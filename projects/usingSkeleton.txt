@@ -1,0 +1,18 @@
+Using the Skeleton
+Whenever you want to start a new project, just do this:
+
+Make a copy of your skeleton directory. 
+Name it after your new project.
+Rename everything with NAME 
+    to the name of your project 
+    or whatever you want to call 
+    your root module.
+	directory and in file name
+		in NAME_tests
+		in setup
+Edit setup.py to have 
+	all the information for your project.
+Remove all *.pyc files 
+	to make sure you're clean.
+Check that all is working by using nosetests.
+Start coding.

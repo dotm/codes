@@ -1,0 +1,182 @@
+JavaScript Syntax
+
+#Confirm and prompt
+confirm for yes no question, prompt: request to input data
+confirm("I am ok");		prompt("Type your name");
+
+#toUpperCase and toLowerCase		to make prompt input case insensitive
+var answer = prompt("Question to the user").toUpperCase();
+
+#console.log()
+console.log(2*5)		console.log("Hello")
+
+#Data types: number(NaN, infinity), string, boolean, array, object, function, null, undefined, symbol, etc.
+#Finding data types using typeof
+	console.log(typeof var)
+	#If a data type is something
+		if(typeof languages[i]==='string')
+	
+#Variable
+var variableName='data'
+
+#Conditionals
+if (condition) {
+    statement
+} else if {
+    statement
+} else {
+    statement}
+
+#Manipulating numbers
+operations: + - * / %
+comparisons: > < <= >= === !==
+
+#Manipulating strings
+string length (e.g. "Emily".length;)
+substrings (e.g. "hi".substring(0, 1);)
+
+#Function ()
+var identifier = function (parameter) {
+	statement};									#mind the ;
+	#return keyword
+	When we call a function, we don't always want to just print stuff. 
+	Sometimes, we just want it to return a value. 
+	We can then use that value (ie. the output from the function) in other code. 
+	The return keyword simply gives the programmer back the value that comes out of the function. 
+	So the function runs, and when the return keyword is used, 
+	the function will immediately stop running and return the value.
+
+#-----------------------------------------------------------------------------------------------------------------	
+#For loop
+for(var i = 0; i < integer; i++){		#the var is optional, i is a placeholder local variable
+    codes}
+	#For in loop
+	for (i in lala){codes}				#lala can be an array or object
+
+#While loop
+while(condition===true) {						#you can also omit true: while(condition){do this}
+    #do this while the condition is true}
+#Do while loop
+do {this one time and continue while loopCondition is true
+} while (loopCondition);
+
+#Switch
+var user=prompt('Lala?').toLowerCase();
+switch(user){
+    case 'do':
+        console.log('mi');
+        break;						#break is important
+    case 're':
+        console.log('fa');
+        break;
+    case 'mi':
+        console.log('sol');
+        break;
+    default:						#if the prompt is not covered in any case statement, default is optional
+        console.log('la');}
+	#Switch inside object literal
+		var objectName={
+			methodName: function (item) {
+				switch (item) { 
+				case "eggs": this.add(0.98); break;
+				case "milk": this.add(1.23); break;
+				}
+			}
+		}
+#-----------------------------------------------------------------------------------------------------------------		
+#Array []
+Arrays:store lists of data, can store different data types at the same time, are ordered so the position of each piece of data is fixed
+var arrayId=['la',3,2 //elements]
+	//Array constructor
+		var arrayName = new Array();	//Array must be capitalized
+	//Add data value to an array you've created before
+		array.push(data);
+	//Accessing element by index
+		var element = array[index]; console.log (languages[2])  //start from 0
+	//Check array length: array.length
+	//Iterating over an array to print every elements in it
+		for(var i=0; i<arrayName.length; i++){			//you can also use:for (i in arrayName)
+		console.log(arrayName[i]);}
+	//Heterogeneous array: array with a mixture of data types -strings, numbers, booleans, array, object, etc 
+	//Two-dimensional array: has two rows that each contain two items.
+		var twoDimensional = [[1, 1], [1, 1]];
+			[1, 1]		//matrix of 2D array
+			[1, 1]
+	//Jagged array
+		var jagged=[[1,2],[3]]
+	
+//Object {}
+	//2 ways to create an object: 			//you can use this with array
+		//using object literal notation
+			var objectName = {							//never forget the comma
+				key: value,								//key a.k.a property
+				methodName: function(parameter) { 		//defining function a.k.a method
+				codes},									//you must end the method with comma, no ; is allowed inside the object bracket
+				key: value};
+			var emptyObject = {};
+		//using the object constructor (constructor notation)
+			var objectName = new Object();	//Object must be capitalized
+			//after the object has been constructed, add keys and value to the object (see below)
+	//Iterating over an object
+		for(var i=0; i<objectName.length; i++){			//you can also use:for (i in objectName)
+		console.log(i);}								//to print the keys
+		console.log(objectName[i]);}					//to print the value of keys
+	//Accessing property's value
+		objectName.key		//dot notation
+		objectName["key"]	//bracket notation 		//use this when you can't use dot notation, don't forget the ""
+			//you can use a variable to act as a placeholder of an object property
+				x="key"								//don't forget the ""
+				objectName["key"]=objectName[x]
+	//2 ways to add keys and value to an object you've created before:
+		objectName["key"] = "value";
+		objectName.key = "value";
+	//Finding out whether an object has a certain property or not
+		myObj.hasOwnProperty('name') 
+	//In addition to making arrays of Objects, we can use objects as parameters for functions as well.
+	//The Object constructor have hasOwnProperty method and prototype property by default
+	
+	
+//Class									//a.k.a Custom constructor
+	function className(parameter1,parameter2) {
+		this.parameter1= argument1;								//defining property in class
+		this.parameter2= 'value';								//you can use value instead of argument
+		this.methodName = function() {							//defining method in class
+			codes}		};										//you must use ; when separating property
+		var parameter=value;									//a private variable
+	//Using class
+		var objectName = new className(value1, value2);		//never forget the 'new' and className
+	//Properties: variables associated with an object. 
+		objectName.var = value;	//Assigning value to property
+		//In JavaScript all properties of an object are automatically public: they can be accessed outside the class. 
+		//If you want to make a private variable, use: var parameter=value
+			//Accessing private variables using public method
+				this.methodName= function() {return privateVariable};
+	#Method: a function associated with an object.
+		objectName.methodName= function (parameter){codes;};
+		#Functions can only use parameters as an input, but methods can make calculations with object properties.
+		#Method is especially helpful when you want to either update the object properties or calculate something based on an object's properties.
+		#Calling method
+			objectName.methodName()
+		#Like object properties, method can be public or private. The syntax to create them is also similar.
+			#Accessing private method using public method
+			   this.publicMethod=function(){return privateMethod }		
+			   #don't use () after privateMethod so that it returns the method itself and NOT the result of calling that method.
+	#The keyword this acts as a placeholder, and will refer to whichever object called that method when the method is actually used.
+		var functionName= function (parameters) {			#if you make the var objectName.functionName
+			this.property=value;};							#the this will only refer to the objectName object
+		#Specifying 'this' when calling the method
+			objectName.functionName=functionName		#Assigning functionName to objectName is necessary
+			objectName.functionName(parameters)
+#Prototype
+	#Prototype is a property
+	#Extending the prototype
+		className.prototype.newMethod =function(parameter) {statements;};
+		Cat.prototype.meow = function () { }; 
+	#Prototype	inheritance/changing the class's prototype
+		childClass.prototype = new parentClass();
+	#Prototype chain
+		If JS encounters something it can't find in the current class's methods or properties, 
+		it looks up the prototype chain to see if it's defined in a class that it inherits from. 
+		This keeps going upwards until it stops all the way at the top: the mighty Object.prototype
+		By default, all classes inherit directly from Object, unless we change the class's prototype
+		

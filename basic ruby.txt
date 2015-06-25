@@ -1,0 +1,209 @@
+variable_name=value
+variable_name.methodName
+variable_name.methodName(argument)					#with argument; the () is optional, the space is not
+variable_name.methodName(argument1,argument2,...)	#multiple argument
+variable_name.method1.method2.method3				#multiple method
+
+#Arithmetic operators: + - * / ** % 
+#Comparators/Comparison operators: == != <> <= >= < >
+#Boolean operators/Logical operators: &&, ||, !
+
+#Comment
+	#single-line comment
+	=begin
+		a multi-line comment (no space between = and begin!) 
+		= begin and = end need to be on their own lines.
+	=end
+
+puts (put string) vs print
+puts := print + '\n'
+
+#Modifying variable
+  answer.capitalize!
+  
+#Block
+	{a block}
+	do
+		a block
+	end
+
+#Type conversion:
+	to_s converts values to strings
+	to_i converts values to integers (numbers)
+	to_a converts values to arrays
+
+#User Input
+  variable_name = gets.chomp
+	gets get input from the user, convert it to string, and adds a blank new line after each bit of input
+	chomp removes that extra line
+	
+#Substring
+	"some strings"[0]
+	"some strings"[0..4]
+	"some strings"[0..-1]
+	"some strings"[0,4]
+	"some strings"[0...4]
+	
+#String's Method
+  "some strings".methodName
+	.length
+	.split				#split with spaces, equals to -> .split(" ")
+		.split(",")		#split with delimiter argument
+	.reverse 
+	.upcase 
+		.downcase 
+		.swapcase
+			"lALA".swapcase -> "Lala"
+		.capitalize			#beware: " la".capitalize -> " la"
+	.ljust (lineWidth)		#lineWidth must be an integer bigger than the number of characters
+		.center
+		.rjust
+	.include?		search if an element is inside a string
+		"hiss".include? "s"		-> true
+	.sub			#substitute only the first instance
+		"ass".sub!(/s/, "th")	-> "aths"
+	.gsub! 			#stands for global substitution
+		"ass".gsub!(/s/, "th")	-> "athth"
+
+		
+#String concatenation
+	"Good morning, " + name + "!"
+#String interpolation
+	first_name = "Kevin"
+	puts "Your name is #{first_name}!"
+		puts "Your name is #{first_name * 3}!"	#you can evaluate code and calculation inside the brackets
+#String comparison
+	When strings get compared, they compare their lexicographical ordering (dictionary ordering)
+	'azz' < 'ba'	->	true			#beware: 'Z' < 'a'		->	true
+		
+#Advanced math
+	(2-5).abs							#absolute value
+	rand								#random FLOAT number [0,1)
+		rand(integer)					#random INT number [0,int)
+	def lala (min, max)
+		rand * (max-min) + min	end		#random FLOAT number [min,max)
+	srand integer						#set an integer as the seed for the pseudo-random rand
+		srand 0							#seeds using the current time on your computer, down to the millisecond
+  #Math object
+	Math::PI
+	Math::E
+	Math.cos(number)
+		.tan .sin .log .sqrt
+#--------------------------------------------------------------------------------
+#Method
+	def functionName(parameter1, parameter2)					#can also be -> def functionName parameter1, parameter2
+	   a block
+	end
+	def functionName(parameter1, parameter2); a block; end		#one line method
+#Calling method
+	functionName(parameter1, parameter2)						#can also be -> functionName parameter1, parameter2
+
+#--------------------------------------------------------------------------------
+#Flow control
+
+#Conditional Statements
+	if user_num < 0
+	  puts "You picked a negative integer!"
+	elsif user_num > 0
+	  puts "You picked a positive integer!"
+	else
+	  puts "You picked zero!"
+	end
+  #without condition
+	if false
+		puts "OK"
+	elsif true
+		puts "This will be printed"
+	end
+  #with variable and unless
+	hungry = false
+	unless hungry
+	  puts "I'm writing Ruby programs!"
+	else
+	  puts "Time to eat!"
+	end
+
+#Range
+	1...10			[1,10)
+	'a'..'z'		[a,z]
+	'ba'...'bd'	->  ba,bb,bc
+
+#While vs. until loop
+	i = 1
+	while i < 11
+	  puts i
+	  i+=1
+	end
+
+	until i > 10
+	  puts i
+	  i+=1
+	end
+
+#For loop
+	for num in 1...10
+	  print num
+	end						->123456789
+
+#Times iterator
+	5.times {puts "la"}
+	5.times do |i|
+	  puts i
+	end
+
+#Loop method
+	i = 0
+	loop do
+	  i += 1
+	  print "#{i}"
+	  break if i > 5
+	end
+
+#Next keyword 
+used to skip over certain steps in the loop
+	for i in 1..5
+	  next if i % 2 == 0
+	  print i
+	end
+
+#Each iterator
+object.each { |item| # Do something }
+object.each do |item| # Do something end
+
+#Iterating hash
+hashName.each do | keyName, value |
+  puts keyName + ':  ' + value			end
+
+#--------------------------------------------------------------------------------
+#Time class
+	Time.new
+		Time.new + 60				#current time + 60 seconds
+	Time.mktime(2000, 1, 1)         #2000-01-01 00:00:00 -0800
+	Time.mktime(1976, 8, 3, 10, 11) #1976-08-03 10:11:00 -0700
+
+#Array class
+	meals = ["Breakfast", "Lunch", "Dinner"]	-> ["Breakfast", "Lunch", "Dinner"]
+	meals << "Dessert"							-> ["Breakfast", "Lunch", "Dinner", "Dessert"]
+	meals[2]									-> "Dinner"
+	meals.last									-> "Dessert"
+#Array's method
+	[array].methodName
+	.new 	.max 	.min	.push	.last	.first	:<<
+
+#Hash class {Dictionary}
+	same syntax as Python
+	
+#Extending classes
+class ClassName
+  def methodName
+    block of code
+  end
+end
+
+#--------------------------------------------------------------------------------
+text.lines.to_a.reverse
+:symbol are global and immutable
+
+array = [1, 2, 3, 4, 5, 6]
+array.select &:even?		-> [2, 4, 6]
+

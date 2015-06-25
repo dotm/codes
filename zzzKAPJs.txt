@@ -1,0 +1,29 @@
+Processing JS Khan Academy
+
+/* Comments */
+
+//--Shapes and Colours--
+
+background(173, 236, 255);
+
+stroke(28, 84, 0);	fill(55, 166, 0);	triangle(100, 410, 200, 200, 300, 410);
+noFill(); noStroke();
+
+fill(255, 255, 0); ellipse(x, 208, 300, 300);
+ellipse(x - 50, 151, eyeSize, eyeSize); ellipse(x + 100, 142, eyeSize, eyeSize);
+
+#Animation
+var draw= function() {
+    
+ // The sun, a little circle on the horizon
+fill(255, warna, 0);
+ellipse(200, 298, sunSize, sunSize);
+
+// The land, blocking half of the sun
+fill(76, 168, 67);
+rect(0, 300, 400, 100);
+
+sunSize=sunSize+1;
+warna=warna-0.2;
+};
+

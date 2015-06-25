@@ -1,0 +1,308 @@
+Basic CSS
+<link href="font.css" rel="stylesheet">								#import font(must be before css/order matters)
+<link rel="stylesheet" href="http://s3.amazonaws.com/codecademy-content/courses/ltp/css/bootstrap.css">		#bootstrap
+<link href='stylesheet.css' type='text/css' rel='stylesheet'>		#import css
+#3 Ways to CSS
+inline styling, in head element (internal stylesheet), in another stylesheet file (external stylesheet)
+
+#Syntax
+CSS Rule:
+selector{property:value;	property:value}
+selectors: body for background, p for paragraph, h# for header, * for all (universal selector)
+
+#CSS Units
+	px (such as font-size: 12px) is the unit for pixels.
+	em (such as font-size: 2em) is the unit for the calculated size of a font. So 2em, is two times the current font size.
+	pt (such as font-size: 12pt) is the unit for points, for measurements typically in printed media.
+	% (such as width: 80%) is the unit for percentages.
+	Other units include pc (picas), cm (centimeters), mm (millimeters) and in (inches).
+	You can also use inherit
+When a value is zero, you do not need to state a unit. e.g. border: 0
+  em vs rem
+	em is relative to the font-size of its direct or nearest parent
+	rem is only relative to the html (root) font-size
+
+#Coloring:
+    background-color to fill, color to color text
+	the values can be:
+		red
+		rgb(255,0,0)
+		rgb(100%,0%,0%)
+		#ff0000
+		#f00
+	Predefined color names include aqua, black, blue, fuchsia, gray, green, 
+		lime, maroon, navy, olive, orange, purple, red, silver, teal, white, and yellow. 
+		transparent is also a valid value
+	You can also use inherit
+	
+#Background image
+selector{background-image: url('http://goo.gl/04j7Nn')}
+#Background-repeat
+how the image repeats itself. Its value can be:
+	repeat, the equivalent of a “tile” effect across the whole background,
+	repeat-y, repeating on the y-axis, above and below,
+	repeat-x (repeating on the x-axis, side-by-side), or
+	no-repeat (which shows just one instance of the image).
+#Background-position
+can be top, center, bottom, left, right, a length, or a percentage, or any sensible combination, such as top right.
+	#Background shorthand
+	selector	{background: background-color url(background-image) background-repeat background-position(s)}
+	body 		{background: white url(http://www.htmldog.com/images/bg.gif) no-repeat top right;}
+
+#Text
+	body{										//Other values:
+			font-family: sans-serif; 			//serif, Arial, etc
+			font-size: 12px; 					//
+			font-weight:bold; 					//normal, bolder, lighter, 100, 200, 300, 400 (normal), 500, 600, 700 (bold), 800 or 900
+			font-style: italic; 				//
+		    font-variant: small-caps;			//normal; small-caps is capitalized word but in smaller size
+			text-align: left; 					//right, center, justify
+			text-decoration: underline;			//overline, line-through
+			text-transform: capitalize 			//uppercase, lowercase, none
+			text-indent: normal					//
+			line-height: 1.5em; 				//2 (2 * font size), normal
+			letter-spacing: normal				//
+			word-spacing: normal				//
+		}										//(available for all) inherit, CSS Units, normal
+	#Font shorthand
+	You can shorthand all of the font-xxx tags by using the shorthand (font) tag
+	Shorthand will OVERRIDE other longhand property
+	the syntax for font shorthand
+		selector 	{font: font-style font-variant font-weight font-size/line-height font-family;}
+		p 			{font: small-caps italic bold 12px/2 courier;}
+	You need to supply at least font-size and font-family for the shorthand to work, otherwise it'll just be a syntax error and do nothing.
+
+#Grouping element
+Use (div) to group block element and (span) to group inline element
+You can use class and id as attribute of both grouper	
+
+#Width, Height, Overflow
+Width control the width, height control the height, overflow manage text overflowing out of the box.
+.info {			width:70%;
+                height:200px;
+                overflow:auto;
+				overflow-y: auto;		you can use this to specify which coordinate you want to use
+				overflow-x: hidden;}
+				
+#---------------------------------------------------------------------------------------------------
+#Box Model
+From outside to inside: 
+	margin,	border, padding, content
+	
+#Shorthand of box model properties
+The below rule applies to margin, border and padding.
+	property with one value has its value applied to all
+	stating two values e.g. padding: 1em 10em;
+		the first value will be the top and bottom 
+		the second value will be the right and left.
+	To specify with 4 value: top, right, bottom, left,
+	Or you can use specific property e.g. margin-top. 
+		.info {	margin: 15px 0px 10px 6px;	
+				border: 2px dashed rgb(161, 161, 161);
+				padding: 6px;}		
+	When you use negative value: you move the content
+		.info{margin-left:-10px} //move .info 10 px to the LEFT
+		
+#Use {margin: auto;} to center a div
+	#auto will maximize the amount of space as much as possible
+
+#Border 
+h2 {								//Other values:
+    border-style: dashed;			//solid, dotted, dashed, double, groove, ridge, inset and outset
+    border-width: 3px;
+    border-left-width: 10px;		//OVERRIDE original border-width; left can be replaced by top, right, bottom
+    border-color: red;
+	border-radius: 100%;			//border can have 4 separate value
+}
+	#Border shorthand
+	You can shorthand all of the border width, style, and color tags by using the shorthand (border) tag
+	Shorthand will OVERRIDE other longhand property
+	the syntax for border shorthand
+		 selector{border: border-width, border-style, border-color}
+
+#---------------------------------------------------------------------------------------------------
+#Positioning
+Position can be static(default), relative, absolute, fixed.
+	1.Static means where the element would normally go.
+		top left right bottom positioning property will be ignored when the element is static
+	2.Relative tells the element to move relative to where it would have landed if it just had the default static positioning.
+	3.Absolute pull the element outside of the HTML flow
+		the element will be positioned in relation to the first parent element it has that doesn't have position: static. 
+		If there's no such element, the element will gets positioned relative to <html>.
+	4.Fixed positioning anchors an element to the browser window pull it outside of the HTML flow
+		If you scroll up and down, the fixed element stays put even as other elements scroll past
+the downside to absolute positioning is that because the element outside of the HTML flow, 
+  there is no way of accurately determining where they end
+  when using relative values for widths and sizes, 
+  you often have to abandon any hope of placing anything, such as a footer, below these boxes. 
+  If you wanted to do such a thing, one way would be to float your chunks, rather than absolutely positioning them.
+You need to specify positioning top left right bottom in a separate properties
+
+#z-index is for ordering object from back (1) to front (2,3,..-->)
+	hopper {position: absolute; top: 30px; left: 80px; z-index: 3;}
+	h1     {position: fixed; z-index: 4; left: 30px;}
+
+#Floating element
+Float value can be left or right, etc.
+The float property moves an element to the far left or far right of the page.
+Use float to make image appear like in newspaper and to move them around. 
+If you use float with div, specify the width with px or % so it doesn't take all the page space         
+	div {float: right; width: 30%;}
+Floating element will adjust to the flow of other floating element (won't be on top of each other), 
+but not to other non-floating element (can be on top of each other).
+To ensure that they won't be on top of each other, you can use clear
+
+#Clear
+can have 3 values:
+	left, it will immediately move BELOW any floating elements on the left side of the page
+	right, same as above but to the right side
+	both, it will move BELOW elements floating on the left and right
+Used so the text wouldn't be on top of each other. Value can also be inherit, or none
+
+#---------------------------------------------------------------------------------------------------
+#Display
+CSS treats HTML elements like boxes. A box can be "block" or "inline".
+It's possible to change whether a box is block or inline by using the display property.
+The display property has 4 value: 
+	none					->the box is gone
+	inline					->boxes that are displayed inline follow the flow of a line e.g. em{display:inline}
+	block(default)			->in a box of its own, line break before and after it e.g. p, h1{display:block}
+	inline-block			->keep a box inline but lend the greater formatting flexibility of block boxes,
+							  allowing margin to the right and left of the box, for example.
+	display: none vs. visibility: hidden 
+		display: none takes the element’s box completely out of play
+		whereas visibility: hidden keeps the box and its flow in place without visually representing its contents
+#Display Table Value
+used to create page lay out so that the HTML table tag is not abused
+not supported by IE
+	table - a block-level table - the equivalent of the default styling of the HTML (table) element
+	inline-table - an inline-level table / sets the table without line breaks before and after it
+	table-row-group - the equivalent of the default styling of the HTML (tbody) element
+	table-header-group - the equivalent of the default styling of the HTML (thead) element
+	table-footer-group - the equivalent of the default styling of the HTML (tfoot) element
+	table-row - the equivalent of the default styling of the HTML (tr) element
+	table-column-group - the equivalent of the default styling of the HTML (colgroup) element
+	table-column - the equivalent of the default styling of the HTML (col) element
+	table-cell - the equivalent of the default styling of the HTML (td) or (th) elements
+	table-caption - the equivalent of the default styling of the HTML (caption) element
+#Other Display Value
+	list-item displays a box in the way that you would usually expect an (li) HTML element to be displayed
+		To work properly, elements displayed this way should be nested in a (ul) or (ol) element
+	run-in makes a box either in-line or block depending on the display of its parent
+
+#---------------------------------------------------------------------------------------------------
+#Grouping / Compound selector to apply CSS to multiple selectors
+h1, p, .lala, #yeye{property:value}
+
+#Combining CSS class and element selectors 
+h2.metal {property:value}
+
+#Nesting / Combining descendant selectors 
+table .emperor {property:value}
+div div p{css;}
+	#Direct descendant / child selectors (use the > )
+	html > #lala{css;}
+
+#Difference between CSS class + element selectors and descendant selectors
+ul.spacey will find <ul>s with the class name spacey directly on that tag. 
+p .purple will find paragraph tags that have children tags with the class name purple on them. 
+The difference is whether it looks directly on itself or for children.								
+
+#Pseudo-class
+selector:pseudo-class {property: value;}
+	a:link	 		An unvisited link.
+	a:visited 		A visited link.
+	p:first-child 	//other pseudo-class selector: last-child, target, first-of-type
+	p:nth-child(2) 	//other value: odd, even, 3n+1 (1,4,7 ~ mod3==1)
+		#CSS nth-child is zero index
+#Dynamic pseudo-class selector
+	a:active 		is for when a link is clicked on.
+	a:hover 		A link you're hovering your mouse over.
+	a:focus 		is for when something gains focus, that is when it is selected by, or is ready for, keyboard input.
+
+#Pseudo-element
+selector:pseudo-element {property: value;}
+	p:first-letter 	first letter inside a box 
+	p:first-line 	the top-most displayed line in a box
+	li:before		immediately before the element box
+	li:after		immediately after the element box
+before and after pseudo elements are used in conjunction with the content property to place content on either side of a box without touching the HTML
+the value of the content property can be open-quote, close-quote, any string enclosed in quotation marks, or any image using url(imagename)
+since CSS is for styling, use content sparingly. Look at it like this: 
+	You are borrowing content to use solely as presentation, 
+	e.g. using “!” because it looks pretty. Not because you actually want to exclaim anything
+The content property effectively creates another box to play with so you can also add styles to the “presentational content”:
+	li:before {
+		content: "POW! ";
+		background: red;
+		color: #fc0;
+	}
+	
+#---------------------------------------------------------------------------------------------------
+#Specificity
+If the selectors are the same then the last one will always take precedence.
+	p { color: red }
+	p { color: blue }	#WIN
+You won’t usually have identical selectors with conflicting declarations on purpose (because there’s not much point)
+Conflicts usually come up when you have nested selectors
+More specific = greater precedence
+	the more specific a selector, the more preference it will be given when it comes to conflicting styles
+
+#Calculating Specificity
+	give every ID selector (#conclusion-header) a value of 0,1,0,0
+	every class selector (.headers) a value of 0,0,1,0 
+	and every HTML selector (h2) a value of 0,0,0,1
+	inline styling get a value of 1,0,0,0
+		!important always win because the value is 1,0,0,0,0
+		universal selector (*) has no specificity value (0,0,0,0)
+		pseudo-elements (e.g. :first-line) get 0,0,0,1 
+		pseudo-class get 0,0,1,0
+		The pseudo-class :not() adds no specificity by itself
+add them all up, you have the specificity value
+	you can have css with 0,0,13,0 specificity value, but another with 0,1,0,0 will beat it
+
+#---------------------------------------------------------------------------------------------------
+#Bootstrap
+<link rel="stylesheet" href="http://s3.amazonaws.com/codecademy-content/courses/ltp/css/bootstrap.css">
+12 columns
+Bootstrap provides the .pull-left class to left-align an element, and the .pull-right class to right-align an element. Let's use these classes to finish styling the navigation bar.
+<div class="row">
+    <div class="col-md-4">
+      ...    </div>
+    <div class="col-md-4">
+      ...    </div>
+    <div class="col-md-4">
+      ...    </div>
+  </div>
+
+#Tab navigation
+<ul class="nav nav-tabs ">
+	<li><a href="#">Primary</a></li>
+	<li class="active"><a href="#">Social</a></li>
+	<li><a href="#">Promotions</a></li>
+	<li><a href="#">Updates</a></li>
+</ul>
+
+#Pill navigation
+<ul class="nav nav-pills">
+	same as above
+</ul>
+
+#Jumbotron: used to call extra attention to important content on the site
+<div class="jumbotron">
+</div>
+
+#Alignment (pull)
+.pull-left class to left-align an element, and the .pull-right class to right-align an element. 
+
+#Container
+.container {
+    margin-right: auto;
+    margin-left: auto;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+#Thumbnail
+Bootstrap provides the ".thumbnail" class to easily display grids of images.
+

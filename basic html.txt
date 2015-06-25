@@ -1,0 +1,290 @@
+#Intro:
+	(!DOCTYPE html) for document type: html
+	(html) at the start and the end of every html
+	(head), for page (title) etc, and (body), for page body, must be inside	the (html) tag
+	(meta charset) for character coding set used in page: utf-8
+
+#Basic of writing text:
+    (h#) for header, (p) for paragraph body, (br) for break
+
+#Text emphasis:
+    (em) for weak emphasis, (strong) for strong emphasis
+
+#List:
+    (ol) for ordered list, (ul) for unordered list
+    (li) for the list points
+
+    <ol>  <li>Math</li> <li>Physics</li> <l>Spanish</li>    </ol>
+
+#Definition List:
+	(dl) for definition list
+	use definition terms (dt) followed by definition descriptions (dd) instead of (li)
+	
+	<dl>
+		<dt>HTML</dt>
+			<dd>Abbreviation for HyperText Markup Language - a language used to make web pages.</dd>
+		<dt>Dog</dt>
+			<dd>Any carnivorous animal belonging to the family Canidae.</dd>
+			<dd>The domesticated sub-species of the family Canidae, Canis lupus familiaris.</dd>
+		<dt>Moo juice</dt>		<dt>Cat beer</dt>		<dt>Milk</dt>
+			<dd>A white liquid produced by cows and used for human consumption.</dd>					</dl>
+	
+#Image:
+    (img) for image, no (/img) required
+    src as source, alt as alternative source
+    
+    <img src='https://www.kasandbox.org/programming-images/animals/thumbs/komodo-dragon.png' alt='komodo dragon'>
+
+#Creating ID and Class:
+    id and class is an attribute
+	to select an id use #
+	to select a class use .      
+	You can attribute multiple class to the same element using space ' '
+    
+	<h2 id="summer">Summer</h2>    
+		<style>#summer{background-color: red; color: rgb(255, 255, 0);}</style>
+    <p> <strong class="apples">apples</strong> and <strong class="bananas">bananas</strong>.
+        <strong class="apples bananas">apples and bananas</strong>.            </p>    
+		<style>     .apples{color:red;}
+					.bananas{background-color:yellow;}        </style>
+
+#Hyperlink:
+    (a) for hyperlink text, href attrib for html reference
+    absolute html use http://domain-name/path
+    relative html only use /path
+    internal hyperlink (link to the same page) use id attrib
+
+    <a href="http://www.youtube.com">Youtube</a>     <br>
+    <a href="https://www.khanacademy.org">
+    <img src="https://www.kasandbox.org/programming-images/cute/Heart.png"></a>
+    <a href="#top">Jump to the top</a>
+
+#Table:
+    (table) at the beginning and end of table
+    (thead) for table head, (tbody) for table body, (tr) for each row
+    (th) as head data entry, (td) for body data entry
+		colspan and rowspan attribute can be used to "merge" table cells
+	<table> <thead> <tr>
+						<th rowspan="2">Meal</th>
+						<th colspan='1'>Price</th>                </tr>            </thead>
+			<tbody> <tr>
+						<td>Rice</td>
+						<td>3000</td>                </tr>            </tbody>
+			</table>
+
+#---------------------------------------------------------------------------------------------------
+#Form
+an action attribute is needed to tell the form where its contents will be sent to
+	if the action attribute is omitted, the action is set to the current page.
+
+method attribute tells the form how the data in it is going to be sent 
+	the (default) value get latches the form information onto a web address
+		use this if the form submission is short, passive (like a search engine query), or without sensitive information
+	post (essentially) invisibly sends the form’s information
+		use this if the form is lengthy, for updating data, or includes sensitive information (password).
+
+other form attributes:
+	accept-charset	Specifies the charset used in the submitted form (default: the page charset)
+	autocomplete	Specifies if the browser should autocomplete the form (default: on)
+	enctype			Specifies the encoding of the submitted data (default: is url-encoded)
+	name			Specifies a name used to identify the form (for DOM usage: document.forms.name)
+	novalidate		Specifies that the browser should not validate the form
+	target			Specifies the target of the address in the action attribute (default: _self)
+	
+The <fieldset> element groups related data in a form.
+The <legend> element defines a caption for the <fieldset> element.
+
+	<form action="contactus.php" method="post">
+	  <fieldset>
+	   <legend>Personal information:</legend>
+		<p>Name:</p>
+		<p><input type="text" name="name" value="Yoshua"></p>
+		<p><input type="password" name="password" placeholder="Type Password"></p>
+
+		<p>Are you:</p>
+		<p><input type="radio" name="areyou" value="male"> Male</p>
+		<p><input type="radio" name="areyou" value="female"> Female</p>
+	  </fieldset>	
+		<p>Comments: </p>
+		<p><textarea name="comments" rows="5" cols="20">Your comments</textarea></p>
+
+		<p><input type="checkbox" name="agree"> I agree with the terms</p>
+		<p><input type="checkbox" name="agree"> I agree to not post bullshit</p>
+		<p><input type="submit"></p>															</form>
+
+you can use (br) instead of multiple (p)
+		
+#Input
+The input tag can take a multitude of guises, the most common ones are:
+<input type="text"> or simply <input> is a standard textbox. 
+	can have a value attribute, which sets the initial text in the textbox
+	placeholder can be used as an attribute to create description of input
+<input type="password"> is similar to the textbox, but the characters typed in by the user will be hidden.
+<input type="checkbox"> is a checkbox, which can be toggled on and off by the user. 
+	can have a checked attribute, and makes the initial state of the check box to be switched on, as it were. 
+	<input type="checkbox" checked> - the attribute doesn’t require a value
+<input type="radio"> is similar to a checkbox, but user can only select one radio button in a group
+	can have a checked attribute
+	you can select multiple radio buttons with different NAME attribute
+<input type="submit"> is a button that when selected will submit the form. 
+	you can control the text that appears on the submit button with the value attribute
+	<input type="submit" value="Ooo. Look. Text on a button. Wow">
+Note that, like img and br tags, the input tag, which doesn’t surround any content, doesn’t require a closing tag.
+
+#Textarea
+textarea is, basically, a large, multi-line textbox. 
+The anticipated number of rows and columns can be defined with rows and cols attributes, 
+although you can manipulate the size to your heart’s content using CSS.
+
+<textarea rows="5" cols="20">A big load of text</textarea>
+
+Any text you choose to place between the opening and closing tags (in this case “a big load of text”) will form the initial value of the text area.
+You can also just use placeholder
+
+#Select and Option
+works with the option tag to make drop-down select boxes
+
+	<select>
+		<option>Option 1</option>
+		<option>Option 2</option>
+		<option value="third option">Option 3</option>
+	</select>
+
+When the form is submitted, the value of the selected option will be sent. This value will be the text between the selected opening and closing option tag unless an explicit value is specified with the value attribute, in which case this will be sent instead. So, in the above example, if the first item is selected, “Option 1” will be sent, if the third item is selected, “third option” will be sent.
+Similar to the checked attribute of checkboxes and radio buttons, an option tag can also have a selected attribute, to start off with one of the items already being selected, eg. <option selected>Rodent</option> would pre-select “Rodent” from the items.
+
+#Names
+all of the tags mentioned above will all be ignored without name
+this is because the form fields need names
+so to all of the fields, the attribute name needs to be added, e.g. <input type="text" name="rant">.
+
+#---------------------------------------------------------------------------------------------------
+#Abbreviation (abbr)
+#Quotations
+	(blockquote) for standalone multi-line quotations, (q) for shorter, in-line quotations
+#Citations (cite)
+#Code (code)
+	(var) can be used for variables (which could be a variable in anything, not just in code - it could be a variable in an equation, for example),
+	(samp) for sample output
+	(kbd) / keyboard for user input.
+#Preformatted text (pre)
+pre takes notice of every character in it, including the white space 
+other elements will ignore a consecutive space or a line-break
+pre is most commonly used for blocks of code, where spacing, such as indentations, can be relevant.
+	<pre><code>
+	&lt;div id="intro"&gt;
+		&lt;h1&gt;Some heading&lt;/h1&gt;
+		&lt;p&gt;Some paragraph paragraph thing thing thingy.&lt;/p&gt;
+	&lt;/div&gt;															</code></pre>
+#Addresses
+(address) should be used specifically for the contact details 
+relating either to the entire web page (and so only used once) 
+or to an article element 
+It isn’t, as it might at first appear, for marking up any old address willy-nilly.
+
+	<h3>Author contact details</h3>
+	<address>
+	<ul>
+		<li>0123-456-7890</li>
+		<li>author_dude@noplaceinteresting.com</li>
+		<li>http://www.noplaceinteresting.com/contactme/</li>
+	</ul>
+	</address>
+
+#Definition terms
+(dfn) used to highlight the first use of a term. title attribute can be used to describe the term.
+
+	<p>Bob's <dfn title="Dog">canine</dfn> mother 
+	and <dfn title="Horse">equine</dfn> father 
+	sat him down and carefully explained that 
+	he was an <dfn title="A mutation that combines two or more sets of chromosomes from different species">allopolyploid</dfn> organism.	</p>
+
+#Bi-directional text
+bdo can be used to reverse the direction of the text, and to display languages that read right to left. 
+The value of the required attribute dir (direction) can be ltr (left to right) or rtl (right to left).
+	<bdo dir="rtl">god lmth</bdo>
+	
+#Editorial
+ins and del are used to display editorial insertions and deletions respectively. 
+Strictly speaking, they aren’t limited to text and can be used over whole swathes of content 
+but, typically, they are used in moderation just like “Track Changes” feature in word processors tend to be.
+They can have the attributes datetime to indicate when the edit was made and cite, to point to a description as to why the edit has been made.
+
+<p>I have decided to <del datetime="2013-01-26">decrease</del> <ins cite="http://www.icecreamforall.com/changeofpolicy/">increase</ins> 
+the amount of free ice cream that the State will provide for its citizens.</p>
+
+#---------------------------------------------------------------------------------------------------
+#Sectioning
+used to create semantic div
+
+#Articles and Sections
+
+An article element can be used to mark up a standalone section of content. This could be used just once, if you think of a blog post as an article, for example, or a number of times, if you imagine replicating a traditional newspaper page with numerous articles.
+A section element represents a more general section and could be used to split up an article, or to represent chapters, for example.
+
+	<body>
+		<article>
+			<header>
+				<h1>Alternatively&hellip;</h1>
+				<p>[An introduction]</p>
+			</header>
+			<section id="main_content">
+				<p>[Content]</p>
+			</section>
+			<footer>
+				<p>[End notes]</p>
+			</footer>
+		</article>
+		<footer>
+			<p>[Copyright bumf]</p>
+		</footer>
+	</body>
+
+The footer is the footer of the section in which it is contained. 
+So, in the above example, the first footer is the footer of the article 
+and the second footer is the footer of the page.
+
+Asides
+
+An aside can be used to represent content that is related the content surrounding it. Think of pull-quotes or snippets of related information in an article:
+
+
+<section id="main_content">
+    <h1>Tixall</h1>
+    <p>[All about Tixall]</p>
+    <aside>
+        <h2>Tixall Obelisk</h2>
+        <p>[A short note about Tixall Obelisk]</p>
+    </aside>
+    <p>[Maybe a bit more about Tixall]</p>
+</section>
+While we’re at this structure-love, if you want to include figures, there happens to be two tags for doing just that:
+
+
+<figure>
+    <img src="obelisk.jpg">
+    <figcaption>Tixall Obelisk</figcaption>
+</figure>
+Note that the img element doesn’t need an alt attribute IF the figcaption (figure caption) does that job.
+
+#Navigation
+used to mark up a group of navigation links:
+
+<nav id="main_nav">
+    <ul>
+        <li><a href="/tutorials/">Tutorials</a></li>
+        <li><a href="/reference/">Reference</a></li>
+        <li><a href="/articles/">Articles</a></li>
+        <li><a href="/about/">About us</a></li>
+    </ul>
+</nav>
+
+If you want to style these new HTML 5 elements (and you probably do, right? It’s much nicer than using <div id="content">..., etc) you will experience a problem in older browsers, most notably Internet Explorer versions 8 and earlier, that don’t understand these tags.
+
+HTML5Shiv can come to your rescue, however; a small piece of JavaScript, slotted in to your head element, that teaches the remedial browsers and holds their hands so that you can use new HTML 5 tags and style them up to your heart’s content with CSS.
+
+It’s your call if you want to use a JavaScript fudge or stick with the safe old (and, again, perfectly valid) but semantically poorer headings and divs approach.
+Many sites chooses the former. Because HTML 5’s loveliness just about outweighs a hack’s ugliness.
+
+#---------------------------------------------------------------------------------------------------
+#Meta tags ???????????????????????

@@ -1,0 +1,179 @@
+#Linking jQuery
+	<script type="text/javascript" src="jquery.min.js"></script>	#link to the minified jquery and your jQuery script.js
+	<script type="text/javascript" src="script.js"></script>		//is not void element
+
+#Basic jQuery instructions
+	find		elements in an HTML document (DOM)
+	change		the content of the HTML element
+	listen		to what a user does
+	animate		content on the page
+	talk		over the network to communicate with the server and fetch new content without refreshing the page
+
+#Blank script
+  make sure the DOM is ready
+	$(document).ready(function(){
+		//events;
+	});
+	
+#jQuery := $
+The $() is a function that makes document (DOM) and HTML elements a jQuery object
+you select an HTML element the same way you select it in CSS selector
+	$("h1")	makes the h1 element a jQuery object; DON'T FORGET the ""
+
+#Assigning jQuery object in a variable
+	var $p = $('p');									#you can replace the $p with any legal Javascript variable name
+	var lala = $('.aClass').find('ol').last().prev()
+#Assigning jQuery function
+	function showTicket(){$(this).closest('.ticketList').find('.ticket').slideDown();}
+	$('.ticketList').on('mouseenter', 'img', showTicket)
+		#Don't put () at the end of showTicket if you want the function to execute after the event is triggered (not immediately)
+	
+#Event syntax
+	$('.button').someAction('attribute');	#the ; are important
+
+#Click function
+	$('button').click(function() {			#there is a <button> element in HTML
+			$('.vanish').fadeOut('slow');
+	});
+
+#This
+	$('div').click(function() {
+			$(this).fadeOut('slow');});			#ONLY fade out the clicked div
+	$('div').click(function() {
+			$(this).find("p").remove();});		#when div is clicked, all paragraph in it will be removed
+			
+#Adding elements
+	var lala=$("<p>lala</p>");				#assign a paragraph jQuery object to lala
+	$("h1").after(lala);					#add lala after h1; other method are listed below
+		//or
+	lala.insertAfter($("h1"));
+
+#Fetching HTML data
+  <selector data-name='value'></selector>
+  .data('name')
+	<li data-price="400"> Knife </li>	#in HTML
+	$('li').click(function() {
+		var amount = $(this).data('price');
+		var price = $('<li>The price is '+amount+' gold </li>');
+			$(this).after(price);
+	});
+#Converting strings to number
+	var amount = +$(this).data('price');		#notice the +	
+#Setting HTML data
+  .data('name','value')
+
+#Fetching form input value
+  <input type='number' class='aClass' value='1'/>
+  $('selector').val()		#the selector must refer to (input) e.g. in this case .aClass
+  +$('selector').val()		#fetch as number
+#Setting form input value
+  $('selector').val('new value')
+	
+#Handling event parameter ????????????????????
+$('selector').on('click', function(event) {event.stopPropagation();})
+$('selector').on('click', function(event) {event.preventDefault();})
+
+#Setting CSS from jQuery
+	.css('attribute','value')
+		$('selector').css('display','block');
+	.css({Javascript object})							#cleaner when you set more than one attribute
+		$('selector').css({'display':'block',			#notice the use placement of : and ,
+							'color':'red'});
+  Whenever possible try to use special class instead of modifying CSS directly in jQuery
+#Fetching CSS value
+	.css('attribute')
+#Setting CSS using class and CSS
+	<div class='aClass'></div>								#in HTML
+	.highlight {background-color:yellow}					#in CSS
+	$('div').find('.aClass').addClass('highlight')
+	
+#Displaying hidden element
+<div class='aClass' style='display:none; color:red'></div>		#the display is important
+  #Using CSS method
+	$('selector').css('display','block');						#block is optional, other value other than none is okay
+  #Using show() and hide()
+	$('selector').show();
+	
+#Animating element
+  .animate({Javascript object},speed)
+	#Using if else to toggle animation
+		$('selector').on('click',function(){
+			$(this).toggleClass('move-up');
+			if($(this).hasClass('move-up')){
+				$(this).animate({'top':'-10px'},fast);
+			}else{
+				$(this).animate({'top':'0px'},fast);
+			}
+		});
+	#Using CSS transition attribute
+		$('selector').on('click',function(){
+			$(this).toggleClass('move-up');});
+		selector {transition: top 0.2s;}			#in CSS; you might have to use browser attribute e.g. -moz-transition
+		.move-up {top: -10px;}
+
+$(document).ready(function() {
+  $('.tour').on('mouseenter', function() {
+    $(this).addClass('highlight');
+    $(this).find('.per-night').animate({'top': '-14px', 'opacity': '1'}, 'fast');
+  });
+  $('.tour').on('mouseleave', function() {
+    $(this).removeClass('highlight');
+    $(this).find('.per-night').animate({'top': '0px', 'opacity': '0'}, 'fast');
+  });
+});
+
+
+#--------------------------------------------------------------------------------
+#Method list
+.text()							#fetching an element text
+	.text("some strings")		#replace an element text with another text (can be strings or number)
+	#Traversal
+		.find("descendant element")
+		.first()						#similar to the first pseudo-class
+		.last()
+		.first().next()					#second element; walking the DOM with method chaining
+		.last().prev()					#penultimate element
+		.parent()
+		.children()						#select direct descendant
+			ul li === $('ul').find('li')
+			ul>li === $('ul').children('li')
+		.parents("selector")
+		.closest("selector") ??????????????????????????????
+	#Adding elements
+		.before()
+		.after()
+		.prepend()
+		.append()
+		.insertBefore()
+		.insertAfter()
+		.prependTo()
+		.appendTo()
+.remove()
+	$("selector").remove()
+.ready(event handler function)
+.on('event to listen', 'element to listen', event-handler)
+	$('.aClass').on('click', 'button', function(){				#listen for a click event on the button inside the aClass
+		$(this).fadeOut('slow')});
+.click(event-handler)
+.filter('selector')
+	$('#anID').filter(".aClass")			#select only and all the element with .aClass inside #anID
+.addClass('className')		#DO NOT use the dot (.className)
+.removeClass('className')
+.toggleClass('className')
+.hasClass('className')
+.slideUp()
+.slideDown()
+.slideToggle()		#so the element can slide up and down multiple times
+.fadeIn()
+.fadeOut()
+.fadeToggle()
+.length								#display number of nodes
+	alert($('selector').length)		#do NOT use the ()
+.data()
+.val()
+.show()
+.hide()
+.animate({Javascript object},speed)
+	default speed is 400 (miliseconds), fast is 200, slow 600
+.css()
+.size ??????????????????????

@@ -1,0 +1,220 @@
+#Hypertext Transfer Protocol(HTTP): the network protocol used to 
+		deliver virtually all resources on the World Wide Web.
+		e.g. HTML files, image files, query results, 
+	Usually, HTTP takes place through TCP/IP sockets
+
+A browser is an HTTP client because it sends requests to an HTTP server (Web server), 
+	which then sends responses back to the client. 
+	The standard (and default) port for HTTP servers to listen on is 80, though they can use any port.
+
+#Resource: some chunk of information that can be identified by a URL
+	Almost all HTTP resources are currently either files or server-side script output.
+
+#HTTP proxy: a program that acts as an intermediary between a client and a server. 
+	It receives requests from clients, and forwards those requests to the intended servers. 
+	The responses pass back through it in the same way. 
+	Thus, a proxy has functions of both a client and a server.
+
+Proxies are commonly used in firewalls, for LAN-wide caches, or in other situations. 
+
+When a client uses a proxy, it typically sends all requests to that proxy, instead of to the servers in the URLs. 
+Requests to a proxy differ from normal requests in one way:
+	in the first line, they use the complete URL of the resource being requested, instead of just the path.
+	e.g.: GET http://www.somehost.com/path/file.html HTTP/1.0
+That way, the proxy knows which server to forward the request to (though the proxy itself may use another proxy).
+
+#--------------------------------------------------------------------------------
+#URL Structure
+		http://video.google.co.uk:80/videoplay?docid=-7246927612831078230&hl=en#00h02m30s
+	protocol					http
+	host or hostname			video.google.co.uk.
+	subdomain 					video
+	domain name					google.co.uk
+	top-level domain (TLD)		uk
+		uk is also referred as country-code top-level domain or ccTLD
+		for google.com, the TLD would be com.
+	second-level domain (SLD)	co.uk.
+	port						80
+	resource path				/videoplay
+	parameter or query			?docid & hl
+	value of parameter 			-7246927612831078230 & en
+		URLs can have lots parameters that start with a question mark (?) and separated with an ampersand (&).
+	fragment or named anchor	See the “#00h02m30s”? 
+
+#static url: a document that can be returned by a webserver without the webserver doing any computation
+#dynamic url is a document that requires the webserver to do some computation before returning the web document
+
+#--------------------------------------------------------------------------------
+#Structure of HTTP Transactions
+
+HTTP uses client-server model: 
+	An HTTP client opens a connection and sends a request message to an HTTP server; 
+	the server then returns a response message, usually containing the resource that was requested. 
+	After delivering the response, the server closes the connection 
+	(making HTTP a stateless protocol, i.e. not maintaining any connection information between transactions)
+
+The format of the request and response messages consist of:
+	an initial line,
+	zero or more header lines,
+	a blank line (i.e. a CRLF by itself), and
+	an optional message body (e.g. a file, or query data, or query output).
+
+Initial lines and headers should end in CRLF, 
+	though you should gracefully handle lines ending in just LF.
+
+The format of an HTTP message is:
+	<initial line, different for request vs. response>
+	Header1: value1
+	Header2: value2
+	Header3: value3
+
+	<optional message body goes here, like file contents or query data;
+	 it can be many lines long, or even binary data $&*%@!^$@>
+
+#Initial Request Line
+The initial line is different for the request than for the response. 
+A request line has three parts, separated by spaces: 
+	a method name, the local path of the requested resource, and the version of HTTP being used. 
+A typical request line is: GET /path/to/file/index.html HTTP/1.0
+
+GET is the most common HTTP method; it says "give me this resource". 
+Method names are always uppercase.
+The path is the part of the URL after the host name, also called the request URI (a URI is like a URL, but more general).
+The HTTP version always takes the form "HTTP/x.x", uppercase.
+
+#Other HTTP Methods
+Besides GET, the two most commonly used methods are HEAD and POST.
+
+A HEAD request is just like a GET request, except it asks the server to return the response headers only, and not the actual resource (i.e. no message body). This is useful to check characteristics of a resource without actually downloading it, thus saving bandwidth. Use HEAD when you don't actually need a file's contents.
+The response to a HEAD request must never contain a message body, just the status line and headers.
+
+A POST request is used to send data to the server to be processed in some way, like by a CGI script. A POST request is different from a GET request in the following ways:
+
+There's a block of data sent with the request, in the message body. There are usually extra headers to describe this message body, like Content-Type: and Content-Length:.
+The request URI is not a resource to retrieve; it's usually a program to handle the data you're sending.
+The HTTP response is normally program output, not a static file.
+The most common use of POST, by far, is to submit HTML form data to CGI scripts. In this case, the Content-Type: header is usually application/x-www-form-urlencoded, and the Content-Length: header gives the length of the URL-encoded form data (here's a note on URL-encoding). The CGI script receives the message body through STDIN, and decodes it. Here's a typical form submission, using POST:
+
+POST /path/script.cgi HTTP/1.0
+From: frog@jmarshall.com
+User-Agent: HTTPTool/1.0
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 32
+
+home=Cosby&favorite+flavor=flies
+
+You can use a POST request to send whatever data you want, not just form submissions. 
+Just make sure the sender and the receiving program agree on the format.
+
+The GET method can also be used to submit forms. 
+The form data is URL-encoded and appended to the request URI.
+
+#Initial Response Line (Status Line)
+The initial response line also has three parts separated by spaces: 
+	the HTTP version, a response status code that gives the result of the request, and an English reason phrase describing the status code. 
+Typical status lines are: 	HTTP/1.0 200 OK
+		or					HTTP/1.0 404 Not Found
+
+The HTTP version is in the same format as in the request line, "HTTP/x.x".
+The status code is meant to be computer-readable; the reason phrase is meant to be human-readable, and may vary.
+The status code is a three-digit integer, and the first digit identifies the general category of response:
+	1xx indicates an informational message only
+	2xx indicates success of some kind
+	3xx redirects the client to another URL
+	4xx indicates an error on the client's part
+	5xx indicates an error on the server's part
+The most common status codes are:
+200 OK							The request succeeded, and the resulting resource (e.g. file or script output) is returned in the message body.
+404 Not Found					The requested resource doesn't exist.
+301 Moved Permanently 
+302 Moved Temporarily 
+303 See Other (HTTP 1.1 only)	The resource has moved to another URL (given by the Location: response header), 
+								and should be automatically retrieved by the client. 
+								This is often used by a CGI script to redirect the browser to an existing file.
+500 Server Error				An unexpected server error. 
+								The most common cause is a server-side script that has bad syntax, fails, or otherwise can't run correctly.
+
+#Header Lines
+Header lines provide information about the request or response, or about the object sent in the message body.
+The header lines are in the usual text header format: 
+	one line per header, of the form "Header-Name: value", ending with CRLF. 
+It's the same format used for email and news postings, defined in RFC 822, section 3. Details about RFC 822 header lines:
+	they should end in CRLF, but you should handle LF correctly.
+	The header name is not case-sensitive (though the value may be).
+	Any number of spaces or tabs may be between the ":" and the value.
+	Header lines beginning with space or tab are actually part of the previous header line, folded into multiple lines for easy reading.
+Thus, the following two headers are equivalent:
+Header1: some-long-value-1a, some-long-value-1b
+HEADER1:    some-long-value-1a,
+            some-long-value-1b
+
+HTTP 1.0 defines 16 headers, though none are required. HTTP 1.1 defines 46 headers, and one (Host:) is required in requests. 
+For Net-politeness, consider including these headers in your requests:
+	The From: header gives the email address of whoever's making the request, or running the program doing so. 
+			  (This must be user-configurable, for privacy concerns.)
+	The User-Agent: header identifies the program that's making the request, in the form "Program-name/x.xx", 
+					where x.xx is the (mostly) alphanumeric version of the program. 
+					e.g. Netscape 3.0 sends the header "User-agent: Mozilla/3.0Gold"
+These headers help webmasters troubleshoot problems. They also reveal information about the user. 
+When you decide which headers to include, you must balance the webmasters' logging needs against your users' needs for privacy.
+
+If you're writing servers, consider including these headers in your responses:
+The Server: header is analogous to the User-Agent: header: 
+	it identifies the server software in the form "Program-name/x.xx". 
+	e.g. one beta version of Apache's server returns "Server: Apache/1.2b3-dev"
+The Last-Modified: header gives the modification date of the resource that's being returned. 
+	It's used in caching and other bandwidth-saving activities. 
+	Use Greenwich Mean Time, in the format
+		Last-Modified: Fri, 31 Dec 1999 23:59:59 GMT
+    
+#The Message Body
+An HTTP message may have a body of data sent after the header lines. 
+In a response, this is where the requested resource is returned to the client (the most common use of the message body), 
+	or perhaps explanatory text if there's an error. 
+In a request, this is where user-entered data or uploaded files are sent to the server.
+
+If an HTTP message includes a body, there are usually header lines in the message that describe the body. In particular,
+	The Content-Type: header gives the MIME-type of the data in the body, such as text/html or image/gif.
+	The Content-Length: header gives the number of bytes in the body.
+
+#--------------------------------------------------------------------------------
+#Sample HTTP Exchange
+To retrieve the file at the URL http://www.somehost.com/path/file.html
+first open a socket to the host www.somehost.com, port 80 (use the default port of 80 because none is specified in the URL). 
+Then, send something like the following through the socket:
+
+GET /path/file.html HTTP/1.0
+From: someuser@jmarshall.com
+User-Agent: HTTPTool/1.0
+[blank line here]
+
+The server should respond with something like the following, sent back through the same socket:
+HTTP/1.0 200 OK
+Date: Fri, 31 Dec 1999 23:59:59 GMT
+Content-Type: text/html
+Content-Length: 1354
+
+<html>
+<body>
+<h1>Happy New Millennium!</h1>
+(more file contents)
+  .
+  .
+</body>
+</html>
+
+After sending the response, the server closes the socket.
+To familiarize yourself with requests and responses, manually experiment with HTTP using telnet.
+
+#--------------------------------------------------------------------------------
+Being Tolerant of Others
+
+Be strict in what you send and tolerant in what you receive.
+	Other clients and servers you interact with may have minor flaws in their messages, 
+	but you should try to work gracefully with them
+In particular, the HTTP specification suggests the following:
+	Even though header lines should end with CRLF, accept either CRLF or LF.
+	The three fields in the initial message line should be separated by a single space, but might instead use several spaces, or tabs. 
+		Accept any number of spaces or tabs between these fields.
+	The specification has other suggestions too, like how to handle varying date formats. 
+		If your program interprets dates from other programs, read the "Tolerant Applications" section of the specification.

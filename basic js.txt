@@ -87,69 +87,69 @@ switch(user){
 #Array []
 Arrays:store lists of data, can store different data types at the same time, are ordered so the position of each piece of data is fixed
 var arrayId=['la',3,2 //elements]
-	//Array constructor
-		var arrayName = new Array();	//Array must be capitalized
-	//Add data value to an array you've created before
+	#Array constructor
+		var arrayName = new Array();	#Array must be capitalized
+	#Add data value to an array you've created before
 		array.push(data);
-	//Accessing element by index
-		var element = array[index]; console.log (languages[2])  //start from 0
-	//Check array length: array.length
-	//Iterating over an array to print every elements in it
-		for(var i=0; i<arrayName.length; i++){			//you can also use:for (i in arrayName)
+	#Accessing element by index
+		var element = array[index]; console.log (languages[2])  #start from 0
+	#Check array length: array.length
+	#Iterating over an array to print every elements in it
+		for(var i=0; i<arrayName.length; i++){			#you can also use:for (i in arrayName)
 		console.log(arrayName[i]);}
-	//Heterogeneous array: array with a mixture of data types -strings, numbers, booleans, array, object, etc 
-	//Two-dimensional array: has two rows that each contain two items.
+	#Heterogeneous array: array with a mixture of data types -strings, numbers, booleans, array, object, etc 
+	#Two-dimensional array: has two rows that each contain two items.
 		var twoDimensional = [[1, 1], [1, 1]];
 			[1, 1]		//matrix of 2D array
 			[1, 1]
-	//Jagged array
+	#Jagged array
 		var jagged=[[1,2],[3]]
 	
-//Object {}
-	//2 ways to create an object: 			//you can use this with array
-		//using object literal notation
-			var objectName = {							//never forget the comma
-				key: value,								//key a.k.a property
-				methodName: function(parameter) { 		//defining function a.k.a method
-				codes},									//you must end the method with comma, no ; is allowed inside the object bracket
+#Object {}
+	#2 ways to create an object: 			#you can use this with array
+		#using object literal notation
+			var objectName = {							#never forget the comma
+				key: value,								#key a.k.a property
+				methodName: function(parameter) { 		#defining function a.k.a method
+				codes},									#you must end the method with comma, no ; is allowed inside the object bracket
 				key: value};
 			var emptyObject = {};
-		//using the object constructor (constructor notation)
-			var objectName = new Object();	//Object must be capitalized
-			//after the object has been constructed, add keys and value to the object (see below)
-	//Iterating over an object
-		for(var i=0; i<objectName.length; i++){			//you can also use:for (i in objectName)
-		console.log(i);}								//to print the keys
-		console.log(objectName[i]);}					//to print the value of keys
-	//Accessing property's value
-		objectName.key		//dot notation
-		objectName["key"]	//bracket notation 		//use this when you can't use dot notation, don't forget the ""
-			//you can use a variable to act as a placeholder of an object property
-				x="key"								//don't forget the ""
+		#using the object constructor (constructor notation)
+			var objectName = new Object();				#Object must be capitalized
+			#after the object has been constructed, add keys and value to the object (see below)
+	#Iterating over an object
+		for(var i=0; i<objectName.length; i++){			#you can also use:for (i in objectName)
+		console.log(i);}								#to print the keys
+		console.log(objectName[i]);}					#to print the value of keys
+	#Accessing property's value
+		objectName.key		#dot notation
+		objectName["key"]	#bracket notation 		#use this when you can't use dot notation, don't forget the ""
+			#you can use a variable to act as a placeholder of an object property
+				x="key"								#don't forget the ""
 				objectName["key"]=objectName[x]
-	//2 ways to add keys and value to an object you've created before:
+	#2 ways to add keys and value to an object you've created before:
 		objectName["key"] = "value";
 		objectName.key = "value";
-	//Finding out whether an object has a certain property or not
+	#Finding out whether an object has a certain property or not
 		myObj.hasOwnProperty('name') 
-	//In addition to making arrays of Objects, we can use objects as parameters for functions as well.
-	//The Object constructor have hasOwnProperty method and prototype property by default
+	#In addition to making arrays of Objects, we can use objects as parameters for functions as well.
+	#The Object constructor have hasOwnProperty method and prototype property by default
 	
 	
-//Class									//a.k.a Custom constructor
+#Class									#a.k.a Custom constructor
 	function className(parameter1,parameter2) {
-		this.parameter1= argument1;								//defining property in class
-		this.parameter2= 'value';								//you can use value instead of argument
-		this.methodName = function() {							//defining method in class
-			codes}		};										//you must use ; when separating property
-		var parameter=value;									//a private variable
-	//Using class
-		var objectName = new className(value1, value2);		//never forget the 'new' and className
-	//Properties: variables associated with an object. 
-		objectName.var = value;	//Assigning value to property
-		//In JavaScript all properties of an object are automatically public: they can be accessed outside the class. 
-		//If you want to make a private variable, use: var parameter=value
-			//Accessing private variables using public method
+		this.parameter1= argument1;								#defining property in class
+		this.parameter2= 'value';								#you can use value instead of argument
+		this.methodName = function() {							#defining method in class
+			codes}		};										#you must use ; when separating property
+		var parameter=value;									#a private variable
+	#Using class
+		var objectName = new className(value1, value2);		#never forget the 'new' and className
+	#Properties: variables associated with an object. 
+		objectName.var = value;	#Assigning value to property
+		#In JavaScript all properties of an object are automatically public: they can be accessed outside the class. 
+		#If you want to make a private variable, use: var parameter=value
+			#Accessing private variables using public method
 				this.methodName= function() {return privateVariable};
 	#Method: a function associated with an object.
 		objectName.methodName= function (parameter){codes;};

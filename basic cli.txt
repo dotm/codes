@@ -1,0 +1,161 @@
+#Common Command
+Global
+	pwd - print working directory
+	hostname - my computer's network name
+	mkdir - make directory
+	cd - change directory
+	ls - list directory
+	rmdir - remove directory
+	pushd - push directory
+	popd - pop directory
+	cp - copy a file or directory
+	mv - move a file or directory
+	echo - print some arguments
+	exit - exit the shell
+Linux/Mac OSX
+	touch - create new file or update modification time if file exists
+	sort - sort file's lines
+	uniq - filters out adjacent, duplicate lines in a file
+		sort deserts.txt | uniq		#use sort before uniq so all file with the same name will become adjacent
+	less - page through a file
+	cat - print the whole file
+	clear - clear terminal
+	nano - open nano text editor
+	xargs - execute arguments
+	find - find files
+	grep - find and print
+	sed - find and replace
+	man - read a manual page
+	apropos - find what man page is appropriate
+	env - look at your list of environment variables
+		env | grep PATH		#show path
+	export - export/set a new environment variable
+	sudo - DANGER! become super user root DANGER!
+Windows
+	robocopy - robust copy
+	more - page through a file
+	type - print the whole file
+	forfiles - run a command on lots of files
+	dir -r - find files
+	select-string - find things inside files
+	help - read a manual page
+	helpctr - find what man page is appropriate
+	set - export/set a new environment variable
+	runas - DANGER! become super user root DANGER!
+
+command line: a text interface for the computer's operating system. 
+	to access command line, use the terminal
+A filesystem organizes a computer's files and directories into a tree structure. 
+	It starts with the root directory. 
+	Each parent directory can contain more child directories and files.
+Through I/O redirection 
+	you can direct the input and output of a command to and from other files and programs, 
+	and chain commands together in a pipeline.
+Shell/command prompt: $ in Unix-like system
+Working directory := current directory
+.  := current directory link
+.. := parent directory link
+~  := user's home directory
+wildcards e.g. *
+
+Redirection: reroutes standard input, standard output, and standard error 
+	to or from a different location (commands, files, program, etc)
+	and chain commands together in a pipeline. 
+
+standard input (stdin)		: information inputted into the terminal through the keyboard or input device.
+standard output (stdout) 	: information outputted after a process is run.
+standard error (stderr) 	: error message outputted by a failed process.
+
+environment: the preferences and settings of the current user
+nano: a command line text editor used to configure the environment
+environment variables: variables that can be used across commands and programs and hold information about the environment
+	USER: name of the current user
+	PS1: the command prompt
+	HOME: home directory
+	PATH: a colon separated list of file paths
+
+export: makes the variable available to all child sessions initiated from the session you are in. a way to make the variable persist across programs
+	export VARIABLE="Value" sets and exports an environment variable.
+
+PATH variable lists which directories contain scripts for the command line to execute
+
+#Command syntax
+	<command> <argument> <option>
+	ls current-directory/child-directory -a
+  #multiple options contraction
+	-alt == a+l+t
+#common ls options
+	-a - lists all contents, including hidden files and directories
+	-l - lists all contents of a directory in long format
+		-> drwxr-xr-x 5  cc  eng  4096 Jun 24 16:51  action
+			drwxr-xr-x		access rights
+			5				number of hard links (directories and files) including parent and current directory link.
+			cc				file's owner username
+			eng				name of the group that owns the file
+			4096 			size of the file in bytes
+			Jun 24 16:51	file's last modified date & time 
+			action			name of file or directory
+	-t - order files and directories by the time they were last modified.
+#multi touch
+	touch <file1> <file2> <file3>
+#Using cp
+	#single copy
+		cp biopic/cleopatra.txt historical/
+	#multiple copy
+		cp biopic/ray.txt biopic/notorious.txt historical/
+	#copy all
+		cp * satire/
+	#using wildcards
+		cp m*.txt scifi/
+		cp *ye*.txt scifi/
+#the above points applies to mv command
+
+#rename a file using mv 
+	mv batman.txt spiderman.txt
+#delete a directory and all of its child directories
+	rm -r comedy
+
+#echo command 
+	accepts string as stdin, echoes the string back to the terminal as standard output.
+
+#redirection commands
+	>	- takes stdout of command on the left, redirects and write it to file on the right
+	>>	- takes stdout of command on the left, appends (adds) it to the file on the right
+	<	- takes stdin from file on the right, inputs it into the program on the left
+		cat < lakes.txt
+	| (pipe) - takes stdout of command on the left, pipes it as stdin to the command on the right. 
+
+#grep (global regular expression print)
+	grep -i		#make grep case-insensitive
+	grep -R <string> <directory>		#-R := recursive
+		search all files in a directory, outputs filenames and lines containing matched results. 
+	grep -Rl <string> <directory>		#-l := files with matches
+		search all files in a directory, outputs only the filenames with matched results. 
+
+#sed (stream editor)
+accepts standard input and modifies it based on an expression, before displaying it as output data. 
+	sed 's/snow/rain/g' forests.txt
+		s 	:= "substitution"; always used when using sed for substitution.
+		snow: the search string
+		rain: the replacement string
+		g	: global substitution; g is optional
+		
+#nano
+	Ctrl + O saves a file. 'O' stands for output.
+	Ctrl + X exits the nano program. 'X' stands for exit.
+	Ctrl + G opens a help menu.
+#accessing environment settings
+	~/.bash_profile is a hidden file used to store environment settings
+	when a session starts, it will load the contents of the bash profile before executing commands.
+	use nano to edit bash_profile
+#update environment
+	source ~/.bash_profile 
+	activates the changes in ~/.bash_profile for the current session
+	Instead of closing the terminal and needing to start a new session, 
+		source makes the changes available right away in the session we are in
+
+#create command alias
+	alias <new alias> = "<commands [optional options]>"
+	alias ll="ls -la"
+#accessing variable
+	echo $VARIABLE

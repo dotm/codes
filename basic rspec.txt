@@ -1,0 +1,102 @@
+#Initialize RSpec
+	go to project directory in cmd, then type: rspec --init
+	
+project source will be in lib/name.rb
+test will be in spec/lib/name_spec.rb
+
+#Running the test
+	go to project directory in cmd, then type: rake
+
+#--------------------------------------------------------------------------------
+#Basic structure
+
+!lib/name.rb
+class ClassName
+	attr_accessor :name
+	def initialize
+		@name="Lala"
+	end
+end
+
+!spec/lib/name_spec.rb						#a specification := one test file
+require "spec_helper"
+
+describe ClassName do
+	#examples code_block
+	it "is named Lala" do					#an examples := a test inside the "it end" block
+		instance = ClassName.new
+		instance.name.should == "Lala"		#an expectation := assertion (assert_equal)
+		#'should' is the modifier, == is matcher
+	end
+end
+
+#--------------------------------------------------------------------------------
+#Matchers
+	instance.attribute.should == value					# == can be replaced by other comparator
+		instance.attribute.should be < value			#the be is optional
+	instance.attribute.should_not == value
+	instance.attribute.should == false
+		instance.attribute.should be_false
+	instance.attribute.should == true
+		instance.attribute.should be_true
+	instance.attribute.should be_within(0.1).of(98.6)	#use this instead of == when testing floating point operation
+
+#Predicate matchers
+!lib/name
+	class ClassName
+		@hungry=true
+		def hungry?
+			@hungry
+		end
+	end
+	
+	instance=ClassName.new
+
+!spec/lib/name_spec
+	instance.hungry?.should == true
+	instance.hungry?.should be_true
+	instance.should be_hungry					#best matcher for readability
+	
+#--------------------------------------------------------------------------------
+#Mark as pending
+	#Leave of the example body and use it
+		it "should be / has /is / etc ...."
+	#Use xit
+		xit "should be / has /is / etc ...." do
+			code_block
+		end
+	#Use pending keyword
+		it "should be / has /is / etc ...." do
+			pending
+			code_block
+		end
+
+#--------------------------------------------------------------------------------
+#Instantiating class
+describe Book do
+
+  before do
+    @book = Book.new
+  end
+  
+  describe ClassName do
+	#examples code_block
+  end
+  
+end
+
+#--------------------------------------------------------------------------------
+before :all
+before :each := before do
+
+using lambda to test function output
+
+rspec <directory>/<file> --format nested
+Using a "." or "::"in describe signify that you’re testing a class method, 
+	using "#" signify that it’s an instance method
+
+built-in matchers
+	def has_ketchup_on_it?
+		@ketchup
+	end
+	it { should have_ketchup_on_it }

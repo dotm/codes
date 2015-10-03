@@ -1,0 +1,238 @@
+Ruby Building Blocks
+
+Numbers, Operators and Expressions:
+	What's the difference between an Integer and a Float?
+		Integer: fixed point decimal;	Float: floating point decimal
+	Why should you be careful when converting back and forth between integers and floats?
+		float to integer -> x.x to x (rounded down, floor of x.x, x.x%1 )
+X	What's the difference between =, ==, and ===?
+		= is assignment
+		== is generic equality: 
+		=== is case equality:
+X	What's the difference between eql? and equal?
+	How do you do exponents in Ruby?
+		x**y := x^y
+X	What is a range?
+X	How do you create a range?
+	What's the difference between (1..3) and (1...3)?
+		(1..3) := [1,3]		-> 123
+		(1...3):= [1,3)		-> 12
+X	What are three ways to create a range?
+Strings:
+	What's the difference between single and double quotes?
+		double quotes allow string interpolation
+X	What is string interpolation?
+X	What are escape characters?
+X	What are line breaks?
+X	How do you make other things into strings?
+X	How do you concatenate strings?
+X	How do you access a specific character or substring?
+X	How do you split up strings into arrays?
+X	How are strings and arrays similar?
+X	How do you get and clean up user input on the command line?
+X	What does it mean that strings are "mutable" and why care?
+X	What is a symbol?
+X	How is a symbol different from a string?
+X	What is a Regular Expression (RegEx)?
+X	How can you center or right-justify a string?
+Arrays:
+X	What are three ways to create an array?
+X	How do you prepopulate the array with default data?
+X	How do you access items in an array?
+X	How can you access a specific group of items in an array?
+X	How do you modify the items in an array?
+X	How do you combine arrays?
+X	How do you find the values in one array that aren't in another?
+X	How do you find values in both arrays?
+X	What is the difference between push/pop and shift/unshift?
+X	What is the shovel operator?
+X	How is > arr.pop different from > arr[-1]?
+X	How is pushing or <<ing another array into your array different from just adding them together?
+X	How do you delete items in an array?
+X	Why should you be careful deleting items in an array?
+X	How can you convert arrays to strings?
+X	How can you convert from other data types to arrays?
+X	How can you figure out if an array contains a particular value?
+X	How do you find the biggest item in an array?
+X	How do you find the smallest item in an array?
+X	How do you remove any duplicates from your array?
+X	How to you find out how big an array is?
+X	How do you put an array in order?
+X	What are the naming conventions for arrays?
+X	What should you store in arrays?
+Hashes:
+X	What is a hash?
+X	What are keys and values?
+X	How is a hash similar to an Array?
+X	How is a hash different from an Array?
+X	What are 3 ways to create a hash?
+X	What is the hash rocket?
+X	How do you access data in a hash?
+X	How do you change data in a hash?
+X	What types of data are good to store in a hash?
+X	What are options hashes?
+X	How do you delete data from a hash?
+X	How do you add hashes together?
+X	How do you list out all the keys or values?
+X	How do you see if the hash contains a key or value?
+X	What is a set?
+Dates and Times:
+X	How do you get the current date and time?
+X	How do you find just the Year? Month? Hour? Second? Weekday?
+X	How do you create a Time specifically for 12/25/2013?
+X	How do you find how many days have passed between two Time's?
+X	What's the difference between UTC and GMT and Local times?
+X	How would you find out the time that was 100 seconds ago? 10 days ago?
+Other Random Stuff:
+X	What is nil?
+X	How do you check if something is nil?
+X	What's the difference between nil and blank and empty?
+X	Are the following nil or empty?
+X	" ", "", [], [""], {}
+X	What's the difference between puts and p and print?
+X	What does inspect do?
+X	What do +=, -=, *= and /= do?
+X	What is parallel assignment?
+X	What's the easiest way to swap two variables?
+
+#--------------------------------------------------------------------------------
+Advanced Building Blocks
+
+Conditionals and Flow Control
+X	What is a "boolean"?
+X	What are "truthy" values?
+X	Are nil, 0, "0", "", 1, [], {} and -1 considered true or false?
+X	When do you use elsif?
+X	When do you use unless?
+X	What does <=> do?
+X	Why might you define your own <=> method?
+X	What do || and && and ! do?
+X	What is returned by puts("woah") || true?
+X	What is ||=?
+X	What is the ternary operator?
+X	When should you use a case statement?
+Iteration
+X	What does loop do?
+X	What are the two ways to denote a block of code?
+X	What is an index variable?
+X	How do you print out each item of a simple array [1,3,5,7] with:
+X	X	loop?
+X	X	while?
+X	X	for?
+X	X	#each?
+X	X	#times?
+X	What's the difference between while and until?
+X	How do you stop a loop?
+X	How to you skip to the next iteration of a loop?
+X	How would you start the loop over again?
+X	What are the (basic) differences between situations when you would use while vs #times vs #each?
+X	What does nesting loops mean and when would you use it?
+Blocks, Procs, and Lambdas:
+X	How is a block like a function?
+X	How is a block different from a function?
+X	What are the two ways to declare a block?
+X	How do you return data from a block?
+X	What happens if you include a return statement in a block?
+X	Why would you use a block instead of just creating a method?
+X	What does yield do?
+X	How do you pass arguments to a block from within a method?
+X	How do you check whether a block was actually passed in?
+X	What is a proc?
+X	What's the difference between a proc and a block?
+X	When would you use a proc instead of a block?
+X	What is a closure?
+X	What is a lambda?
+X	What's different between a lambda and a proc?
+X	What is a Method (capital "M")?
+X	What do Methods basically allow you to do that could probably be pretty interesting when you're writing some more advanced programs later on?
+Enumerable and Modules
+X	What is a module?
+X	Why are modules useful?
+X	What does #each do?
+X	What does #each return?
+X	What does #map do?
+X	What does #map return?
+X	What is the difference between #map and #collect?
+X	What does #select do?
+X	What does #select return?
+X	What is the difference between #each #map and #select?
+X	What does #inject do?
+X	When might you use #inject?
+X	How do you check if every item in a hash fulfills a certain criteria?
+X	What about if none of the elements fulfill that criteria?
+X	What (basically) is an enumerator?
+Writing Methods
+X	How many things should a method ideally do?
+X	What types of things should a method modify?
+X	What should you name a method?
+X	What does self mean?
+X	What do you need to do to create your own Ruby script file?
+X	How would you run a Ruby script from the command line?
+X	How can you check whether your script was being run from the command line?
+X	What is a shebang line?
+X	What does require do?
+X	What does load do?
+X	What is the difference between require and load?
+X	How do you access any parameters that were passed to your script file from the command line?
+X	What does #send do?
+X	When would #send be used that's different from just running the method on an object 'normally'?
+
+#--------------------------------------------------------------------------------
+Object-Oriented Programming
+
+Classes and Methods:
+X	What is an implicit return?
+X	What is a class?
+X	When should you use a class?
+X	How do you create a class in your script file?
+X	What is an instance of a class?
+X	What is the difference between the CamelCase and snake_case styles of naming?
+X	How do you instantiate a class?
+X	How do you set the state of your new instance?
+X	What should be done in the #initialize method?
+X	What is a class method?
+X	How is a class method different from an instance method?
+X	How are methods you already know like #count or #sort etc instance methods?
+X	What's the difference between how you declare a class method vs an instance method?
+X	What's the difference between how you call a class method vs an instance method?
+X	What is an instance variable?
+X	What's the difference between an instance variable and a 'regular' variable?
+X	What are "getter" and "setter" methods used for?
+X	What is the difference between a "getter" and a "setter" method?
+X	How do you make instance variables readable outside your class? Writeable? Both at the same time?
+X	Can a class call its own class methods?
+X	What's the difference between when would you use a class variable and when you would use a constant?
+X	What's the difference between a class and a module?
+X	When would you use a class but not a module?
+X	How does inheritance work?
+X	Why is inheritance really useful?
+X	How do you extend a class? What does that mean?
+X	What does #super do? Why use it?
+Scope:
+X	What is scope?
+X	When can you start using a variable?
+X	When is a new scope defined?
+X	When are methods in scope?
+X	What is a private method?
+X	What is a protected method?
+X	How are private and protected methods different?
+X	What does "encapsulation" mean?
+
+#--------------------------------------------------------------------------------
+Files I/O and Serializing Data
+
+X	What are two ways to store a file from your hard drive into a string or array in your Ruby script?
+X	What are three things made possible or much easier by serialization?
+X	What is JSON?
+X	What is YAML?
+X	How do you turn a Ruby object into JSON?
+X	How do you turn JSON into a Ruby object?
+
+#--------------------------------------------------------------------------------
+Ruby on the Web
+
+X	How do you issue an HTTP request in Ruby?
+X	How do you parse the response to get to the body content?
+X	What is REST?
+X	What's the difference between a GET and a POST request? (seem familiar?)
+

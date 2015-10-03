@@ -1,6 +1,6 @@
-see the directory where you installed Git 
-which git 
-Windows users should try $ where.exe git
+#See the directory where you installed Git 
+	which git 
+	where.exe git		#in Windows
 
 #Creating repository online
 	create repository in GitHub
@@ -23,6 +23,70 @@ Windows users should try $ where.exe git
 	git push origin master
 When you're building your project, you will probably end up doing several git add + git commit cycles 
 before being ready to push it up to Github with git push
+
+#-----------------------------------------------------------------------------------
+#Configuring Git
+	git config lets you get and set configuration variables that control all aspects of how Git looks and operates. 
+	These variables can be stored in 3 different places
+	Each level overrides values in the previous, more general level
+		1. /etc/gitconfig file
+			Contains values for every user on the system and all their repositories. 
+			If you pass the option --system to git config, it reads and writes from this file specifically
+		2. ~/.gitconfig or ~/.config/git/config file: 
+			Specific to your user
+			read and write to this file by passing the --global option
+		3. config file in the Git directory (that is, .git/config) of repository you’re currently using
+			Specific to that single repository
+
+#Your identity
+	git config --global user.name "John Doe"
+	git config --global user.email johndoe@example.com
+#Your editor
+	git config --system core.editor emacs
+#Checking your setting
+	git config --list
+#Create a shortcut for a Git command
+	git config --global alias.<alias-name> <git-command>
+#Open global configuration file in a text editor for manual editing
+	git config --global --edits
+	
+#Git help overview
+		git
+	usage: git [--version] [--help] [-C <path>] [-c name=value]
+			   [--exec-path[=<path>]] [--html-path] [--man-path] [--info-path]
+			   [-p|--paginate|--no-pager] [--no-replace-objects] [--bare]
+			   [--git-dir=<path>] [--work-tree=<path>] [--namespace=<name>]
+			   <command> [<args>]
+		git help <verb>
+		git <verb> --help
+		man git-<verb>
+		
+	The most commonly used git commands are:
+	   add        Add file contents to the index
+	   bisect     Find by binary search the change that introduced a bug
+	   branch     List, create, or delete branches
+	   checkout   Checkout a branch or paths to the working tree
+	   clone      Clone a repository into a new directory
+	   commit     Record changes to the repository
+	   diff       Show changes between commits, commit and working tree, etc
+	   fetch      Download objects and refs from another repository
+	   grep       Print lines matching a pattern
+	   init       Create an empty Git repository or reinitialize an existing one
+	   log        Show commit logs
+	   merge      Join two or more development histories together
+	   mv         Move or rename a file, a directory, or a symlink
+	   pull       Fetch from and integrate with another repository or a local branch
+	   push       Update remote refs along with associated objects
+	   rebase     Forward-port local commits to the updated upstream head
+	   reset      Reset current HEAD to the specified state
+	   rm         Remove files from the working tree and from the index
+	   show       Show various types of objects
+	   status     Show the working tree status
+	   tag        Create, list, delete or verify a tag object signed with GPG
+
+	'git help -a' and 'git help -g' lists available subcommands and some
+	concept guides. See 'git help <command>' or 'git help <concept>'
+	to read about a specific subcommand or concept.
 
 #-----------------------------------------------------------------------------------
 #Initialize git
@@ -82,7 +146,6 @@ A place where we can group files together before we "commit" them to Git.
 	press Q to exit <END>
 	
 #Add remote repository
-	git remote add origin <url>
 	git remote add origin <url>
   it's typical to name your main remote branch origin
 

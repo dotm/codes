@@ -1,0 +1,310 @@
+Coding
+	1. Loops 
+	2. Recursion
+	3. Formatted output - "printf"
+	4. Text-file I/O
+
+#------------------------------------------------------------------------------------
+Object Oriented Programming
+
+Terminology
+	1. class, object (and the difference between the two)
+			class: a template consisting of attributes and methods used to create an instance
+				class needs to have two distinct features:
+					state: defines the attributes of its instances. e.g. length of Rectangle class
+					behaviour: class must do something meaningful. achieved by adding methods to class that interact with its state to give results.
+			object: an instance of a class
+				some people use object to refer to both classes and their instances
+			metaclass: a class whose instances themselves are classes
+			parameterized class: a template for a class wherein specific items have been identified as being required 
+								 to create non-parameterized classes based on the template. 
+			  parameterized class can be viewed as a "fill in the blanks" version of a class. 
+			  One cannot directly use the instance creation mechanism of a parameterized class. 
+				  first, supply the required parameters to create a non-parameterized class. 
+				  then use the non-parameterized class to create instances
+			non-class instance: is an instance of a class, which is not a class
+	2. instantiation
+			the process of creating an instance of a class
+			the instance of a class
+	3. method (as opposed to, say, a C function)
+			method belongs to an object; function is independent
+	4. virtual method, pure virtual method
+	5. class/static method
+	6. static/class initializer
+	7. constructor
+			the first code executed when a new instance is created
+				used to initialize the instance variables of an object
+	8. destructor/finalizer
+			a method called automatically during the destruction of an object to:
+				recovering the space allocated during the object's lifetime
+				closing file or database connections
+				releasing network resources and resource locks
+				etc.
+			an object method that contains the code required to 
+				free unmanaged resources and perform clean-up operations prior to garbage collection (GC).
+	9. superclass / base class / generalization
+			opposite of subclass
+	10. subclass / derived class / specialization
+			the process of defining a new object based on a (typically) more narrow definition of an existing object
+			an object that is directly related to, and more narrowly defined than, another object.
+	11. inheritance
+			the process whereby one object acquires characteristics from another object
+	13. multiple inheritance (and give an example)
+			inheritance from more than one objects
+	12. encapsulation
+		 #data-hiding
+			the ability for an object to have certain methods and attributes available for use publicly 
+				but for others to be visible only within the class itself or by other objects of the same class
+			a mechanism for restricting access to some of the object's components
+			the ability of objects to hide their constituent data behind an abstracted interface
+			a strong form of abstraction or information hiding 
+				where a class disallows calling code from accessing internal object data and forces access through methods only
+		 #namespacing
+			a construct that facilitates the bundling of data and methods (or functions) operating on that data into a single component
+			the process of combining elements to create a new entity
+		  accessors: public methods used to ask an object about itself (it's attributes)
+		  mutators: public methods used to modify the state of an object
+	14. delegation/forwarding
+	15. composition/aggregation
+			the process of creating a new object from two or more other objects, or
+			the object that is composed of two or more other objects
+		  monolithic object: object that has no externally-discernible structure
+			a monolithic object does not appear to have been constructed from two or more other objects
+		  composite objects: objects that have an externally-discernible structure
+			the structure can be addressed via the public interface of the composite object
+		  component objects: objects that comprise a composite object
+		  heterogeneous composite object: composite object conceptually composed of components that are not all conceptually the same
+		  homogeneous composite object: composite object conceptually composed of components that are all conceptually the same
+	16. abstract class
+	17. interface/protocol (and difference from abstract class ?????????????)
+			public interface: open (visible) to everybody
+				Another way of saying that an item is in the public interface of an object is to say that 
+					the object "exports" that item. 
+				When an object requires information from outside of itself (e.g., as with the parameters in a parameterized class), 
+					we can say that the object needs to "import" that information.
+			inheritance interface: accessible only by direct specializations of the object.
+				in class-based object-oriented systems, only classes can provide an inheritance interface
+			parameter interface: defines the parameters that must be supplied to create an instance of parameterized class
+	18. method overriding
+	19. method overloading (and difference from overriding)
+	20. polymorphism (without resorting to examples)
+			writing code that can work with objects of multiple types and classes at once
+			ability to process objects differently depending on their data type or class
+			ability to redefine methods for derived classes
+			the provision of a single interface to entities of different types
+			ad hoc polymorphism:
+				if a function denotes different and potentially heterogeneous implementations 
+				depending on a limited range of individually specified types and combinations
+				supported in many languages using function overloading
+			parametric polymorphism: 
+				if the code is written without mention of any specific type 
+				thus can be used transparently with any number of new types
+				in OOP, often known as generics or generic programming
+				in functional programming, often simply called polymorphism
+			subtyping (or inclusion polymorphism):
+				a name may denote instances of many different classes 
+					as long as they are related by some common superclass
+				in OOP, often referred simply as polymorphism
+	21. is-a versus has-a relationships (with examples)
+			an object is-a instance of a class
+			a class is-a child of its superclass
+			an object has-a attributes and methods
+	22. method signatures (what's included in one)
+	23. method visibility (e.g. public/private/other)
+			public method: callable outside the scope of its object
+			private method: only code within the object’s methods can access those private methods
+				unable to directly call a private method outside the scope of that object and its methods
+			protected method: makes a method private within the scope of a class rather than within a single object. 
+				able to call a protected method from the scope of the methods of any object that’s a member of the same class
+	x. reflection: the process by which a computer program can inspect, analyse, and modify itself while it’s running and being used
+	x. struct: a special class whose only job is to have attributes and to hold data
+
+OO Design
+
+Candidates who've only studied the terminology without ever doing any OOP often don't really get it. 
+When they go to produce classes or code, they don't understand:
+	the difference between a static member and an instance member, and they'll use them interchangeably
+	when to use a subclass versus an attribute or property
+	that objects are supposed to know how to take care of themselves
+		They'll create a bunch of classes with nothing but data, getters, and setters (i.e., basically C structs),
+		and some Manager classes that contain all the logic (i.e., basically C functions),
+		and voila, they've implemented procedural programming perfectly using classes.
+	the difference between a char*, an object, and an enum
+	polymorphism is not the same as inheritance
+Or they'll have any number of other fuzzy, weird conceptual errors,
+	and their designs will be fuzzy and weird as well
+	
+For the OO-design weeder question, have them describe:
+	1. What classes they would define.
+	2. What methods go in each class ( including signatures).
+	3. What the class constructors are responsible for.
+	4. What data structures the class will have to maintain.
+	5. Whether any Design Patterns are applicable to this problem.
+
+A good OO design question can test coding, design, domain knowledge, OO principles, and so on. 
+A good weeder question should probably just target whether they know when to use subtypes, attributes, and containment.
+
+#------------------------------------------------------------------------------------
+Scripting and Regular Expression
+
+Character Classes			Special
+\c	Control character		.		Any character except new line (\n)
+\s	White space				\n		New line
+\S	Not white space			\r		Carriage return
+\d	Digit					\t		Tab
+\D	Not digit				\v		Vertical tab
+\w	Alphanumeric			\f		Form feed
+\W	Non-alphanumeric		\xxx	Octal character xxx
+\x	Hexade-cimal digit		\xhh	Hex character hh
+\O	Octal digit				\		escape character
+							\Q		begin literal sequence
+							\E		end literal sequence
+
+Anchors
+^	Start of string, or start of line in multi-line pattern
+\A	Start of string
+$	End of string, or end of line in multi-line pattern
+\Z	End of string
+\b	Word boundary
+\B	Not word boundary
+\<	Start of word
+\>	End of word
+
+Quantifiers
+*		0 or more
++		1 or more
+?		0 or 1
+{3}		exactly 3
+{3,}	3 or more
+{3,5}	[3,4,5]
+
+Groups and Ranges
+(...)		group
+(.(..))		subgroup
+(a|b)		a or b
+(?:...)		passive (non-capturing) group
+[abc]		range (a or b or c)
+[^abc]		not a or b or c
+[a-q]		letter from a to q
+[A-Q]		upper case letter from A to Q
+[0-7]		Digit from 0 to 7
+
+Pattern Modifiers
+g	Global match
+i	Case-i-nse-nsitive
+m	Multiple lines
+s	Treat string as single line
+x	Allow comments and white space in pattern
+e	Evaluate replac-ement
+U	Ungreedy pattern
+
+Assertions
+?=			Lookahead assertion
+?!			Negative lookahead
+?<=			Lookbehind assertion
+?!= or ?<!	Negative lookbehind
+?>			Once-only Subexp-ression
+?()			Condition [if then]
+?()|		Condition [if then else]
+?#			Comment
+
+POSIX
+[:upper:]	Upper case letters
+[:lower:]	Lower case letters
+[:alpha:]	All letters
+[:alnum:]	Digits and letters
+[:digit:]	Digits
+[:xdigit:]	Hexadecimal digits
+[:punct:]	Punctuation
+[:blank:]	Space and tab
+[:space:]	Blank characters
+[:cntrl:]	Control characters
+[:graph:]	Printed characters
+[:print:]	Printed characters and spaces
+[:word:]	Digits, letters and underscore
+
+String Replacement
+$n	nth non-pa-ssive group
+$2	"-xyz-" in /^(abc-(xy-z))$/
+$1	"-xyz-" in /^(?:a-bc)-(xyz)$/
+$`	Before matched string
+$'	After matched string
+$+	Last matched string
+$&	Entire matched string
+
+#------------------------------------------------------------------------------------
+Data Structures
+Fundamentals of "big-O" algorithmic complexity analysis.
+	algorithms usually fall into the following performance classes: 
+		constant-time, logarithmic, linear, polynomial, exponential, and factorial.
+	the big-O complexity for the operations of data structures. Example:  
+		finding an element in a hashtable is usually constant-time
+		finding an element in a balanced binary tree is order log(n)
+		finding an element in a linked list is order N
+		finding an element in a sorted array is order log(n)
+	Similarly for insert/update/delete operations.
+	And they should be able to explain why each operation falls into a particular complexity class. 
+		No math needed, no proofs, just explanations.
+
+The (concrete) data structures they absolutely must understand are these:
+	1. arrays 
+		fixed-sized, indexed, contiguous structures 
+		homogeneous elements (same type)
+		elements can be accessed in constant time given their indices
+	2. vectors - a.k.a "growable arrays" or ArrayLists
+		objects that are backed by a fixed-size array
+		resize themselves as necessary.
+	3. linked lists 
+		lists made of nodes 
+		contain a data item and a pointer/reference to the next (and possibly previous) node
+	4. hashtables
+		amortized constant-time access data structures that map keys to values
+		backed by a real array in memory
+		with some form of collision handling for values that hash to the same location
+	5. trees 
+		consist of nodes with optional data elements and one or more child pointers/references, and possibly parent pointers
+		representing a hierarchical or ordered set of data elements
+	6. graphs 
+		represent arbitrary relationships between members of any data set
+		represented as networks of nodes and edges
+
+Describe, for all the data structures above:
+	* what you use them for in real-life (examples)
+	* why you prefer them for those examples
+	* the operations they typically provide (e.g. insert, delete, find)
+	* the big-O performance of those operations (e.g. logarithmic, exponential)
+	* how you traverse them to visit all their elements, and what order they're visited in
+	* at least one typical implementation for the data structure
+
+Difference between an abstract data type (Stack, Map, List, Set, etc), 
+	and a concrete data structure such as a singly-linked list or a hash table.
+For a given abstract data type (e.g. a Queue),
+	suggest at least two possible concrete implementations
+	explain the performance trade-offs between the two implementations
+
+#------------------------------------------------------------------------------------
+Bits and Bytes
+	* know what bits and bytes are
+	* able to count in binary and hexadecimal
+	* able to convert between the binary, octal, and hex representations of a number
+	* not stare blankly at you when you ask what 2^16 is. It's a special number. They should know it
+	* know at least the logical operations AND, OR, NOT, and XOR, and how to express them in their favorite/strongest programming language
+	* understand the difference between a bitwise-AND and a logical-AND; similarly for the other operations
+	* know the probable sizes of the primitive data types for a standard 32-bit (e.g. Intel) architecture
+	* know what the primitive types are (byte, short, int, long, float, double, char, boolean) 
+		and, except for boolean, exactly how much space is allocated for them per the Language specification
+	* know the difference between signed and unsigned types
+		what it does to the range of representable values for that type
+		whether their language supports signed vs. unsigned types
+	* know the bitwise and logical operators for their language
+		be able to use them for simple things like setting or testing a specific bit, or set of bits
+	* know about the bit-shift operators in their language, and should know why you would want to use them
+	* know about the sizeof  operator and how (and why/when) to use it
+
+#------------------------------------------------------------------------------------
+Sorting and knowing the differences in complexity between bubble sort, quicksort, and heap sort.
+When, why, and how to use common data structures such as lists, queues, dequeues, stacks, heaps, hashes, etc.
+The when, why, and how of using of OO design and programming.
+How to deal with concurrency between threads and processes, and in distributed systems.
+When, why, and how to use common design patterns and architectural structures 
+	e.g. Singletons, Factories, Pools, Iterators, etc., MVC, and common multitiered technology stacks, such as LAMP, MEAN, etc.

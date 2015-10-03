@@ -41,8 +41,9 @@ Stack diagram
 	traceback
 Incremental development: adding and testing only a small amount of code at a time so that avoid long debugging sessions
 Scaffolding: code that is helpful for building the program but is not part of the final product
-The formal parameter is what's given in the function declaration/definition/prototype
-	the actual argument is what's passed when calling the function (an instance of a formal parameter).
+Parameter vs Argument
+	parameter: given in the function declaration/definition/prototype
+	argument: passed when calling the function (an instance of a parameter)
 Program development:
   1.Start with a working program and make small incremental changes.
 	At any point, if there is an error, you will know exactly where it is.
@@ -59,19 +60,36 @@ Development plan	e.g. 	We develop code by writing lines of code outside any func
 Compound data types: types comprised of smaller pieces
 Traversal: A pattern of processing where you manipulate one index at a time.
 	Often they start at the beginning, select each character in turn, do something to it, and continue until the end. 
+Comparing strings: Python use lexicographical ordering (dictionary ordering) to compare string
+	in Python, capital letter comes BEFORE lower-case letter		# 'Z' < 'a'		->		True
 
-p.83
+Shallow equality: equality of references, or two references that point to the same object.
+Deep equality: equality of values, or two references that point to objects that have the same value.
+Shallow copy: To copy the contents of an object, including any references to embedded objects
+	implemented by the copy function in the copy module.
+Deep copy: To copy the contents of an object as well as any embedded objects, and any objects embedded in them, and so on
+	implemented by the deepcopy function in the copy module.
+	
+	s.7.7
+short-circuit evaluation. That means that Ruby doesn't look at both expressions unless it has to
+Literal: embedded directly into the code
+Parallel assignment: assign multiple variable simultaneously
+	a,b = b,a		#swap the values
+Destructuring assignment (unpacking): parallel assignment with a single variable (e.g. an array or structure) in the right-hand side
+	a,b = [1,2]
+Embedded references: ????
 """
 #--------------------------------------------------------------------------------
 #Escape sequences basic
 	\\ and \' and \" is escape character
-	\a			ASCII bell (BEL)
-	\b			ASCII backspace (BS)
-	\f			ASCII formfeed (FF)
-	\n			ASCII linefeed (LF)
+	\a			bell (BEL)
+	\b			backspace (BS)
+	\f			formfeed (FF)
+	\n			linefeed (LF)
 	\N{name}	Character named name in the Unicode database (Unicode only)
-	\r ASCII	Carriage Return (CR)
-	\t ASCII	Horizontal Tab (TAB)
+	\r 			Carriage Return (CR)
+	\t 			Horizontal Tab (TAB)
+	\s			space
   #Escape character must be in '' (a string)
 #Line break(\)
 	codes \
@@ -190,6 +208,11 @@ now = datetime.now()
 print '%s/%s/%s %s:%s:%s' % (now.month, now.day, now.year,now.hour, now.minute, now.second)
 
 #--------------------------------------------------------------------------------
+#String
+In Python, string are immutable compound data type consisting of letters
+	greeting = "Hello, world!"
+	greeting[0] = 'J' 			#TypeError since string are immutable
+
 #Three ways to create strings: 'Alpha'; "Bravo"; str(3)
 
 #Combining strings and variables (Concatenation)
@@ -374,6 +397,7 @@ Mutable: can be changed after they are created
 		'Separator'.join(list_name)
 	#Split string into a list
 		str.split('text')
+		'text'.split('delimiter')
 	#Specifying an element in a 2-dimensional list
 		list_name[x][y]			#ZERO INDEX, x is an element in the outer list(row) and y is an element in the inner list(column) 
 

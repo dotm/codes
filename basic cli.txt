@@ -122,8 +122,23 @@ PATH variable lists which directories contain scripts for the command line to ex
 	>	- takes stdout of command on the left, redirects and write it to file on the right
 	>>	- takes stdout of command on the left, appends (adds) it to the file on the right
 	<	- takes stdin from file on the right, inputs it into the program on the left
-		cat < lakes.txt
 	| (pipe) - takes stdout of command on the left, pipes it as stdin to the command on the right. 
+
+#cat
+	cat is very useful, especially if you use it with redirection commands
+	#read file
+		cat filename
+	#concatenation
+		cat file1 file2 file3
+	#write and append file
+		to append, use >> instead of >
+		cat > file				#then input string with keyboard, end input by pressing Ctrl+D on a new blank line
+		cat file1 > file2
+		cat - file1 > file2		#concatenate keyboard input then file1, then write to file2
+		cat file1 - > file2		#concatenate file1 then keyboard input, then write to file2
+	#write and append using heredoc delimiter
+		cat <<heredoc > filename	#then input string with keyboard, end input by typing heredoc on a new blank line without any whitespace
+		cat <<EOT > filename		#EOT is the heredoc here, you can replace it with any other string
 
 #grep (global regular expression print)
 	grep -i		#make grep case-insensitive

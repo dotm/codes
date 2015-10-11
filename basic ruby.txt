@@ -18,8 +18,7 @@ variable_name.method1.method2.method3				#multiple method (method chaining)
 #Conditional assignment operator:  variable = first || second || third
 	variable_name ||= value		:=		variable_name = variable_name || value
 		assign a variable if it hasn't already been assigned (returns false)
- 
-  
+
 #Comment
 	#single-line comment
 	=begin
@@ -84,7 +83,7 @@ variable_name.method1.method2.method3				#multiple method (method chaining)
 #String's Method
   "some strings".method_name
 	.length
-	.split				#split with spaces, equals to -> .split(" ")
+	.split				#split with whitespaces, equals to -> .split("\s")
 		.split(",")		#split with delimiter argument
 		.split("")		#split letter by letter
 			.split(//)
@@ -1019,6 +1018,7 @@ text.lines.to_a.reverse
 
 array = [1, 2, 3, 4, 5, 6]
 array.select &:even?		-> [2, 4, 6]
+array.enum &:method
 
 2.respond_to? :next		:=		2.methods.include? :next
 

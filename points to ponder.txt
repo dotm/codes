@@ -21,6 +21,7 @@ X	What are three ways to create a range?
 Strings:
 	What's the difference between single and double quotes?
 		double quotes allow string interpolation
+		single quotes escape backslash 				'\t' := "\\t"
 X	What is string interpolation?
 X	What are escape characters?
 X	What are line breaks?

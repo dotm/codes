@@ -75,9 +75,18 @@ drop table
 	SELECT attribute1 / (attribute2 + 1) as new_attribute		#use as to make the new attribute title new_attribute
 
 #Where clause
-	#Arithmetic operator: = >= <= > < <>
-		advanced operator: ABS LIKE
-			WHERE attribute LIKE '%string%'
+	#Comparison operator: = >= <= > < <> LIKE
+		WHERE attribute LIKE '%string%'
+	#Advanced mathematical functions as operator:
+		ABS(x)					returns absolute value of x
+		SIGN(x)					returns sign of input x as -1, 0, or 1 (negative, zero, positive)
+		MOD(x,y)				returns the integer remainder of x divided by y (same as x%y)
+		FLOOR(x)				returns the largest integer value that is less than or equal to x
+		CEILING(x) or CEIL(x)	returns the smallest integer value that is greater than or equal to x
+		POWER(x,y)				returns x raised to the power of y
+		ROUND(x)				returns x rounded to the nearest integer
+		ROUND(x,d)				returns the value of x rounded to the number of decimal places specified by the value d
+		SQRT(x)					returns square-root of x
 	#Condition		e.g. name <> value
 	#Logical operator: AND OR NOT	(precedence: (parentheses) > NOT > AND > OR)
 		WHERE NOT condition AND condition
@@ -107,24 +116,39 @@ delete
 update
 
 #--------------------------------------------------------------------------------
-Khan Academy SQLite
-#--------------------------------------------------------------------------------
 NEVER forget the ;
-CREATE TABLE table_name (id INTEGER PRIMARY KEY, attribute TYPE, multi-word_attribute TYPE);
-	basic types: TEXT, NUMERIC, INTEGER, REAL, NONE
+Strings must be in single quotes
 
+CREATE TABLE table_name (id INTEGER PRIMARY KEY, attribute TYPE, multi-word_attribute TYPE);
+CREATE TABLE "tablename"
+("column1" "data type" 
+         [constraint],
+ "column2" "data type" 
+         [constraint],
+ "column3" "data type" 
+        [constraint]);		#[] = optional
+
+TYPE: TEXT, NUMERIC, INTEGER, REAL, NONE, etc. (use Google)
+	
 INSERT INTO table_name VALUES (id, value, value);
 INSERT INTO table_name (id, attribute) VALUES (id, value);			#with this you don't have to input all value
 
 CREATE TABLE table_name (id INTEGER PRIMARY KEY AUTOINCREMENT, attribute TYPE);
 	INSERT INTO table_name (attribute) VALUES (value);				#with this you don't have to input id
 
+#SELECT
+SELECT [ALL | DISTINCT] column1[,column2] 				#ALL is the default if DISTINCT is not specified
+FROM table1[,table2] [WHERE "conditions"] 
+[GROUP BY "column-list"] [HAVING "conditions"] 			#If you use multiple columns, separate the columns with commas
+[ORDER BY "column-list" [ASC | DESC] ] ;				#ASC is the default
+	
 #Aggregating and Aliasing
 SELECT MAX(attribute) FROM table_name;
 SELECT SUM(attribute) FROM table_name AS total_attribute;
 	#Common aggregate functions:
-		AVERAGE() 		#arithmetic mean)
+		AVERAGE() 		#arithmetic mean
 		COUNT()
+			COUNT(*)
 		MAXIMUM()
 		MINIMUM()
 		NANMEAN() 		#mean ignoring NaN values (or undefined values or 'nil's)
@@ -135,11 +159,17 @@ SELECT SUM(attribute) FROM table_name AS total_attribute;
 
 #IN
 WHERE attribute1 = value1 OR attribute1 = value2;
-	:= WHERE attribute1 IN (value1, value2);
+	:= WHERE attribute1 IN (value1, value2);			#WHERE attribute is IN the set of this value set
+you can also use NOT IN
 	
 SELECT * FROM table_name WHERE attribute1 IN (SELECT attribute1 FROM table_name1);
 	select all attributes from table_name if the table_name.attribute1 also exists in table_name1.attribute1
 SELECT title FROM songs WHERE artist IN (SELECT name FROM artists WHERE name = "Queen");
+
+#BETWEEN
+WHERE attribute BETWEEN value1 AND value2;
+	WHERE age BETWEEN 30 AND 40;
+you can also use NOT BETWEEN
 
 #Restricting group result
   HAVING : WHERE for GROUP
@@ -205,12 +235,13 @@ GROUP BY letter_grade;
 		ON project_pairs.project2_id = b.id;
 
 #UPDATE
-	UPDATE table_name SET attribute = value WHERE id = 1;
+	UPDATE table_name SET attribute = value, attribute1 = value1 WHERE id = 1;
   you can use attribute or set of attributes other than id in the WHERE clause
 	but it's always safer to use id
 
 #DELETE
 	DELETE FROM table_name WHERE id = 1;
+	DELETE FROM table_name WHERE attribute = value AND attribute1 = value1;		#you can use other logical operator
 
 #ALTER
   you can't modify CREATE when altering database schema unless you want all the data stored to be deleted
@@ -223,6 +254,11 @@ GROUP BY letter_grade;
 	DROP TABLE table_name
 
 #--------------------------------------------------------------------------------
+/* multi-line comment */
+-- single-line comment
+
+Normalization
+
 #What to learn next
 features: indexes and query planning, constraints, triggers, views, and foreign keys. 
 different versions of SQL: MySQL, PostGreSQL, Oracle, MS SQL, and DB2

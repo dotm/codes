@@ -435,11 +435,22 @@ rails new project_name
 rails server
 rails generate model ModelName
 rake db:migrate
+heroku run rake db:migrate
 rails console
+rails console --sandbox
 rake routes
 rails generate controller controller_name
 reload! #to refresh any code changes.
 bundle show [gemname]
-bundle
+bundle := bundle install
+heroku run console
+heroku run console --sandbox
+rails console test
+rails server --environment production
+bundle exec rake db:migrate RAILS_ENV=production
 
 
+duplicate_user = @user.dup
+@user.save
+
+debugger

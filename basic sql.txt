@@ -63,10 +63,10 @@ drop table
 	SELECT 		attribute1, attribute2 (what to return)
 	FROM		Relation1, Relation2						#multiple relation is called a join statement
 	WHERE		conditions									#use connective (and, or) to create compound proposition
-	ORDER BY	attribute1, attribute2 DESC					#attribute2 to sort each attribute1 group. desc for descending; the default is ascending
+	ORDER BY	attribute1 DESC, attribute2 				#attribute2 to sort each attribute1 group. desc for descending; the default is ascending
 	;														#end of statement
   use * to select all attributes
-  to get rid of duplicates use: select distinct attributes
+  to get rid of duplicates use: SELECT DISTINCT attributes
   if you use multiple relation, make sure to check the key match in Where:
 	WHERE Relation1.name = Relation2.name
   when you use multiple relation and try to select an attribute that exists in more than one relation,
@@ -109,6 +109,12 @@ that produces the value that comes out of the query.
 
 from (sub-query) G
 
+We can refer to values in the outer SELECT within the inner SELECT. We can name the tables so that we can tell the difference between the inner and outer versions.
+	SELECT continent, name, population FROM world x
+	  WHERE population >= ALL
+		(SELECT population FROM world y
+			WHERE y.continent=x.continent
+			  AND population>0)
 
 #modifying
 insert
@@ -144,18 +150,19 @@ FROM table1[,table2] [WHERE "conditions"]
 	
 #Aggregating and Aliasing
 SELECT MAX(attribute) FROM table_name;
-SELECT SUM(attribute) FROM table_name AS total_attribute;
+SELECT SUM(attribute) FROM table_name AS total_attribute;		#aliasing the column
+SELECT MIN(attribute) FROM table_name table;					#aliasing the table
 	#Common aggregate functions:
-		AVERAGE() 		#arithmetic mean
-		COUNT()
+		AVERAGE(attribute) 		#arithmetic mean
+		COUNT(attribute)		#NULL values of attribute will not be counted
 			COUNT(*)
-		MAXIMUM()
-		MINIMUM()
-		NANMEAN() 		#mean ignoring NaN values (or undefined values or 'nil's)
-		MEDIAN()
-		MODE()
-		SUM()
-		ROUND()
+		MAXIMUM(attribute)
+		MINIMUM(attribute)
+		NANMEAN(attribute) 		#mean ignoring NaN values (or undefined values or 'nil's)
+		MEDIAN(attribute)
+		MODE(attribute)
+		SUM(attribute)
+		ROUND(attribute)
 
 #IN
 WHERE attribute1 = value1 OR attribute1 = value2;
@@ -166,8 +173,16 @@ SELECT * FROM table_name WHERE attribute1 IN (SELECT attribute1 FROM table_name1
 	select all attributes from table_name if the table_name.attribute1 also exists in table_name1.attribute1
 SELECT title FROM songs WHERE artist IN (SELECT name FROM artists WHERE name = "Queen");
 
+Using IN in SELECT will return boolean values (1 and 0). You can use this value to ORDER BY.
+SELECT winner, subject, subject IN ('Physics','Chemistry')			#the third column will return boolean
+  FROM nobel;
+SELECT winner, subject
+  FROM nobel
+ WHERE yr=1984
+ ORDER BY subject IN ('Physics','Chemistry'), subject, winner;		#winner of Physics and Chemistry will be listed last
+
 #BETWEEN
-WHERE attribute BETWEEN value1 AND value2;
+WHERE attribute BETWEEN value1 AND value2;		# BETWEEN is inclusive [value1, value2]
 	WHERE age BETWEEN 30 AND 40;
 you can also use NOT BETWEEN
 
@@ -179,22 +194,13 @@ you can also use NOT BETWEEN
 	HAVING		conditions
 
 #CASE
-SELECT 			attribute1, attribute2,			#the CASE will be the third attribute
+SELECT 			attribute1, attribute2,			#the CASE will be the third attribute so the comma must be there
 	CASE 
         WHEN condition THEN value
         WHEN condition THEN value1
         ELSE value2
     END AS "attribute3"
 FROM			Relation1, Relation2
-
-SELECT type, heart_rate,
-    CASE 
-        WHEN heart_rate > 220-30 THEN "above max"
-        WHEN heart_rate > ROUND(0.90 * (220-30)) THEN "above target"
-        WHEN heart_rate > ROUND(0.50 * (220-30)) THEN "within target"
-        ELSE "below target"
-    END as "hr_zone"
-FROM exercise_logs;
 
 SELECT COUNT(*),
 CASE
@@ -259,7 +265,15 @@ GROUP BY letter_grade;
 
 Normalization
 
+wildcards: % _
+CONCAT(id,' is ', value)
+COALESCE takes any number of arguments and returns the first value that is not null.
+COALESCE(x,y,z,'None')		#if x,y,z is NULL, None will be returned; the default value is NULL
+ SELECT teacher.name, dept.name FROM teacher LEFT OUTER JOIN dept ON (teacher.dept > dept.id)	#Why use > ?  
+
 #What to learn next
+WHERE vs HAVING
+JOIN
 features: indexes and query planning, constraints, triggers, views, and foreign keys. 
 different versions of SQL: MySQL, PostGreSQL, Oracle, MS SQL, and DB2
 theories, principles, and design: relational design theory (relational model), relational algebra and unified modelling language. 

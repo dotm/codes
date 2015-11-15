@@ -1,60 +1,76 @@
-#Basic CRUD
+#Setting up Rails
+	Set rails alias to bin/rails (or just type every rails commands below as bin/rails)
+	Set rake alias to bin/rake (or just type every rake commands below as bin/rake)
+	rails new project_name
+	cd project_name
+	git init
+	git add -A
+	git commit -m 'Initial commit'
+	Modify README.rdoc
+		you can also add README.md (rdoc for gems documentation, md for GitHub)
+		or you can rename the rdoc: git mv README.rdoc README.md
+	git commit -am 'Modify README'
+	Push to GitHub
+		Create a new repo in GitHub
+		git remote add origin https://github.com/dotm/project_name.git
+		git push --set-upstream origin master
 
-#Accessing table
-table name is singular and upper-case in rails e.g. Person, MultiWordsTable
-	calling the above will access the plural and lower-case table in database e.g. people
-	as a hash {key: value}
-
-#Read
-	#with id
-		var=Person.find(id)
-		var[:key]
-		var.key
-	#multiple id
-		Person.find(id, id, id)		#return array of hashes
-	#other parameter
-		Person.first
-		Person.last
-		Person.all					#return array of hashes
+#Setting up RSpec
+	Add RSpec to the Gemfile
+	  !Gemfile
+		...
+		group :development, :test do
+		  gem 'rspec-rails'
+		  #add above line
+		  ...
+		end
+	bundle			#bundle := bundle install
+	rails generate rspec:install
+		rspec --init
+	To run test use
+		rake
 	
-  #other read function
-		Person.count				#count the number of person
-		Person.order(:key)			#order by key
-		Person.limit(10)			#return first 10 (or other integer) person
-		Person.where(key: value)	#DBMS where statement
-
-#Create
-		var=Person.new
-		var.key=value
-		var.save
-	#multiple input
-		var=Person.new(				#don't mistake () with {}
-		key: value,
-		key: value)
-		var.save
-	#auto-save
-		Person.create(key: value, key: value)		#you can omit the arguments if you want to construct a new empty Person
+#Setting up Model
+	rails g model ModelName	[field[:type][:index] field[:type][:index]] [options]	#g := generate
+		rails g model User username:string email:string password:string
+	rake db:migrate
+		bin/rake db:migrate
+		bundle exec db:migrate
+	git add -A
+	git commit -m 'Generate model ModelName'
 	
-#Update
-		var=Person.find(id)
-		var.key=new_value
-		var.save
-	#multiple attribute update
-		var=Person.find(id)
-		var.attribute={key: value,
-		key: value}
-		var.save
-	#auto-save
-		var=Person.find(id)
-		var.update(key: value, key: value)
-#Delete
-		var=Person.find(id)
-		var.destroy
-	#without declaring var
-		Person.find(id).destroy
-	#delete all
-		Person.destroy_all
-		
+#Setting up routes
+	Write in config/routes
+	rake routes
+#Setting up Controller
+	rails g controller Controllers
+	Add actions based on routes you have set
+		def new
+		end
+		...
+#Setting up View
+	touch app/views/models/new.html.erb
+	
+#--------------------------------------------------------------------------------
+#Important commands
+
+rails s := rails server
+heroku run rake db:migrate
+rails console
+rails console --sandbox
+reload! #to refresh any code changes.
+bundle show [gemname]
+heroku run console
+heroku run console --sandbox
+rails console test
+rails server --environment production
+bundle exec rake db:migrate RAILS_ENV=production
+
+duplicate_user = @user.dup
+@user.save
+
+debugger
+
 #--------------------------------------------------------------------------------
 
     | User's  | ------> |Web   | --> Route --> Dispatcher --> | 		   | <-----> Model <-----> Data storage
@@ -230,6 +246,7 @@ When a request come in such as /tweets/1 (show a tweet)
 !app/controllers/tweets_controller.rb
 	class TweetsController < ApplicationController
 		def show								#the show method (action) maps to the !app/views/tweets/show.html.erb (notice the SHOW file)
+
 			#this is where we call our models
 			@tweet=Tweet.find(1)				#never forget the @ so that the View can access the class local instance variable
 			#if you want to render it to an html.erb with different name, you can use:
@@ -429,28 +446,60 @@ custom routes replace the URL in browser, redirect will simply redirect a path t
 	end
 
 #--------------------------------------------------------------------------------
-#Important commands
+#Basic CRUD Query
 
-rails new project_name
-rails server
-rails generate model ModelName
-rake db:migrate
-heroku run rake db:migrate
-rails console
-rails console --sandbox
-rake routes
-rails generate controller controller_name
-reload! #to refresh any code changes.
-bundle show [gemname]
-bundle := bundle install
-heroku run console
-heroku run console --sandbox
-rails console test
-rails server --environment production
-bundle exec rake db:migrate RAILS_ENV=production
+#Accessing table
+table name is singular and upper-case in rails e.g. Person, MultiWordsTable
+	calling the above will access the plural and lower-case table in database e.g. people
+	as a hash {key: value}
 
+#Read
+	#with id
+		var=Person.find(id)
+		var[:key]
+		var.key
+	#multiple id
+		Person.find(id, id, id)		#return array of hashes
+	#other parameter
+		Person.first
+		Person.last
+		Person.all					#return array of hashes
+	
+  #other read function
+		Person.count				#count the number of person
+		Person.order(:key)			#order by key
+		Person.limit(10)			#return first 10 (or other integer) person
+		Person.where(key: value)	#DBMS where statement
 
-duplicate_user = @user.dup
-@user.save
-
-debugger
+#Create
+		var=Person.new
+		var.key=value
+		var.save
+	#multiple input
+		var=Person.new(				#don't mistake () with {}
+		key: value,
+		key: value)
+		var.save
+	#auto-save
+		Person.create(key: value, key: value)		#you can omit the arguments if you want to construct a new empty Person
+	
+#Update
+		var=Person.find(id)
+		var.key=new_value
+		var.save
+	#multiple attribute update
+		var=Person.find(id)
+		var.attribute={key: value,
+		key: value}
+		var.save
+	#auto-save
+		var=Person.find(id)
+		var.update(key: value, key: value)
+#Delete
+		var=Person.find(id)
+		var.destroy
+	#without declaring var
+		Person.find(id).destroy
+	#delete all
+		Person.destroy_all
+		

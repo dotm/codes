@@ -1,0 +1,290 @@
+#Enter Vim from command prompt
+	vim FILENAME <ENTER>
+
+#Modes
+	<ESC>	Normal mode or cancel an unwanted and partially completed command
+	i		Insert mode
+		o		open a line BELOW the cursor, places cursor on the open line in Insert mode
+		O		open a line ABOVE the cursor, places cursor on the open line in Insert mode
+		a		append text AFTER the character the cursor is on
+		A		append text to the end of the line
+		c		change (cut, then go to insert mode)
+	R		Replace mode (overwrite)
+	v		Visual selection mode
+NOTE:  You can use the Backspace key to correct mistakes while typing.
+
+#Command format
+	[number] command object
+	command [number] object
+		object := motion
+		command		what to do								(default = move to)
+		number		how many times to execute the command	(default = 1)
+		object		what the command will operate on		(default = the character under the cursor)
+
+#Cursor movement
+Object list:
+	w		end of the word, including the space ()
+	e		end of the word, NOT including the space
+	$		end of line
+	0		start of line
+	w		jump forwards to the start of a word
+	W		jump forwards to the start of a word (any non-whitespace characters, words can contain punctuation)
+	e		jump forwards to the end of a word
+	E		jump forwards to the end of a word (words can contain punctuation)
+	b		jump backwards to the start of a word
+	B		jump backwards to the start of a word (words can contain punctuation)
+	^		jump to the first non-blank character of the line
+	)		Jump forward one sentence
+	(		Jump backward one sentence
+	}		Jump forward one paragraph
+	{		Jump backward one paragraph
+	H		Jump to the top of the screen
+	M		Jump to the middle of the screen
+	L		Jump to the bottom of the screen.
+	10<PageUp> or 10<CTRL-B>		Move 10 pages up.
+	5<PageDown> or 5<CTRL-F>		Move 5 pages down.
+	'm		Jump to the beginning of the line of mark m.
+	`m		Jump to the cursor position of mark m.
+	''		Return to the line where the cursor was before the latest jump
+	``		Return to the cursor position before the latest jump (undo the jump)
+	%		Jump to corresponding item, e.g. from an open brace to its matching closing brace.
+	2w		move 2 words forward to the start of the second word
+	2e		move 2 words forward to the end of the second word
+#Arrow or hjkl keys
+	h		left
+	j		down
+	k		up
+	l		right
+#Using line number
+	CTRL-g	displays your location in the file and the file status
+	264G	line number 264
+	G		last line of file (end of file)
+	gg		start of file
+#Other commands
+	CTRL-o	go back to last position (similar to Word SHIFT-F5)
+	CTRL-i	reverse CTRL-o
+	%		locates the matching pair of the bracket under the cursor
+				this is useful in debugging a program with unmatched parentheses
+	
+#The : commands
+All : commands must be finished by hitting <ENTER>
+	:!		execute an external command						:!ls
+				you can also use arguments and options		:!rm -rf directory
+	:q!		quit and trash all changes
+	:wq 	save changes and quit
+  #Write
+	:w FILENAME		write (save) current file with name FILENAME
+	:#,#w FILENAME	save lines # through # in file FILENAME
+	writing part of file with visual mode:
+		go to visual mode
+		highlight text you want to write
+		press :
+		:'<,'> will appear on screen
+		type w FILENAME		->		:'<,'>w FILENAME
+		press <ENTER>
+  #Retrieve
+	:r FILENAME  	retrieve FILENAME and insert into current file below the cursor
+	You can also read(retrieve) the output of an external command
+       :r !ls		reads the output of the ls command and puts it below the cursor
+  #Setting options
+	:set xxx		set an option "xxx"
+	:set noxxx		unset an option "xxx"
+	:set xxx xxx	set multiple options
+	:xxxxxx			set an option with a long form (like bash --append to -a)
+	:noxxxxxx		unset an option with a long form
+		:set ic		ignore case
+		:set hls	highlight search
+		:hlsearch 	highlight search
+		:set is		incremental search
+		:incsearch	incremental search
+#Autocomplete for : command
+Completion works for many commands. Just try pressing CTRL-D and <TAB>. It is especially useful for  :help .
+  When typing a : command
+  CTRL-D	see possible completions
+  <TAB>		use one completion		
+	1. Make sure Vim is not in compatible mode:  :set nocp
+	2. Look what files exist in the directory:  :!ls   or  :!dir
+	3. Type the start of a command:  :e
+	4. Press  CTRL-D  and Vim will show a list of commands that start with "e".
+	5. Press <TAB>  and Vim will complete the command name to ":edit".
+	6. Now add a space and the start of an existing file name:  :edit FIL
+	7. Press <TAB>.  Vim will complete the name (if it is unique).
+
+yank, cut/delete, change can be used as an operator (e.g. y3w) or with Visual mode highlighting
+#Deleting/Cutting
+	x	delete a character under the cursor in Normal mode
+	d	delete multi-character
+		dd		delete a whole line
+		dw		delete [cursor, start of next word)
+		de		delete [cursor, end of current word]
+		d$		delete from the cursor to the end of a line
+	c	change (cut, then go to insert mode)
+#Copy Paste
+	y	yank (copy)
+	p	put (paste)
+	r	replace a single character under the cursor
+			rk	->	replace the character under the cursor with k
+
+#Undo and Redo
+	u		undo
+	U		undo all the changes on a line
+	CTRL-r	redo
+
+#Search
+When the search reaches the end of the file it will continue at the start, unless the 'wrapscan' option has been reset.
+	/		search FORWARD for the phrase
+	?		search BACKWARD for the phrase.
+	After a search:
+	n		find the next occurrence in the same direction
+	N		find the next occurrence in the opposite direction
+#Replace
+	:s/old/new			substitute new for the first old on a line
+	:s/old/new/g		substitute new for all 'old' on a line
+	:#,#s/old/new/g		substitute phrases between two line # and #
+	:%s/old/new/g		substitute all occurrences in the file type
+	backslash is used for escaping
+	flag for substitution:
+		g	global substitution
+		i	case-insensitive
+				:s/old/new/i	:=		:s/old\c/new
+		I	case-sensitive
+				:s/old/new/I	:=		:s/old\C/new
+		c	ask confirmation
+				confirmation answers:
+					y	yes (substitute this match)
+					n	no/next (skip this match)
+					a	all (substitute this and all remaining match)
+					q	quit the command
+					l	last (substitute this match then quit)
+					^E	go down (scroll screen up one line)
+					^Y	go up (scroll screen down one line)
+
+#Get help
+	<HELP>
+	<F1>
+	:help
+		type :q to close the help window
+		You can find help on just about any subject, by giving an argument to the :help command
+			:help w
+			:help c_<T
+			:help insert-index
+			:help user-manual
+	:help cmd	find help on  cmd .
+
+CTRL-W CTRL-W	jump to another window
+
+#vimrc
+Create a vimrc startup script to keep your preferred settings.
+Vim has many more features than Vi, but most of them are disabled by default. 
+To start using more features you have to create a "vimrc" file.
+  1. Start editing the "vimrc" file
+		:e ~/.vimrc		for Unix
+		:e $VIM/_vimrc		for MS-Windows
+  2. Now read the example "vimrc" file contents:
+		:r $VIMRUNTIME/vimrc_example.vim
+  3. Write the file with:
+		:w
+The next time you start Vim it will use syntax highlighting.
+You can add all your preferred settings to this "vimrc" file.
+For more information type  :help vimrc-intro
+
+
+#------------------------------------------------------------------------------
+Vim Cheat Sheet
+
+Insert mode - inserting/appending text
+i - insert before the cursor
+I - insert at the beginning of the line
+a - insert (append) after the cursor
+A - insert (append) at the end of the line
+o - append (open) a new line below the current line
+O - append (open) a new line above the current line
+ea - insert (append) at the end of the word
+Esc - exit insert mode
+
+Editing
+r - replace a single character
+J - join line below to the current one
+cc - change (replace) entire line
+cw - change (replace) to the end of the word
+c$ - change (replace) to the end of the line
+s - delete character and substitute text
+S - delete line and substitute text (same as cc)
+xp - transpose two letters (delete and paste)
+u - undo
+Ctrl + r - redo
+. - repeat last command
+
+Marking text (visual mode)
+v - start visual mode, mark lines, then do a command (like y-yank)
+V - start linewise visual mode
+o - move to other end of marked area
+Ctrl + v - start visual block mode
+O - move to other corner of block
+aw - mark a word
+ab - a block with ()
+aB - a block with {}
+ib - inner block with ()
+iB - inner block with {}
+Esc - exit visual mode
+
+Visual commands
+> - shift text right
+< - shift text left
+y - yank (copy) marked text
+d - delete marked text
+~ - switch case
+
+Cut and paste
+yy - yank (copy) a line
+2yy - yank (copy) 2 lines
+yw - yank (copy) word
+y$ - yank (copy) to end of line
+p - put (paste) the clipboard after cursor
+P - put (paste) before cursor
+dd - delete (cut) a line
+2dd - delete (cut) 2 lines
+dw - delete (cut) word
+D - delete (cut) to the end of the line
+d$ - delete (cut) to the end of the line
+x - delete (cut) character
+
+Exiting
+:w - write (save) the file, but don't exit
+:wq or :x or ZZ - write (save) and quit
+:q - quit (fails if there are unsaved changes)
+:q! or ZQ - quit and throw away unsaved changes
+
+Search and replace
+/pattern - search for pattern
+?pattern - search backward for pattern
+n - repeat search in same direction
+N - repeat search in opposite direction
+:%s/old/new/g - replace all old with new throughout file
+:%s/old/new/gc - replace all old with new throughout file with confirmations
+
+Working with multiple files
+:e filename - edit a file in a new buffer
+:bnext or :bn - go to the next buffer
+:bprev or :bp - go to the previous buffer
+:bd - delete a buffer (close a file)
+:sp filename - open a file in a new buffer and split window
+:vsp filename - open a file in a new buffer and vertically split window
+Ctrl + ws - split window
+Ctrl + ww - switch windows
+Ctrl + wq - quit a window
+Ctrl + wv - split window vertically
+Ctrl + wh - move cursor to the left window (vertical split)
+Ctrl + wl - move cursor to the right window (vertical split)
+Ctrl + wj - move cursor to the window below (horizontal split)
+Ctrl + wk - move cursor to the window above (horizontal split)
+
+Tabs
+:tabnew filename or :tabn filename - open a file in a new tab
+Ctrl + wT - move the current split window into its own tab
+gt or :tabnext or :tabn - move to the next tab
+gT or :tabprev or :tabp - move to the previous tab
+#gt - move to tab number #
+:tabmove # - move current tab to the #th position (indexed from 0)
+:tabclose or :tabc - close the current tab and all its windows
+:tabonly or :tabo - close all tabs except for the current one

@@ -6,14 +6,12 @@
 
 #Basic of writing text:
     (h#) for header, (p) for paragraph body, (br) for break
-
 #Text emphasis:
     (em) for weak emphasis, (strong) for strong emphasis
 
 #List:
     (ol) for ordered list, (ul) for unordered list
     (li) for the list points
-
     <ol>  <li>Math</li> <li>Physics</li> <l>Spanish</li>    </ol>
 
 #Definition List:
@@ -31,8 +29,7 @@
 	
 #Image:
     (img) for image, no (/img) required
-    src as source, alt as alternative source
-    
+    src as source, alt as alternative source 
     <img src='https://www.kasandbox.org/programming-images/animals/thumbs/komodo-dragon.png' alt='komodo dragon'>
 
 #Creating ID and Class:
@@ -48,17 +45,28 @@
 		<style>     .apples{color:red;}
 					.bananas{background-color:yellow;}        </style>
 
-#Hyperlink:
+#Hyperlink (Anchor):
     (a) for hyperlink text, href attrib for html reference
-    absolute html use http://domain-name/path
-    relative html only use /path
+    absolute path gives the location of a file or directory in reference to a root directory
+	  fully qualified URLs:		<a href="http://www.youtube.com">Youtube</a>
+	  if the the location is on the same server, you can use / as root instead of the server URL
+    relative path is a path to a given file or directory starting from another file or directory
+		e.g. <a href="assets/stylesheet.css">Assets</a>		is a relative path from current file
+		e.g. <a href="/assets/stylesheet.css">Assets</a>		is an absolute path from root
     internal hyperlink (link to the same page) use id attrib
-
-    <a href="http://www.youtube.com">Youtube</a>     <br>
-    <a href="https://www.khanacademy.org">
-    <img src="https://www.kasandbox.org/programming-images/cute/Heart.png"></a>
-    <a href="#top">Jump to the top</a>
-
+		<a href="#top">Jump to the top</a>
+    you can use image instead of text as the anchor
+		<a href="https://www.khanacademy.org"><img src="https://www.kasandbox.org/programming-images/cute/Heart.png"></a>
+  #Absolute vs relative path
+	relative links make it very easy to move “chunks” of a site from one location on a web server to another 
+	  without having the links break as long as the chunks maintain their relative structure
+	because large, dynamic sites typically have a shared header file and common assets directory, it makes more sense to use absolute links
+	with relative paths, the local site structure doesn’t need to match the remote one; with absolute paths, it does
+	using fully qualified URLs, without manipulating DNS entries, it’s impossible to work locally. 
+	  the local files will always point to the remote server
+	using a relative path will make your site respond quicker
+	if you're linking to something off your site, then you must use the absolute path
+  
 #Table:
     (table) at the beginning and end of table
     (thead) for table head, (tbody) for table body, (tr) for each row
@@ -71,6 +79,36 @@
 						<td>Rice</td>
 						<td>3000</td>                </tr>            </tbody>
 			</table>
+
+#---------------------------------------------------------------------------------------------------
+#Audio
+  #single-source audio
+	<audio src="music.mp3" type="audio/mpeg" control autoplay loop>
+		Audio element is not supported by your browser
+	</audio>
+  #multi-sources audio
+	<audio control autoplay loop>
+		<source src="music.mp3" type="audio/mpeg">
+		<source src="music.ogg" type="audio/ogg">
+		Audio element is not supported by your browser
+	</audio>
+  control, autoplay, and loop is a boolean attribute
+  the page will try to render the sources top to bottom
+	the mp3 is rendered first
+	the ogg will be rendered if the first one failed
+	and the text will be rendered last if all the above sources failed
+	
+#Video
+  the video syntax is the same as audio element
+	<video src="mv.mp4" type="video/mp4" control autoplay loop>
+		Video element is not supported by your browser
+	</video>
+	<video control autoplay loop>
+		<source src="mv.mp4" type="video/mp4">
+		<source src="mv.ogg" type="video/ogg">
+		Video element is not supported by your browser
+	</video>
+	
 
 #---------------------------------------------------------------------------------------------------
 #Form

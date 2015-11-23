@@ -83,16 +83,18 @@
 #---------------------------------------------------------------------------------------------------
 #Audio
   #single-source audio
-	<audio src="music.mp3" type="audio/mpeg" control autoplay loop>
+	<audio src="music.mp3" type="audio/mpeg" control autoplay loop preload="auto">
 		Audio element is not supported by your browser
 	</audio>
   #multi-sources audio
 	<audio control autoplay loop>
 		<source src="music.mp3" type="audio/mpeg">
 		<source src="music.ogg" type="audio/ogg">
-		Audio element is not supported by your browser
+		Audio element is not supported by your browser.
+		Please download the music <a href="music.mp3">here</a>.
 	</audio>
   control, autoplay, and loop is a boolean attribute
+  preload has 3 values: none, auto, metadata
   the page will try to render the sources top to bottom
 	the mp3 is rendered first
 	the ogg will be rendered if the first one failed
@@ -100,7 +102,8 @@
 	
 #Video
   the video syntax is the same as audio element
-	<video src="mv.mp4" type="video/mp4" control autoplay loop>
+  poster attribute allows us to specify an image, in the form of a URL, to be shown before a video is played. 
+	<video src="mv.mp4" type="video/mp4" poster="movie-screenshot.jpg" control autoplay loop>
 		Video element is not supported by your browser
 	</video>
 	<video control autoplay loop>
@@ -108,7 +111,14 @@
 		<source src="mv.ogg" type="video/ogg">
 		Video element is not supported by your browser
 	</video>
-	
+  you can embed a youtube video with inline frame instead of just showing text as the last option
+
+#Inline Frames
+  display content from the embedded HTML page on the current page
+	<iframe src="contact.html" seamless></iframe>
+  seamless attribute allows:
+	allows styles from parent page to be inherited by the page in the <iframe> element
+	allows links clicked on child page to be opened within the same window as the original page
 
 #---------------------------------------------------------------------------------------------------
 #Form
@@ -297,7 +307,6 @@ An aside can be used to represent content that is related the content surroundin
     <p>[Maybe a bit more about Tixall]</p>
 </section>
 While we’re at this structure-love, if you want to include figures, there happens to be two tags for doing just that:
-
 
 <figure>
     <img src="obelisk.jpg">

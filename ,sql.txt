@@ -278,3 +278,4 @@ features: indexes and query planning, constraints, triggers, views, and foreign 
 different versions of SQL: MySQL, PostGreSQL, Oracle, MS SQL, and DB2
 theories, principles, and design: relational design theory (relational model), relational algebra and unified modelling language. 
 
+Order by a, b desc = order by a asc, b desc

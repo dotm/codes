@@ -3,6 +3,15 @@
 	(html) at the start and the end of every html
 	(head), for page (title) etc, and (body), for page body, must be inside	the (html) tag
 	(meta charset) for character coding set used in page: utf-8
+        meta charset should be directly below head so that browser doesn't reparse much text
+        you can use non-ASCII utf-8 character by using: HTML special characters encoding
+            e.g. &#x232b;
+    conditional comment to make HTML suited to a certain version of IE
+        <!--[if IE]><![endif]-->
+        <!--[if IE 9]><![endif]-->
+        <!--[if gte IE 8]>IE 8 or higher<![endif]-->
+        <!--[if lt IE 9]>IE lower than 9<![endif]-->
+        <!--[if !IE]> -->not IE 5-9<!-- <![endif]-->    #note the '-->' in the opening tag
 
 #Basic of writing text:
     (h#) for header, (p) for paragraph body, (br) for break
@@ -30,6 +39,8 @@
 #Image:
     (img) for image, no (/img) required
     src as source, alt as alternative source 
+    use alt="" if you don’t have alternative explanation
+        so that blind people won't hear the image file name as alt
     <img src='https://www.kasandbox.org/programming-images/animals/thumbs/komodo-dragon.png' alt='komodo dragon'>
 
 #Creating ID and Class:
@@ -55,6 +66,8 @@
 		e.g. <a href="/assets/stylesheet.css">Assets</a>		is an absolute path from root
     internal hyperlink (link to the same page) use id attrib
 		<a href="#top">Jump to the top</a>
+    stub URL: an internal hyperlink that goes nowhere
+        <a href="#">stub link</a>
     you can use image instead of text as the anchor
 		<a href="https://www.khanacademy.org"><img src="https://www.kasandbox.org/programming-images/cute/Heart.png"></a>
   #Absolute vs relative path
@@ -68,17 +81,31 @@
 	if you're linking to something off your site, then you must use the absolute path
   
 #Table:
-    (table) at the beginning and end of table
-    (thead) for table head, (tbody) for table body, (tr) for each row
-    (th) as head data entry, (td) for body data entry
+    (tr) for each row, (th) as head data entry, (td) for body data entry
 		colspan and rowspan attribute can be used to "merge" table cells
-	<table> <thead> <tr>
-						<th rowspan="2">Meal</th>
-						<th colspan='1'>Price</th>                </tr>            </thead>
-			<tbody> <tr>
-						<td>Rice</td>
-						<td>3000</td>                </tr>            </tbody>
-			</table>
+		scope attribute indicates with the values col, row, colgroup, and rowgroup
+			whether a table header applies to a row or column. default value is col
+	<table>
+		<caption>Menu</caption>
+		<thead>
+			<tr>
+				<th rowspan="2" scope="col">Meal</th>
+				<th colspan='1' scope="col">Price</th>
+            </tr>
+        </thead>
+		<tbody>
+			<tr>
+				<td>Rice</td>
+				<td>3000</td>
+            </tr>
+		</tbody>
+		<tfoot>
+			<tr>
+				<td>Total Price</td>
+				<td>3000</td>
+            </tr>
+		</tfoot>
+	</table>
 
 #---------------------------------------------------------------------------------------------------
 #Audio
@@ -89,7 +116,7 @@
   #multi-sources audio
 	<audio control autoplay loop>
 		<source src="music.mp3" type="audio/mpeg">
-		<source src="music.ogg" type="audio/ogg">
+		<source src="music.ogg" type="audio/ogg; codecs=vorbis">
 		Audio element is not supported by your browser.
 		Please download the music <a href="music.mp3">here</a>.
 	</audio>
@@ -102,13 +129,16 @@
 	
 #Video
   the video syntax is the same as audio element
+  the type attribute contains container MIME type, video codecs, then audio
+codecs
   poster attribute allows us to specify an image, in the form of a URL, to be shown before a video is played. 
 	<video src="mv.mp4" type="video/mp4" poster="movie-screenshot.jpg" control autoplay loop>
 		Video element is not supported by your browser
 	</video>
 	<video control autoplay loop>
-		<source src="mv.mp4" type="video/mp4">
-		<source src="mv.ogg" type="video/ogg">
+    <source src="mv.mp4"  type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
+    <source src="mv.webm" type='video/webm; codecs="vp8, vorbis"'>
+    <source src="mv.ogv"  type='video/ogg; codecs="theora, vorbis"'>
 		Video element is not supported by your browser
 	</video>
   you can embed a youtube video with inline frame instead of just showing text as the last option

@@ -1,3 +1,19 @@
+#Setting up RSpec in Rails 4
+
+#Create the app
+	rails new app_name
+
+#Install RSpec
+	!Gemfile
+		group :development, :test do
+		  gem 'rspec-rails', '~> 2.0'
+		end
+	bundle install
+	rails generate rspec:install
+	bundle binstubs rspec-core			#create RSpec binstub to allow you to run RSpec with bin/rspec instead of bundle exec rspec
+	
+	
+#--------------------------------------------------------------------------------
 #Initialize RSpec
 	go to project directory in cmd, then type: rspec --init
 	

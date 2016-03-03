@@ -1,21 +1,25 @@
 Basic CSS
 <link href="font.css" rel="stylesheet">								#import font(must be before css/order matters)
-<link rel="stylesheet" href="http://s3.amazonaws.com/codecademy-content/courses/ltp/css/bootstrap.css">		#bootstrap
 <link href='stylesheet.css' type='text/css' rel='stylesheet'>		#import css
 #3 Ways to CSS
 inline styling, in head element (internal stylesheet), in another stylesheet file (external stylesheet)
 
 #Syntax
-CSS Rule:
-selector{property:value;	property:value}
+CSS Rule: selector{ property:value; }
 selectors: body for background, p for paragraph, h# for header, * for all (universal selector)
 
+#CSS vendor prefix
+    -webkit- (Chrome, newer versions of Opera, Android, iOS, Safari)
+    -moz- (Firefox)
+    -o- (Old versions of Opera)
+    -ms- (Internet Explorer)
+
 #CSS Units
-	px (such as font-size: 12px) is the unit for pixels.
-	em (such as font-size: 2em) is the unit for the calculated size of a font. So 2em, is two times the current font size.
-	pt (such as font-size: 12pt) is the unit for points, for measurements typically in printed media.
-	% (such as width: 80%) is the unit for percentages.
-	Other units include pc (picas), cm (centimeters), mm (millimeters) and in (inches).
+	px is the unit for pixels.
+	em is the unit for the calculated size of a font. So 2em, is two times the current font size.
+	pt is the unit for points, for measurements typically in printed media.
+	% is the unit for percentages.
+	Other units: pc (picas), cm (centimeters), mm (millimeters) and in (inches).
 	You can also use inherit
 When a value is zero, you do not need to state a unit. e.g. border: 0
   em vs rem
@@ -25,14 +29,14 @@ When a value is zero, you do not need to state a unit. e.g. border: 0
 #Coloring:
     background-color to fill, color to color text
 	the values can be:
-		red
-		rgb(255,0,0)
+		red								#predefined color
+		rgb(255,0,0)			#red, green, blue
 		rgb(100%,0%,0%)
+		rgba(255,0,0,0.3)	##red, green, blue, alpha transparency [0-1]
 		#ff0000
 		#f00
-	Predefined color names include aqua, black, blue, fuchsia, gray, green, 
-		lime, maroon, navy, olive, orange, purple, red, silver, teal, white, and yellow. 
-		transparent is also a valid value
+	Predefined color "transparent" is valid
+	You can use hsl instead of rgb and hsla instead of rgba
 	You can also use inherit
 	
 #Background image
@@ -50,31 +54,28 @@ can be top, center, bottom, left, right, a length, or a percentage, or any sensi
 	body 		{background: white url(http://www.htmldog.com/images/bg.gif) no-repeat top right;}
 
 #Text
-	body{										//Other values:
-			font-family: sans-serif; 			//serif, Arial, etc
-			font-size: 12px; 					//
+	body{														//Other values:
+			font-family: sans-serif; 		//serif, Arial, etc
+			font-size: 12px;						//
 			font-weight:bold; 					//normal, bolder, lighter, 100, 200, 300, 400 (normal), 500, 600, 700 (bold), 800 or 900
 			font-style: italic; 				//
-		    font-variant: small-caps;			//normal; small-caps is capitalized word but in smaller size
+		    font-variant: small-caps;	//normal; small-caps is capitalized word but in smaller size
 			text-align: left; 					//right, center, justify
-			text-decoration: underline;			//overline, line-through
-			text-transform: capitalize 			//uppercase, lowercase, none
+			text-decoration: underline;	//overline, line-through
+			text-transform: capitalize 	//uppercase, lowercase, none
 			text-indent: normal					//
 			line-height: 1.5em; 				//2 (2 * font size), normal
-			letter-spacing: normal				//
+			letter-spacing: normal			//
 			word-spacing: normal				//
 		}										//(available for all) inherit, CSS Units, normal
 	#Font shorthand
-	You can shorthand all of the font-xxx tags by using the shorthand (font) tag
 	Shorthand will OVERRIDE other longhand property
-	the syntax for font shorthand
 		selector 	{font: font-style font-variant font-weight font-size/line-height font-family;}
 		p 			{font: small-caps italic bold 12px/2 courier;}
 	You need to supply at least font-size and font-family for the shorthand to work, otherwise it'll just be a syntax error and do nothing.
 
 #Grouping element
 Use (div) to group block element and (span) to group inline element
-You can use class and id as attribute of both grouper	
 
 #Width, Height, Overflow
 Width control the width, height control the height, overflow manage text overflowing out of the box.
@@ -83,28 +84,39 @@ Width control the width, height control the height, overflow manage text overflo
                 overflow:auto;
 				overflow-y: auto;		you can use this to specify which coordinate you want to use
 				overflow-x: hidden;}
-				
+
+#Maximum and minimum width and height
+    max-width
+    max-height
+    min-width
+    min-height
+
+#Box sizing
+use box-sizing to tell the browser what the sizing properties (width and height) should include.
+box-sizing has 2 options:
+    border-box will include padding and border in the element's total width and height
+    content-box (default) only include content in the element's total width and height
+
 #---------------------------------------------------------------------------------------------------
 #Box Model
 From outside to inside: 
 	margin,	border, padding, content
 	
 #Shorthand of box model properties
-The below rule applies to margin, border and padding.
-	property with one value has its value applied to all
-	stating two values e.g. padding: 1em 10em;
-		the first value will be the top and bottom 
-		the second value will be the right and left.
-	To specify with 4 value: top, right, bottom, left,
-	Or you can use specific property e.g. margin-top. 
-		.info {	margin: 15px 0px 10px 6px;	
-				border: 2px dashed rgb(161, 161, 161);
-				padding: 6px;}		
-	When you use negative value: you move the content
+The below rules applies to margin, border and padding.
+	one value applied to all
+	two values e.g. padding: 1em 10em;
+		first value: top and bottom 
+		second value: right and left
+	4 value: top, right, bottom, left,
+	you can use specific property e.g. margin-top. 
+	When you use negative value, you move the content
 		.info{margin-left:-10px} //move .info 10 px to the LEFT
 		
-#Use {margin: auto;} to center a div
-	#auto will maximize the amount of space as much as possible
+#Aligning elements
+Use {margin: auto;} to center a div
+	auto will maximize the amount of space as much as possible
+vertical-align property sets the vertical alignment of an element
 
 #Border 
 h2 {								//Other values:
@@ -115,42 +127,39 @@ h2 {								//Other values:
 	border-radius: 100%;			//border can have 4 separate value
 }
 	#Border shorthand
-	You can shorthand all of the border width, style, and color tags by using the shorthand (border) tag
 	Shorthand will OVERRIDE other longhand property
-	the syntax for border shorthand
 		 selector{border: border-width, border-style, border-color}
 
 #---------------------------------------------------------------------------------------------------
+#Offset properties
+You need to specify positioning's top left right bottom in a separate properties called offset properties
+
 #Positioning
-Position can be static(default), relative, absolute, fixed.
-	1.Static means where the element would normally go.
-		top left right bottom positioning property will be ignored when the element is static
-	2.Relative tells the element to move relative to where it would have landed if it just had the default static positioning.
+	1.Static (default) means where the element would normally go
+		offset property will be ignored when the element is static
+	2.Relative tells the element to move relative to where it would have landed if it just had the default static positioning
 	3.Absolute pull the element outside of the HTML flow
-		the element will be positioned in relation to the first parent element it has that doesn't have position: static. 
-		If there's no such element, the element will gets positioned relative to <html>.
+		the element will latch to last ancestor that doesn't have static position or to body if no such ancestor exists
 	4.Fixed positioning anchors an element to the browser window pull it outside of the HTML flow
 		If you scroll up and down, the fixed element stays put even as other elements scroll past
-the downside to absolute positioning is that because the element outside of the HTML flow, 
-  there is no way of accurately determining where they end
-  when using relative values for widths and sizes, 
-  you often have to abandon any hope of placing anything, such as a footer, below these boxes. 
-  If you wanted to do such a thing, one way would be to float your chunks, rather than absolutely positioning them.
-You need to specify positioning top left right bottom in a separate properties
 
 #z-index is for ordering object from back (1) to front (2,3,..-->)
-	hopper {position: absolute; top: 30px; left: 80px; z-index: 3;}
 	h1     {position: fixed; z-index: 4; left: 30px;}
 
 #Floating element
-Float value can be left or right, etc.
+Float values: left right inherit none
 The float property moves an element to the far left or far right of the page.
-Use float to make image appear like in newspaper and to move them around. 
+If you float an image that is taller than the element containing it, 
+    you may make it overflow outside of its container
+    to fix this, you can use the clearfix hack:
+        add this to CSS: .clearfix { overflow: auto; }
+            some browser will require more CSS rules for clearfix to work
+        add the clearfix class to the overflowed container
 If you use float with div, specify the width with px or % so it doesn't take all the page space         
 	div {float: right; width: 30%;}
 Floating element will adjust to the flow of other floating element (won't be on top of each other), 
-but not to other non-floating element (can be on top of each other).
-To ensure that they won't be on top of each other, you can use clear
+    but not to other non-floating element (can be on top of each other).
+To ensure that they won't be on top of each other, you can use clear property
 
 #Clear
 can have 3 values:
@@ -260,6 +269,15 @@ More specific = greater precedence
 		The pseudo-class :not() adds no specificity by itself
 add them all up, you have the specificity value
 	you can have css with 0,0,13,0 specificity value, but another with 0,1,0,0 will beat it
+
+#---------------------------------------------------------------------------------------------------
+#Column properties
+    column-width
+    column-count
+    column-gap
+    column-rule
+        specify width, style and color of the rule between columns
+    columns is a shorthand for column-width column-count
 
 #---------------------------------------------------------------------------------------------------
 #Bootstrap

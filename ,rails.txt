@@ -2,6 +2,7 @@
 	Set rails alias to bin/rails (or just type every rails commands below as bin/rails)
 	Set rake alias to bin/rake (or just type every rake commands below as bin/rake)
 	rails new project_name
+		you can add --skip-bundle to postpone bundle install call
 	cd project_name
 	git init
 	git add -A
@@ -33,6 +34,7 @@
 #Setting up Model
 	rails g model ModelName	[field[:type][:index] field[:type][:index]] [options]	#g := generate
 		rails g model User username:string email:string password:string
+	Modify the migration file
 	rake db:migrate
 		bin/rake db:migrate
 		bundle exec db:migrate
@@ -41,13 +43,16 @@
 	
 #Setting up routes
 	Write in config/routes
+		resources :controllers
+		root 'controllers#action'
 	rake routes
 #Setting up Controller
-	rails g controller Controllers
+	rails g controller controllers
 	Add actions based on routes you have set
 		def new
 		end
 		...
+
 #Setting up View
 	touch app/views/models/new.html.erb
 	

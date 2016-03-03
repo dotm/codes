@@ -1,79 +1,366 @@
-JavaScript Syntax
+var variableName='value';
+	var a = b = 1;
+	var a = 1,
+		b = 2;
 
-#Confirm and prompt
-confirm for yes no question, prompt: request to input data
-confirm("I am ok");		prompt("Type your name");
+// single line comment
+/* multi line comment */
+  can also be used as inline comment:
+	var variableName /* declare */ = 'value' //initialize a.k.a assign
 
-#toUpperCase and toLowerCase		to make prompt input case insensitive
-var answer = prompt("Question to the user").toUpperCase();
+#Variable scope
+  variable scope: the context in which the variable exists
+  variables have either a local scope or a global scope
+  all variables declared without a var statement are global variable
+	#Local variables (Function-level scope)
+	  JavaScript does not have block-level scope (variables scoped to surrounding curly brackets)
+	  JavaScript has function-level scope
+	  Variables declared within a function 
+	    are local variables and will have priority inside that function over global variables
+		are only accessible within that function or by functions inside that function
+	#Global variables
+	  all variables declared outside a function are in the global scope
+	  in the browser, the global context or scope is the 'window' object
+	  avoid polluting the global scope with variable declarations, use function whenever possible
+	#Non-local variables
+	  variables that are neither in the local nor the global scope
+#Hoisting
+  all variable and function declarations are hoisted (lifted and declared) to the top of its context (the containing scope)
+  only declarations are hoisted to the top (initialization/assignments are not hoisted)
+  function declaration takes precedence over variable declarations but not over variable assignment
+	var myName;	​		function myName(){};	console.log(typeof myName);	-> function
+	var myName='la';	​function myName(){};	console.log(typeof myName);	-> string
+	
+#Reserved words
+	abstract boolean break byte case catch char class const continue debugger
+	default delete do double else enum export extends false final finally float
+	for function goto if implements import in instanceof int interface long
+	native new null package private protected public return short static super
+	switch synchronized this throw throws transient true try typeof var
+	volatile void while with
 
-#console.log()
-console.log(2*5)		console.log("Hello")
+#User string input
+	confirm for yes no question, prompt for request to input data
+	confirm("I am ok");		prompt("Type your name");
+#String output
+	console.log to console, alert to pop up
+	console.log(2*5);		alert("Lala");
 
 #Data types: number(NaN, infinity), string, boolean, array, object, function, null, undefined, symbol, etc.
-#Finding data types using typeof
-	console.log(typeof var)
-	#If a data type is something
-		if(typeof languages[i]==='string')
-	
-#Variable
-var variableName='data'
+	#Falsy value: undefined, null, NaN, 0, ''
+	#Primitives: strings, booleans, numbers, undefined, null
+    #Complex: object, array, function
+	#Find data types of a variable
+		typeof variableName;		typeof(variableName);
+#Primitives vs Complex Type
+	simple (primitive) data types are immutable, while complex data types are mutable.
+	primitive data type's value is stored directly on the variable, as a value
+	reference data type's value (complex type) is stored as a reference to another variable
+		var obj = {};
+		var anotherObj = obj;		#anotherObj is a reference to the obj object
 
-#Conditionals
-if (condition) {
-    statement
-} else if {
-    statement
-} else {
-    statement}
-
-#Manipulating numbers
-operations: + - * / %
-comparisons: > < <= >= === !==
+#Operators: + - * / %
+#Comparataors: > < <= >= === !==
 
 #Manipulating strings
-string length (e.g. "Emily".length;)
-substrings (e.g. "hi".substring(0, 1);)
-
-#Function ()
-var identifier = function (parameter) {
-	statement};									#mind the ;
-	#return keyword
-	When we call a function, we don't always want to just print stuff. 
-	Sometimes, we just want it to return a value. 
-	We can then use that value (ie. the output from the function) in other code. 
-	The return keyword simply gives the programmer back the value that comes out of the function. 
-	So the function runs, and when the return keyword is used, 
-	the function will immediately stop running and return the value.
+strings.function()
+	.length()
+	.substring(0, 1)
+	.toUpperCase
+	.toLowerCase
 
 #-----------------------------------------------------------------------------------------------------------------	
-#For loop
-for(var i = 0; i < integer; i++){		#the var is optional, i is a placeholder local variable
-    codes}
-	#For in loop
-	for (i in lala){codes}				#lala can be an array or object
+#Function ()
+  In JS, functions are first-class objects:
+   they are of the type Object, can be manipulated like any other object (string, number, etc.)
+   they can be stored in variables, passed as arguments to functions, created within functions, and returned from functions
+  the arguments and codes inside function is actually stored as string
+  #Function declaration: 						function functionName(parameters) { statements; }
+  #Function expression
+	anonymous function expression:				var identifier = function(parameters) { statements; }
+	named function expression:					var identifier = function functionName(parameters) { statements; }
+	immediately invoked function expression		(function greet() { alert("hello!"); })(); 
+		#another valid way to use IIFE			(function greet() { alert("hello!"); }());
+#Function hoisting
+  function declarations and function variables are moved to the top of their scope by JavaScript interpreter
+  do function expressions get hoisted too?
+	the variable declarations get hoisted but their assignment expressions don’t:	var identifier = undefined
+#Inner functions
+  inner functions (nested functions): functions defined inside of another function (the outer function)
+  each time the outer function is called, an instance of the inner function is created
+  inner functions have implicit access to the outer function’s scope
+    inner function can use the variables, arguments, etc. 
+#Closure
+  closures: objects that contain a function and a reference to the environment in which the function was created
+  closure: an inner function that has access to the outer (enclosing) function’s variables and parameters
+  closure has three scope chains: it has access to its own scope, the outer function’s scope, and the global scope.
+  closures have access to the outer function’s variable even after the outer function returns
+	therefore, you can call the inner function later in your program
+  closure has access to the outer function’s variables by reference, not by value
+  a closure is created when an inner function is made accessible from outside of the function that created it
+    typically occurs when an outer function returns a (reference to an) inner function
+    the inner function then maintains a reference to the environment in which it was created
+      it remembers all of the variables (and their values) that were in scope at the time
+#Callback function (higher-order function)
+  callback function: a function passed to another function as an argument
+  even though it's called a callback, it is actually passing information forward
+  callback is not executed immediately by the containing function
+	we aren’t passing callback with the trailing pair of executing parenthesis ()
+  the function definition acts like any other variable do when they're passed as an argument
+  callback functions are closures
+	this is because the callback is executed at some point inside the outer function
+#Manipulate function context
+  use the methods below to manipulate the this variable of a function
+  set new context to null if you don't want to change the context
+  set new context to where the function is defined using 'this' as newContext
+	.bind(newContext)
+	.bind(newContext, argument1, argument2)
+	.apply(newContext,[argument1, argument2, ...])
+  .apply() vs .call()
+	pass the function parameters to apply () as an array
+	list the parameters individually to the call () method
+  you can use apply to borrow methods (from constructor or custom object) and create variadic function
+	
+#Time Out methods
+    window.setTimeout()
+      Calls a function or executes a code snippet after a specified delay.
+        var timeoutID = window.setTimeout(func, [delay, param1, param2, ...]);
+        var timeoutID = window.setTimeout(code string, [delay]);
+        function delayedAlert() {
+          timeoutID = window.setTimeout(slowAlert, 2000);
+        }
+      setTimeout does not return a function that can be executed
+      it returns a handler, an number ID that lets you reference the timeout
+        if you assign it to a variable, you can clear it with clearTimeout
+    window.clearTimeout(timeoutID);
 
-#While loop
-while(condition===true) {						#you can also omit true: while(condition){do this}
-    #do this while the condition is true}
-#Do while loop
-do {this one time and continue while loopCondition is true
-} while (loopCondition);
+#-----------------------------------------------------------------------------------------------------------------	
+#Asynchronous JavaScript
+the functions below in the real world will make an AjAX request and return the results
+for now let’s just use timeouts
+
+#Callbacks
+  in the callback pattern we call a function (finder) that will do the asynchronous operation
+  one of the parameters we pass is a function that will be called when the operation is done
+    finder([1, 2], function (results) { codes; });
+  #Setup
+    function finder(records, cb) {
+        setTimeout(function () {
+            records.push(3, 4);
+            cb(records);
+        }, 1000);
+    }
+    function processor(records, cb) {
+        setTimeout(function () {
+            records.push(5, 6);
+            cb(records);
+        }, 1000);
+    }
+  #Usage
+    finder([1, 2], function (records) {
+        processor(records, function(records) {
+          console.log(records);
+        });
+    }); ->  [1,2,3,4,5,6]
+  nested callbacks can be written more clearly by passing a reference to another function.
+    function onProcessorDone(records){ console.log(records); }
+    function onFinderDone(records) { processor(records, onProcessorDone); }
+    finder([1, 2], onFinderDone); ->  [1,2,3,4,5,6]
+  #Pros: very well know pattern, familiar, easy to understand,easy to implement in your own libraries or functions.
+  #Cons:
+    nested callbacks (callback hell)is hard to read; fix by splitting the functions 
+    you can only pass one callback for a given event, this can be a big limitation in many cases
+
+#Listeners
+  we call a function (.on) on an object (finder) that adds a listener
+  in that function we pass the name of the event we want to listen to and a callback function
+  common names for this function: on, bind, listen, addEventListener, observe
+    finder.on('done', function (event, records) { codes; });
+  #Setup
+   1.create a couple of objects that will do the work of finding and processing the records.
+    var finder = {
+        run: function (records) {
+            var self = this;
+            setTimeout(function () {
+                records.push(3, 4);
+                self.trigger('done', [records]);
+            }, 1000);
+        }
+    }
+    var processor = {
+        run: function (records) {
+            var self = this;
+            setTimeout(function () {
+                records.push(5, 6);
+                self.trigger('done', [records]);
+            }, 1000);
+        }
+    }
+   note: they are calling a method trigger when the work is done
+    add this method to these objects using a mix-in
+    common names for this method: trigger, fire, publish
+   2.create a mix-in object that has the listener behaviour
+    var eventable = {
+        on: function(event, cb) { $(this).on(event, cb); },
+        trigger: function (event, args) { $(this).trigger(event, args); }
+    }
+   3.apply the behaviour to our finder and processor objects:
+    $.extend(finder, eventable);
+    $.extend(processor, eventable);
+   now our objects can take listeners and trigger events
+  #Usage
+    finder.on('done', function (event, records) { processor.run(records); });
+    processor.on('done', function (event, records) { console.log(records); });
+    finder.run([1,2]); ->  [1,2,3,4,5,6]
+  #Pros: 
+    well understood pattern, 
+    you are not limited to one listener per object, you can add as many listeners as you want:
+        finder
+          .on('done', function (event, records) { do something })
+          .on('done', function (event, records) { do something else });
+  #Cons: more difficult to setup, you'll probably want to use a library e.g. jQuery, bean.js.
+  
+#Flow Control Library
+  Code using Async.js looks like this:
+    async.series([
+        function(){ ... },
+        function(){ ... }
+    ]);
+  #Setup
+    function finder(records, cb) {
+        setTimeout(function () {
+            records.push(3, 4);
+            cb(null, records);
+        }, 1000);
+    }
+    function processor(records, cb) {
+        setTimeout(function () {
+            records.push(5, 6);
+            cb(null, records);
+        }, 1000);
+    }
+   #The Node Continuation Passing Style
+    Note the style used in the callbacks inside the functions above
+    The first argument in the callback is null if no error occurs; or the error if one occurs. 
+    This is a common pattern in Node.js libraries and Async.js uses this pattern. 
+    By using this style the flow between Async.js and the callbacks becomes super simple.
+  #Usage
+    async.waterfall([
+        function(cb){
+            finder([1, 2], cb);
+        },
+        processor,
+        function(records, cb) {
+            alert(records);
+        }
+    ]);
+    Async.js takes care of calling each function in order after the previous one has finished
+    Note how we can just pass the ‘processor’ function, 
+      this is because we are using the Node continuation style. 
+  #Setup 2
+    when doing front-end development 
+    it is unlikely to have a library that follows the callback(null, results) signature
+    so a more realistic example will look like this:
+    function finder(records, cb) {
+        setTimeout(function () {
+            records.push(3, 4);
+            cb(records);
+        }, 500);
+    }
+    function processor(records, cb) {
+        setTimeout(function () {
+            records.push(5, 6);
+            cb(records);
+        }, 500);
+    }
+    // using the finder and the processor
+    async.waterfall([
+        function(cb){
+            finder([1, 2], function(records) {
+                cb(null, records)
+            });
+        },
+        function(records, cb){
+            processor(records, function(records) {
+                cb(null, records);
+            });
+        },
+        function(records, cb) {
+            alert(records);
+        }
+    ]);
+  Pros:
+    usually code using a control flow library is easier to understand 
+      because it follows a natural order (from top to bottom); this is not true with callbacks and listeners.
+  Cons:
+    if the signatures of the functions don’t match as in Setup 2
+      then you can argue that the flow control library offers little in terms of readability.
+      
+#Promises
+  syntax vary widely depending on the promises library you use
+    finder([1,2])
+    .then(function(records) {
+      .. do something
+    });
+  #Setup
+   each function creates a deferred object and returns a promise
+   then it resolves the deferred when the results arrive.
+    function finder(records){
+        var deferred = when.defer();
+        setTimeout(function () {
+            records.push(3, 4);
+            deferred.resolve(records);
+        }, 500);
+        return deferred.promise;
+    }
+    function processor(records) {
+         var deferred = when.defer();
+        setTimeout(function () {
+            records.push(5, 6);
+            deferred.resolve(records);
+        }, 500);
+        return deferred.promise;
+    }
+  #Usage
+    finder([1,2])
+        .then(processor)
+        .then(function(records) {
+                alert(records);
+        });
+   Note how in the first callback we can simply pass the ‘processor’ function. 
+   This is because this function returns a promise itself.
+  #Pros:
+    Really powerful: aggregate them into bigger promises, pass them around as regular objects, add handlers for failed promises
+    The biggest advantage: add listeners even when already resolved
+        if event already resolved, then listener will trigger immediately
+          meaning that you don’t have to worry if the event has already happened when you add the listener
+  #Cons:
+    the least understood of all these tools
+    difficult to track when you have lots of aggregated promises with added listeners along the way.
+    
+#-----------------------------------------------------------------------------------------------------------------	
+#Conditionals
+	if (condition) {
+		statement
+	} else if {
+		statement
+	} else {
+		statement};
+#Ternary operator
+	var propertyName = ( dim === 'width' ) ? 'clientWidth' : 'clientHeight';
 
 #Switch
-var user=prompt('Lala?').toLowerCase();
-switch(user){
-    case 'do':
-        console.log('mi');
-        break;						#break is important
-    case 're':
-        console.log('fa');
-        break;
-    case 'mi':
-        console.log('sol');
-        break;
-    default:						#if the prompt is not covered in any case statement, default is optional
-        console.log('la');}
+	var user=prompt('Lala?').toLowerCase();
+	switch(user){
+		case 'do':
+		case 're':
+			console.log('fa');
+			break;
+		case 'mi':
+			console.log('sol');
+			break;
+		default:						#default is optional
+			console.log('la');}
 	#Switch inside object literal
 		var objectName={
 			methodName: function (item) {
@@ -83,100 +370,298 @@ switch(user){
 				}
 			}
 		}
+
+#For loop
+	for(var i = 0; i < integer; i++){ statements };
+	for (i in lala){ statements };						#lala can be an array or object
+#While loop
+	while(condition===true){ statements };
+	:=	while(condition){ statements };
+#Do while loop
+	do { this one time and continue while loopCondition is true } while (loopCondition);
+
+#Loop control flow statements
+    if (condition) { break; }       #get out of loop
+    if (condition) { continue; }    #go to next iteration
+  with label
+    labelName:
+    if (condition) { break labelName; }       #jump out of any code block
+    if (condition) { continue labelName; }    #go to next iteration
+
 #-----------------------------------------------------------------------------------------------------------------		
 #Array []
-Arrays:store lists of data, can store different data types at the same time, are ordered so the position of each piece of data is fixed
-var arrayId=['la',3,2 //elements]
+Array is heterogeneous and ordered
+Array name is usually capitalized
+	var arrayId=['la',3,2 //elements]
 	#Array constructor
-		var arrayName = new Array();	#Array must be capitalized
-	#Add data value to an array you've created before
+		var arrayName = new Array();
+	#Add data value to an array
 		array.push(data);
 	#Accessing element by index
 		var element = array[index]; console.log (languages[2])  #start from 0
-	#Check array length: array.length
+	#Array's length is a property, NOT function
+		array.length
 	#Iterating over an array to print every elements in it
 		for(var i=0; i<arrayName.length; i++){			#you can also use:for (i in arrayName)
 		console.log(arrayName[i]);}
-	#Heterogeneous array: array with a mixture of data types -strings, numbers, booleans, array, object, etc 
 	#Two-dimensional array: has two rows that each contain two items.
-		var twoDimensional = [[1, 1], [1, 1]];
-			[1, 1]		//matrix of 2D array
-			[1, 1]
+		var twoDimensional = [[1, 2], [3, 4]];
+			[[1, 2]		//matrix of 2D array
+			 [3, 4]]
 	#Jagged array
 		var jagged=[[1,2],[3]]
 	
+#-----------------------------------------------------------------------------------------------------------------
+Object Data Properties Have Attributes
+Each object data property has not only the name-value pair, but also 3 attributes (that are set to true by default):
+	configurable: specifies whether the property can be deleted or changed
+	enumerable:   specifies whether the property can be returned in a for/in loop
+	writable:     specifies whether the property can be changed
+Objects Have Attributes 
+	prototype
+	class
+	extensible
+	
 #Object {}
-	#2 ways to create an object: 			#you can use this with array
-		#using object literal notation
-			var objectName = {							#never forget the comma
-				key: value,								#key a.k.a property
-				methodName: function(parameter) { 		#defining function a.k.a method
-				codes},									#you must end the method with comma, no ; is allowed inside the object bracket
-				key: value};
-			var emptyObject = {};
-		#using the object constructor (constructor notation)
-			var objectName = new Object();				#Object must be capitalized
-			#after the object has been constructed, add keys and value to the object (see below)
+	#Object literal notation
+		var objectName = {							#never forget the comma
+			key: value,								#key a.k.a property
+			methodName: function(parameter) { 		#defining function a.k.a method
+			codes},									#you must end the method with comma, no ; is allowed inside the object bracket
+			key: value};
+		var emptyObject = {};
+	#Object constructor (constructor notation)
+		var objectName = new Object();				#Object must be capitalized
+		objectName.key = value;
+		objectName.methodName = function (parameter) { codes }
+		objectName["key"] = value;
 	#Iterating over an object
-		for(var i=0; i<objectName.length; i++){			#you can also use:for (i in objectName)
-		console.log(i);}								#to print the keys
-		console.log(objectName[i]);}					#to print the value of keys
+		for(var i=0; i<objectName.length; i++){			#you can also use "for (var i in objectName){};"
+			console.log(i);}							#print keys
+			console.log(objectName[i]);};				#print value of keys
 	#Accessing property's value
 		objectName.key		#dot notation
 		objectName["key"]	#bracket notation 		#use this when you can't use dot notation, don't forget the ""
 			#you can use a variable to act as a placeholder of an object property
 				x="key"								#don't forget the ""
-				objectName["key"]=objectName[x]
-	#2 ways to add keys and value to an object you've created before:
-		objectName["key"] = "value";
-		objectName.key = "value";
-	#Finding out whether an object has a certain property or not
-		myObj.hasOwnProperty('name') 
-	#In addition to making arrays of Objects, we can use objects as parameters for functions as well.
-	#The Object constructor have hasOwnProperty method and prototype property by default
-	
-	
-#Class									#a.k.a Custom constructor
-	function className(parameter1,parameter2) {
-		this.parameter1= argument1;								#defining property in class
-		this.parameter2= 'value';								#you can use value instead of argument
-		this.methodName = function() {							#defining method in class
-			codes}		};										#you must use ; when separating property
-		var parameter=value;									#a private variable
-	#Using class
-		var objectName = new className(value1, value2);		#never forget the 'new' and className
-	#Properties: variables associated with an object. 
-		objectName.var = value;	#Assigning value to property
-		#In JavaScript all properties of an object are automatically public: they can be accessed outside the class. 
-		#If you want to make a private variable, use: var parameter=value
-			#Accessing private variables using public method
-				this.methodName= function() {return privateVariable};
-	#Method: a function associated with an object.
+				objectName["key"] := objectName[x]
+	#Find if object has a certain property
+		myObj.hasOwnProperty('name') 	#this only include non-inherited properties
+		'name' in myObj					#this will include inherited properties
+	#Delete object properties
+		delete.objectName.key
+	  delete operator returns true if
+		the delete was successful
+		the property to delete was nonexistent
+		the property could not be deleted (e.g. non-configurable or inherited)
+	#Properties: variables associated with an object.
+		objectName.variableName = value;	#Assigning value to property
+		#All object's properties are automatically public (can be accessed outside the class)
+		#If you want to make a private variable, use: 			var _parameter=value
+			#Accessing private variables using public method:	this.methodName= function() {return privateVariable};
+	#Method: a function associated with an object
 		objectName.methodName= function (parameter){codes;};
-		#Functions can only use parameters as an input, but methods can make calculations with object properties.
-		#Method is especially helpful when you want to either update the object properties or calculate something based on an object's properties.
-		#Calling method
-			objectName.methodName()
-		#Like object properties, method can be public or private. The syntax to create them is also similar.
+		#Calling method:	objectName.methodName()
+		#Method can be public or private. The syntax to create them is also similar.
 			#Accessing private method using public method
 			   this.publicMethod=function(){return privateMethod }		
 			   #don't use () after privateMethod so that it returns the method itself and NOT the result of calling that method.
-	#The keyword this acts as a placeholder, and will refer to whichever object called that method when the method is actually used.
-		var functionName= function (parameters) {			#if you make the var objectName.functionName
-			this.property=value;};							#the this will only refer to the objectName object
-		#Specifying 'this' when calling the method
-			objectName.functionName=functionName		#Assigning functionName to objectName is necessary
-			objectName.functionName(parameters)
+			   
+#Class encapsulation
+	When creating class function, combine the Constructor and Prototype pattern
+		Constructor pattern for properties that are unique to an object
+		Prototype pattern for properties that are owned by the class and for methods
+#Constructor Pattern
+	function ClassName(parameter1,parameter2) {
+		this.parameter1 = argument1;							#defining property in class
+		this.parameter2 = 'value';								#you can use value instead of argument
+		var _parameter  = value;								#a private variable
+		this.methodName = function() {							#defining method in class
+			codes}		};										#you must use ;
+  #Instantiate object from class
+	var objectName = new ClassName(argument1, argument2);
+  #New function
+    What the new function does is:
+      create an object inheriting from ClassName.prototype
+      run the constructor function, bind this keyword to the newly created object
+      return this (the newly created object)
+        if constructor function doesn't explicitly return an object, the object created in step 1 is used
+#Prototype pattern
+	function ClassName(){};
+	ClassName.prototype.key = value;
+	ClassName.prototype.methodName = function() { codes }
+  or overwrite the prototype (instead of extending it):
+	ClassName.prototype = {
+		constructor: ClassName,
+		methodName: function() { codes; },
+		key: value							};
+  #Instantiate the object
+	var objectName = new ClassName();
+#Constructor property
+	Whenever you overwrite an object’s prototype				#ClassName.prototype = {}
+		you also overwrite the object’s constructor property
+		so you have to set it manually 							#constructor: ClassName,
+
+#Class implementation example:
+    var Person = function(firstName, lastName, age){
+      this.firstName = firstName;
+      this.lastName = lastName;
+      this.age = age;
+    }
+     
+    Person.prototype.fullName = function(){
+      return this.firstName + " " + this.lastName;
+    };
+    var Spy = function(firstName, lastName, age){
+      this.firstName = firstName;
+      this.lastName = lastName;
+      this.age = age;
+    };
+
+    Spy.prototype = new Person();
+     
+    Spy.prototype.spy = function(){
+      alert(this.fullName() + " is spying.");   
+    }
+     
+    var mySpy = new Spy("Mr.", "Spy", 50);
+    mySpy.spy();
+
+#Class inheritance
+	Object.create = function (o) {
+        function F() {}
+​    	F.prototype = o;
+        return new F();
+    };
+  #Instantiate the object
+	var cars = {type:"sedan", wheels:4​ };
+​	​var toyota = Object.create (cars);
+#Parasitic Combination Inheritance Pattern
+	function inheritPrototype(childObject, parentObject) {
+		var copyOfParent = Object.create(parentObject.prototype);
+		copyOfParent.constructor = childObject;
+		childObject.prototype = copyOfParent;						}
+  #Instantiate the object
+	first, instantiate the object using the constructor pattern
+	then, call the inheritPrototype function to overwrite the prototype of childObject with the prototype of parentObject
+		inheritPrototype(childObject, parentObject)
+	finally, (if necessary) add more prototype to the childObject using the encapsulation prototype pattern
+
+#This
+	function go() { console.debug(this); };					go();		->	window
+	var obj= { go: function() { console.debug(this); } };	obj.go();	->	obj
+	function MyClass() { this.go = function() { console.debug(this); } }
+	var instance1 = new MyClass(); var instance2 = new MyClass();
+	instance1.go(); -> instance1
+	instance2.go(); -> instance2
+  this: a reference to the object that is the context in which the executing method is bound to
+  this is not assigned a value until an object invokes the function where this is defined
+  this is assigned the value of the object where the function is invoked, not where the function is defined
+  jQuery library automatically binds this to the selector object that invokes the event handler
+  if you want to override the default this definition you can use .bind(), .apply(), or .call() method
+	see Manipulate function context
+	overriding is usually necessary when:	borrowing methods, assigning object method to global or non-local variable, using callbacks
+  closures (inner functions) cannot access the outer function’s this 
+	to fix the problem, store the this as a variable inside the outer function
+  if you declare var objectName.functionName, the this will only refer to the objectName object
+	but, if you declare functionName like this:		var functionName= function (parameters) { this.property=value; }
+	you can assign it later to an object
+		objectName.methodName=functionName			#assigning global functionName to objectName as a method
+		objectName.methodName(arguments)			#calling the method
 #Prototype
-	#Prototype is a property
-	#Extending the prototype
-		className.prototype.newMethod =function(parameter) {statements;};
-		Cat.prototype.meow = function () { }; 
-	#Prototype	inheritance/changing the class's prototype
+	#Prototype property
+		every JavaScript function has a prototype property (empty by default)
+		attach properties and methods on this prototype property when you want to implement inheritance
+		some web browser have a __proto__ “pseudo” property that allows you to access an object’s prototype property
+	#Prototype attribute (prototype object)
+		an object’s prototype attribute points to the object’s parent (the object it inherited its properties from)
+		it is set automatically when you create a new object
+	#2 general ways an object’s prototype attribute is set when an object is created
+		if an object is created with an object literal (var newObj = {}), 
+			it inherits properties from Object.prototype 
+			its prototype object (or prototype attribute) is Object.prototype
+		if an object is created from a constructor function e.g. new Object (), new Fruit (), new Array () or new Anything ()
+			it inherits from that constructor (Object (), Fruit (), Array (), or Anything ())
+			e.g. any object created with the Array constructor ( var a = new Array() ) inherits from Array.prototype
+			all built-in constructors were created from the Object constructor, and as such their prototype is Object.prototype
+	#Extending the prototype property
+		className.prototype.key = value;
+		className.prototype.newMethod = function(parameter) { codes; };
+	#Changing the class's prototype attribute
 		childClass.prototype = new parentClass();
 	#Prototype chain
 		If JS encounters something it can't find in the current class's methods or properties, 
 		it looks up the prototype chain to see if it's defined in a class that it inherits from. 
 		This keeps going upwards until it stops all the way at the top: the mighty Object.prototype
 		By default, all classes inherit directly from Object, unless we change the class's prototype
-		
+
+#Serialize and Deserialize Objects
+  serialize: convert an object to a string to (transfer your objects via HTTP, etc.)
+	var strings = JSON.stringify (objectName);
+  deserialize
+	var objectName = JSON.parse (strings); 
+	
+#-----------------------------------------------------------------------------------------------------------------
+#Module and Namespace
+
+#IIFE Module Pattern
+	(function(window, $, undefined){ codes; })(window, jQuery);
+#Namespace
+  declare a namespace, and assign a function to it:
+	window.myApp = window.myApp || {};
+	window.myApp.someFunction = function(){	codes };
+#Combining IIFE Module Pattern and Namespace Pattern
+    (function(myApp, $, undefined){ codes; }(window.myApp = window.myApp || {}, jQuery));
+  could also be written like this:
+    window.myApp = (function(myApp, $, undefined){
+      codes;
+      return myApp;
+    })(window.myApp || {}, jQuery);
+
+#Revealing Module Pattern
+  define everything privately inside of the module, 
+   then expose what you want to expose by returning an object 
+   which has references to everything you want to expose publicly
+    var myModule = (function($, undefined){
+      var myVar1 = '', myVar2 = '';
+      var someFunction = function(){ return myVar1 + " " + myVar2; };
+      return {
+        getMyVar1: function() { return myVar1; }, //myVar1 public getter
+        setMyVar1: function(val) { myVar1 = val; }, //myVar1 public setter
+        someFunction: someFunction //some function made public
+      }
+    })(jQuery);
+
+#Module implementation example
+    (function($) {
+        $.jPanelMenu = function(options) {
+            var jpm = {
+                options: $.extend({
+                    'animated': true,
+                    'duration': 500,
+                    'direction': 'left'
+                }, options),
+                openMenu: function( ) {
+                    …
+                    this.setMenuStyle( );
+                },
+                closeMenu: function( ) {
+                    …
+                    this.setMenuStyle( );
+                },
+                setMenuStyle: function( ) { … }
+            };
+
+            return {
+                open: jpm.openMenu,
+                close: jpm.closeMenu,
+                someComplexMethod: function( ) { … }
+            };
+        };
+    })(jQuery);
+  instantiate:
+    var jpm = $.jPanelMenu({
+        duration: 1000,
+        … other options
+    });
+    jpm.open( );

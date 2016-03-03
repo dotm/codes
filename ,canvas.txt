@@ -1,0 +1,242 @@
+#Empty canvas
+  <canvas id="canvas" width="500" height="500" style="border:1px solid #000;">
+    #you can insert fallback content here for browsers that don't support canvas
+  </canvas>
+#Checking support
+  create a canvas
+  get a reference to the canvas
+  try to get the rendering context
+    if (canvas.getContext){ start drawing } else { canvas-unsupported code here }
+#Start drawing
+  you can wrap all this script in a function for later use ( usually named draw() )
+  or in IIFE to avoid polluting global namespace
+    this is important since if the script run before canvas is loaded, canvas will be blank
+  <script>
+    var canvas = document.getElementById('canvas');    #get a reference to the canvas 
+    var c = canvas.getContext('2d');                   #get a reference to the CanvasRenderingContext2D object
+    
+  </script>
+
+#Drawing context methods and properties
+  all CanvasRenderingContext2D methods below must be prefixed with 'contextReference.'
+  arguments and property values are usually either a number or a string enclosed in "" 
+    c.method(arguments)
+    c.property = value
+
+#Saving and restoring state
+  canvas states are stored on a stack (LIFO)
+  especially useful when doing transformations
+    save()      saves the entire state of the canvas.
+    restore()   restores the most recently saved canvas state.
+#--------------------------------------------------------------------------------
+canvas coordinate begin at top left
+canvas primitive shapes: rectangles, paths
+angles are in radians, not degrees
+ to convert, use: radians = (Math.PI/180)*degrees.
+
+#Drawing rectangles
+    fillRect(x, y, width, height)
+    strokeRect(x, y, width, height)
+    clearRect(x, y, width, height)
+      clears the specified rectangular area, making it fully transparent.
+
+#Drawing paths (path methods)
+  create the path, use drawing commands to draw into the path, close the path, stroke or fill the path to render it
+    beginPath()
+      creates a new path, then direct and use future drawing commands into the path to build the path up
+    closePath()
+      do a lineTo the starting position
+      closes path to direct future drawing commands to the context
+    moveTo(x, y)
+    lineTo(x, y)
+    stroke()
+    fill()
+
+    arc(x, y, radius, startAngle, endAngle, direction)
+      an arc centered at (x, y) position
+      radius r starting at startAngle and ending at endAngle
+       the angle is in radian
+      going in the given direction: anticlockwise, clockwise (default), false ?
+    arcTo(x1, y1, x2, y2, radius)
+      an arc with the given control points and radius
+      connected to the previous point by a straight line.
+
+quadraticCurveTo(cp1x, cp1y, x, y)
+Draws a quadratic Bézier curve from the current pen position to the end point specified by x and y, using the control point specified by cp1x and cp1y.
+bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y)
+Draws a cubic Bézier curve from the current pen position to the end point specified by x and y, using the control points specified by (cp1x, cp1y) and (cp2x, cp2y).
+
+Cubic Bezier curves???
+
+    c.fillStyle = "black"; 
+    c.lineWidth = 2.0; 
+    c.beginPath();
+    c.moveTo(75,50);
+    c.lineTo(100,75);
+    c.lineTo(100,25);
+    c.fill();
+    c.stroke()
+
+#--------------------------------------------------------------------------------
+#Coloring
+  all css color value are valid here
+    fillStyle = "color";
+    strokeStyle = "color";
+    
+#Transparency
+  you can use transparency by using css value with alpha channel or 
+  using globalAlpha context property with transparencyValue in range [0..1]
+    globalAlpha = transparencyValue
+    
+#Line styles
+  beware if you want to use 1px line: line width is calculated from the center of a pixel
+    lineWidth = value
+    lineCap = type
+      sets the appearance of the ends of lines
+        type: butt (default), round, square
+    lineJoin = type
+      sets the appearance of the "corners" where lines meet
+        type: round, bevel and miter (default)
+    miterLimit = value
+      establishes a limit on the miter when two lines join at a sharp angle, 
+       to let you control how thick the junction becomes
+    getLineDash()
+      returns the current line dash pattern array containing an even number of non-negative numbers.
+    setLineDash(segments)
+      sets the current line dash pattern.
+    lineDashOffset = value
+      specifies where to start a dash array on a line.
+
+miterLimit???
+
+#Gradients
+    createLinearGradient(x1, y1, x2, y2)
+      create linear gradient object 
+      starting point of (x1, y1) and end point of (x2, y2)
+    createRadialGradient(x1, y1, r1, x2, y2, r2)
+      the parameters represent two circles,
+      one with its center at (x1, y1) and a radius of r1, 
+      the other with its center at (x2, y2) with a radius of r2
+
+gradient.addColorStop(position, color)
+Creates a new color stop on the gradient object. The position is a number between 0.0 and 1.0 and defines the relative position of the color in the gradient, and the color argument must be a string representing a CSS <color>, indicating the color the gradient should reach at that offset into the transition.
+
+both the strokeStyle and fillStyle properties can accept a canvasGradient object as valid input.
+
+// Create gradients
+  var lingrad = ctx.createLinearGradient(0,0,0,150);
+  lingrad.addColorStop(0, '#00ABEB');
+  lingrad.addColorStop(0.5, '#fff');
+  lingrad.addColorStop(0.5, '#26C000');
+  lingrad.addColorStop(1, '#fff');
+
+  var lingrad2 = ctx.createLinearGradient(0,50,0,95);
+  lingrad2.addColorStop(0.5, '#000');
+  lingrad2.addColorStop(1, 'rgba(0,0,0,0)');
+
+  // assign gradients to fill and stroke styles
+  ctx.fillStyle = lingrad;
+  ctx.strokeStyle = lingrad2;
+  
+  // draw shapes
+  ctx.fillRect(10,10,130,130);
+  ctx.strokeRect(50,50,50,50);
+  
+createRadialGradient????
+
+#Patterns
+    createPattern(image, type)
+      creates and returns a new canvas pattern object
+      image is a CanvasImageSource (i.e., an HTMLImageElement, another canvas, a <video> element, or the like)
+      type is a string indicating how to use the image
+        possible type string values: repeat, repeat-x, repeat-y, no-repeat
+  we use createPattern method to create a CanvasPattern object
+    var img = new Image();
+    img.src = 'pattern.png';
+  once we've created a pattern, we can assign it to the fillStyle or strokeStyle properties
+    var pattern = ctx.createPattern(img,'repeat');
+    ctx.fillStyle = pattern;
+    ctx.fillRect(0,0,150,150);
+
+Shadows????
+#--------------------------------------------------------------------------------
+#Text
+  render text with fill or stroke, maximum width is optional
+    fillText(text, x, y [, maxWidth])
+    strokeText(text, x, y [, maxWidth])
+
+#Styling text
+    font = value
+      value string uses the same syntax as CSS font property
+      default: 10px sans-serif
+    textAlign = value
+      values: start (default), end, left, right or center
+    textBaseline = value
+      baseline alignment setting
+      values: top, hanging, middle, alphabetic (default), ideographic, bottom
+    direction = value
+      values: ltr, rtl, inherit (default)
+
+textBaseline ???
+
+#--------------------------------------------------------------------------------
+#Images
+    drawImage(image, dx, dy);
+    drawImage(image, dx, dy, dWidth, dHeight);
+    drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
+  parameters:
+    image
+      this permits any canvas image source (CanvasImageSource), 
+        such as an HTMLImageElement, an HTMLVideoElement, an HTMLCanvasElement or an ImageBitmap.
+    dx, dy
+      destination x and y coordinate in canvas to place the top-left corner of source image
+    dWidth, dHeight
+      width and height to draw the image in the destination canvas
+      this allows scaling of the drawn image
+      if not specified, the image is not scaled when drawn
+    sx, sy
+      x and y coordinate of the top left corner of the sub-rectangle of the source image to draw into destination context
+    sWidth, sHeight
+      width and height of the sub-rectangle of the source image to draw into the destination context
+      if not specified, the entire rectangle from the coordinates (sx, sy) to the bottom-right corner of the image is used
+
+#--------------------------------------------------------------------------------
+#Transformations
+  don't forget to save and restore state when transforming
+    translate(x, y)
+      moves the canvas and its origin on the grid
+    rotate(angle)
+      rotates the canvas clockwise around the current origin by the angle number of radians
+    scale(x, y)
+      scales the canvas units by x horizontally and by y vertically
+      both parameters are real numbers
+      values smaller than 1.0 reduce the unit size 
+      values above 1.0 increase the unit size
+      values of 1.0 leave the units the same size
+    
+To rotate the rectangle around its own center, we translate the canvas to the center of the rectangle, then rotate the canvas, then translate the canvas back to 0,0, and then draw the rectangle.
+
+#Transforms
+  allow modifications directly to the transformation matrix
+    transform(a, b, c, d, e, f)
+multiplies the current transformation matrix with the matrix described by its arguments. 
+The transformation matrix is described by: [ [a,c,e], [b,d,f], [0,0,1] ]
+If any of the arguments are Infinity the transformation matrix must be marked as infinite instead of the method throwing an exception.
+The parameters of this function are:
+a (m11)
+Horizontal scaling.
+b (m12)
+Horizontal skewing.
+c (m21)
+Vertical skewing.
+d (m22)
+Vertical scaling.
+e (dx)
+Horizontal moving.
+f (dy)
+Vertical moving.
+
+setTransform(a, b, c, d, e, f)
+Resets the current transform to the identity matrix, and then invokes the transform() method with the same arguments. This basically undoes the current transformation, then sets the specified transform, all in one step.
+resetTransform()
+Resets the current transform to the identity matrix. This is the same as calling: ctx.setTransform(1, 0, 0, 1, 0, 0);

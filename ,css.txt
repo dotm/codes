@@ -130,6 +130,8 @@ h2 {								//Other values:
 	Shorthand will OVERRIDE other longhand property
 		 selector{border: border-width, border-style, border-color}
 
+#Box-Shadow
+box-shadow: none|h-shadow v-shadow blur spread color |inset|initial|inherit;
 #---------------------------------------------------------------------------------------------------
 #Offset properties
 You need to specify positioning's top left right bottom in a separate properties called offset properties

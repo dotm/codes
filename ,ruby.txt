@@ -372,6 +372,35 @@ end
     end
 
 #--------------------------------------------------------------------------------
+#Proc vs Block vs Lambda
+procs are objects
+  blocks are just part of the *syntax* of a method call and can only appear in argument lists
+at most one block can appear in an argument list
+  In contrast, you can pass multiple procs to methods.
+procs and lambdas are both Proc objects.
+  <Proc:0x007f96b1032d30@(irb):75>
+  <Proc:0x007f96b1b41938@(irb):76 (lambda)>
+lambdas check the number of arguments
+  procs just return nil if arguments are not passed and ignore extra arguments given
+lambdas and procs treat the 'return' keyword differently
+  'return' inside of a lambda triggers the code right outside of the lambda code
+  'return' inside of a proc triggers the code outside of the method where the proc is being executed
+    def lambda_test
+      lam = lambda { return "inner" }
+      lam.call
+      puts "Hello world"
+      return "outer"
+    end
+    lambda_test #puts "Hello world" and return "outer"
+
+    def proc_test
+      proc = Proc.new { return "inner" }
+      proc.call
+      puts "Hello world"
+      return "outer"
+    end
+    proc_test #only return "inner"
+
 #Block
 	{a block}
 	do
@@ -577,7 +606,7 @@ One of the main purposes of modules is to separate methods and constants into na
 	gem					-> RubyGems help and overview
 	gem list			-> list all local gems
 	gem list --remote	-> list all remote gems at http://rubyforge.org
-		gem query --remote --name-matches class		-> asked the repository for all gems with names including the word “class.”
+		gem query --remote --name-matches class		-> asked the repository for all gems with names including the word “class.�?
 	gem install name	-> replace name with the gem name you want to install
 		gem install name --source http://url.org	-> accessing a gem build from sources other than rubyforge.org
 	gem update			-> update all local gems
@@ -634,8 +663,6 @@ One of the main purposes of modules is to separate methods and constants into na
 #File I/O
 I/O stream: a conduit or channel for input and output operations between one resource and another
 			using a sequence(stream) of data bytes that are accessed sequentially or randomly
-I/O covers the ways that a computer interacts with the world
-	screens, speakers, keyboards, files, and networks communication are all forms of I/O
 
 There are a bunch of I/O streams that Ruby initializes when the interpreter gets loaded
 	ObjectSpace.each_object(IO) { |x| p x }		#list the initial standard I/O streams
@@ -674,7 +701,7 @@ since non-standard streams don’t have constant file descriptors, we first need
 	dev_null.puts 'hello'					#-> nil
 	dev_null.gets							#-> nil
 	dev_null.close							#-> nil
-/dev/null (a.k.a the “bit bucket” or “black hole”) is the null device on Unix-like systems. 
+/dev/null (a.k.a the "bit bucket" or "black hole") is the null device on Unix-like systems. 
 	Writing to it does nothing and attempting to read from it returns nothing (nil in Ruby)
 	When writing to dev_null, the text no longer appears on the screen. When reading from dev_null, we get nil.
 since everything on a Unix-like system is a file, we can open an IO stream to a text file the same way we open a device:
@@ -790,7 +817,7 @@ File#readlines returns an array of all the lines of the opened IO stream.
 
 File#seek 
 allow you to "seek" to a particular byte in the file to tell Ruby where you want to start reading from. 
-	seek(amount, whence=IO::SEEK_SET) → 0
+	seek(amount, whence=IO::SEEK_SET)
 	available value of whence:
 		:CUR or IO::SEEK_CUR	Seeks to _amount_ plus current position
 		:END or IO::SEEK_END	Seeks to _amount_ plus end of stream (you probably want a negative value for _amount_)
@@ -908,7 +935,7 @@ It’s worth noticing that putc and write overwrite existing content
 		looping recursively through the file tree by pushing new directories and files to remove onto an array.
 
 #Creating files in temporary directory
-	a “temporary” directory is where temporary files can be stored. 
+	a "temporary" directory is where temporary files can be stored. 
 	Temporary files: files created briefly during a program’s execution but aren’t a permanent store of information.
 	Dir.tmpdir provides the path to the temporary directory on the current system
 	To make Dir.tmpdir available it’s necessary to require 'tmpdir'
@@ -969,18 +996,10 @@ This is common in tests where we might inject a StringIO instead of reading an a
 #Serializing
 At some point, you will want your Ruby programs to talk to other programs.
 	communication between programs is usually done through an Application Programming Interface (API). 
-API: a generic term for any interface which allows one program 
-	 to either read data from another program, or write data to another program, or both
 
-One of the simplest interfaces two Ruby programs can share is a file. 
+The simplest interfaces two Ruby programs can share is a file. 
 	first program transform some of its objects into a string and write those strings to a file
 	second program look for the file in a shared location, read it, and turn the strings in it back into Ruby objects
-
-serial: objects lumped together as a string of characters, one character after another
-serialization: the process of converting the state information of an object instance 
-			   into a binary or textual form to persist into storage medium or transported over a network
-deserialization: the reverse process of converting stream of bits into an object
-beside acting as API interface, serialization can save your data so that you can access it later
 
 YAML::dump(object)			#to serialize
 YAML::load(yaml_string)		#to deserialize
@@ -994,13 +1013,6 @@ YAML::load(yaml_string)		#to deserialize
 		url = 'http://www.acme.com/products/3322' # ACME boomerang
 		resp = Net::HTTP.get_response(URI.parse(url))
 		resp_text = resp.body
-
-	The response field code contains the HTTP response code. 
-	To make things simpler, the result object's very class indicates the response type; 
-	for example, resp (in the example above) will be of type 
-		Net::HTTPSuccess if the response is 2xx (HTTP OK code), or
-		Net::HTTPNotFound for 404 responoses (HTTP Not Found code). 
-	A complete hierarchy of the response classes appears in Net::HTTP's documentation.
 
 #Issuing POST Requests
 	We need Net::HTTP's post_form method for POSTing:

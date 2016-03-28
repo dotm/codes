@@ -14,29 +14,13 @@
 	more codes
 
 #Print statement
-print statement
-	print "string"
 	print identifier
-  #Print 2D table
-	print x, '\t', x**2		#for x in range()
-	>>>	x	x**2
-
-#Identifier
-	#name given to entities(class, function, variable)
-	#valid identifier: var_12Name
-	#invalid identifier: 1var, print(python's keywords), symbols other than _
-	#is case-sensitive
 	
 #Variable assignment statement
-	#Variables store values for later use
-varIdentifier=value
-	monty=True
-	python=1.234
+    varIdentifier = value
 
-#Whitespace, which separates statements
-
-#Comments, which make your code easier to read
-#lala			"""lala"""
+#Comments
+#single line comment			"""multi line comment"""
 	#you can print the text inside """text"""; but not after #text
 
 #Python's keywords
@@ -108,7 +92,7 @@ apply(), buffer(), coerce(), and intern()
 #--------------------------------------------------------------------------------
 #Keyboard input
 raw_input type's is string
-	varIdentifier=raw_input("prompt statement")
+	varIdentifier = raw_input("prompt statement")
 	name = raw_input ("What...is your name? ")
 
 #Command line input using argv
@@ -120,10 +104,9 @@ argv type's is string
 	
 #--------------------------------------------------------------------------------
 #Datetime module
-
-from datetime import datetime
-now = datetime.now()
-print '%s/%s/%s %s:%s:%s' % (now.month, now.day, now.year,now.hour, now.minute, now.second)
+    from datetime import datetime
+    now = datetime.now()
+    print '%s/%s/%s %s:%s:%s' % (now.month, now.day, now.year,now.hour, now.minute, now.second)
 
 #--------------------------------------------------------------------------------
 #String
@@ -134,10 +117,8 @@ In Python, string are immutable compound data type consisting of letters
 #Three ways to create strings: 'Alpha'; "Bravo"; str(3)
 
 #Combining strings and variables (Concatenation)
-	#Use +
-		print 'This is a '+self.color+' '+self.model+' with '+str(self.mpg)+' MPG.'
-	#Use comma
-		print 'Do','re',3,'fa',		#This will print a line of code (the comma will automatically create a space)
+    print 'This is a '+self.color+' '+self.model+' with '+str(self.mpg)+' MPG.'
+    print 'Do','re',3,'fa',		#This will print a line of code (the comma will automatically create a space)
 
 #String methods
 "Delta".upper()
@@ -145,8 +126,6 @@ In Python, string are immutable compound data type consisting of letters
 Methods that use dot notation only work with strings. On the other hand, len() and str() can work on other data types.
 
 #String Formatting Operator
-print "Golf,", "Hotel"
-#become
 g = "Golf"; h = "Hotel"
 print "%s, %s" % (g, h)
 
@@ -443,7 +422,6 @@ new_list=filter(lambda x: x % 3 == 0, my_list)
 	
 #--------------------------------------------------------------------------------
 #Bitwise operations 
-	operations that directly manipulate bits
 	#Left bit shift operators(<<)  
 		0b000001 << 2 == 0b000100 (1 << 2 = 4)
 	#Right bit shift (>>)
@@ -451,14 +429,6 @@ new_list=filter(lambda x: x % 3 == 0, my_list)
 			mathematically equivalent to floor dividing and multiplying by 2 (respectively) for every time you shift
 	#Logic bitwise operators: AND &		OR |		XOR ^		NOT ~
 		Logical operators deal with statements. Bitwise operators deal with binary representations of data.
-		
-#Bit mask
-	a variable that aids you with bitwise operations
-	A bit mask can help you turn specific bits on, turn others off, or collect data about which bits are on or off.
-		Using the AND to check if a bit is on
-		Using the OR to turn a corresponding bit on if it is off and leave it on if it is already on.
-		Using the XOR to flip bits. Using ^ on a bit with the number one will return a result where that bit is flipped.
-		Using the left and right shift operators to slide masks into place.
 
 #--------------------------------------------------------------------------------
 #File I/O

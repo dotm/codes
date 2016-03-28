@@ -1,0 +1,118 @@
+Getting Started
+
+#Download jqueryUI
+  visit jqueryui.com Download Builder
+  choose all the components you need
+  select a theme or roll your own theme using ThemeRoller
+  choose a version of jqueryUI
+  download and extract zip
+
+#Webpage setup
+  include all necessary files
+    <link rel="stylesheet" href="jquery-ui.min.css">
+    <script src="external/jquery/jquery.js"></script>
+    <script src="jquery-ui.min.js"></script>
+  don't forget to copy the images folder
+
+#Add the widgets
+  example: datepicker widget
+    <input type="text" name="date" id="date">
+    <script> $( "#date" ).datepicker(); </script>
+    
+#Override widgets default settings using options
+  Options: a set of properties passed into a jQuery UI widget as an argument
+    $( "#mySliderDiv" ).slider({
+        orientation: "vertical",
+        min: 0,
+        max: 150,
+        value: 50
+    });
+
+#--------------------------------------------------------------------------------
+How jqueryUI Works
+
+#Initialization
+  to initialize a widget, call the plugin on one or more elements
+    $( "#elem" ).progressbar();
+  pass a set of options during initialization in order to override the default options
+    $( "#elem" ).progressbar({ value: 20 });
+  we can pass as many or as few options as we want during initialization
+  any options that we don't pass will just use their default values
+  the options are part of the widget's state, 
+    so we can set options after initialization as well
+
+#Methods
+  after the widget is initialized, we can query its state or perform actions on the widget
+  all actions after initialization take the form of a method call
+  to call a method on a widget, pass the name of the method to the jQuery plugin
+    e.g., call the value method on our progressbar widget:
+      $( "#elem" ).progressbar( "value" );
+  if the method accepts parameters, we can pass them after the method name.
+    e.g., pass the parameter 40 to the value method:
+      $( "#elem" ).progressbar( "value", 40 );
+  just like other methods in jQuery, most widget methods return the jQuery object for chaining.
+    $( "#elem" )
+        .progressbar( "value", 90 )
+        .addClass( "almost-done" );
+#Common Methods
+    each widget have its own set of methods
+    however, there are a few methods that exist on all widgets
+  #option
+    change options after initialization through the option method:
+      $( "#elem" ).progressbar( "option", "value", 30 );
+     this is different from the previous example where we were calling the value method
+      here, we're calling the option method and saying that we want to change the value option to 30
+    get the current value for an option:
+      $( "#elem" ).progressbar( "option", "value" );
+    update multiple options at once by passing an object to the option method:
+      $( "#elem" ).progressbar( "option", {
+          value: 100,
+          disabled: true
+      });
+    the option method has the same signature as getters and setters in jQuery core
+      the only difference is that you have to pass the string "option" as the first parameter
+  #disable
+    disable method disables the widget and changes the styling to make the widget look disabled
+      $( "#elem" ).progressbar( "disable" );
+    calling the disable method is equivalent to setting the disabled option to true
+  #enable
+    the enable method is the opposite of the disable method
+      $( "#elem" ).progressbar( "enable" );
+    calling the enable method is equivalent to setting the disabled option to false
+  #destroy
+    ends the life cycle of the widget
+    if you no longer need the widget, you can destroy it and return back to the original markup
+      $( "#elem" ).progressbar( "destroy" );
+    once you destroy a widget, you can no longer call any methods on it unless you initialize the widget again. 
+    if you're removing the element, the widget will automatically destroy itself
+  #widget
+    some widgets generate wrapper elements (elements disconnected from the original element)
+    in these cases, the widget method will return the generated element. 
+    in cases like the progressbar, where there is no generated wrapper, the widget method returns the original element
+      $( "#elem" ).progressbar( "widget" );
+
+#Events
+  all widgets have events associated with their various behaviors to notify you when the state is changing
+  for most widgets, when the events are triggered, the names are prefixed with the widget name
+    e.g., we can bind to progressbar's change event which is triggered whenever the value changes:
+      $( "#elem" ).bind( "progressbarchange", function() {
+          alert( "The value has changed!" );
+      });
+  each event has a corresponding callback, which is exposed as an option
+  we can hook into progressbar's changecallback instead of binding to the progressbarchange event, if we wanted to.
+    $( "#elem" ).progressbar({
+        change: function() {
+            alert( "The value has changed!" );
+        }
+    });
+
+#Common Events
+  while most events will be widget specific, all widgets have a create event
+    create event will be triggered immediately after the widget is created
+
+#--------------------------------------------------------------------------------
+#jQueryUI CSS Framework
+http://api.jqueryui.com/theming/css-framework/
+jquery-ui.css = jquery-ui.structure.css + jquery-ui.theme.css
+
+#--------------------------------------------------------------------------------

@@ -16,8 +16,8 @@
 			Specific to that single repository
 
 #Your identity
-	git config --global user.name "John Doe"
-	git config --global user.email johndoe@example.com
+	git config --global user.name "dotm"
+	git config --global user.email "desde.el.mar96@gmail.com"
 #Your editor
 	git config --system core.editor emacs
 #Checking your setting
@@ -27,6 +27,13 @@
 #Open global configuration file in a text editor for manual editing
 	git config --global --edits
 	
+#SSH
+  check for existing SSH key
+    ls -al ~/.ssh
+  generate new key
+   Windows:
+    ssh-keygen -t rsa -b 4096 -C "desde.el.mar96@gmail.com"
+    
 #Git help overview
 		git
 	usage: git [--version] [--help] [-C <path>] [-c name=value]

@@ -77,6 +77,30 @@ $.fn = $.prototype
 	$( "li" ).eq( 0 );               	#the first list item (zero-index)
 
 #-------------------------------------------------------------------------------------------
+#Selecting form elements
+jQuery offers several pseudo-selectors that help find elements in forms.		e.g. $( "form :checked" );
+	:checked
+		targets checked checkboxes, radio buttons, and <select> elements (for <select> elements only, use the :selected selector)
+	:disabled
+		targets any <input> elements with the disabled attribute
+	:enabled
+		targets any elements that do not have a disabled attribute
+	:input
+		selects all <input>, <textarea>, <select>, and <button> elements
+	:selected
+		targets any selected items in <option> elements:
+
+jQuery provides pseudo selectors to select form-specific elements according to their type:
+	:password  :reset  :radio  :text  :submit  :checkbox  :button  :image  :file
+
+#Getting form input value
+	<input type='number' class='aClass' value='1'/>
+	$('selector').val()			#the selector must refer to (input) e.g. in this case .aClass
+	+$('selector').val()		#fetch as number
+#Setting form input value
+	$('selector').val('new value')
+
+#-------------------------------------------------------------------------------------------
 #Getter and Setter
 Some jQuery methods can be used to either assign or read some value on a selection.
 When the method is called with a value as an argument, it's a setter because it sets (or assigns) that value.
@@ -212,9 +236,9 @@ Traversing can be broken into 3 basic parts: parents(up), children(down), and si
 Each of these methods can optionally be passed string selectors to filter selection
 Some can also take another jQuery object to filter your selection
 	#Parents
-	  	.parent();			 			#select direct parent
-		.parents();						#select all ancestor of an element
-		.parentsUntil( "div" );			#select all parents of an element up to, but not including the selector
+	  .parent();			 			  #select direct parent
+		.parents();						  #select all ancestor of an element
+		.parentsUntil( "div" );	#select all parents of an element up to, but not including the selector
 	  #Closest parent
 		Select the closest parent; only one parent will be selected and the initial element itself is included in the search
 	 	$( "li.child" ).closest( "ul" ); 	#returns [ ul.parent ]
@@ -280,30 +304,6 @@ too much traversals will be likely to break if the HTML is changed
 	.data('name','value')						#the value can also be a JS, jQuery, or DOM object
 #Converting strings to number
 	var amount = +$(this).data('price');		#notice the +	
-
-#-------------------------------------------------------------------------------------------
-#Selecting form elements
-jQuery offers several pseudo-selectors that help find elements in forms.		e.g. $( "form :checked" );
-	:checked
-		targets checked checkboxes, radio buttons, and <select> elements (for <select> elements only, use the :selected selector)
-	:disabled
-		targets any <input> elements with the disabled attribute
-	:enabled
-		targets any elements that do not have a disabled attribute
-	:input
-		selects all <input>, <textarea>, <select>, and <button> elements
-	:selected
-		targets any selected items in <option> elements:
-
-jQuery provides pseudo selectors to select form-specific elements according to their type:
-	:password  :reset  :radio  :text  :submit  :checkbox  :button  :image  :file
-
-#Getting form input value
-	<input type='number' class='aClass' value='1'/>
-	$('selector').val()			#the selector must refer to (input) e.g. in this case .aClass
-	+$('selector').val()		#fetch as number
-#Setting form input value
-	$('selector').val('new value')
 
 #-------------------------------------------------------------------------------------------
 #Iterating over objects

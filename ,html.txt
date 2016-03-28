@@ -191,6 +191,9 @@ The <legend> element defines a caption for the <fieldset> element.
 		<p><input type="submit"></p>															</form>
 
 you can use (br) instead of multiple (p)
+you can use label to label input
+  <label for="email">Your Email</label>
+  <input type="email" name="email">
 		
 #Input
 The input tag can take a multitude of guises, the most common ones are:

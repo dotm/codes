@@ -1,0 +1,83 @@
+API (application programming interface) is like a contract: it specifies the ways a program can interact with an application.
+
+REST (Representational State Transfer): ????
+state transition: ???
+When something (e.g. API or web service) follows REST principles, we say that thing is RESTful
+
+For an API or web service to be RESTful, it must do the following:
+Separate the client from the server
+Not hold state between requests 
+  all the information necessary to respond to a request is available in each individual request;
+  no data, or state, is held by the server from request to request
+Use HTTP and HTTP methods
+
+var xhr = new XMLHttpRequest();
+xhr.open("GET", "https://www.codecademy.com/", false);
+xhr.send()
+console.log(xhr.status)
+console.log(xhr.statusText)
+
+Endpoints: API-defined locations where particular data are stored
+  you'll GET something different depending on the endpoint you use.
+e.g., if you're using the API for a video hosting service, 
+there might be endpoints for the most popular videos, the most recent videos, or videos belonging to a certain genre or category.
+
+#--------------------------------------------------------------------------------
+#Youtube API
+
+#Setting up
+setup tasks needed to make YouTube Data API calls using the Google APIs JavaScript client library:
+
+!search.html
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="search.js" type="text/javascript"></script>
+        <script src="https://apis.google.com/js/client.js?onload=onClientLoad" type="text/javascript"></script>
+    </head>
+    <body>
+        <pre id="response"></pre>
+    </body>
+</html>
+
+!search.js
+// Your use of the YouTube API must comply with the Terms of Service:
+// https://developers.google.com/youtube/terms
+
+// Helper function to display JavaScript value on HTML page.
+function showResponse(response) {
+    var responseString = JSON.stringify(response, '', 2);
+    document.getElementById('response').innerHTML += responseString;
+}
+
+// Called automatically when JavaScript client library is loaded.
+function onClientLoad() {
+    gapi.client.load('youtube', 'v3', onYouTubeApiLoad);
+}
+
+// Called automatically when YouTube API interface is loaded (see line 9).
+function onYouTubeApiLoad() {
+    // This API key is intended for use only in this lesson.
+    // See https://goo.gl/PdPA1 to get a key for your own applications.
+    gapi.client.setApiKey('AIzaSyCR5In4DZaTP6IEZQ0r1JceuvluJRzQNLE');
+
+    search();
+}
+
+function search() {
+    // Use the JavaScript client library to create a search.list() API call.
+    var request = gapi.client.youtube.search.list({
+        // part: 'id'
+        part: 'snippet'
+        q: 'chet faker'
+    });
+    
+    // Send the request to the API server,
+    // and invoke onSearchRepsonse() with the response.
+    request.execute(onSearchResponse);
+}
+
+// Called automatically with the response of the YouTube API request.
+function onSearchResponse(response) {
+    showResponse(response)
+}

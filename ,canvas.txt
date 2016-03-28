@@ -78,14 +78,18 @@ Cubic Bezier curves???
     c.stroke()
 
 #--------------------------------------------------------------------------------
-#Coloring
-  all css color value are valid here
+There are 2 ways to apply styles with canvas:
+  setting fillStyle and strokeStyle (Coloring, Transparency, Gradients, Patterns)
     fillStyle = "color";
-    strokeStyle = "color";
-    
+    strokeStyle = gradientObject
+  setting canvas context properties (Transparency, Line styles, Shadows)
+Once you apply the style, you can use it by creating objects (e.g. rectangles, paths, etc.)
+
+#Coloring
+  all css color value format are valid here, but they must be "quoted" (they must be a string)
 #Transparency
   you can use transparency by using css value with alpha channel or 
-  using globalAlpha context property with transparencyValue in range [0..1]
+  setting globalAlpha context property with transparencyValue in range [0..1]
     globalAlpha = transparencyValue
     
 #Line styles
@@ -117,30 +121,17 @@ miterLimit???
       the parameters represent two circles,
       one with its center at (x1, y1) and a radius of r1, 
       the other with its center at (x2, y2) with a radius of r2
-
-gradient.addColorStop(position, color)
-Creates a new color stop on the gradient object. The position is a number between 0.0 and 1.0 and defines the relative position of the color in the gradient, and the color argument must be a string representing a CSS <color>, indicating the color the gradient should reach at that offset into the transition.
-
-both the strokeStyle and fillStyle properties can accept a canvasGradient object as valid input.
-
-// Create gradients
+    gradient.addColorStop(position, color)
+      creates a new color stop on the gradient object
+      position (a number between 0.0 and 1.0) defines relative position of the color in the gradient
+      color (a string representing a CSS color) indicate the color the gradient should reach at that offset into the transition
+// create linear gradientObject
   var lingrad = ctx.createLinearGradient(0,0,0,150);
-  lingrad.addColorStop(0, '#00ABEB');
-  lingrad.addColorStop(0.5, '#fff');
-  lingrad.addColorStop(0.5, '#26C000');
-  lingrad.addColorStop(1, '#fff');
-
-  var lingrad2 = ctx.createLinearGradient(0,50,0,95);
-  lingrad2.addColorStop(0.5, '#000');
-  lingrad2.addColorStop(1, 'rgba(0,0,0,0)');
-
-  // assign gradients to fill and stroke styles
+  lingrad.addColorStop(0, '#000'); lingrad.addColorStop(0.5, '#26C000'); lingrad.addColorStop(1, '#fff');
+// assign gradients to fill and stroke styles
   ctx.fillStyle = lingrad;
-  ctx.strokeStyle = lingrad2;
-  
-  // draw shapes
+// draw shapes
   ctx.fillRect(10,10,130,130);
-  ctx.strokeRect(50,50,50,50);
   
 createRadialGradient????
 
@@ -158,7 +149,23 @@ createRadialGradient????
     ctx.fillStyle = pattern;
     ctx.fillRect(0,0,150,150);
 
-Shadows????
+#Shadows
+    shadowOffsetX = float
+      horizontal distance the shadow should extend from the object
+      this value isn't affected by the transformation matrix
+      default is 0
+    shadowOffsetY = float
+      vertical distance the shadow should extend from the object
+      this value isn't affected by the transformation matrix
+      default is 0
+    shadowBlur = float
+      size of the blurring effect
+      this value doesn't correspond to a number of pixels and is not affected by the current transformation matrix
+      default is 0
+    shadowColor = color
+      standard CSS color value indicating the color of the shadow effect
+      default: fully-transparent black
+
 #--------------------------------------------------------------------------------
 #Text
   render text with fill or stroke, maximum width is optional
@@ -167,7 +174,8 @@ Shadows????
 
 #Styling text
     font = value
-      value string uses the same syntax as CSS font property
+      value string uses the sa
+      me syntax as CSS font property
       default: 10px sans-serif
     textAlign = value
       values: start (default), end, left, right or center
@@ -240,3 +248,241 @@ setTransform(a, b, c, d, e, f)
 Resets the current transform to the identity matrix, and then invokes the transform() method with the same arguments. This basically undoes the current transformation, then sets the specified transform, all in one step.
 resetTransform()
 Resets the current transform to the identity matrix. This is the same as calling: ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+#--------------------------------------------------------------------------------
+#Compositing 
+  create composite shapes
+  with globalCompositeOperation we can not only draw new shapes behind existing shapes but we can also use it to 
+   mask off certain areas, clear sections from the canvas (not limited to rectangles like the clearRect() method does), etc.
+    globalCompositeOperation = type
+      sets the type of compositing operation to apply when drawing new shapes,
+      type is a string identifying which of the compositing operations to use
+  #Compositing operations:
+    source-over (default) draws new shapes on top of existing content
+    source-in: new shape is drawn only where both the new shape and the destination canvas overlap. Everything else is made transparent.
+    source-out: new shape is drawn where it doesn't overlap the existing canvas content
+    source-atop: new shape is only drawn where it overlaps the existing canvas content
+    destination-over: new shapes are drawn behind the existing canvas content
+    destination-in: existing canvas content is kept where both the new shape and existing content overlap. Everything else is made transparent.
+    destination-out: existing content is kept where it doesn't overlap the new shape.
+    destination-atop: existing canvas is only kept where it overlaps the new shape. The new shape is drawn behind the canvas content.
+    lighter: both shapes overlap the color is determined by adding color values.
+    copy: only the existing canvas is present
+    xor: shapes are made transparent where both overlap and drawn normal everywhere else.
+    multiply: the pixels of the top layer are multiplied with the corresponding pixel of the bottom layer. A darker picture is the result.
+    screen: the pixels are inverted, multiplied, and inverted again. A lighter picture is the result (opposite of multiply)
+    overlay: A combination of multiply and screen. Dark parts on the base layer become darker, and light parts become lighter.
+    darken: Retains the darkest pixels of both layers.
+    lighten: Retains the lightest pixels of both layers.
+    color-dodge: Divides the bottom layer by the inverted top layer.
+    color-burn: Divides the inverted bottom layer by the top layer, and then inverts the result.
+    hard-light: A combination of multiply and screen like overlay, but with top and bottom layer swapped.
+    soft-light: A softer version of hard-light. Pure black or white does not result in pure black or white.
+    difference: Subtracts the bottom layer from the top layer or the other way round to always get a positive value.
+    exclusion: Like difference, but with lower contrast.
+    hue: Preserves the luma and chroma of the bottom layer, while adopting the hue of the top layer.
+    saturation: Preserves the luma and hue of the bottom layer, while adopting the chroma of the top layer.
+    color: Preserves the luma of the bottom layer, while adopting the hue and chroma of the top layer.
+    luminosity: Preserves the hue and chroma of the bottom layer, while adopting the luma of the top layer.
+    
+#Clipping
+  clipping path is like a normal canvas shape but acts as a mask to hide unwanted parts of shapes
+  everything that falls outside of this path won't get drawn on the canvas
+    clip()
+      turns the path currently being built into the current clipping path
+  clip() works just like stroke() or fill()
+    you use clip() instead of closePath() to close a path 
+     and turn it into a clipping path instead of stroking or filling the path
+  by default the <canvas> element has a clipping path that's the exact same size as the canvas itself. i.e., no clipping occurs
+
+#--------------------------------------------------------------------------------
+#Basic animations
+  the steps (inside the loop):
+    clear canvas
+      unless the shapes you'll be drawing fill the complete canvas (e.g. a backdrop image),
+        or you want to make trailing path behind the shape,
+      you need to clear any shapes that have been drawn previously.
+      the easiest way to do this is using clearRect(0, 0, canvas.width, canvas.height)
+    save canvas state
+      if you're changing any setting (e.g. styles, transformations, etc.) which affect the canvas state 
+      and you want to make sure the original state is used each time a frame is drawn, 
+      you need to save that original state.
+    draw animated shapes
+      the step where you do the actual frame rendering
+    restore canvas state
+      if you've saved the state, restore it before drawing a new frame.
+
+#Controlling an animation
+  we need a way to execute our drawing functions over a period of time using scheduled updates
+  the functions below can be used to call a specific function over a set period of time:
+    setInterval(function, delay)
+      starts repeatedly executing the function specified by function every delay milliseconds
+    setTimeout(function, delay)
+      executes the function specified by function in delay milliseconds
+    requestAnimationFrame(callback)
+      tells the browser that you wish to perform an animation and 
+      requests that the browser call a specified function to update an animation before the next repaint.
+  if you don't want any user interaction you can use the setInterval() function which repeatedly executes the supplied code
+  if we wanted to make a game, we could use keyboard or mouse events to control the animation and use setTimeout().
+    by setting EventListeners, we catch any user interaction and execute our animation functions.
+  window.requestAnimationFrame() method provides a smoother and more efficient way for animating 
+    you may need to use the prefixed version in some browsers
+  To make requestAnimationFrame a loop just call it recursively as the first thing
+    function draw(parameters){
+      window.requestAnimationFrame(draw);
+      // animation steps here
+    }
+    window.requestAnimationFrame(draw); 
+
+    var x = 0; 
+    function drawIt() { 
+        window.requestAnimationFrame(drawIt); 
+        var canvas = document.getElementById('canvas'); 
+        var c = canvas.getContext('2d'); 
+        c.clearRect(0,0,canvas.width,canvas.height); 
+        c.fillStyle = "red"; 
+        c.fillRect(x,100,200,100); 
+        x+=5; 
+    } 
+    window.requestAnimationFrame(drawIt); 
+
+Advanced animations???
+Particle simulator???
+Sprite animation???
+
+#--------------------------------------------------------------------------------
+#Pixel manipulation
+  canvas gives you direct access to the pixels if you want it
+  you can get the pixels for an entire canvas or just a portion, manipulate those pixels, then set them back.
+  interesting things to do with pixel manipulation: ???
+    create a color picker tool (using getImageData)
+    zooming and aliasing (using getImageData and putImageData)
+    do interesting color effects: grayscaling, inverting, etc.
+      load image, getImageData of the image, manipulate the pixel through Uint8ClampedArray using loops, set data back with putImageData
+    create texture
+      use createImageData, manipulate the pixel through Uint8ClampedArray using loops, set data back with putImageData
+
+#ImageData object
+  represents the underlying pixel data of an area of a canvas object
+  it contains the following read-only attributes:
+    width
+      width of the image in pixels
+    height
+      height of the image in pixels
+    data
+      a Uint8ClampedArray representing a one-dimensional array containing each pixel data in the RGBA order, 
+       every pixel array data (maximum alpha channel included) have integer values between 0 and 255
+       pixels default color are transparent black
+  The Uint8ClampedArray contains height × width × 4 bytes of data, with index values ranging from 0 to (height×width×4)-1.
+  access the size of the pixel array in bytes by reading Uint8ClampedArray.length attribute:
+    ImageDataObject.data.length
+#Creating ImageData object
+  use the createImageData() method to create a new, blank ImageData object
+  two signatures of createImageData() method:
+    var myImageData = ctx.createImageData(width, height);
+      create a new ImageData object with the specified dimensions
+    var myImageData = ctx.createImageData(anotherImageData);
+      create a new ImageData object with the same dimensions as the object specified by anotherImageData
+      this does NOT copy the image data
+#Getting the pixel data for a context
+  obtain an ImageData object containing a copy of the pixel data for a canvas context
+    var myImageData = ctx.getImageData(left, top, width, height);
+      this method returns an ImageData object representing the pixel data for the area of the canvas 
+       whose corners are represented by the points (left,top), (left+width, top), (left, top+height), and (left+width, top+height)
+      the coordinates are specified in canvas coordinate space units.
+      Note: Any pixels outside the canvas are returned as transparent black in the resulting ImageData object.
+#Painting pixel data into a context
+  use putImageData() method to paint pixel data into a context:
+    ctx.putImageData(myImageData, dx, dy);
+      dx and dy indicate the device coordinates within the context 
+       at which to paint the top left corner of the pixel data you wish to draw
+
+#Saving images
+  toDataURL() method is useful when saving images
+   it returns a data URI containing a representation of the image in a default resolution of 96 dpi.
+  toDataURL is canvas method, NOT canvas context method
+    canvas.toDataURL(mimeType, quality)
+      mimeType default setting: creates a PNG image ('image/png')
+      quality is optional and in the range from 0(almost not recognizable but small in file size) to 1 (best quality)
+  Once you have generated a data URI from you canvas,
+    you can use it as the source of any <image> 
+    or put it into a hyper link with a download attribute to save it to disc
+  You can also create a Blob from the canvas.
+    canvas.toBlob(callback, type, encoderOptions)
+      creates a Blob object representing the image contained in the canvas.
+#--------------------------------------------------------------------------------
+#Canvas Events
+  Canvas doesn't define any new events
+    you can listen to the same mouse and touch events that you'd work with anywhere else. This is both good and bad.
+  Canvas is just a rectangular area of pixels to the rest of the browser.
+    The browser doesn't know about any shapes you've drawn.
+   If you drag your mouse cursor over the canvas 
+    then the browser will send you standard drag events to the canvas as a whole, not to anything within the canvas.
+   This means that if you want to do special things like making buttons or a drawing tool 
+    you will have to do the event processing yourself 
+    by converting the raw mouse events that the browser gives you to your own data model.
+  Calculating which shape is under the mouse cursor could be very difficult.
+   Fortunately Canvas has an API to help: isPointInPath.
+    This function will tell you if a given coordinate is inside of the current path.
+   Another option is to use a scenegraph library such as Amino 
+    which lets you work in terms of shapes instead of pixels.
+    It will handle event processing and repaints for you.
+
+c.beginPath(); 
+c.arc( 
+    100,100, 40,  //40 pix radius circle at 100,100 
+    0,Math.PI*2,  //0 to 360 degrees for a full circle 
+); 
+c.closePath(); 
+var a = c.isPointInPath(80,0);     // returns true 
+var b = c.isPointInPath(200,100);  // returns false 
+
+#--------------------------------------------------------------------------------
+????
+3D Graphics with WebGL and ThreeJS
+Intro to WebAudio
+WebCam Access with getUserMedia()
+
+Fallback content
+Accessible Rich Internet Applications (ARIA) rules
+Hit regions
+Focus rings
+#--------------------------------------------------------------------------------
+#Performance Optimization
+  see MDN for more tips
+  The general mantra for performance is draw less:
+    don't draw hidden things
+      if you have four screens of information but only one is visible at a time, then don't draw the others.
+    use images instead of shapes
+      if you have some graphic that won't ever change or be scaled, 
+      then consider drawing it into an image at compile time using something like photoshop. 
+      In general images can be drawn much faster to the screen than vector artwork. 
+      This is especially true if you have some graphic that will be repainted over and over again like a sprite in a game.
+    cache using offscreen canvases
+      You can create new instance of the canvas object at runtime that aren't visible on screen.
+      You can use these offscreen canvasas as a cache.
+      When your app starts draw graphics into the offscreen canvas then just copy that over and over again to draw it.
+      This gives you the same speed as using images over shapes,
+        but you are generating these images at runtime and could potentially change them if needed.
+    image stretching
+      Since we are using images for lots of things already, consider stretching them for effects.
+      Most canvas implementations have highly optimized code for scaling and cropping images so it should be quite fast.
+      There are also several versions of drawImage that let you draw subsections of an image.
+      With these apis you can do clever things like caching a bunch of sprites into a single image, or wildly stretching images for funky effects.
+    only redraw the part of the screen you need
+      Depending on your app it may be possible to just redraw part of the screen instead of erase and redraw the entire background.
+    Draw fewer frames
+      Now that you are drawing as little per frame as possible try to draw fewer frames.
+      most computers max out animation at a 60fps screen refresh rate.
+        there's no point in drawing more frames because the user will never see them.
+      use requestAnimationFrame when animating
+    The best way to draw less is to not draw it at all.
+      if you have a static background then move it out of canvas and draw it with just an image in the browser.
+      You can make the background of a canvas transparent so that a background image will show through.
+      If you have large images to move around
+        you may find they move faster and smoother by using CSS transitions rather than doing it with javascript in the canvas.
+      In general CSS transitions will be faster because they are implemented in C rather than JS,
+        but your mileage may vary, so test test test.
+    pixel aligned images
+      in some implementations images and shapes will draw faster if they are draw on pixel boundaries.
+      Some tests show a 2 to 3x speedup if you pixel align your sprites.

@@ -9,7 +9,6 @@ var variableName='value';
 	var variableName /* declare */ = 'value' //initialize a.k.a assign
 
 #Variable scope
-  variable scope: the context in which the variable exists
   variables have either a local scope or a global scope
   all variables declared without a var statement are global variable
 	#Local variables (Function-level scope)
@@ -89,14 +88,9 @@ strings.function()
   inner functions (nested functions): functions defined inside of another function (the outer function)
   each time the outer function is called, an instance of the inner function is created
   inner functions have implicit access to the outer function’s scope
-    inner function can use the variables, arguments, etc. 
+    can use outer function's variables, arguments, etc. 
 #Closure
-  closures: objects that contain a function and a reference to the environment in which the function was created
-  closure: an inner function that has access to the outer (enclosing) function’s variables and parameters
-  closure has three scope chains: it has access to its own scope, the outer function’s scope, and the global scope.
-  closures have access to the outer function’s variable even after the outer function returns
-	therefore, you can call the inner function later in your program
-  closure has access to the outer function’s variables by reference, not by value
+  see Evernote for definition
   a closure is created when an inner function is made accessible from outside of the function that created it
     typically occurs when an outer function returns a (reference to an) inner function
     the inner function then maintains a reference to the environment in which it was created
@@ -340,12 +334,7 @@ for now let’s just use timeouts
     
 #-----------------------------------------------------------------------------------------------------------------	
 #Conditionals
-	if (condition) {
-		statement
-	} else if {
-		statement
-	} else {
-		statement};
+	if (condition) { statements	} else if { statements } else { statements }
 #Ternary operator
 	var propertyName = ( dim === 'width' ) ? 'clientWidth' : 'clientHeight';
 
@@ -360,23 +349,14 @@ for now let’s just use timeouts
 			console.log('sol');
 			break;
 		default:						#default is optional
-			console.log('la');}
-	#Switch inside object literal
-		var objectName={
-			methodName: function (item) {
-				switch (item) { 
-				case "eggs": this.add(0.98); break;
-				case "milk": this.add(1.23); break;
-				}
-			}
-		}
+			console.log('do');}
 
 #For loop
 	for(var i = 0; i < integer; i++){ statements };
-	for (i in lala){ statements };						#lala can be an array or object
+	for (var i in lala){ statements };						#lala can be an array or object
 #While loop
 	while(condition===true){ statements };
-	:=	while(condition){ statements };
+	  while(condition){ statements };
 #Do while loop
 	do { this one time and continue while loopCondition is true } while (loopCondition);
 

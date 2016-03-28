@@ -1,0 +1,510 @@
+#Setting up Rails
+	Set rails alias to bin/rails (or just type every rails commands below as bin/rails)
+	Set rake alias to bin/rake (or just type every rake commands below as bin/rake)
+	rails new project_name
+		you can add --skip-bundle to postpone bundle install call
+	cd project_name
+	git init
+	git add -A
+	git commit -m 'Initial commit'
+	Modify README.rdoc
+		you can also add README.md (rdoc for gems documentation, md for GitHub)
+		or you can rename the rdoc: git mv README.rdoc README.md
+	git commit -am 'Modify README'
+	Push to GitHub
+		Create a new repo in GitHub
+		git remote add origin https://github.com/dotm/project_name.git
+		git push --set-upstream origin master
+
+#Setting up RSpec
+	Add RSpec to the Gemfile
+	  !Gemfile
+		...
+		group :development, :test do
+		  gem 'rspec-rails'
+		  #add above line
+		  ...
+		end
+	bundle			#bundle := bundle install
+	rails generate rspec:install
+		rspec --init
+	To run test use
+		rake
+	
+#Setting up Model
+	rails g model ModelName	[field[:type][:index] field[:type][:index]] [options]	#g := generate
+		rails g model User username:string email:string password:string
+	Modify the migration file
+	rake db:migrate
+		bin/rake db:migrate
+		bundle exec db:migrate
+	git add -A
+	git commit -m 'Generate model ModelName'
+	
+#Setting up routes
+	Write in config/routes
+		resources :controllers
+		root 'controllers#action'
+	rake routes
+#Setting up Controller
+	rails g controller controllers
+	Add actions based on routes you have set
+		def new
+		end
+		...
+
+#Setting up View
+	touch app/views/models/new.html.erb
+	
+#--------------------------------------------------------------------------------
+#Important commands
+
+rails s := rails server
+heroku run rake db:migrate
+rails console
+rails console --sandbox
+reload! #to refresh any code changes.
+bundle show [gemname]
+heroku run console
+heroku run console --sandbox
+rails console test
+rails server --environment production
+bundle exec rake db:migrate RAILS_ENV=production
+
+duplicate_user = @user.dup
+@user.save
+
+debugger
+
+#--------------------------------------------------------------------------------
+
+    | User's  | ------> |Web   | --> Route --> Dispatcher --> | 		   | <-----> Model <-----> Data storage
+  	| Web	  |			|	   |							  | Controller |  
+	| browser | <------ |server| <--------------------------- |			   | <-----> View
+
+#--------------------------------------------------------------------------------
+#Model
+communicate with data storage system
+
+#Empty model file
+	!app/models/person.rb
+	class Person < ActiveRecord::Base
+
+	end
+the < means: inherit from
+this file enable us to use the Person.find and other Person's methods in our Rails application
+
+#Validation
+	!app/models/person.rb
+	class Person < ActiveRecord::Base
+		validates_presence_of :key			#make sure that key's value is not null
+	end
+
+	!lib
+	var=Person.new
+	var.save			-> false			#false because the key is null (haven't been specified)
+	var.errors.messages
+		-> {key:["can't be blank"]}
+	var.errors[:key][0]						#[0] because ["can't be blank"] is an array
+		-> "can't be blank"
+  
+  #Other built-in validation
+		validates_presence_of :key						#make sure that key's value:
+		validates_numericality_of :key					#	is a number
+		validates_uniqueness_of :key					#	is unique
+		validates_confirmation_of :key					#	if we have 2 fields that should be equal e.g. password confirmation
+		validates_acceptance_of :key					#	if we have check-boxes that need to be checked e.g. terms of servi
+		validates_length_of :key						#	have certain length
+			validates_length_of :password, minimum:6
+		validates_format_of :key						#	is valid by using a regex e.g. E-mail must have @domain.com at the end
+			validates_format_of :email, with: /regex/i
+		validates_inclusion_of :key						#	is in between (inside) a range
+			validates_inclusion_of :age, in 18..99
+		validates_exclusion_of :key						#	is NOT in between (inside) a range
+			validates_inclusion_of :age, in 0...18, message: "Sorry, you must be over 18"
+	#Alternative syntax
+		validates :key, presence: true					#watch out for the position of :
+		validates :key, length: { minimum: 3 }
+						presence: true
+						uniqueness: true
+						numericality: true
+						length: { minimum: 0, maximum: 2000 }
+						format: { with: /regex/ }
+						acceptance: true
+						confirmation: true
+	  #multiple validation
+		validates :key, presence: true, length: { minimum: 3 }
+		
+#Relationship
+defining relationship of RDBMS relations in Rails
+	!app/models/person.rb
+	class Person < ActiveRecord::Base
+		has_many :tweets						#notice that the key is plural and lower-case, like it's name in the RDBMS as relation
+	end											#because a person can has_many tweets
+	
+	class Tweet < ActiveRecord::Base
+		belongs_to :person						#notice that the key is singular and upper-case
+	end											#because a tweet can only belongs_to a person
+	
+	!lib
+	Tweet create(status: "140 characters of string", person: Person.find(id))	#creating a new tweet (key: value pair)
+		#even if the foreign key is person_id, you just have to type person: because Rails maps it automatically
+	Person.find(id).tweets		#accessing all tweets; remember that .tweets := (:tweets)
+
+#--------------------------------------------------------------------------------
+#View
+visual representation of Rails application, user interface, what user see
+
+!app/views/people/		#erb is embedded Ruby (embedding Ruby in HTML file)
+	../index.html.erb	#list all people
+	../ahow.html.erb	#view a person
+
+!app/views/people/show.html.erb
+	<!DOCTYPE html>
+	<html>
+		<head> <title>Web Application</title>    </head>
+		<body>
+			<header>...</header>
+			<% var=Person.find(id) %>		#the embedded Ruby code that will be evaluated
+			<h1> <%= var.key %> </h1>		#the %= means the evaluated result must be printed to the HTML
+		</body>
+	</html>
+
+#Using layouts to template HTML
+!app/views/people/show.html.erb
+	<% var=Person.find(id) %>
+	<h1> <%= var.key %> </h1>
+!app/views/layouts/application.html.erb
+	<html>
+		<head> <title>Web Application</title>    </head>
+		<body>
+			<header>...</header>
+			<%= yield %>					#mark where the Ruby code should go in an HTML template
+		</body>
+	</html>
+	
+#Creating a link
+	<%= link_to text_to_show, model_instance (URL) %>				#text_to_show := anchor text
+	<%= link_to text_to_show, model_instance, confirm:"string" %>
+	
+#Looping
+	<h1>Person and key list</h1>
+	<table>
+		<tr>
+			<th>Person</th>
+			<th>key</th>
+		</tr>
+	<% var=Person.all %> 
+	<% var.each do |person| %>				#the |person| is just local iterator variable placeholder
+		<tr>
+			<td> <%= person.name %> </td>
+			<td> <%= person.key  %> </td>
+		</tr>
+	<% end %> 
+	<% if var.size==0 %> 					#size can be replaced by the count method
+		<em>No Person Found</em>			#so that user don't get confused when they see empty table
+	<% end %> 
+	</table>
+	
+#Creating a code link
+	<%= link_to text_to_show, code %>
+ e.g.
+	<%= link_to "Edit tweet", edit_tweet_path (tweet) %>
+	<%= link_to "Destroy tweet", tweet, method: :delete %>
+	
+#URL generator methods
+	Action			 Code (URL generator)		The URL
+list all tweets		tweets_path					/tweets
+go to a tweet		tweets_path(1)				/tweets/1		?? probably
+new tweet form		new_tweet_path				/tweets/new
+	#all methods below need: tweet=Tweet.find(1)
+show a tweet		tweet						/tweets/1
+edit a tweet		edit_tweet_path(tweet)		/tweets/1/edit
+delete a tweet		tweet, method: :delete		/tweets/1
+
+#Rake routes
+Prefix 		 Verb   URI Pattern                  Controller#Action
+articles 	 GET    /articles(.:format)          articles#index
+             POST   /articles(.:format)          articles#create
+new_article  GET    /articles/new(.:format)      articles#new
+edit_article GET    /articles/:id/edit(.:format) articles#edit
+article 	 GET    /articles/:id(.:format)      articles#show
+             PATCH  /articles/:id(.:format)      articles#update
+             PUT    /articles/:id(.:format)      articles#update
+             DELETE /articles/:id(.:format)      articles#destroy
+			 
+#--------------------------------------------------------------------------------
+#Controller
+the brain that control Model and View
+
+!app/views/people/show.html.erb
+	<% var=Person.find(id) %>		#line like this should not be in the View, instead it must be in Controller
+	<h1> <%= var.key %> </h1>
+
+When a request come in such as /tweets/1 (show a tweet)
+	before it get into !app/views/tweets/show.html.erb
+	it will first hit !app/controllers/tweets_controller.rb
+		notice the same tweets syntax(name) in the request, view sub-folder, and controller name
+	then it will run the show method
+	finally it will render the show.html.erb
+
+!app/controllers/tweets_controller.rb
+	class TweetsController < ApplicationController
+		def show								#the show method (action) maps to the !app/views/tweets/show.html.erb (notice the SHOW file)
+
+			#this is where we call our models
+			@tweet=Tweet.find(1)				#never forget the @ so that the View can access the class local instance variable
+			#if you want to render it to an html.erb with different name, you can use:
+			#render action: 'filename'			#will render it to !app/views/tweets/filename.html.erb
+		end
+	end
+
+!app/views/tweets/show.html.erb
+	<h1><%= @tweet.status %></h1>
+	<p>Posted by: <%= @tweet.name %></p>
+
+notice that the @tweet above can only render the tweet with id of 1
+	to load the proper tweet being clicked by user, use: @tweet=Tweet.find(params[:id])
+	this works because Rails generate a new hash: params{id: '1'}
+
+if we have a url: /tweets?status=I'm dead
+	Rails will create the hash: params = {status: "I'm dead" }
+	and you can create a new tweet by using: @tweet=Tweet.create(status: params[:status])
+however, sometime a URL can be like: /tweets?tweet[status]=I'm dead
+	Rails will create a nested hash: params = { tweet: {status: "I'm dead" }}
+	if we want to access it we can use: @tweet=Tweet.create(status: params[:tweet][:status])
+	or we can simply use: @tweet=Tweet.create(params[:tweet])
+		this work because our tweet method is expecting a hash
+		and params[:tweet] returns	->	{status: "I'm dead"}
+
+#Creating strong parameter to secure input
+  strong params only required when create or update with multiple attributes
+	we need to specify the parameter key we require: require(:tweet)
+	and the attributes we will permit to be set by user: permit(:status)
+	the @tweet then become: @tweet=Tweet.create(params.require(:tweet).permit(:status))
+  #multiple attributes permit by using array
+	params.require(:tweet).permit([:status, :location])	#you don't have to type the [] ?? probably
+	
+#Parsing JSON and XML
+!app/controllers/tweets_controller.rb
+	class TweetsController < ApplicationController
+		def show
+			@tweet=Tweet.find(params[:id])
+			respond_to do |format|
+				format.html								#will show the default show.html.erb if request is /tweets/1
+				format.json { render json: @tweet }		#render json representation if request is /tweets/1.json
+				format.xml { render xml: @tweet }		#render xml representation if request is /tweets/1.xml
+			end
+		end
+	end
+	
+#Controller actions in a typical Rails application
+!app/controllers/tweets_controller.rb
+	class TweetsController < ApplicationController
+		def index		#list all tweet
+		def show		#show a single tweet
+		def new			#show a new tweet form
+		def edit		#show an edit tweet form
+		def create		#create a new tweet
+		def update		#update a tweet
+		def destroy		#delete a tweet
+	end
+  most of the actions above will be associated with a View file
+  
+#Adding authentication
+!app/controllers/tweets_controller.rb
+	class TweetsController < ApplicationController
+		def edit
+			@tweet=Tweet.find(params[:id])
+			if session[:person_id] != @tweet.person_id			#session works like a per user hash used to store things required in a log in session
+				flash[:notice] = "You can't edit this tweet"	#flash is used to send message to the user
+				redirect_to(tweets_path)						#go back to tweets list
+				#you can combine flash and redirect_to:
+				#redirect_to(tweets_path, notice: "You can't edit this tweet")
+			end
+		end
+	end
+
+!app/views/layouts/application.html.erb
+	<!DOCTYPE html>
+	<html>
+		<head> <title>Web Application</title>    </head>
+		<body>
+			<header>...</header>
+			<% if flash[:notice] %>
+				<div id='notice'><%= flash[:notice] %></div>	#this will be where the notice located
+			<% end %>
+			<%= yield %>
+		</body>
+	</html>
+
+#Avoiding repetition
+!app/controllers/tweets_controller.rb
+	class TweetsController < ApplicationController
+		before_action :get_tweet, only: [:edit, :update, :destroy]
+			#if we don't specify the :only, the :get_tweet will be executed in ALL the controller's actions
+		before_action :check_auth, :only => [:edit, :update, :destroy]
+		
+		def get_tweet
+			@tweet=Tweet.find(params[:id])
+		end
+		
+		def check_auth
+			if session[:person_id] != @tweet.person_id			#session works like a per user hash used to store things required in a log in session
+				flash[:notice] = "You can't edit this tweet"	#flash is used to send message to the user
+				redirect_to(tweets_path)						#go back to tweets list
+				#you can combine flash and redirect_to:
+				#redirect_to(tweets_path, notice: "You can't edit this tweet")
+			end
+		end
+		
+	end
+	
+#--------------------------------------------------------------------------------
+#Route
+used in order to route the URL path (see URL generator) into the action in controller
+
+!config/routes.rb
+Twitter::Application.routes.draw do		#multiple words follow CamelCase e.g. MyTwitter
+	resource :tweets					#create default RESTful resource
+end
+
+		Code				The URL			TweetsController
+tweets_path				/tweets					def index
+tweet					/tweet/<id>				def show
+new_tweet_path			/tweets/new				def new
+edit_tweet_path(tweet)	/tweets/<id>/edit		def edit
+etc...
+
+#Custom routes
+	domain.com/all	render	domain.com/tweets
+	
+	Twitter::Application.routes.draw do
+		get '/all' => 'tweets#index', as: 'all_tweets'	#controller name is lower-cased
+	   #get 'path' => 'controller#action', as: 'string'	#the 'as' alias is considered best practice when linking in erb
+	end
+
+	<%= link_to "All Tweets", all_tweets_path %>	#tweets_path wouldn't work
+
+#Redirect URL
+custom routes replace the URL in browser, redirect will simply redirect a path to another path
+
+	domain.com/all	render	domain.com/tweets
+	
+	Twitter::Application.routes.draw do
+		get '/all' => redirect('/tweets')
+	   #get '/all', to: redirect('/tweets')		#alternative syntax
+	end
+	
+#Root route
+	domain.com
+	
+	Twitter::Application.routes.draw do
+		root to: 'tweets#index'
+	end
+	
+	<%= link_to "All Tweets", root_path %>
+	
+#Route with parameter
+	e.g. domain.com/local_tweets/32828		#zipcode is 32828
+	
+!app/controllers/tweets_controller.rb
+	def index
+		if params[:zipcode]						#if the local tweet in zipcode exist, display it
+			@tweets = Tweet.where(zipcode: params[:zipcode])
+		else
+			@tweets = Tweet.all
+		end
+		respond_to do |format|
+			format.html
+			format.xml { render xml: @tweet }
+		end
+	end
+
+!config/routes.rb
+	Twitter::Application.routes.draw do
+	   #get '/local_tweets/:zipcode' => 'tweets#index'		#:zipcode because referenced by params[:zipcode] in controller
+		get '/local_tweets/:zipcode' => 'tweets#index', as: 'local_tweets'	#again the alias is for linking
+	end
+
+	<%= link_to "Tweets in 32828", local_tweets_path(32828) %>
+	
+  #Name as parameter
+	e.g. domain.com/yoshua		#name is yoshua
+	
+!config/routes.rb
+	Twitter::Application.routes.draw do
+	   get ':name' => 'tweets#index', as: 'person_tweets'
+	end
+
+	<%= link_to "Yoshua Elmaryono", person_tweets_path(yoshua) %>
+
+!app/controllers/tweets_controller.rb
+	def index
+		if params[:name]
+			@person = Person.where(name: params[:name]).first		#.first because where method will return an array
+			@tweets = @person.tweets
+		else
+			@tweets = Tweet.all
+		end
+		#if we don't have to respond_to JSON or XML (we only respond_to HTML), it's OK to not use the respond_to method
+	end
+
+#--------------------------------------------------------------------------------
+#Basic CRUD Query
+
+#Accessing table
+table name is singular and upper-case in rails e.g. Person, MultiWordsTable
+	calling the above will access the plural and lower-case table in database e.g. people
+	as a hash {key: value}
+
+#Read
+	#with id
+		var=Person.find(id)
+		var[:key]
+		var.key
+	#multiple id
+		Person.find(id, id, id)		#return array of hashes
+	#other parameter
+		Person.first
+		Person.last
+		Person.all					#return array of hashes
+	
+  #other read function
+		Person.count				#count the number of person
+		Person.order(:key)			#order by key
+		Person.limit(10)			#return first 10 (or other integer) person
+		Person.where(key: value)	#DBMS where statement
+
+#Create
+		var=Person.new
+		var.key=value
+		var.save
+	#multiple input
+		var=Person.new(				#don't mistake () with {}
+		key: value,
+		key: value)
+		var.save
+	#auto-save
+		Person.create(key: value, key: value)		#you can omit the arguments if you want to construct a new empty Person
+	
+#Update
+		var=Person.find(id)
+		var.key=new_value
+		var.save
+	#multiple attribute update
+		var=Person.find(id)
+		var.attribute={key: value,
+		key: value}
+		var.save
+	#auto-save
+		var=Person.find(id)
+		var.update(key: value, key: value)
+#Delete
+		var=Person.find(id)
+		var.destroy
+	#without declaring var
+		Person.find(id).destroy
+	#delete all
+		Person.destroy_all
+		

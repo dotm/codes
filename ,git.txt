@@ -1,0 +1,234 @@
+#See the directory where you installed Git 
+	which git 
+	where.exe git		#in Windows
+
+#Configuring Git
+	git config lets you get and set configuration variables that control all aspects of how Git looks and operates. 
+	These variables can be stored in 3 different places
+	Each level overrides values in the previous, more general level
+		1. /etc/gitconfig file
+			Contains values for every user on the system and all their repositories. 
+			If you pass the option --system to git config, it reads and writes from this file specifically
+		2. ~/.gitconfig or ~/.config/git/config file: 
+			Specific to your user
+			read and write to this file by passing the --global option
+		3. config file in the Git directory (that is, .git/config) of repository you’re currently using
+			Specific to that single repository
+
+#Your identity
+	git config --global user.name "dotm"
+	git config --global user.email "desde.el.mar96@gmail.com"
+#Your editor
+	git config --system core.editor emacs
+#Checking your setting
+	git config --list
+#Create a shortcut for a Git command
+	git config --global alias.<alias-name> <git-command>
+#Open global configuration file in a text editor for manual editing
+	git config --global --edits
+	
+#SSH
+  check for existing SSH key
+    ls -al ~/.ssh
+  generate new key
+   Windows:
+    ssh-keygen -t rsa -b 4096 -C "desde.el.mar96@gmail.com"
+    
+#Git help overview
+		git
+	usage: git [--version] [--help] [-C <path>] [-c name=value]
+			   [--exec-path[=<path>]] [--html-path] [--man-path] [--info-path]
+			   [-p|--paginate|--no-pager] [--no-replace-objects] [--bare]
+			   [--git-dir=<path>] [--work-tree=<path>] [--namespace=<name>]
+			   <command> [<args>]
+		git help <verb>
+		git <verb> --help
+		man git-<verb>
+		
+	The most commonly used git commands are:
+	   add        Add file contents to the index
+	   bisect     Find by binary search the change that introduced a bug
+	   branch     List, create, or delete branches
+	   checkout   Checkout a branch or paths to the working tree
+	   clone      Clone a repository into a new directory
+	   commit     Record changes to the repository
+	   diff       Show changes between commits, commit and working tree, etc
+	   fetch      Download objects and refs from another repository
+	   grep       Print lines matching a pattern
+	   init       Create an empty Git repository or reinitialize an existing one
+	   log        Show commit logs
+	   merge      Join two or more development histories together
+	   mv         Move or rename a file, a directory, or a symlink
+	   pull       Fetch from and integrate with another repository or a local branch
+	   push       Update remote refs along with associated objects
+	   rebase     Forward-port local commits to the updated upstream head
+	   reset      Reset current HEAD to the specified state
+	   rm         Remove files from the working tree and from the index
+	   show       Show various types of objects
+	   status     Show the working tree status
+	   tag        Create, list, delete or verify a tag object signed with GPG
+
+	'git help -a' and 'git help -g' lists available subcommands and some
+	concept guides. See 'git help <command>' or 'git help <concept>'
+	to read about a specific subcommand or concept.
+
+#-----------------------------------------------------------------------------------
+#Initialize git
+	git init
+  Repository: a directory (folder) where Git has been initialized to start version controlling your files
+  a repository have a hidden .git folder
+  
+#Checking current state of repository
+	git status
+  checking the state often is good
+  checking the state before commit is mandatory
+	
+#Create new file
+
+#Adding file to staging area
+	git add fileName.extension
+  Before Git can track changes made to a file, we first need to add it to the staging area
+
+ #Add all
+	git add -A . 
+  the dot stands for the current directory, so everything in and beneath it is added
+  the -A ensures even file deletions are included.
+	git add -A := git add .; git add -u
+  git add -A stages All
+  git add . stages new and modified, without deleted
+	this actually stages all in git version 2.x ??
+  git add -u stages modified and deleted, without new
+  
+ #Remove file from staging area
+	git reset <filename> 
+	
+ #Using wild-card to add multiple files of the same type
+	git add '*.txt'			#the quote is important to add all txt recursively
+	
+#State of file
+staged: files are ready to be committed.
+unstaged: files with changes that have not been prepared to be committed.
+untracked: files aren't tracked by Git yet. This usually indicates a newly created file.
+deleted: file has been deleted and is waiting to be removed from Git.
+
+#Staging Area: a place where we can group files together before we "commit" them to Git.
+	
+#Committing repository
+  commit: a snapshot of our repository
+	git commit -m "short descriptive commit message"
+  for the first commit use -m "initial commit"
+  
+  git commit -am "your message" := git add . ; git commit -m
+  if you have added any new files since the last commit, tell Git about them using git add -A first, else just git commit -a
+	
+#Viewing the changes log
+	git log
+	git log --summary
+  if the log is displayed in multiple page, 
+	press Enter to display next line
+	press space to display next page
+	press Q to exit <END>
+	
+#Add remote repository
+	git remote add origin <url>
+  it's typical to name your main remote branch origin
+
+#Pushing repository to remote server
+	git push -u origin master
+	shell response-> Branch master set up to track remote branch master from origin.
+  the name of our remote is origin and the default local branch name is master
+  the -u tells Git to remember the parameters, so that next time we can simply run git push and Git will know what to do. 
+
+	Cool Stuff:
+	When you start to get the hang of git you can do some really cool things with hooks when you push.
+	For example, you can upload directly to a webserver whenever you push to your master remote instead of having to upload your site with an ftp client. Check out Customizing Git - Git Hooks for more information.
+
+#Pulling remotely
+	git pull origin master
+  check for changes on our GitHub repository and pull down any new changes by running
+
+	git stash:
+	Sometimes when you go to pull you may have changes you don't want to commit just yet. One option you have, other than commiting, is to stash the changes.
+	Use the command 'git stash' to stash your changes, and 'git stash apply' to re-apply your changes after your pull.
+
+#See difference from last commit
+	git diff HEAD
+  In this case we want the diff of our most recent commit, which we can refer to using the HEAD pointer.
+  HEAD: a pointer that holds your position within all your different commits. 
+  By default HEAD points to your most recent commit, 
+  so it can be used as a quick way to reference that commit without having to look up the SHA.
+
+	diff --git a/octocat.txt b/octocat.txt
+	index 7d8d808..e725ef6 100644
+	--- a/octocat.txt
+	+++ b/octocat.txt
+	@@ -1 +1 @@
+	-A Tale of Two Octocats
+	+[mA Tale of Two Octocats and an Octodog
+
+#
+Another great use for diff is looking at changes within files that have already been staged. 
+Remember, staged files are files we have told git that are ready to be committed.
+	git diff --staged
+Commit Etiquette:
+You want to try to keep related changes together in separate commits. Using 'git diff' gives you a good overview of changes you have made and lets you add files or directories one at a time and commit them separately.
+	
+	diff --git a/octofamily/octodog.txt b/octofamily/octodog.txt
+	new file mode 100644
+	index 0000000..cfbc74a
+	--- /dev/null
+	+++ b/octofamily/octodog.txt
+	@@ -0,0 +1 @@
+	+[mwoof
+	
+#
+Files can be changed back to how they were at the last commit by using the command: 
+	git checkout -- <target>
+	git checkout -- octocat.txt				#get rid of all the changes since the last commit for octocat.txt
+
+The '--'
+So you may be wondering, why do I have to use this '--' thing? git checkout seems to work fine without it. It's simply promising the command line that there are no more options after the '--'. This way if you happen to have a branch named octocat.txt, it will still revert the file, instead of switching to the branch of the same name.
+
+#Creating branch
+	git branch <branch_name>
+	
+#Switching branch
+	git checkout <branch_name>
+  
+  to checkout and create a branch at the same time
+	git checkout -b new_branch
+  same thing as doing: git branch new_branch; git checkout new_branch
+
+#Rename file
+	git mv <oldName> <newName>
+
+#Remove file
+	git rm <fileName>
+	git rm '*.txt'
+  will not only remove the actual files from disk, but will also stage the removal of the files for us
+
+  remove an entire folder
+	git rm -r folder_of_cats
+  this will recursively remove all folders and files from the given directory
+  
+	The '-a' option
+	If you happen to delete a file without using 'git rm' you'll find that you still have to 'git rm' the deleted files from the working tree. 
+	You can save this step by using the '-a' option on 'git commit', which auto removes deleted files with the commit.
+	git commit -am "Delete stuff"
+
+#Merging branches
+you need to switch back to the master branch so you can copy (or merge) your changes from a branch back into the master branch
+	git merge branch_name
+
+#Delete branch
+	git branch -d <branch_name>
+  -d won't let you delete something that hasn't been merged
+  to force delete either add the --force (-f) option or use -D which combines -d -f together into one command.
+
+#Resolve conflict
+Although we could just merge branch directly into master, 
+	it's actually conventional to do the opposite -- merge master into branch 
+	and, once all conflicts are resolved, merge knock-knock back into master (which won't have any conflicts anymore). 
+This is best practice because you don't really want to be fixing a bunch of merge conflicts on your master branch 
+	if you're working with other developers or with a big code base. 
+Anything you merge into master should already be up-to-date and clean.

@@ -1,0 +1,72 @@
+#search
+  find remote gems by name
+  you can use regular expression characters in your query
+    gem search ^rails
+  options
+    -d    give detailed information
+
+#install 
+  downloads and installs the gem and any necessary dependencies 
+  then builds documentation for the installed gems
+    gem install rails
+  disable documentation generation using the --no-doc argument when installing gems
+
+#REQUIRING CODE???
+
+#list
+  command shows your locally installed gems
+    gem list
+
+#uninstall 
+  removes the gems you have installed
+    gem uninstall drip
+
+#VIEWING DOCUMENTATION
+  view the documentation for your installed gems with ri
+    ri rails
+  view the documentation for your installed gems in your browser with the server command
+    gem server
+
+#FETCHING AND UNPACKING GEMS????
+  If you wish to audit a gem’s contents without installing it 
+    you can use the fetch command to download the .gem file 
+    then extract its contents with the unpack command.
+  You can also unpack a gem you have installed, 
+    modify a few files, 
+    then use the modified gem in place of the installed one:
+      gem unpack rake
+      vim rake-10.1.0/lib/rake/...
+      ruby -I rake-10.1.0/lib -S rake some_rake_task
+        The -I argument adds your unpacked rake to the ruby $LOAD_PATH which prevents RubyGems from loading the gem version (default version). 
+        The -S argument finds rake in the shell’s $PATH so you don’t have to type out the full path.
+
+#---------------------------------------------------------------------------------------------------
+Bundler
+
+#Getting Started
+  install bundler
+    gem install bundler
+  specify your dependencies in a Gemfile in your project's root:
+    source 'https://rubygems.org'
+    gem 'nokogiri'
+    gem 'rack', '~>1.1'
+    gem 'rspec', :require => 'spec'
+  Install all of the required gems from your specified sources:
+    $ bundle install
+    $ git add Gemfile Gemfile.lock
+  Inside your app, load up the bundled environment:
+    require 'rubygems'
+    require 'bundler/setup'
+    require 'nokogiri'      #require your gems as usual
+  Run an executable that comes with a gem in your bundle:
+    $ bundle exec rspec spec/models
+  ???
+  Finally, if you want a way to get a shortcut to gems in your bundle:
+    $ bundle install --binstubs
+    $ bin/rspec spec/models
+  The executables installed into bin are scoped to the bundle, and will always work.
+
+#Create a rubygem with Bundler?????
+
+#---------------------------------------------------------------------------------------------------
+Gemfiles

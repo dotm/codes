@@ -91,19 +91,19 @@
 			<tr>
 				<th rowspan="2" scope="col">Meal</th>
 				<th colspan='1' scope="col">Price</th>
-            </tr>
-        </thead>
+      </tr>
+    </thead>
 		<tbody>
 			<tr>
 				<td>Rice</td>
 				<td>3000</td>
-            </tr>
+      </tr>
 		</tbody>
 		<tfoot>
 			<tr>
 				<td>Total Price</td>
 				<td>3000</td>
-            </tr>
+      </tr>
 		</tfoot>
 	</table>
 

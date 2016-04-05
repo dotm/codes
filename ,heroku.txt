@@ -1,0 +1,60 @@
+Heroke Deployment
+
+!Gemfile
+group :development, :test do
+  gem 'sqlite3',     '1.3.9'
+  gem 'byebug',      '3.4.0'
+  gem 'web-console', '2.0.0.beta3'
+  gem 'spring',      '1.1.3'
+end
+
+group :production do
+  gem 'pg',             '0.17.1'
+  gem 'rails_12factor', '0.0.2'
+end
+
+-----
+to prevent the local installation of any production gems
+  bundle install --without production
+
+git commit -a -m "Update Gemfile.lock for Heroku"
+
+#Commands
+heroku run := heroku
+
+check if already has the Heroku command-line client
+  heroku version
+  
+log in and add your SSH key:
+  heroku login
+  heroku keys:add
+
+Creating a new application at Heroku.
+  heroku create
+  Creating damp-fortress-5769... done, stack is cedar
+  http://damp-fortress-5769.herokuapp.com/ | git@heroku.com:damp-fortress-5769.git
+  Git remote heroku added
+
+push the master branch up to Heroku:
+  git push heroku master
+  
+$ heroku rename rails-tutorial-hello
+damp-fortress-5769.herokuapp.com -> rails-tutorial-hello.herokuapp.com
+If you change your app's name on Heroku, 
+  you'll probably need to manually update your Git remote 
+  so Git knows where to send your local application when you deploy to Heroku.
+
+visit the app on the command line 
+$ heroku open 
+
+heroku run rake db:migrate
+
+gives you a Rails console in Production
+  heroku run console 
+  
+shows you your server logs (like rails server)
+on a streaming basis (which is the result of the -t, or "tail" flag
+  heroku logs -t 
+
+for if your application has failed and won't start up. 
+  heroku restart 

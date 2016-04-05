@@ -31,3 +31,35 @@ function vowel_count(s){
 function reverse(s){
   return s.split("").reverse().join("")
 };
+
+function myEach(array,callback){
+  for (i in array){
+    callback(array[i])
+  }
+}
+myEach([1,2,3,4], function(item){
+  console.log(item);
+});
+function myMap(array,callback){
+  // with myEach
+  var newArray = []
+  myEach(array,function(item){
+    newArray.push( callback(item) )
+  })
+  return newArray
+}
+myMap([1,2,3,4], function(item){
+  return item * 2;
+});
+function myMap(array,callback){
+  // without myEach
+  var newArray=[]
+  for(i in array){
+    newArray.push( callback(array[i]) )
+  }
+  return newArray
+}
+myMap([1,2,3,4], function(item){
+  return item * 2;
+});
+

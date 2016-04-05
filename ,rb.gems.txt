@@ -70,3 +70,10 @@ Bundler
 
 #---------------------------------------------------------------------------------------------------
 Gemfiles
+  Gemfile is where you specify which gems, and which versions of them you want to use.
+  The Gemfile.lock file is where Bundler records the exact versions that were installed. 
+    when the same project is loaded on another machine, 
+      running bundle install will look at the Gemfile.lock 
+      and install the exact same versions, 
+      rather than just using the Gemfile and installing the most recent versions.
+  To update Gemfile.lock, just update Gemfile

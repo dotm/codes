@@ -1,89 +1,89 @@
 var variableName='value';
-	var a = b = 1;
-	var a = 1,
-		b = 2;
+  var a = b = 1;
+  var a = 1,
+    b = 2;
 
 // single line comment
 /* multi line comment */
   can also be used as inline comment:
-	var variableName /* declare */ = 'value' //initialize a.k.a assign
+  var variableName /* declare */ = 'value' //initialize a.k.a assign
 
 #Variable scope
   variables have either a local scope or a global scope
   all variables declared without a var statement are global variable
-	#Local variables (Function-level scope)
-	  JavaScript does not have block-level scope (variables scoped to surrounding curly brackets)
-	  JavaScript has function-level scope
-	  Variables declared within a function 
-	    are local variables and will have priority inside that function over global variables
-		are only accessible within that function or by functions inside that function
-	#Global variables
-	  all variables declared outside a function are in the global scope
-	  in the browser, the global context or scope is the 'window' object
-	  avoid polluting the global scope with variable declarations, use function whenever possible
-	#Non-local variables
-	  variables that are neither in the local nor the global scope
+  #Local variables (Function-level scope)
+    JavaScript does not have block-level scope (variables scoped to surrounding curly brackets)
+    JavaScript has function-level scope
+    Variables declared within a function 
+      are local variables and will have priority inside that function over global variables
+    are only accessible within that function or by functions inside that function
+  #Global variables
+    all variables declared outside a function are in the global scope
+    in the browser, the global context or scope is the 'window' object
+    avoid polluting the global scope with variable declarations, use function whenever possible
+  #Non-local variables
+    variables that are neither in the local nor the global scope
 #Hoisting
   all variable and function declarations are hoisted (lifted and declared) to the top of its context (the containing scope)
   only declarations are hoisted to the top (initialization/assignments are not hoisted)
   function declaration takes precedence over variable declarations but not over variable assignment
-	var myName;	​		function myName(){};	console.log(typeof myName);	-> function
-	var myName='la';	​function myName(){};	console.log(typeof myName);	-> string
-	
+  var myName;  ​    function myName(){};  console.log(typeof myName);  -> function
+  var myName='la';  ​function myName(){};  console.log(typeof myName);  -> string
+  
 #Reserved words
-	abstract boolean break byte case catch char class const continue debugger
-	default delete do double else enum export extends false final finally float
-	for function goto if implements import in instanceof int interface long
-	native new null package private protected public return short static super
-	switch synchronized this throw throws transient true try typeof var
-	volatile void while with
+  abstract boolean break byte case catch char class const continue debugger
+  default delete do double else enum export extends false final finally float
+  for function goto if implements import in instanceof int interface long
+  native new null package private protected public return short static super
+  switch synchronized this throw throws transient true try typeof var
+  volatile void while with
 
 #User string input
-	confirm for yes no question, prompt for request to input data
-	confirm("I am ok");		prompt("Type your name");
+  confirm for yes no question, prompt for request to input data
+  confirm("I am ok");    prompt("Type your name");
 #String output
-	console.log to console, alert to pop up
-	console.log(2*5);		alert("Lala");
+  console.log to console, alert to pop up
+  console.log(2*5);    alert("Lala");
 
 #Data types: number(NaN, infinity), string, boolean, array, object, function, null, undefined, symbol, etc.
-	#Falsy value: undefined, null, NaN, 0, ''
-	#Primitives: strings, booleans, numbers, undefined, null
+  #Falsy value: undefined, null, NaN, 0, ''
+  #Primitives: strings, booleans, numbers, undefined, null
     #Complex: object, array, function
-	#Find data types of a variable
-		typeof variableName;		typeof(variableName);
+  #Find data types of a variable
+    typeof variableName;    typeof(variableName);
 #Primitives vs Complex Type
-	simple (primitive) data types are immutable, while complex data types are mutable.
-	primitive data type's value is stored directly on the variable, as a value
-	reference data type's value (complex type) is stored as a reference to another variable
-		var obj = {};
-		var anotherObj = obj;		#anotherObj is a reference to the obj object
+  simple (primitive) data types are immutable, while complex data types are mutable.
+  primitive data type's value is stored directly on the variable, as a value
+  reference data type's value (complex type) is stored as a reference to another variable
+    var obj = {};
+    var anotherObj = obj;    #anotherObj is a reference to the obj object
 
 #Operators: + - * / %
 #Comparataors: > < <= >= === !==
 
 #Manipulating strings
 strings.function()
-	.length()
-	.substring(0, 1)
-	.toUpperCase
-	.toLowerCase
+  .length()
+  .substring(0, 1)
+  .toUpperCase
+  .toLowerCase
 
-#-----------------------------------------------------------------------------------------------------------------	
+#-----------------------------------------------------------------------------------------------------------------  
 #Function ()
   In JS, functions are first-class objects:
    they are of the type Object, can be manipulated like any other object (string, number, etc.)
    they can be stored in variables, passed as arguments to functions, created within functions, and returned from functions
   the arguments and codes inside function is actually stored as string
-  #Function declaration: 						function functionName(parameters) { statements; }
+  #Function declaration:             function functionName(parameters) { statements; }
   #Function expression
-	anonymous function expression:				var identifier = function(parameters) { statements; }
-	named function expression:					var identifier = function functionName(parameters) { statements; }
-	immediately invoked function expression		(function greet() { alert("hello!"); })(); 
-		#another valid way to use IIFE			(function greet() { alert("hello!"); }());
+  anonymous function expression:        var identifier = function(parameters) { statements; }
+  named function expression:          var identifier = function functionName(parameters) { statements; }
+  immediately invoked function expression    (function greet() { alert("hello!"); })(); 
+    #another valid way to use IIFE      (function greet() { alert("hello!"); }());
 #Function hoisting
   function declarations and function variables are moved to the top of their scope by JavaScript interpreter
   do function expressions get hoisted too?
-	the variable declarations get hoisted but their assignment expressions don’t:	var identifier = undefined
+  the variable declarations get hoisted but their assignment expressions don’t:  var identifier = undefined
 #Inner functions
   inner functions (nested functions): functions defined inside of another function (the outer function)
   each time the outer function is called, an instance of the inner function is created
@@ -95,26 +95,30 @@ strings.function()
     typically occurs when an outer function returns a (reference to an) inner function
     the inner function then maintains a reference to the environment in which it was created
       it remembers all of the variables (and their values) that were in scope at the time
+  in general, you can say that:
+    first-class function == object with only one method
+    closure == object with only one method and some states
+    object == bundle of closures
 #Callback function (higher-order function)
   callback function: a function passed to another function as an argument
   even though it's called a callback, it is actually passing information forward
-  callback is not executed immediately by the containing function
-	we aren’t passing callback with the trailing pair of executing parenthesis ()
+  if we don’t pass callback with the trailing pair of executing parenthesis ()
+    the callback will not be executed immediately by the containing function
   the function definition acts like any other variable do when they're passed as an argument
   callback functions are closures
-	this is because the callback is executed at some point inside the outer function
+  this is because the callback is executed at some point inside the outer function
 #Manipulate function context
   use the methods below to manipulate the this variable of a function
   set new context to null if you don't want to change the context
   set new context to where the function is defined using 'this' as newContext
-	.bind(newContext)
-	.bind(newContext, argument1, argument2)
-	.apply(newContext,[argument1, argument2, ...])
+  .bind(newContext)
+  .bind(newContext, argument1, argument2)
+  .apply(newContext,[argument1, argument2, ...])
   .apply() vs .call()
-	pass the function parameters to apply () as an array
-	list the parameters individually to the call () method
+  pass the function parameters to apply () as an array
+  list the parameters individually to the call () method
   you can use apply to borrow methods (from constructor or custom object) and create variadic function
-	
+  
 #Time Out methods
     window.setTimeout()
       Calls a function or executes a code snippet after a specified delay.
@@ -128,7 +132,7 @@ strings.function()
         if you assign it to a variable, you can clear it with clearTimeout
     window.clearTimeout(timeoutID);
 
-#-----------------------------------------------------------------------------------------------------------------	
+#-----------------------------------------------------------------------------------------------------------------  
 #Asynchronous JavaScript
 the functions below in the real world will make an AjAX request and return the results
 for now let’s just use timeouts
@@ -332,33 +336,33 @@ for now let’s just use timeouts
     the least understood of all these tools
     difficult to track when you have lots of aggregated promises with added listeners along the way.
     
-#-----------------------------------------------------------------------------------------------------------------	
+#-----------------------------------------------------------------------------------------------------------------  
 #Conditionals
-	if (condition) { statements	} else if { statements } else { statements }
+  if (condition) { statements  } else if { statements } else { statements }
 #Ternary operator
-	var propertyName = ( dim === 'width' ) ? 'clientWidth' : 'clientHeight';
+  var propertyName = ( dim === 'width' ) ? 'clientWidth' : 'clientHeight';
 
 #Switch
-	var user=prompt('Lala?').toLowerCase();
-	switch(user){
-		case 'do':
-		case 're':
-			console.log('fa');
-			break;
-		case 'mi':
-			console.log('sol');
-			break;
-		default:						#default is optional
-			console.log('do');}
+  var user=prompt('Lala?').toLowerCase();
+  switch(user){
+    case 'do':
+    case 're':
+      console.log('fa');
+      break;
+    case 'mi':
+      console.log('sol');
+      break;
+    default:            #default is optional
+      console.log('do');}
 
 #For loop
-	for(var i = 0; i < integer; i++){ statements };
-	for (var i in lala){ statements };						#lala can be an array or object
+  for(var i = 0; i < integer; i++){ statements };
+  for (var i in lala){ statements };            #lala can be an array or object
 #While loop
-	while(condition===true){ statements };
-	  while(condition){ statements };
+  while(condition===true){ statements };
+    while(condition){ statements };
 #Do while loop
-	do { this one time and continue while loopCondition is true } while (loopCondition);
+  do { this one time and continue while loopCondition is true } while (loopCondition);
 
 #Loop control flow statements
     if (condition) { break; }       #get out of loop
@@ -368,98 +372,98 @@ for now let’s just use timeouts
     if (condition) { break labelName; }       #jump out of any code block
     if (condition) { continue labelName; }    #go to next iteration
 
-#-----------------------------------------------------------------------------------------------------------------		
+#-----------------------------------------------------------------------------------------------------------------    
 #Array []
 Array is heterogeneous and ordered
 Array name is usually capitalized
-	var arrayId=['la',3,2 //elements]
-	#Array constructor
-		var arrayName = new Array();
-	#Add data value to an array
-		array.push(data);
-	#Accessing element by index
-		var element = array[index]; console.log (languages[2])  #start from 0
-	#Array's length is a property, NOT function
-		array.length
-	#Iterating over an array to print every elements in it
-		for(var i=0; i<arrayName.length; i++){			#you can also use:for (i in arrayName)
-		console.log(arrayName[i]);}
-	#Two-dimensional array: has two rows that each contain two items.
-		var twoDimensional = [[1, 2], [3, 4]];
-			[[1, 2]		//matrix of 2D array
-			 [3, 4]]
-	#Jagged array
-		var jagged=[[1,2],[3]]
-	
+  var arrayId=['la',3,2 //elements]
+  #Array constructor
+    var arrayName = new Array();
+  #Add data value to an array
+    array.push(data);
+  #Accessing element by index
+    var element = array[index]; console.log (languages[2])  #start from 0
+  #Array's length is a property, NOT function
+    array.length
+  #Iterating over an array to print every elements in it
+    for(var i=0; i<arrayName.length; i++){      #you can also use:for (i in arrayName)
+    console.log(arrayName[i]);}
+  #Two-dimensional array: has two rows that each contain two items.
+    var twoDimensional = [[1, 2], [3, 4]];
+      [[1, 2]    //matrix of 2D array
+       [3, 4]]
+  #Jagged array
+    var jagged=[[1,2],[3]]
+  
 #-----------------------------------------------------------------------------------------------------------------
 Object Data Properties Have Attributes
 Each object data property has not only the name-value pair, but also 3 attributes (that are set to true by default):
-	configurable: specifies whether the property can be deleted or changed
-	enumerable:   specifies whether the property can be returned in a for/in loop
-	writable:     specifies whether the property can be changed
+  configurable: specifies whether the property can be deleted or changed
+  enumerable:   specifies whether the property can be returned in a for/in loop
+  writable:     specifies whether the property can be changed
 Objects Have Attributes 
-	prototype
-	class
-	extensible
-	
+  prototype
+  class
+  extensible
+  
 #Object {}
-	#Object literal notation
-		var objectName = {							#never forget the comma
-			key: value,								#key a.k.a property
-			methodName: function(parameter) { 		#defining function a.k.a method
-			codes},									#you must end the method with comma, no ; is allowed inside the object bracket
-			key: value};
-		var emptyObject = {};
-	#Object constructor (constructor notation)
-		var objectName = new Object();				#Object must be capitalized
-		objectName.key = value;
-		objectName.methodName = function (parameter) { codes }
-		objectName["key"] = value;
-	#Iterating over an object
-		for(var i=0; i<objectName.length; i++){			#you can also use "for (var i in objectName){};"
-			console.log(i);}							#print keys
-			console.log(objectName[i]);};				#print value of keys
-	#Accessing property's value
-		objectName.key		#dot notation
-		objectName["key"]	#bracket notation 		#use this when you can't use dot notation, don't forget the ""
-			#you can use a variable to act as a placeholder of an object property
-				x="key"								#don't forget the ""
-				objectName["key"] := objectName[x]
-	#Find if object has a certain property
-		myObj.hasOwnProperty('name') 	#this only include non-inherited properties
-		'name' in myObj					#this will include inherited properties
-	#Delete object properties
-		delete.objectName.key
-	  delete operator returns true if
-		the delete was successful
-		the property to delete was nonexistent
-		the property could not be deleted (e.g. non-configurable or inherited)
-	#Properties: variables associated with an object.
-		objectName.variableName = value;	#Assigning value to property
-		#All object's properties are automatically public (can be accessed outside the class)
-		#If you want to make a private variable, use: 			var _parameter=value
-			#Accessing private variables using public method:	this.methodName= function() {return privateVariable};
-	#Method: a function associated with an object
-		objectName.methodName= function (parameter){codes;};
-		#Calling method:	objectName.methodName()
-		#Method can be public or private. The syntax to create them is also similar.
-			#Accessing private method using public method
-			   this.publicMethod=function(){return privateMethod }		
-			   #don't use () after privateMethod so that it returns the method itself and NOT the result of calling that method.
-			   
+  #Object literal notation
+    var objectName = {              #never forget the comma
+      key: value,                #key a.k.a property
+      methodName: function(parameter) {     #defining function a.k.a method
+      codes},                  #you must end the method with comma, no ; is allowed inside the object bracket
+      key: value};
+    var emptyObject = {};
+  #Object constructor (constructor notation)
+    var objectName = new Object();        #Object must be capitalized
+    objectName.key = value;
+    objectName.methodName = function (parameter) { codes }
+    objectName["key"] = value;
+  #Iterating over an object
+    for(var i=0; i<objectName.length; i++){      #you can also use "for (var i in objectName){};"
+      console.log(i);}              #print keys
+      console.log(objectName[i]);};        #print value of keys
+  #Accessing property's value
+    objectName.key    #dot notation
+    objectName["key"]  #bracket notation     #use this when you can't use dot notation, don't forget the ""
+      #you can use a variable to act as a placeholder of an object property
+        x="key"                #don't forget the ""
+        objectName["key"] := objectName[x]
+  #Find if object has a certain property
+    myObj.hasOwnProperty('name')   #this only include non-inherited properties
+    'name' in myObj          #this will include inherited properties
+  #Delete object properties
+    delete.objectName.key
+    delete operator returns true if
+    the delete was successful
+    the property to delete was nonexistent
+    the property could not be deleted (e.g. non-configurable or inherited)
+  #Properties: variables associated with an object.
+    objectName.variableName = value;  #Assigning value to property
+    #All object's properties are automatically public (can be accessed outside the class)
+    #If you want to make a private variable, use:       var _parameter=value
+      #Accessing private variables using public method:  this.methodName= function() {return privateVariable};
+  #Method: a function associated with an object
+    objectName.methodName= function (parameter){codes;};
+    #Calling method:  objectName.methodName()
+    #Method can be public or private. The syntax to create them is also similar.
+      #Accessing private method using public method
+         this.publicMethod=function(){return privateMethod }    
+         #don't use () after privateMethod so that it returns the method itself and NOT the result of calling that method.
+         
 #Class encapsulation
-	When creating class function, combine the Constructor and Prototype pattern
-		Constructor pattern for properties that are unique to an object
-		Prototype pattern for properties that are owned by the class and for methods
+  When creating class function, combine the Constructor and Prototype pattern
+    Constructor pattern for properties that are unique to an object
+    Prototype pattern for properties that are owned by the class and for methods
 #Constructor Pattern
-	function ClassName(parameter1,parameter2) {
-		this.parameter1 = argument1;							#defining property in class
-		this.parameter2 = 'value';								#you can use value instead of argument
-		var _parameter  = value;								#a private variable
-		this.methodName = function() {							#defining method in class
-			codes}		};										#you must use ;
+  function ClassName(parameter1,parameter2) {
+    this.parameter1 = argument1;              #defining property in class
+    this.parameter2 = 'value';                #you can use value instead of argument
+    var _parameter  = value;                #a private variable
+    this.methodName = function() {              #defining method in class
+      codes}    };                    #you must use ;
   #Instantiate object from class
-	var objectName = new ClassName(argument1, argument2);
+  var objectName = new ClassName(argument1, argument2);
   #New function
     What the new function does is:
       create an object inheriting from ClassName.prototype
@@ -467,20 +471,20 @@ Objects Have Attributes
       return this (the newly created object)
         if constructor function doesn't explicitly return an object, the object created in step 1 is used
 #Prototype pattern
-	function ClassName(){};
-	ClassName.prototype.key = value;
-	ClassName.prototype.methodName = function() { codes }
+  function ClassName(){};
+  ClassName.prototype.key = value;
+  ClassName.prototype.methodName = function() { codes }
   or overwrite the prototype (instead of extending it):
-	ClassName.prototype = {
-		constructor: ClassName,
-		methodName: function() { codes; },
-		key: value							};
+  ClassName.prototype = {
+    constructor: ClassName,
+    methodName: function() { codes; },
+    key: value              };
   #Instantiate the object
-	var objectName = new ClassName();
+  var objectName = new ClassName();
 #Constructor property
-	Whenever you overwrite an object’s prototype				#ClassName.prototype = {}
-		you also overwrite the object’s constructor property
-		so you have to set it manually 							#constructor: ClassName,
+  Whenever you overwrite an object’s prototype        #ClassName.prototype = {}
+    you also overwrite the object’s constructor property
+    so you have to set it manually               #constructor: ClassName,
 
 #Class implementation example:
     var Person = function(firstName, lastName, age){
@@ -508,88 +512,88 @@ Objects Have Attributes
     mySpy.spy();
 
 #Class inheritance
-	Object.create = function (o) {
+  Object.create = function (o) {
         function F() {}
-​    	F.prototype = o;
+​      F.prototype = o;
         return new F();
     };
   #Instantiate the object
-	var cars = {type:"sedan", wheels:4​ };
-​	​var toyota = Object.create (cars);
+  var cars = {type:"sedan", wheels:4​ };
+​  ​var toyota = Object.create (cars);
 #Parasitic Combination Inheritance Pattern
-	function inheritPrototype(childObject, parentObject) {
-		var copyOfParent = Object.create(parentObject.prototype);
-		copyOfParent.constructor = childObject;
-		childObject.prototype = copyOfParent;						}
+  function inheritPrototype(childObject, parentObject) {
+    var copyOfParent = Object.create(parentObject.prototype);
+    copyOfParent.constructor = childObject;
+    childObject.prototype = copyOfParent;            }
   #Instantiate the object
-	first, instantiate the object using the constructor pattern
-	then, call the inheritPrototype function to overwrite the prototype of childObject with the prototype of parentObject
-		inheritPrototype(childObject, parentObject)
-	finally, (if necessary) add more prototype to the childObject using the encapsulation prototype pattern
+  first, instantiate the object using the constructor pattern
+  then, call the inheritPrototype function to overwrite the prototype of childObject with the prototype of parentObject
+    inheritPrototype(childObject, parentObject)
+  finally, (if necessary) add more prototype to the childObject using the encapsulation prototype pattern
 
 #This
-	function go() { console.debug(this); };					go();		->	window
-	var obj= { go: function() { console.debug(this); } };	obj.go();	->	obj
-	function MyClass() { this.go = function() { console.debug(this); } }
-	var instance1 = new MyClass(); var instance2 = new MyClass();
-	instance1.go(); -> instance1
-	instance2.go(); -> instance2
+  function go() { console.debug(this); };          go();    ->  window
+  var obj= { go: function() { console.debug(this); } };  obj.go();  ->  obj
+  function MyClass() { this.go = function() { console.debug(this); } }
+  var instance1 = new MyClass(); var instance2 = new MyClass();
+  instance1.go(); -> instance1
+  instance2.go(); -> instance2
   this: a reference to the object that is the context in which the executing method is bound to
   this is not assigned a value until an object invokes the function where this is defined
   this is assigned the value of the object where the function is invoked, not where the function is defined
   jQuery library automatically binds this to the selector object that invokes the event handler
   if you want to override the default this definition you can use .bind(), .apply(), or .call() method
-	see Manipulate function context
-	overriding is usually necessary when:	borrowing methods, assigning object method to global or non-local variable, using callbacks
+  see Manipulate function context
+  overriding is usually necessary when:  borrowing methods, assigning object method to global or non-local variable, using callbacks
   closures (inner functions) cannot access the outer function’s this 
-	to fix the problem, store the this as a variable inside the outer function
+  to fix the problem, store the this as a variable inside the outer function
   if you declare var objectName.functionName, the this will only refer to the objectName object
-	but, if you declare functionName like this:		var functionName= function (parameters) { this.property=value; }
-	you can assign it later to an object
-		objectName.methodName=functionName			#assigning global functionName to objectName as a method
-		objectName.methodName(arguments)			#calling the method
+  but, if you declare functionName like this:    var functionName= function (parameters) { this.property=value; }
+  you can assign it later to an object
+    objectName.methodName=functionName      #assigning global functionName to objectName as a method
+    objectName.methodName(arguments)      #calling the method
 #Prototype
-	#Prototype property
-		every JavaScript function has a prototype property (empty by default)
-		attach properties and methods on this prototype property when you want to implement inheritance
-		some web browser have a __proto__ “pseudo” property that allows you to access an object’s prototype property
-	#Prototype attribute (prototype object)
-		an object’s prototype attribute points to the object’s parent (the object it inherited its properties from)
-		it is set automatically when you create a new object
-	#2 general ways an object’s prototype attribute is set when an object is created
-		if an object is created with an object literal (var newObj = {}), 
-			it inherits properties from Object.prototype 
-			its prototype object (or prototype attribute) is Object.prototype
-		if an object is created from a constructor function e.g. new Object (), new Fruit (), new Array () or new Anything ()
-			it inherits from that constructor (Object (), Fruit (), Array (), or Anything ())
-			e.g. any object created with the Array constructor ( var a = new Array() ) inherits from Array.prototype
-			all built-in constructors were created from the Object constructor, and as such their prototype is Object.prototype
-	#Extending the prototype property
-		className.prototype.key = value;
-		className.prototype.newMethod = function(parameter) { codes; };
-	#Changing the class's prototype attribute
-		childClass.prototype = new parentClass();
-	#Prototype chain
-		If JS encounters something it can't find in the current class's methods or properties, 
-		it looks up the prototype chain to see if it's defined in a class that it inherits from. 
-		This keeps going upwards until it stops all the way at the top: the mighty Object.prototype
-		By default, all classes inherit directly from Object, unless we change the class's prototype
+  #Prototype property
+    every JavaScript function has a prototype property (empty by default)
+    attach properties and methods on this prototype property when you want to implement inheritance
+    some web browser have a __proto__ “pseudo” property that allows you to access an object’s prototype property
+  #Prototype attribute (prototype object)
+    an object’s prototype attribute points to the object’s parent (the object it inherited its properties from)
+    it is set automatically when you create a new object
+  #2 general ways an object’s prototype attribute is set when an object is created
+    if an object is created with an object literal (var newObj = {}), 
+      it inherits properties from Object.prototype 
+      its prototype object (or prototype attribute) is Object.prototype
+    if an object is created from a constructor function e.g. new Object (), new Fruit (), new Array () or new Anything ()
+      it inherits from that constructor (Object (), Fruit (), Array (), or Anything ())
+      e.g. any object created with the Array constructor ( var a = new Array() ) inherits from Array.prototype
+      all built-in constructors were created from the Object constructor, and as such their prototype is Object.prototype
+  #Extending the prototype property
+    className.prototype.key = value;
+    className.prototype.newMethod = function(parameter) { codes; };
+  #Changing the class's prototype attribute
+    childClass.prototype = new parentClass();
+  #Prototype chain
+    If JS encounters something it can't find in the current class's methods or properties, 
+    it looks up the prototype chain to see if it's defined in a class that it inherits from. 
+    This keeps going upwards until it stops all the way at the top: the mighty Object.prototype
+    By default, all classes inherit directly from Object, unless we change the class's prototype
 
 #Serialize and Deserialize Objects
   serialize: convert an object to a string to (transfer your objects via HTTP, etc.)
-	var strings = JSON.stringify (objectName);
+  var strings = JSON.stringify (objectName);
   deserialize
-	var objectName = JSON.parse (strings); 
-	
+  var objectName = JSON.parse (strings); 
+  
 #-----------------------------------------------------------------------------------------------------------------
 #Module and Namespace
 
 #IIFE Module Pattern
-	(function(window, $, undefined){ codes; })(window, jQuery);
+  (function(window, $, undefined){ codes; })(window, jQuery);
 #Namespace
   declare a namespace, and assign a function to it:
-	window.myApp = window.myApp || {};
-	window.myApp.someFunction = function(){	codes };
+  window.myApp = window.myApp || {};
+  window.myApp.someFunction = function(){  codes };
 #Combining IIFE Module Pattern and Namespace Pattern
     (function(myApp, $, undefined){ codes; }(window.myApp = window.myApp || {}, jQuery));
   could also be written like this:

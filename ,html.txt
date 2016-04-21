@@ -110,17 +110,17 @@
 #---------------------------------------------------------------------------------------------------
 #Audio
   #single-source audio
-	<audio src="music.mp3" type="audio/mpeg" control autoplay loop preload="auto">
+	<audio src="music.mp3" type="audio/mpeg" controls autoplay loop preload="auto">
 		Audio element is not supported by your browser
 	</audio>
   #multi-sources audio
-	<audio control autoplay loop>
+	<audio controls autoplay loop>
 		<source src="music.mp3" type="audio/mpeg">
 		<source src="music.ogg" type="audio/ogg; codecs=vorbis">
 		Audio element is not supported by your browser.
 		Please download the music <a href="music.mp3">here</a>.
 	</audio>
-  control, autoplay, and loop is a boolean attribute
+  controls, autoplay, and loop is a boolean attribute
   preload has 3 values: none, auto, metadata
   the page will try to render the sources top to bottom
 	the mp3 is rendered first
@@ -132,10 +132,10 @@
   the type attribute contains container MIME type, video codecs, then audio
 codecs
   poster attribute allows us to specify an image, in the form of a URL, to be shown before a video is played. 
-	<video src="mv.mp4" type="video/mp4" poster="movie-screenshot.jpg" control autoplay loop>
+	<video src="mv.mp4" type="video/mp4" poster="movie-screenshot.jpg" controls autoplay loop>
 		Video element is not supported by your browser
 	</video>
-	<video control autoplay loop>
+	<video controls autoplay loop>
     <source src="mv.mp4"  type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
     <source src="mv.webm" type='video/webm; codecs="vp8, vorbis"'>
     <source src="mv.ogv"  type='video/ogg; codecs="theora, vorbis"'>

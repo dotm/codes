@@ -532,26 +532,26 @@ Objects Have Attributes
   finally, (if necessary) add more prototype to the childObject using the encapsulation prototype pattern
 
 #This
-  function go() { console.debug(this); };          go();    ->  window
-  var obj= { go: function() { console.debug(this); } };  obj.go();  ->  obj
-  function MyClass() { this.go = function() { console.debug(this); } }
-  var instance1 = new MyClass(); var instance2 = new MyClass();
-  instance1.go(); -> instance1
-  instance2.go(); -> instance2
-  this: a reference to the object that is the context in which the executing method is bound to
+    function go() { console.debug(this); };          go();    ->  window
+    var obj= { go: function() { console.debug(this); } };  obj.go();  ->  obj
+    function MyClass() { this.go = function() { console.debug(this); } }
+    var instance1 = new MyClass(); var instance2 = new MyClass();
+    instance1.go(); -> instance1
+    instance2.go(); -> instance2
+  this: a reference to the context object in which the executing method is bound to
   this is not assigned a value until an object invokes the function where this is defined
   this is assigned the value of the object where the function is invoked, not where the function is defined
   jQuery library automatically binds this to the selector object that invokes the event handler
   if you want to override the default this definition you can use .bind(), .apply(), or .call() method
-  see Manipulate function context
+    see Manipulate function context
   overriding is usually necessary when:  borrowing methods, assigning object method to global or non-local variable, using callbacks
   closures (inner functions) cannot access the outer function’s this 
-  to fix the problem, store the this as a variable inside the outer function
+    to fix the problem, store the this as a variable inside the outer function
   if you declare var objectName.functionName, the this will only refer to the objectName object
-  but, if you declare functionName like this:    var functionName= function (parameters) { this.property=value; }
-  you can assign it later to an object
-    objectName.methodName=functionName      #assigning global functionName to objectName as a method
-    objectName.methodName(arguments)      #calling the method
+    but, if you declare functionName like this:    var functionName= function (parameters) { this.property=value; }
+    you can assign it later to an object
+      objectName.methodName=functionName      #assigning global functionName to objectName as a method
+      objectName.methodName(arguments)      #calling the method
 #Prototype
   #Prototype property
     every JavaScript function has a prototype property (empty by default)
@@ -573,17 +573,17 @@ Objects Have Attributes
     className.prototype.newMethod = function(parameter) { codes; };
   #Changing the class's prototype attribute
     childClass.prototype = new parentClass();
-  #Prototype chain
-    If JS encounters something it can't find in the current class's methods or properties, 
+  #Delegation with prototype chain
+    If JS encounters a name it can't find in the current class's methods or properties, 
     it looks up the prototype chain to see if it's defined in a class that it inherits from. 
-    This keeps going upwards until it stops all the way at the top: the mighty Object.prototype
+    This keeps going upwards until it stops all the way at the top: Object.prototype
     By default, all classes inherit directly from Object, unless we change the class's prototype
 
 #Serialize and Deserialize Objects
   serialize: convert an object to a string to (transfer your objects via HTTP, etc.)
-  var strings = JSON.stringify (objectName);
+    var strings = JSON.stringify (objectName);
   deserialize
-  var objectName = JSON.parse (strings); 
+    var objectName = JSON.parse (strings); 
   
 #-----------------------------------------------------------------------------------------------------------------
 #Module and Namespace

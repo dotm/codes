@@ -1,0 +1,43 @@
+<script src="jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="stylesheet.css">
+
+;(function ($, window, document, undefined) {
+	'use strict';
+	// Code goes here...
+})(jQuery, window, document);
+
+function a (x){
+ if(x === undefined){return "Getter";}
+ if(typeof x === "string"){ return "Setter set to "+x; }
+ else{return "Please enter a string" }
+}
+
+#recommit git
+git add .
+git commit --amend
+
+#Github Pages project page
+git checkout --orphan gh-pages
+git commit -am"initial commit"
+git push origin gh-pages
+
+#Parsing Ajax html
+var a=$.get("http://dotm.github.io/")
+var el = document.createElement( 'html' );
+el.innerHTML = a.responseText
+
+#Create canvas
+var canvas = document.createElement("canvas")
+canvas.width = canvas.height = 400
+canvas.style = "border:1px solid #000;"
+var c = canvas.getContext('2d');
+document.getElementsByTagName("body")[0].appendChild(canvas)
+
+#Set up git to pull and push all branches
+git push --all origin -u
+
+#Make an existing Git branch track a remote branch
+Given a branch foo and a remote upstream:
+git branch -u upstream/foo
+Or, if local branch foo is not the current branch:
+git branch -u upstream/foo foo

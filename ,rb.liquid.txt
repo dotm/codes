@@ -1,0 +1,185 @@
+#2 types of markup
+  Output markup which resolve to text     {{  }}
+  Tag markup which don't resolve to text  {%  %}
+
+#Valid expressions
+  variable
+    var_name
+  Array or hash access
+    var_name[<KEY EXPRESSION>]
+    var_name.key
+    var_name[<KEY EXPRESSION>].key
+  Array or hash size
+    var_name.size
+  Strings
+    "string"
+    'string'
+  Integers
+  Booleans
+  nil
+  
+#Basic operators: == != > < >= <= or and
+  comparators only work as CONDITION in conditional statement
+#Contains operator
+  checks for the presence of a substring inside a string.
+    {% if product.title contains 'Pack' %}
+      This product's title contains the word Pack.
+    {% endif %}
+  check for the presence of a string in an array of strings.
+    {% if product.tags contains 'Hello' %}
+      This product has been tagged with 'Hello'.
+    {% endif %}
+  contains can only search strings
+    You cannot use it to check for an object in an array of objects
+    
+#Truthy values: all values (even empty string) are truthy except nil and false
+#Falsy values: nil false
+
+#Ranges
+    (start..end)  ->  [start, end]
+  The start and end values must be integers or expressions that resolve to integers
+
+#-----------------------------------------------------------------------------------------------------------------
+#Objects
+    {{ page.title }}
+  contain attributes that are used to display dynamic content on a page
+  Objects and variable names are denoted by double curly braces
+  6 types of Liquid objects: String Number Boolean Nil Array EmptyDrop
+  
+You can initialize Liquid variables with the assign or capture tags.
+#-----------------------------------------------------------------------------------------------------------------
+#Tags
+  make up the programming logic that tells templates what to do
+  denoted by curly braces and percent signs: {% and %}
+  3 types of tags: Control flow, Iteration, Variable assignments
+  
+#Variable Assignment
+    {% assign name = 'freestyle' %}
+    {% capture attribute_name %}{{ item.title | handleize }}-{{ i }}-color{% endcapture %}
+  If you want to combine a number of strings into a single string and save it to a variable, 
+    use the capture tag which is a block that "captures" whatever is rendered inside it,
+    then assigns the captured value to the given variable instead of rendering it to the screen.
+
+#Comments
+  {% comment %}  {% endcomment %}
+
+#Raw
+  temporarily disables tag processing
+  {% raw %} In Handlebars, {{ this }} will be HTML-escaped, but {{{ that }}} will not.
+  {% endraw %}
+
+#If Else
+  {% if <CONDITION> %}
+    code block
+  {% elsif <CONDITION> %}
+    code block
+  {% else %}
+    code block
+  {% endif %}
+#Unless
+  {% unless <CONDITION> %}
+    code block
+  {% endunless %}
+
+#Case statement
+  {% case condition %}
+  {% when 1 %}
+    code block
+  {% when 2 or "two" %}
+    code block
+  {% else %}
+    default
+  {% endcase %}
+
+#Cycle
+  if no name is supplied for the cycle group, 
+   then it's assumed that multiple calls with the same parameters are one group.
+    {% cycle 'one', 'two', 'three' %} -> one
+    {% cycle 'one', 'two', 'three' %} -> two
+    {% cycle 'one', 'two', 'three' %} -> three
+    {% cycle 'one', 'two', 'three' %} -> one
+  you can optionally specify the name of the group which can even be a variable.
+    {% cycle 'group 1': 'one', 'two', 'three' %} -> one
+    {% cycle 'group 1': 'one', 'two', 'three' %} -> two
+    {% cycle 'group 2': 'one', 'two', 'three' %} -> one
+    {% cycle 'group 2': 'one', 'two', 'three' %} -> two
+
+#For loops
+    {% for i in iterable optional_argument:parameter optional_argument:parameter %}
+      {{ i }}
+    {% else %}
+      code block if no item in collection
+    {% endfor %}
+  iterables: array, hash, range of integer
+  when iterating a hash, item[0] contains the key, item[1] contains the value
+#Interrupts
+  {% continue %}  — end current iteration, then continue the loop with the next value.
+  {% break %}     — end current iteration, then completely end the loop.
+#Helper variables
+  During every for loop, the following helper variables are available:
+    forloop.length  - length of the entire for loop
+    forloop.index   - index of the current iteration
+    forloop.index0  - index of the current iteration (zero based)
+    forloop.rindex  - how many items are still left?
+    forloop.rindex0 - how many items are still left? (zero based)
+    forloop.first   - is this the first iteration?
+    forloop.last    - is this the last iteration?
+#Optional arguments
+  limit:<INTEGER>   - restrict how many items you get
+  offset:<INTEGER>  - start the collection with the nth item
+  reversed          - iterate collection from last to first
+
+#-----------------------------------------------------------------------------------------------------------------
+#Filters
+
+#Filter syntax
+    {{ initial_output | filter_name : parameter, parameter | filter_name }}
+  used to modify the output of strings, numbers, variables, and objects
+  parameters must be valid expression
+  when chaining filters, the output of the previous filter will be the input for the next one.
+    
+#Standard Filters
+  size          - return the size of an array or string
+  date          - reformat a date
+  default       - returns the given variable unless it is null or the empty string, when it will return the given value
+  escape_once   - returns an escaped version of html without affecting existing escaped entities
+  escape        - html escape a string
+  newline_to_br - replace each newline (\n) with html break
+  url_encode    - url encode a string
+  
+  append          - append a string
+  prepend
+  capitalize
+  downcase        - convert to lowercase
+  upcase
+  lstrip          - strips all whitespace from the beginning of a string
+  rstrip          - strips all whitespace from the end of a string
+  strip_html      - strip html from string
+  strip_newlines  - strip all newlines (\n) from string
+  strip           - strips all whitespace from both ends of the string
+  remove_first    - remove the first occurrence e.g. {{ 'barbar' | remove_first:'bar' }} #=> 'bar'
+  remove          - remove each occurrence e.g. {{ 'foobarfoobar' | remove:'foo' }} #=> 'barbar'
+  replace_first   - replace the first occurrence e.g. {{ 'barbar' | replace_first:'bar','foo' }} #=> 'foobar'
+  replace         - replace each occurrence e.g. {{ 'foofoo' | replace:'foo','bar' }} #=> 'barbar'
+  slice           - slice a string. Takes an offset and length, e.g. {{ "hello" | slice: -3, 3 }} #=> llo
+  split           - split a string on a matching pattern e.g. {{ "a~b" | split:"~" }} #=> ['a','b']
+  truncate        - truncate a string down to x characters. accepts a second parameter to append to string e.g. {{ 'foobarfoobar' | truncate: 5, '.' }} #=> 'foob.'
+  truncatewords   - truncate a string down to x words
+  pluralize       - if input is 1, return the first word, else return the second word e.g. {{ 3 | pluralize: 'item', 'items' }} #=> 'items'
+
+  round       - rounds input to the nearest integer or specified number of decimals e.g. {{ 4.5612 | round: 2 }} #=> 4.56
+  ceil        - ceiling function
+  floor       - floor function
+  plus
+  minus
+  times       - multiplication
+  divided_by
+  modulo
+  
+  first     - get first element of array
+  last      - get last element of array
+  reverse   - reverse array
+  sort      - sort elements of the array
+  uniq      - removed duplicate elements from an array, optionally using a given property to test for uniqueness
+  join      - join elements of the array with certain character between them
+  map       - map/collect an array on a given property

@@ -1,0 +1,157 @@
+Handlebars.js is a compiler 
+  HTML and Handlebars expression -> JavaScript function
+  JavaScript function(your data) -> HTML string 
+  insert HTML string to the page
+
+#-------------------------------------------------------------------------------------------
+#The Process
+
+#Use Handlebars script tag to deliver template:
+  <script id="template" type="text/x-handlebars-template">
+    template goes here
+  </script>
+
+#Compile a template in JavaScript
+  var source = $("#template").html();
+  var template = Handlebars.compile(source);
+
+#Execute the template with a data object context
+  var context = {key: value, key: value};
+  var html = template(context);          ->  HTML string to be inserted to the page
+
+#One line process
+  (Handlebars.compile("template"))({context})
+    (Handlebars.compile("{{a}}"))({a:1})
+      ->  "1"
+
+#-------------------------------------------------------------------------------------------
+#The Syntax
+
+#Comments
+  {{! nothing will be outputted here }}
+  {{!-- comments that must contain }} or other handlebars tokens should use this syntax. --}}
+  <!-- regular HTML comments will be outputted -->
+
+#Expressions
+  {{ variable }}
+ #Paths (property lookup)
+  {{ variable.property }}
+ #Reference a property that is not a valid identifier using segment-literal notation []
+  articles.[10].[#comments]
+ #Parent paths ../
+  used to lookup properties on parents of the current context
+  given the context:
+    {groupName:"Celebrities",
+     users:[{name:{firstName:"Mike", lastName:"Alexander" }},
+            {name:{firstName:"John", lastName:"Waters" }} ]};
+  create the template of:
+    {{#users}}​
+      <li>{{name.firstName}} {{name.lastName}} is in the {{../groupName}} group.</li>​
+    {{/users}}
+
+#Block Expressions
+  given the context of:
+     {customers:[{firstName:”Michael”, lastName:”Alexander”, age:20}, {firstName:”John”, lastName:”Allen”, age:29}]};
+  using each helper to iterate the context object
+    {{#each customers}} <li> {{ firstName }} {{ lastName }} </li>​ {{/each}}
+  using block helper
+    {{#customers}}      <li> {{ firstName }} {{ lastName }} </li>​ {{/customers}}
+
+#Triple Stash {{{ }}} For Non-escape HTML
+  (Handlebars.compile("{{a}}"))({a:"<p>"})   ->  "&lt;p&gt;"
+  (Handlebars.compile("{{{a}}}"))({a:"<p>"}) ->  "<p>"
+Handlebars will not escape a Handlebars.SafeString.
+  If you write a helper that generates its own HTML, 
+  you will usually want to return a new Handlebars.SafeString(result).
+  In such a circumstance, you will want to manually escape parameters.
+    Handlebars.registerHelper('link', function(text, url) {
+      text = Handlebars.Utils.escapeExpression(text);
+      url  = Handlebars.Utils.escapeExpression(url);
+
+      var result = '<a href="' + url + '">' + text + '</a>';
+
+      return new Handlebars.SafeString(result);
+    });
+  This will escape the passed in parameters, but mark the response as safe,
+    so Handlebars will not try to escape it even if the "triple-stash" is not used.
+    
+#Partials (sub-templates)
+  {{> partialName}}
+  given the template:
+    <div class="post">
+      {{> userMessage tagName="h1" }}
+      <h1>Comments</h1>
+      {{#each comments}}
+        {{> userMessage tagName="h2" }}
+      {{/each}}
+    </div>
+   and the partial:
+    Handlebars.registerPartial('userMessage',
+    '<{{tagName}}>By {{author.firstName}} {{author.lastName}}</{{tagName}}>'
+    + '<div class="body">{{body}}</div>');
+   and the context:
+    {
+      author: {firstName: "Alan", lastName: "Johnson"},
+      body: "I Love Handlebars",
+      comments: [{
+        author: {firstName: "Yehuda", lastName: "Katz"},
+        body: "Me too!"
+      }]
+    }
+   will return:
+    <div class="post">
+      <h1>By Alan Johnson</h1>
+      <div class="body">I Love Handlebars</div>
+      <h1>Comments</h1>
+      <h2>By Yehuda Katz</h2>
+      <div class="body">Me Too!</div>
+    </div>
+
+#-------------------------------------------------------------------------------------------
+#Helpers
+the conditional and loops for executing simple logic
+
+#Built-in Helpers
+  function helper: a helper that does not use a block
+  block helper: a helper with a block
+#Each Helper:
+  {{#each}}code block{{/each}}
+#If Helper:
+  it checks for truthy values such as true, any non-empty or non null value, and the like
+  the block is only rendered if the if evaluates to a truthy value.
+    {{#if variable}}code block{{/if}}
+  it is best to check for the length property of the variable,
+    to catch cases where an array might be empty:
+      {{#if variable.length}}​
+  if helper does not accept any conditional logic
+    use a custom helper to add such conditional logic
+ #Else Helper:
+    {{#if variable}}
+      code block
+    {{else}}
+      code block
+    {{/if}}
+ #Unless Helper: {{#unless}}code block{{/unless}}
+ #With Helper: {{#with}}code block{{/with}}???????????
+
+#Custom Helpers
+Custom helpers are created in the JavaScript code, not inside the Handlebars template.
+2 types of custom helpers you can create: custom function helper, custom block helper
+#Custom Function Helpers
+  Handlebars.registerHelper ("helperName", function (parameters) { function code block })
+ calling the helper:
+  {{helperName arguments}}
+#Custom Block Helpers
+  Handlebars.registerHelper ("helperName", function (parameters, options) { function code block })
+ calling the helper (notice the #):
+  {{#helperName arguments}}
+When we register a custom block helper,
+  Handlebars automatically adds an options object as the last parameter in the callback function.
+  And the options object has an fn method, a hash object, and an inverse method.
+
+#-------------------------------------------------------------------------------------------
+Four Ways to Load/Add Templates
+  Use Script Tags
+  Use Custom Function
+  Use AMD and Require.js
+  Precompile The Templates

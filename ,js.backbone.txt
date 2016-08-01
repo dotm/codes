@@ -1,0 +1,28 @@
+#Views
+  used to reflect what your applications' data models look like
+  used to listen to events and react accordingly
+#Initialize method
+  the initialize function is always called when instantiating a Backbone View.
+  consider it the constructor of the class.
+#The "el" property
+  references the DOM object created in the browser
+  every Backbone.js view has an "el" property, 
+    if it is not defined, Backbone.js will construct its own, which is an empty div element.
+  setting view's "el" property to div#search_container,
+    effectively make Backbone.View the owner of that DOM element.
+  Note: Keep in mind that this binds the container element. Any events we trigger must be in this element.
+
+<div id="search_container"></div>
+
+<script type="text/javascript">
+  SearchView = Backbone.View.extend({
+    initialize: function(){
+      alert("Alerts suck.");
+    }
+  });
+
+  var search_view = new SearchView({ el: $("#search_container") });
+</script>
+
+
+

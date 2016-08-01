@@ -1,0 +1,104 @@
+#Object-Oriented vs Functional Style
+  _([1, 2, 3]).map(function(n){ return n * 2; });
+  _.map([1, 2, 3], function(n){ return n * 2; });
+
+#--------------------------------------------------------------------------------
+#Collection Functions (Arrays or Objects)
+  contains    countBy
+  each        every
+  filter      find          findWhere
+  groupBy
+  indexBy     invoke
+  map         max           min
+  partition   pluck
+  reduce      reduceRight   reject
+  sample      shuffle       size        some    sortBy
+  toArray
+  where
+
+#each
+    _.each(list, iteratee, [context]) Alias: forEach 
+  iteratee is called with 3 arguments:
+    (element, index, list)
+    (value, key, list) if list is an object
+  Returns the list for chaining.
+  each loop cannot be broken out of 
+    to break, use _.find instead.
+  works by duck-typing,
+    so avoid passing objects with a numeric length property
+    
+#map
+    _.map(list, iteratee, [context]) Alias: collect 
+  Produces a new array of values
+    by mapping each value in list
+    through a transformation function (iteratee).
+  The iteratee is passed 3 arguments:
+    (value, index or key, list)
+    
+#reduce
+    _.reduce(list, iteratee, [memo], [context]) Aliases: inject, foldl 
+  boils down a list of values into a single value
+  Memo: the initial state of the reduction,
+    each successive step of it should be returned by iteratee
+  The iteratee is passed 4 arguments: 
+    (memo, value, index or key, list)
+  If no memo is passed to the initial invocation of reduce,
+    first element of list is passed as the memo.  
+#reduceRight
+    _.reduceRight(list, iteratee, memo, [context]) Alias: foldr 
+  The right-associative version of reduce.
+  
+#find
+    _.find(list, predicate, [context]) Alias: detect 
+  Looks through each value in the list,
+    return the first one that passes a truth test (predicate),
+    return undefined if no value passes the test.
+  The function returns as soon as it finds an acceptable element (non-global).
+
+#filter
+    _.filter(list, predicate, [context]) Alias: select 
+  Looks through each value in the list,
+    return an array of all the values that pass a truth test (predicate).
+
+#reject
+    _.reject(list, predicate, [context]) 
+  Returns the values in list without the elements that the truth test (predicate) passes. 
+  The opposite of filter.
+  
+#where
+    _.where(list, properties) 
+  Looks through each value in the list,
+    return an array of all the values that contain all of the key-value pairs listed in properties.
+  If list is array, properties must be array. If list is object, properties must be object. 
+    
+#findWhere
+    _.findWhere(list, properties) 
+  Looks through the list, 
+    returns the first value that matches all of the key-value pairs listed in properties.
+  If no match is found, or if list is empty, undefined will be returned.
+  If list is array, properties must be array. If list is object, properties must be object. 
+  
+#every
+    _.every(list, [predicate], [context]) Alias: all 
+  Returns true if all of the values in the list pass the predicate truth test.
+  Short-circuits and stops traversing the list if a false element is found.
+  
+#some
+    _.some(list, [predicate], [context]) Alias: any 
+  Returns true if any of the values in the list pass the predicate truth test.
+  Short-circuits and stops traversing the list if a true element is found.
+ 
+#shuffle
+    _.shuffle(list) 
+  Returns a shuffled copy of the list
+  Use a version of the Fisher-Yates shuffle.
+  
+  
+#--------------------------------------------------------------------------
+#mixin
+    _.mixin(object) 
+  Extend Underscore with your own utility functions.
+  Pass a hash of {name: function} definitions 
+    to have your functions added to the Underscore object, as well as the OOP wrapper.
+    
+    

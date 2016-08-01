@@ -80,12 +80,6 @@ duplicate_user = @user.dup
 debugger
 
 #--------------------------------------------------------------------------------
-
-    | User's  | ------> |Web   | --> Route --> Dispatcher --> |            | <-----> Model <-----> Data storage
-    | Web     |         |      |                              | Controller |  
-    | browser | <------ |server| <--------------------------- |            | <-----> View
-
-#--------------------------------------------------------------------------------
 #Model
 communicate with data storage system
 

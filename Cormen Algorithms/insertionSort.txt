@@ -1,0 +1,18 @@
+// Insertion Sort
+  // For all element in the array (except the first one at index zero)
+    // Take an element
+    // Compare it with all the sorted element left-to-right (smallest-to-biggest/ascending)
+      // If it's greater than the compared element, compare it to the next one
+      // Else if it's less than or equal to the compared element, stop comparing and put it to the left of the last compared element
+  // Return the result of insertion sort
+
+// Insertion Sort
+  // For all element in the array (except the first one at index zero)
+    // Take an unsorted element
+    // Compare it with all the sorted element in right-to-left order (biggest-to-smallest / descending)
+    // starting from the element just at the left of current unsorted element
+      // If it's less than the compared element,
+        // Swap both element and continue comparing
+      // Else if it's greater than or equal to the compared element,
+        // Leave the element as is and stop comparing
+  // Return the result of insertion sort

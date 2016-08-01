@@ -1,0 +1,313 @@
+describe("A suite", function() {
+  it("contains spec with an expectation", function() {
+    expect(true).toBe(true);
+  });
+});
+
+suite: a bunch of related tests
+  each suite contains a set of expectations
+expectations compare the results of the test (the actual) with the expected value
+
+suite is defined by calling the describe() function which takes two parameters:
+  the name of the Suite
+  the function which contains the calls to the expectation methods (specs)
+specs are defined using it() method which accepts a name and function parameter
+  it() function parameter may contain variables and one or more calls to the expect() method
+  used in conjunction with a Matcher function (e.g. toBe) to compare the actual and expected values
+you can nest describe()
+  the parent's Setup and Teardown Code is inherited and executed
+
+#Disabling Suites
+  suites can be disabled by renaming describe() with xdescribe()
+  these suites and any specs inside them are skipped when run and thus their results will not appear in the results
+#Pending Specs
+  pending specs do not run, but their names will show up in the results as pending
+  spec declared with xit() instead of it() is pending.
+  spec declared without a function body is pending
+  if you call the function pending anywhere in the spec body,
+    no matter the expectations, the spec will be marked pending.
+    A string passed to pending will be treated as a reason and displayed when the suite finishes.
+
+#Pre-defined Matchers
+  toBe          : represents the exact equality (===) operator
+  toEqual       : represents the regular equality (==) operator
+  toMatch       : calls RegExp.match() to compare string data i.e. expect("string").toMatch(/regex/)
+  toBeDefined
+  toBeUndefined
+  toBeNull      :=toBe(null)
+  toBeTruthy    : simulates JavaScript boolean casting
+  toBeFalsy
+  toContain     : see if an array or string contains an item or substring
+  toBeLessThan
+  toBeGreaterThan
+  toBeCloseTo   : for floating point comparisons
+  toThrow       : for catching expected exceptions
+The not operator creates a negative assertion
+  expect(false).not.toBe(true)
+
+#Setup and Teardown Code
+  beforeEach()  is called before each spec (it() method) in the describe
+  afterEach()   is called after each spec
+  beforeAll()   is called only once before all the specs in describe are run
+  afterAll()    is called after all specs finish
+
+#this
+  another way to share variables between a beforeEach, it, and afterEach is through the "this" keyword
+  each spec’s beforeEach/it/afterEach has the "this" as
+    the same empty object that is set back to empty for the next spec’s beforeEach/it/afterEach.
+
+#Built-in function
+  #fail
+      fail("raise failure")
+    causes a spec to fail
+    it can take a failure message or an Error object as a parameter
+  #jasmine.any
+      expect( {} ).toEqual( jasmine.any(Object) );
+      expect(methodName).toHaveBeenCalledWith(jasmine.any(Number), jasmine.any(Function));  #used with spies
+    takes a constructor or “class” name as an expected value
+    returns true if the constructor matches the constructor of the actual value
+  #jasmine.anything
+      expect(1).toEqual(jasmine.anything());
+      expect(methodName).toHaveBeenCalledWith(12, jasmine.anything());
+    returns true if the actual value is not null or undefined
+  #jasmine.objectContaining
+      expect({a: 1, b: 2}).toEqual(jasmine.objectContaining({a: 1}));
+      expect(methodName).toHaveBeenCalledWith(jasmine.objectContaining({bar: "baz"}));
+    for those times when an expectation only cares about certain key/value pairs in the actual
+  #jasmine.arrayContaining
+      expect([1, 2, 3, 4]).toEqual(jasmine.arrayContaining([3, 1]));
+      expect(methodName).toHaveBeenCalledWith(jasmine.arrayContaining([4, 2, 3]));
+    for those times when an expectation only cares about some of the values in an array
+  #jasmine.stringMatching
+      expect({foo: 'bar'}).toEqual({foo: jasmine.stringMatching(/^bar$/)});
+      expect({foo: 'foobarbaz'}).toEqual({foo: jasmine.stringMatching('bar')});
+    for when you don’t want to match a string in a larger object exactly,
+    or match a portion of a string in a spy expectation.
+
+#Custom asymmetric equality tester
+  when you need to check that something meets a certain criteria, without being strictly equal,
+  you can also specify a custom asymmetric equality tester 
+  by providing an object that has an asymmetricMatch function.
+ example:
+  describe("custom asymmetry", function() {
+    var tester = {
+      asymmetricMatch: function(actual) {
+        var secondValue = actual.split(',')[1];
+        return secondValue === 'bar';
+      }
+    };
+
+    it("dives in deep", function() {
+      expect("foo,bar,baz,quux").toEqual(tester);
+    });
+
+    describe("when used with a spy", function() {
+      it("is useful for comparing arguments", function() {
+        var callback = jasmine.createSpy('callback');
+        callback('foo,bar,baz');
+        expect(callback).toHaveBeenCalledWith(tester);
+      });
+    });
+  });
+
+#Jasmine Clock
+  for testing time dependent code
+  installed with a call to jasmine.clock().install in a spec or suite that needs to manipulate time
+  uninstall the clock after you are done to restore the original functions.
+#Mocking JavaScript Timeout Functions
+  move time forward using: jasmine.clock().tick(miliseconds)
+#Mocking the Date
+  if you do not provide a base time to mockDate it will use the current date
+#Example:
+  describe("Manually ticking the Jasmine Clock", function() {
+    var timerCallback;
+    beforeEach(function() {
+      timerCallback = jasmine.createSpy("timerCallback");
+      jasmine.clock().install();
+    });
+    afterEach(function() {
+      jasmine.clock().uninstall();
+    });
+
+    it("causes a timeout to be called synchronously", function() {
+      setTimeout(function(){timerCallback();}, 100);
+      expect(timerCallback).not.toHaveBeenCalled();
+      jasmine.clock().tick(10);
+      expect(timerCallback).not.toHaveBeenCalled();
+      jasmine.clock().tick(91);
+      expect(timerCallback).toHaveBeenCalled();
+    });
+    
+    describe("Mocking the Date object", function(){
+      it("mocks the Date object and sets it to a given time", function() {
+        var baseTime = new Date(2013, 9, 23);
+        jasmine.clock().mockDate(baseTime);
+        jasmine.clock().tick(50);
+        expect(new Date().getTime()).toEqual(baseTime.getTime() + 50);
+      });
+    });
+  });
+
+#Asynchronous Support
+  calls to beforeAll, afterAll, beforeEach, afterEach, and it
+    can take an optional single argument that should be called when the async work is complete
+  by default jasmine wait for 5 seconds for an asynchronous spec to finish before causing a timeout failure.
+  if the timeout expires before done is called,
+    the current spec will be marked as failed and suite execution will continue as if done was called.
+  if specific specs should fail faster or need more time this can be adjusted by passing a timeout value to it, etc.
+  if the entire suite should have a different timeout,
+    jasmine.DEFAULT_TIMEOUT_INTERVAL can be set globally, outside of any given describe.
+  The done.fail function fails the spec and indicates that it has completed.
+#Example:
+describe("Asynchronous specs", function() {
+  var value;
+  beforeEach(function(done) {
+    setTimeout(function() {
+      value = 0;
+      done();
+    }, 1);
+  });
+  
+  // this spec will not start until the done function is called in the call to beforeEach above
+  // and will not complete until its done is called
+  it("should support async execution of test preparation and expectations", function(done) {
+    value++;
+    expect(value).toBeGreaterThan(0);
+    done();
+  });
+  
+  describe("long asynchronous specs", function() {
+    beforeEach(function(done) {
+      done();
+    }, 1000)
+    it("takes a long time", function(done) {
+      setTimeout(function() {
+        done();
+      }, 9000);
+    }, 10000);
+    afterEach(function(done) {
+      done();
+    }, 1000);
+  });
+
+  describe("A spec using done.fail", function() {
+      var foo = function(x, callBack1, callBack2) {
+        x ? setTimeout(callBack1, 0) : setTimeout(callBack2, 0)
+      };
+      it("should not call the second callBack", function(done) {
+        foo(true, done, function() {
+            done.fail("Second callback has been called");
+          }
+        );
+      });
+    });
+  });  
+
+#--------------------------------------------------------------------------------
+#Spies (test double functions)
+    spyOn(object, "methodName")   #methodName must be in "", object can be the global window
+  can stub any function and tracks calls to it and all arguments
+  only exists in the describe or it block in which it is defined
+    and will be removed after each spec
+#Spies' Matchers
+ you can use the not prefix with spies' matchers: expect(methodName).not.toHaveBeenCalled()
+  toHaveBeenCalled()                : return true if the spy was called
+  toHaveBeenCalledTimes(x)          : true if the spy was called x times
+  toHaveBeenCalledWith(parameters)  : true if the argument list matches any of the recorded calls to the spy
+#Chaining the spies with calling strategy
+    e.g.: spyOn(object, "methodName").and.callThrough()
+  and.callThrough()           : the spy will still track all calls to it but in addition it will delegate to the actual implementation
+  and.returnValue(x)          : all calls to the function will return a specific value x
+  and.returnValues(parameters): all calls to the function will return specific values in order until it reaches the end of parameters
+                                  at which point it will return undefined for all subsequent calls
+  and.callFake(callback)      : all calls to the spy will delegate to the supplied function
+  and.throwError(message)     : all calls to the spy will throw the specified value(message) as an error
+  and.stub()
+    when a calling strategy is used for a spy,                    e.g.: spyOn(object, "methodName").and.callThrough()
+    the original stubbing behavior can be returned with and.stub        object.methodName.and.stub()
+#Other tracking properties
+  object.methodName.calls
+ every call to a spy is tracked and exposed on the calls property
+  .calls.any()          : returns false if the spy has not been called at all
+  .calls.count()        : returns the number of times the spy was called
+  .calls.argsFor(index) : returns the arguments passed to call number index (zero-index)
+  .calls.allArgs()      : returns the arguments to all calls in an array of array [[first call parameters], [second call parameters]]
+  .calls.all()          : returns the context (this) and arguments passed all calls
+  .calls.mostRecent()   : returns the context (this) and arguments for the most recent call
+  .calls.first()        : returns the context (this) and arguments for the first call
+  .calls.reset(): clears all tracking for a spy
+ when inspecting the return from all(), mostRecent() and first(),
+  the object property of calls is set to the value of this when the spy was called.
+#createSpy
+    var functionName = createSpy(functionName)
+  when there is no function to spy on, jasmine.createSpy can create a “bare” spy.
+  this spy acts as any other spy, but there is no implementation behind it.
+  spies are JavaScript objects and can be used as such
+#createSpyObj
+    var object = jasmine.createSpyObj('object', ['methodName', 'methodName', 'methodName']);
+  in order to create a mock with multiple spies,
+    use jasmine.createSpyObj and pass an array of strings
+  it returns an object that has a property for each string that is a spy
+
+#--------------------------------------------------------------------------------
+#Example
+describe("Stock Portfolio App Tests", function() {
+  var presentValue,
+      previousValue,
+      aPercentChanges;
+
+  beforeEach(function() {
+    presentValue    = 110;
+    previousValue   = 100;
+    aPercentChanges = [];
+  });
+
+  afterEach(function() {
+    presentValue    = 0;
+    previousValue   = 0;
+    aPercentChanges = [];
+  });
+
+  it("calcWeeklyPercentChange() should return the change between two numbers as a percentage.", function() {
+    var calcWeeklyPercentChange = function(presentValue, previousValue, aPercentChanges) {
+      var percentChange = presentValue / previousValue - 1;
+      aPercentChanges.push(percentChange);
+      return percentChange;
+    };
+
+    //actually returns 0.10000000000000009!
+    var result = calcWeeklyPercentChange(presentValue, previousValue, aPercentChanges);
+    expect(result).toBeCloseTo(0.1);
+    expect(aPercentChanges.length).toEqual(1);
+  });
+
+  it("The aPercentChanges array should now be empty.", function() {
+    expect(aPercentChanges.length).toEqual(0);
+  });
+});
+
+#--------------------------------------------------------------------------------
+#Custom Matchers
+  add a matcher in either a beforeEach() call or an it() call
+  you can write all the custom matcher in a single SpecHelper.js file to keep things clean
+  call this.addMatchers and pass it an object parameter
+    every key in the object will become a matcher’s name,
+    the associated function (the value) will be how it is run.
+  to get the value passed to the expect function use: this.actual
+  example:
+    beforeEach(function () {
+        this.addMatchers({
+            toBeBetween: function (rangeFloor, rangeCeiling) {
+                if (rangeFloor > rangeCeiling) {
+                    var temp = rangeFloor;
+                    rangeFloor = rangeCeiling;
+                    rangeCeiling = temp;
+                }
+                return this.actual > rangeFloor && this.actual < rangeCeiling;
+            }
+        });
+    });
+
+#-------------------------------------------------------------------------------------------
+function-related matchers, asynchronous specs
+accompanying libraries to make testing DOM easier: Jasmine-jQuery, Jasmine-fixture (which depends on Jasmine-jQuery)

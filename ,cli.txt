@@ -84,6 +84,11 @@ PATH variable lists which directories contain scripts for the command line to ex
 	ls current-directory/child-directory -a
   #multiple options contraction
 	-alt == a+l+t
+#common cd options
+  cd .   current directory
+  cd ..  parent directory
+  cd ~   home directory
+  cd -   last visited directory
 #common ls options
 	-a - lists all contents, including hidden files and directories
 	-l - lists all contents of a directory in long format

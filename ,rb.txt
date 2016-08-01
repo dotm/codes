@@ -8,7 +8,7 @@ variable_name.method1.method2.method3        #multiple method (method chaining)
   use ; to compress multi-line codes into a single-line code
 #Exit irb
   exit
-#Arithmetic operators: + - * / ** % 
+#Arithmetic operators: + - * / ** %
 #Comparators / Comparison operators: == != <> <= >= < >
   #Combined comparison / Spaceship operator: <=>
     returns 0 if the first operand equals the second,
@@ -22,7 +22,7 @@ variable_name.method1.method2.method3        #multiple method (method chaining)
 #Comment
   #single-line comment
   =begin
-    a multi-line comment (no space between = and begin!) 
+    a multi-line comment (no space between = and begin!)
     = begin and = end need to be on their own lines.
   =end
 
@@ -34,7 +34,7 @@ variable_name.method1.method2.method3        #multiple method (method chaining)
 
 #Modifying variable
   answer.capitalize!
-  
+
 #User Input
   variable_name = gets.chomp
   gets get input from the user, convert it to string, and adds a blank new line after each bit of input
@@ -68,18 +68,18 @@ variable_name.method1.method2.method3        #multiple method (method chaining)
   Math::E
   Math.cos(number)
     .tan .sin .log .sqrt
-  
+
 #--------------------------------------------------------------------------------
 #String
 
 #Substring (String slicing)
   the [] is just syntactic sugar for the .slice method
-  "some strings"[0]    
+  "some strings"[0]
   "some strings"[0..4]
   "some strings"[0..-1]  #from 0 to end (-1)
   "some strings"[0,4]
   "some strings"[0...4]
-  
+
 #String's Method
   "some strings".method_name
   .length
@@ -88,13 +88,13 @@ variable_name.method1.method2.method3        #multiple method (method chaining)
     .split("")    #split letter by letter
       .split(//)
   .strip
-  .reverse 
+  .reverse
   .chop
     "Test".chop    ->  Tes
   .next
     "Test".next    ->  Tesu
-  .upcase 
-    .downcase 
+  .upcase
+    .downcase
     .swapcase
       "lALA".swapcase -> "Lala"
     .capitalize            #beware: " la".capitalize -> " la"
@@ -107,9 +107,9 @@ variable_name.method1.method2.method3        #multiple method (method chaining)
     lala="do "
     lala << "re"                  :=    lala += "re"
     "I am " << 18.to_s << " years old."        :=    "I am " + 18.to_s + " years old."
-    
+
 #Regex
-  #Substitute: 
+  #Substitute:
     "string".sub('str','substitute with this')
     "string".sub(/regex/,'substitute with this')
   .sub      #substitute only the first instance
@@ -129,7 +129,7 @@ variable_name.method1.method2.method3        #multiple method (method chaining)
   puts x[0]  -> This is
   puts x[1]  -> This
   puts x[2]  -> is
-  
+
 #Multi-line string
   x=%q{multi-line      #you can use other delimiter such as <>, (), or even !!
   string}          #but you must use escape character if you want to type the delimiter inside
@@ -138,7 +138,7 @@ variable_name.method1.method2.method3        #multiple method (method chaining)
     multi-line
     string
     CUSTOM_DELIMITER
-  
+
 #Check ASCII of character
   ?x      ->    120
   120.chr    ->    x
@@ -151,7 +151,7 @@ variable_name.method1.method2.method3        #multiple method (method chaining)
 #String comparison
   When strings get compared, they compare their lexicographical ordering (dictionary ordering)
   'azz' < 'ba'  ->  true      #beware: 'Z' < 'a'    ->  true
-    
+
 #--------------------------------------------------------------------------------
 #Flow control
 
@@ -229,7 +229,7 @@ variable_name.method1.method2.method3        #multiple method (method chaining)
 
 #Times iterator
   5.times{|i| puts i}
-  
+
 #Loop method
   i = 0
   loop do
@@ -238,7 +238,7 @@ variable_name.method1.method2.method3        #multiple method (method chaining)
     break if i > 5
   end
 
-#Next keyword 
+#Next keyword
   used to skip over certain steps in the loop
   for i in 1..5
     next if i % 2 == 0
@@ -273,9 +273,9 @@ variable_name.method1.method2.method3        #multiple method (method chaining)
   meals << "Dessert"              -> ["Breakfast", "Lunch", "Dinner", "Dessert"]
   meals[2]                  -> "Dinner"
   meals.last                  -> "Dessert"
-  #Multidimensional array: array of arrays 
-  s = [  ["ham", "swiss"], 
-      ["turkey", "cheddar"], 
+  #Multidimensional array: array of arrays
+  s = [  ["ham", "swiss"],
+      ["turkey", "cheddar"],
       ["roast beef", "gruyere"]  ]
   s[0][1]=="swiss"
 
@@ -296,7 +296,7 @@ variable_name.method1.method2.method3        #multiple method (method chaining)
   #Array arithmetic
   [1,2,3] + ["a","b","c"] -> [1,2,3,"a","b","c"]
   [1,2,3] - [2,3,4]    -> [1]
-  
+
 #Hash class {Dictionary}
   hashName = {    :key1 => value1,
           key2: value2    #new syntax    }
@@ -314,7 +314,7 @@ variable_name.method1.method2.method3        #multiple method (method chaining)
   hashName[key].nil?         #is the key in hashName empty?
   hashName.delete(key)
   hashName.delete_if { |key, value| code block }
-  
+
 #Symbol
   :symbol
 there can be multiple different strings that all have the same value, there's only one copy of any particular symbol at a given time
@@ -343,7 +343,7 @@ Constants are defined within the scope of the current class (or the main class i
   functionName(argument1, argument2)              #can also be -> functionName argument1, argument2
 #Predicate method: method that returns true or false
   def predicate_method?;code block;end            #the ? is conventional
-  
+
 #Default argument
   def functionName(parameter = default-value); a block; end
 #Splat argument/mass assignment
@@ -364,7 +364,7 @@ end
 #Sorting (Built in sort method)
   object.sort! { |a, b| a <=> b }      #in ascending order
     object.sort! { |a, b| b <=> a }    #in descending order
-  object.sort do |a, b| 
+  object.sort do |a, b|
       if a < b then 1
       elsif a > b then -1
       else 0
@@ -425,19 +425,19 @@ we can build this into the methods we define using the yield keyword
 
 #Proc
   proc_name = Proc.new {code block}    #you can also use the do end syntax
-  
-  since block is not an object, 
-    blocks can't be saved to variables 
+
+  since block is not an object,
+    blocks can't be saved to variables
     and don't have all the powers and abilities of a real object
     for that, we'll need procs; plus procs keep your codes DRY
   passing a proc as parameter: (&proc_name)
     the "&" convert the proc into a block
     the () is optional  #(see method)
   calling a proc directly: proc_name.call
-  converting symbols to procs 
+  converting symbols to procs
     strings = ["1", "2", "3"]
     nums = strings.map(&:to_i)    -> [1, 2, 3]
-    
+
 #Lambda
   lambda: anonymous function
   lambda { |parameters| code block }
@@ -449,15 +449,15 @@ we can build this into the methods we define using the yield keyword
       a proc will ignore unexpected arguments and assign nil to any that are missing
     when a lambda returns, it passes control back to the calling method
       when a proc returns, it does so immediately, without going back to the calling method
-  
+
 #--------------------------------------------------------------------------------
 #Class and object
 
 #Type of variable / attribute
   variable_name    local variables: can only be used in the same place as where it is defined
-  $variable_name    global variables: available everywhere 
+  $variable_name    global variables: available everywhere
               if you want to call $variable_name you must not omit the $
-  @@variable_name    class variables: members of a certain class 
+  @@variable_name    class variables: members of a certain class
   @variable_name    instance variables: only available to particular instances of a class
 
 #Initializing syntax
@@ -465,24 +465,24 @@ we can build this into the methods we define using the yield keyword
     $global_variable=value
     @@class_variable=value
     @@total_instance=0
-    
+
     def initialize (parameter1, parameter2=value)    #parameter2 is optional parameter
       @parameter1=parameter1
       @parameter2=parameter2
       @@total_instance+=1
     end
-    
+
     #Defining class method vs instance (object) method
     def instance_method; code block; end
     def self.class_method; code block; end    #do NOT forget the self; you can use the ClassName instead of self
-    
+
     public
     def public_method; end
 
     private
     def private_method; end
     #you can also use this syntax -> private :this_is_private, :this_is_also_private
-    
+
   end
 
 #Public vs private method
@@ -526,7 +526,7 @@ we can build this into the methods we define using the yield keyword
 #Reflection methods
   methods    protected_methods  private_methods    public_methods
   instance_variables
-  
+
 #Nested class
 class Canvas
   class Line; end
@@ -543,10 +543,10 @@ used to store constant and method; the naming convention is the same as Class
     def method_name; code block; end
   end
 
-One of the main purposes of modules is to separate methods and constants into named spaces. 
+One of the main purposes of modules is to separate methods and constants into named spaces.
   This is called namespacing, and it's how Ruby doesn't confuse Math::PI and Circle::PI
     it's like having 2 files with the same name but in different folder
-    if you don't use the look-up operator, 
+    if you don't use the look-up operator,
       you can access the wrong object and accidentally override important object or method
 
   #Using the look-up operator
@@ -569,36 +569,36 @@ One of the main purposes of modules is to separate methods and constants into na
     require 'filename'
   #from the same file using scope resolution operator
     ModuleName::method_name
-  
+
 #Mix-ins
   class ClassName
     include ModuleName
     extend Module
   end
-  
+
 #When a module is used to mix additional behavior and information into a class, it's called a mix-in
   mix-ins allow us to customize a class without having to rewrite code or using multiple inheritance
 #include vs extend
-  include mixes a module's methods in at the instance level 
+  include mixes a module's methods in at the instance level
   extend mixes a module's methods at the class level
     class itself can use the methods, as opposed to instances of the class
 #require vs include
-  require: run another file 
+  require: run another file
     and tracks what you've required in the past and won't require the same file twice
       to run another file without this added functionality, use the load method
         load will load and reprocess the code each time you use the load method
         require only processes external code once.
   include: takes all the methods from another module and includes them into the current scope
     include method is the primary way to mix-ins
-    since the module is included in the current scope, 
+    since the module is included in the current scope,
       you can access it directly by variable_name and not ModuleName::variable_name
 #Nested inclusions: files that you include can call load and require themselves
-      
+
 #Included files path
   $:  ->  will return an array of included files path
   by using $: you can manipulate the included files path like an array
   use $:.push or $:.unshift to add a path
-  
+
 #Libraries
   a list of all the standard libraries, including documentation, is available at http://www.ruby-doc.org/stdlib/
   sometimes you have to require 'rubygems' in a file before you can require 'aRubyGems' you have installed
@@ -618,7 +618,7 @@ One of the main purposes of modules is to separate methods and constants into na
     raise Exception
   #Create new exception
     class MyNewException < Exception; end    #you can replace Exception with other exception class
-    
+
 #Error handling
   begin
   ... code here ...
@@ -639,9 +639,9 @@ One of the main purposes of modules is to separate methods and constants into na
   rescue => variable_name        #assign ZeroDivisionError to variable_name
     puts variable_name.class    #puts ZeroDivisionError
   end
-#Retry statement 
+#Retry statement
     redirects the program back to the begin statement
-    helpful if your begin/rescue block is inside a loop 
+    helpful if your begin/rescue block is inside a loop
     and you want to retry the same command and parameters that previously resulted in failure
   for i in 'A'..'C'
     retries = 2
@@ -655,7 +655,7 @@ One of the main purposes of modules is to separate methods and constants into na
       retries -= 1
       sleep 2
       retry
-    end  
+    end
     end
   end
 
@@ -673,14 +673,14 @@ There are a bunch of I/O streams that Ruby initializes when the interpreter gets
 file descriptor: Fixnum value assigned to an IO object
 Ruby IO objects wrap I/O streams
 The constants STDIN, STDOUT, and STDERR point to IO objects wrapping the standard streams
-By default the global variables $stdin, $stdout, and $stderr point to their respective constants. 
-While the constants SHOULD always point to the default streams, 
-  the globals can be overwritten to point to another I/O stream such as a file. 
-The purpose of these global variables is temporary redirection: 
-  you can assign these global variables to another IO object 
-  and pick up an IO stream other than the one that it is linked to by default. 
-  This is sometimes necessary for logging errors or capturing keyboard input you normally wouldn't. 
-  
+By default the global variables $stdin, $stdout, and $stderr point to their respective constants.
+While the constants SHOULD always point to the default streams,
+  the globals can be overwritten to point to another I/O stream such as a file.
+The purpose of these global variables is temporary redirection:
+  you can assign these global variables to another IO object
+  and pick up an IO stream other than the one that it is linked to by default.
+  This is sometimes necessary for logging errors or capturing keyboard input you normally wouldn't.
+
 IO objects can be written to via puts and print. puts method provided by ruby’s Kernel module is just an alias to $stdout.puts
   puts := Kernel.puts := $stdout.puts
 IO objects can be read via gets. gets method provided by Kernel is an alias to $stdin.gets
@@ -695,20 +695,20 @@ to create a new IO object, we need a file descriptor. In this example, 1 (stdout
 #Creating IOs to other(non-standard) streams
 since non-standard streams don’t have constant file descriptors, we first need to get that via IO.sysopen
   fd = IO.sysopen('/dev/null', 'w+')    #-> 8
-  #first, we get a file descriptor for a stream to read/write to the dev/null device. 
+  #first, we get a file descriptor for a stream to read/write to the dev/null device.
   dev_null = IO.new(fd)          #-> #<IO:fd 8>
   #then create an IO object for the stream so we can interact with it in Ruby
   dev_null.puts 'hello'          #-> nil
   dev_null.gets              #-> nil
   dev_null.close              #-> nil
-/dev/null (a.k.a the "bit bucket" or "black hole") is the null device on Unix-like systems. 
+/dev/null (a.k.a the "bit bucket" or "black hole") is the null device on Unix-like systems.
   Writing to it does nothing and attempting to read from it returns nothing (nil in Ruby)
   When writing to dev_null, the text no longer appears on the screen. When reading from dev_null, we get nil.
 since everything on a Unix-like system is a file, we can open an IO stream to a text file the same way we open a device:
-  create a file descriptor with the path to our file 
-  create an IO object for that file descriptor. 
-  when we are done with it, close the stream 
-    to flush Ruby’s buffer and release the file descriptor back to the operating system. 
+  create a file descriptor with the path to our file
+  create an IO object for that file descriptor.
+  when we are done with it, close the stream
+    to flush Ruby’s buffer and release the file descriptor back to the operating system.
 attempting read or write from a closed stream will raise an IOError.
 
 #Ruby available open modes
@@ -719,7 +719,7 @@ attempting read or write from a closed stream will raise an IOError.
   "a"  Write-only, each write call appends data at end of file. Creates a new file if file does not exist.
   "a+" Read-write, each write call appends data at end of file. Creates a new file if file does not exist.
   "b"   Binary file mode (only required on Windows). You can use it in conjunction with any of the other modes listed.
-   
+
 #Opening a file
 When working with an IO, we have to keep position in mind.
   you can check current position using .pos method
@@ -759,17 +759,17 @@ When working with an IO, we have to keep position in mind.
   t.gets    -> "strings\n"
   t.close
 any write operations in the middle of a stream will overwrite the existing data
-  this behaviour is necessary because streams do not get loaded into memory, 
+  this behaviour is necessary because streams do not get loaded into memory,
     only the lines being operated on are loaded
-  this is useful because some streams can point to very large files 
+  this is useful because some streams can point to very large files
     that would be expensive to load in memory all at once
   streams can even be infinite e.g. $stdin has no end
     we can always read more data from STDIN (when it receive 'gets' method, it waits for user to type something)
 
 #--------------------------------------------------------------------------------
 #File subclass
-Probably the most well known IO subclass. 
-File allows us to read/write files without messing around with file descriptors. 
+Probably the most well known IO subclass.
+File allows us to read/write files without messing around with file descriptors.
 It also adds file-specific convenience methods such as File#size, File#chmod, and File.path.
 File.open auto-close if block_given, File.new doesn’t
 .read and .readlines also auto-close the file
@@ -781,7 +781,7 @@ File.open auto-close if block_given, File.new doesn’t
   three
   four
 
-!irb  
+!irb
   file = File.open('D:\a.txt', 'r')
   puts file.inspect  ->  #<File:D:\a.txt>    => nil            #puts file object, returns nil
   p file.inspect    -> "#<File:D:\\a.txt>"    => "#<File:D:\\a.txt>"    #puts and returns file object as string
@@ -794,7 +794,7 @@ File.open auto-close if block_given, File.new doesn’t
     four
   file.close
   File.open('D:\a.txt', "r") {|file| p file.read }    -> "One\ntwo\nthree\nfour" => "One\ntwo\nthree\nfour"
-  
+
   a = ""
   File.open('D:\a.txt', "r") {|file| p file.read(4,a)}
     -> "Lala" => "Lala"
@@ -805,18 +805,18 @@ File.open auto-close if block_given, File.new doesn’t
   end
   l=File.readlines('D:\a.txt')    -> ["Lala!\n", "one\n", "two\n", "three and yay\n", "four"]
   l[0]                -> "Lala!\n"
-  
-The File#read method accepts two optional arguments: 
+
+The File#read method accepts two optional arguments:
   length, the number of bytes upto which the stream will be read
   buffer, where you can provide a string object as output buffer which will be filled with the file data
     This buffer is sometimes useful for performance when iterating over a file, as it re-uses an already initialized string
-File#readlines returns an array of all the lines of the opened IO stream. 
-  you can optionally limit the number of lines using array selector [] 
+File#readlines returns an array of all the lines of the opened IO stream.
+  you can optionally limit the number of lines using array selector []
     insert a custom separator between each of these lines
     and limit the number of character per array member
 
-File#seek 
-allow you to "seek" to a particular byte in the file to tell Ruby where you want to start reading from. 
+File#seek
+allow you to "seek" to a particular byte in the file to tell Ruby where you want to start reading from.
   seek(amount, whence=IO::SEEK_SET)
   available value of whence:
     :CUR or IO::SEEK_CUR  Seeks to _amount_ plus current position
@@ -827,7 +827,7 @@ To write to an I/O stream, you can mirror most of the techniques used to read.
   File.open("text.txt", "w") do |f|
     f.puts "This is a test"
   end
-or we can use IO#write (or, in our case, File#write) and pass in a string. 
+or we can use IO#write (or, in our case, File#write) and pass in a string.
   f = File.open("text.txt", "r+")
   f.write "123456"
   f.close
@@ -836,11 +836,11 @@ Whereas puts outputs lines of text, you can perform the writing equivalents of g
     f.putc "X"
   f.close
 This example opens text.txt for reading and writing, and changes the first character of the first line to X.
-It’s worth noticing that putc and write overwrite existing content 
-  rather than inserting it, as puts does.  
+It’s worth noticing that putc and write overwrite existing content
+  rather than inserting it, as puts does.
 
 #--------------------------------------------------------------------------------
-#Reading an I/O stream 
+#Reading an I/O stream
   #with each using a custom delimiter
     File.open("text.txt").each(',') { |line| puts line }
   #using gets with an optional delimiter
@@ -855,13 +855,13 @@ It’s worth noticing that putc and write overwrite existing content
     File.open("text.txt") do |f|
       2.times { puts f.getc }
     end
-    
+
 #Read an entire file into an array, split by lines, using readlines:
   puts File.open("text.txt").readlines
 
 #Read an arbitrary number of bytes from a file into a single variable using read:
   File.open("text.txt") {|f| puts f.read(6)}
-  
+
 #Renaming file
   File.rename("file1.txt", "file2.txt")
 #Deleting file
@@ -881,24 +881,24 @@ It’s worth noticing that putc and write overwrite existing content
 #Creating platform-independent filenames
   Windows and Unix-related operating systems have different ways of denoting filenames. Windows use \, Unix use /
   If your Ruby scripts work with filenames and need to operate under both systems, the File class provides the join method.
-  Under both systems, filenames (and complete paths) are built up from directory names and local filenames. 
+  Under both systems, filenames (and complete paths) are built up from directory names and local filenames.
 
   you can use File.join to put together a filename using directory names and a final filename:
     File.join('full', 'path', 'here', 'filename.txt')
       on Windows  ->  full\path\here\filename.txt
       on Unix    ->  full/path/here/filename.txt
 
-  The separator itself is stored in a constant called File::SEPARATOR, 
-  you can easily turn a filename into an absolute filename (with an absolute path) 
+  The separator itself is stored in a constant called File::SEPARATOR,
+  you can easily turn a filename into an absolute filename (with an absolute path)
     by appending the directory separator to the start, like so:
       File.join(File::SEPARATOR , 'full', 'path', 'here', 'filename.txt')
         ->  /full/path/here/filename.txt
 
   you can use File.expand_path to turn basic filenames into complete paths.
     File.expand_path("text.txt")  ->  /Users/peter/text.txt
-  The result of File.expand_path will vary 
-    according to the operating system the code is run under. 
-  As text.txt is a relative filename, 
+  The result of File.expand_path will vary
+    according to the operating system the code is run under.
+  As text.txt is a relative filename,
     it converts it to an absolute filename and references the current working directory.
 
 #--------------------------------------------------------------------------------
@@ -906,7 +906,7 @@ It’s worth noticing that putc and write overwrite existing content
 
 #Change directories
   Dir.chdir("/usr/bin")
-#Check current directory 
+#Check current directory
   puts Dir.pwd
 #Get an array of files and directories within a specific directory
   #using Dir.entries
@@ -923,25 +923,25 @@ It’s worth noticing that putc and write overwrite existing content
     Dir.mkdir("c:\test")  #using absolute path
   you cannot create directories under directories that don’t yet exist
   if you want to create an entire structure of directories you must create them one by one from the top down.
-  On Unix-related operating systems, Dir.mkdir accepts a second optional argument: 
+  On Unix-related operating systems, Dir.mkdir accepts a second optional argument:
     an integer, specifying the permissions for the directory.
 #Deleting directory
     Dir.delete("testdir")
   Dir.unlink and Dir.rmdir perform exactly the same function
   As with Dir.mkdir, you can use absolute pathnames.
-  If a directory isn’t empty, you cannot delete it with a single call to Dir.delete. 
-    You need to iterate through each of the subdirectories and files and remove them all first. 
-    You can do that iteration with Dir.foreach, 
+  If a directory isn’t empty, you cannot delete it with a single call to Dir.delete.
+    You need to iterate through each of the subdirectories and files and remove them all first.
+    You can do that iteration with Dir.foreach,
     looping recursively through the file tree by pushing new directories and files to remove onto an array.
 
 #Creating files in temporary directory
-  a "temporary" directory is where temporary files can be stored. 
+  a "temporary" directory is where temporary files can be stored.
   Temporary files: files created briefly during a program’s execution but aren’t a permanent store of information.
   Dir.tmpdir provides the path to the temporary directory on the current system
   To make Dir.tmpdir available it’s necessary to require 'tmpdir'
     require 'tmpdir'
     puts Dir.tmpdir    ->  /tmp
-  You can use Dir.tmpdir with File.join 
+  You can use Dir.tmpdir with File.join
     to create a platform-independent way of creating a temporary file:
       require 'tmpdir'
       tempfilename = File.join(Dir.tmpdir, "myapp.dat")
@@ -950,19 +950,19 @@ It’s worth noticing that putc and write overwrite existing content
       tempfile.close
       File.delete(tempfilename)
   This code creates a temporary file, writes data to it, and deletes it.
-  
+
   Ruby’s standard library also includes a library called Tempfile that can create temporary files:
     require 'tempfile'
     f = Tempfile.new('myapp')
     f.puts "Hello"
     puts f.path    ->  /tmp/myfile1842.0
     f.close
-  Unlike creating and managing your own temporary files, 
+  Unlike creating and managing your own temporary files,
     Tempfile automatically deletes the files it creates after they have been used.
-    
+
 #Tempfile
 Tempfile doesn’t inherit from IO, you must require the tempfile library
-  Instead, it implements File’s interface and deals with temporary files. 
+  Instead, it implements File’s interface and deals with temporary files.
   As such, it can be passed to any object that consumes IO-like objects.
 
 #--------------------------------------------------------------------------------
@@ -983,8 +983,8 @@ For example, I have a server running on localhost:3000
 #StringIO
 StringIO allows strings to behave like IOs.
 StringIO doesn’t inherit from IO, you must require the stringio library
-This is useful when we want to pass strings into systems that consume streams. 
-This is common in tests where we might inject a StringIO instead of reading an actual file from disk. 
+This is useful when we want to pass strings into systems that consume streams.
+This is common in tests where we might inject a StringIO instead of reading an actual file from disk.
 
    string_io = StringIO.new('hello world')  -> #<StringIO:0x007feacb0cd4e8>
    string_io.gets                -> "hello world"
@@ -995,15 +995,15 @@ This is common in tests where we might inject a StringIO instead of reading an a
 #--------------------------------------------------------------------------------
 #Serializing
 At some point, you will want your Ruby programs to talk to other programs.
-  communication between programs is usually done through an Application Programming Interface (API). 
+  communication between programs is usually done through an Application Programming Interface (API).
 
-The simplest interfaces two Ruby programs can share is a file. 
+The simplest interfaces two Ruby programs can share is a file.
   first program transform some of its objects into a string and write those strings to a file
   second program look for the file in a shared location, read it, and turn the strings in it back into Ruby objects
 
 YAML::dump(object)      #to serialize
 YAML::load(yaml_string)    #to deserialize
-  
+
 #--------------------------------------------------------------------------------
 #Using REST in Ruby
 

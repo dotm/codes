@@ -1,0 +1,779 @@
+!hello.c
+#include <stdio.h>
+int main(int argc, char *argv[]) {
+    printf("Hello world.\n");
+    return 0;
+}
+
+!for_loop.c
+#include "stdio.h"
+int main(void) {
+    int i;
+    for(i=0; i<10; i++){
+    	printf("%d\n",i);
+    }
+    return 0;
+}
+
+create the program in a c file. e.g. hello. c
+compile the c file with the command cc hello.c
+if there's no compilation mistake,
+  the compilation will proceed silently
+  and make an executable file called a.out
+run a.out by typing the command a.out in the command line
+
+how to compile and load a C program that resides on multiple source files
+  vary from one system to the next.
+
+A C program basically consists of the following parts:
+  Preprocessor Commands
+  Functions
+  Variables
+  Statements & Expressions
+  Comments
+
+A C program consists of various tokens
+Types of token: (reserved) keyword, identifier, constant, string literal, symbol
+  identifier: a name used to identify a variable, function, or any other user-defined item.
+
+#Semicolon
+  individual statements are terminated by semicolons;
+  An expression becomes a statement when it is followed by a semicolon
+  Braces {} are used to group declarations and statements together
+    into a compound statement, or block
+    they are syntactically equivalent to a single statement.
+  There is no semicolon after the right brace that ends a block.
+
+#Command-line Arguments
+  When main is called, it is called with two arguments.
+    argc (argument count) is the number of command-line arguments the program was invoked with
+    argv (argument vector) is a pointer to an array of character strings that contain the arguments, one per string.
+  We customarily use multiple levels of pointers to manipulate these character strings.
+  By convention:
+    argv [0] is the name by which the program was invoked,
+      so argc is at least 1.
+      If argc is 1, there are no command-line arguments after the program name.
+    argv[argc] is a null pointer.
+
+#------------------------------------------------------------------------------------------
+#Preprocessor Commands
+
+#File inclusion
+    #include "filename"
+    #include <filename>
+  File inclusion makes it easy to handle collections of #defines and declarations, among other things.
+  the #include filename line is replaced by the contents of the file filename.
+  If the filename is quoted, searching for the file typically begins where the source program was found;
+    if it is not found there, or if the name is enclosed in < and >,
+      searching follows an implementation-defined rule to find the file.
+  An included file may itself contain #include lines.
+  
+#Macro Substitution
+    #define name replacement-text
+  undefining macro:
+    #undef name
+  macros with arguments:
+    #define max(A, B) ((A) > (B) ? (A) : (B))
+      usage: int x = max(p,q);
+  multi-line macro:
+    #define name {replacement \
+      multi-line \
+      text \
+    }
+  subsequent occurrences of the token "name" will be replaced by the replacement text.
+  The scope of a name defined with #define is from its point of definition to the end of the source file being compiled.
+  A definition may use previous definitions.
+  
+  Substitutions are made only for tokens, and do not take place within quoted strings. e.g. printf("name")
+  If, however, a parameter name is preceded by a # in the replacement text,
+    the combination will be expanded into a quoted string with the parameter replaced by the actual argument.
+  e.g.:
+   #define dprint(expr) printf(#expr" = %g\n", expr)
+  usage:
+    dprint (x/y);
+  expanded:
+    printf("x/y" " = %g\n", x/y);
+  Within the actual argument, each " is replaced by \" and each \ by \\,
+    so the result is a legal string constant.
+
+  The preprocessor operator ## provides a way to concatenate actual arguments during macro expansion.
+  If a parameter in the replacement text is adjacent to a ##,
+    the parameter is replaced by the actual argument,
+    the ## and surrounding white space are removed, and the result is re-scanned.
+  e.g.:
+    #define paste(front, back) front ## back
+  usage:
+    paste (name, 1)
+  expanded:
+    name1
+  The rules for nested uses of ## are arcane.
+  
+#Conditional Inclusion
+    #if SYSTEM == SYSV
+      #define HDR "sysv.h"
+    #elif SYSTEM == BSD
+      #define HDR "bsd.h"
+    #elif SYSTEM == MSDOS
+      #define HDR "msdos.h"
+    #else
+      #define HDR "default.h"
+    #endif
+    #include HDR
+  #if line evaluates a constant integer expression (which may not include sizeof, casts, or enumconstants).
+    If the expression is non-zero, subsequent lines until an #endif or #elif or #else are included.
+  The expression defined(name) in a #if is 1 if the name has been defined, and 0 otherwise.
+  The #ifdef and #ifndef lines are specialized forms that test whether a name is defined.
+    #if !defined(HDR) := #ifndef HDR
+
+#------------------------------------------------------------------------------------------
+#Header file
+
+!stack.h
+void push(double);
+double pop(void);
+
+!main.c
+#include <stdio.h>
+#include "stack.h"
+main(){...}
+
+!stack.c
+#include <stdio.h>
+#include "stack.h"
+void push(double) {...}
+double pop(void) {...}
+
+#------------------------------------------------------------------------------------------
+// single-line comment
+/* multi-line comment */
+
+#Operators: + - * / %
+  integer division truncate the fractional part of the result: 5/9 === 0; 5.0/9.0 === 0.555
+  modulo operator can't be applied to float or double
+  machine-dependent technicality:
+    direction of integer division truncation
+    the sign result of modulo operator with negative operands
+    the action taken on overflow and underflow
+#Increment and decrement: i++, ++i, i--, --i
+#Comparison operators: < <= > >= == !=
+#Logical Operators: && || !
+  Logical && and || use short-circuit evaluation
+#Bitwise Operators: & | ~ ^ << >>
+#Assignment Operators: += -= *= /= %= <<= >>= &= |= ^=
+    expression1 op= expression2
+    := expression1 = (expression1) op (expression2)
+  Notice the parentheses around expression2:
+    x *= y+1
+    := x = x * (y+1)
+#Comma operator
+  expressions separated by a comma is evaluated left to right,
+    the type and value of the result are the type and value of the right operand.
+  most often finds use in the for statement
+  the commas that separate function arguments, variables in declarations, etc.,
+    are not comma operators, and do not guarantee left to right evaluation.
+#sizeof
+    sizeof object
+    sizeof type-name
+  sizeof produces an unsigned integer value whose type is size_t
+  An object can be a variable or array or structure.
+  A type name can be the name of a basic type like int or double,
+    or a derived type like a structure or a pointer.
+  
+C doesn't specify the order in which the operands of an operator are evaluated.
+  The exceptions are &&, ||, ?:, and ','
+
+#main function
+The "main" function is special
+  your program begins executing at the beginning of main
+  every program must have a main somewhere.
+  main will usually call other functions to help perform its job
+    some function from the ones you wrote and others from libraries that are provided for you
+  a return value of zero implies normal termination
+    non-zero values signal unusual or erroneous termination conditions
+
+#Variables
+  use lower case for variable names, and all upper case for symbolic constants
+#Variable definition vs. declaration
+  Declaration: the nature of the variable is stated but no storage is allocated
+  Definition: the nature of the variable is stated and the variable is created or assigned storage
+#Variable definition
+  There must be only one definition of an external variable among all the files that make up the source program;
+    other files may contain extern declarations to access it.
+#Variable declaration
+  list the variables to be used, and state what type they have and perhaps what their initial values are.
+  it consists of a type name and a list of variables:
+    int variableName, variable1, variable2;
+  all variables must be declared before they are used
+  declaration announces the properties of variables;
+#Variable initialization
+  In the absence of explicit initialization:
+    external and static variables are initialized to zero
+    automatic and register variables have undefined (i.e., garbage) initial values.
+#Variable assignment
+    variableName = value;
+  first time assignment is called variable initialization
+ #declaration with assignment (initialization)
+  int a = 0;
+ #Multiple assignment
+  a = b = 0;
+#Types of Variable
+  Automatic variables: local variable which comes into existence only when the function is called,
+    and disappears when the function is exited.
+  Static storage class, in which local variables retain their values between calls.
+  Automatic variables don't retain their values from one call to the next,
+    and must be explicitly set upon each entry.
+  If the variable is not automatic, initialization is done once,
+    conceptually before the program starts executing,
+    and the initializer must be a constant expression.
+  An explicitly initialized automatic variable is
+    initialized each time the function or block it is in is entered;
+    the initializer may be any expression.
+  
+  static declaration, applied to an external variable or function,
+    limits the scope of that object to the rest of the source file being compiled.
+  External static thus provides a way to hide names which must be external so they can be shared,
+    yet which should not be visible outside of file
+  static declaration, applied to internal variables
+    are the variable local to a particular function just as automatic variables are,
+    but unlike automatics, they remain in existence rather than coming and going each time the function is activated.
+  Internal static variables provide private, permanent storage within a single function.
+  
+  External variable := Global variable
+  external variables remain in existence permanently
+    they retain their values even after the functions that set them have returned.
+  external variable must be defined, exactly once, outside of any function to sets aside storage for it
+    it must also be declared in each function that wants to access it to states the type of the variable
+  By default, external variables and functions have the property
+    that all references to them by the same name,
+    even from functions compiled separately,
+    are references to the same thing.
+    The standard calls this property external linkage.
+  #External variable declaration
+    explicit:
+      int i=1;
+      main(){
+        extern int max;
+        printf("%d\n",i);
+      } -> 1
+    implicit:
+      int i=1;
+      main(){
+        // no new int i definition here
+        // if you make a new int i definition,
+        //   it'll override the global i and main() will print garbage value
+        printf("%d\n",i);
+      } -> 1
+    If the definition of an external variable occurs in the source file before its use in a particular function,
+      then there is no need for an explicit extern declaration in the function.
+    If the program is in several source files,
+      e.g. a variable is defined in filel and used in file2,
+      then extern declarations are needed in file2 to connect the occurrences of the variable.
+    extern declare but not define a variable
+    The usual practice is to
+      collect extern declarations of variables and functions in a separate file called a header,
+      that is included by #include at the front of each source file.
+    The suffix .h is conventional for header names.
+  #Static variable declaration
+      static type-name external-variable-name;
+      static int i;
+  #Register variable declaration
+      register type-name external-variable-name;
+      register int i;
+    register declaration advises the compiler that the variable in question will be heavily used.
+    register variables are to be placed in machine registers, which may result in smaller and faster programs
+      but compilers are free to ignore the advice
+    register declaration can only be applied to automatic variables and to the formal parameters of a function.
+      f{register unsigned m, register long n){
+        register int i;
+        ...
+      }
+    The specific restrictions on number and types of register variables vary from machine to machine.
+    Excess register declarations are harmless, however, since the word register is ignored for excess or disallowed declarations.
+      And it is not possible to take the address of a register variable, regardless of whether the variable is actually placed in a register.
+#Basic data types
+  char    a single byte, holding one character.
+  int     an integer, typically reflecting the natural size of integers on the host machine.
+  float   single-precision floating point.
+  double  double-precision floating point.
+  short   short integer
+  long    long integer
+
+  16 bit int is in range of [-32768, 32767]
+  float is typically 32-bit, with at least 6 significant digits and magnitude generally between about 10^(-38) and 10^(38)
+  
+  char can be used for storing small non-character integers.
+  negative char results from using signed char to represent negative number.
+    there's no printable character with negative value
+
+#Qualifiers
+  #short and long
+      short int variableName;
+      long int variableName;
+    The word int can be omitted in such declarations, and typically is.
+    short is often 16 bits, long 32 bits, and int either 16 or 32 bits.
+      int is normally the natural size for a particular machine.
+
+    Each compiler is free to choose appropriate sizes for its own hardware,
+      subject only to the restriction that
+        shorts and ints are at least 16 bits,
+        longs are at least 32 bits,
+        and short is no longer than int, which is no longer than long.
+
+    The type long double specifies extended-precision floating point.
+    As with integers, the sizes of floating-point objects are implementation-defined;
+      float, double and long double could represent one, two or three distinct sizes.
+
+  #signed or unsigned
+    may be applied to char or any integer
+    unsiqned numbers are always positive or zero, and obey the laws of arithmetic modulo 2^n,
+      where n is the number of bits in the type.
+      e.g., if chars are 8 bits,
+        unsigned char variables have values between 0 and 255,
+        siqned chars have values between -128 and 127 (in a two's complement machine).
+    Whether plain chars are signed or unsigned is machine-dependent, but printable characters are always positive.
+
+  #const
+    const can be applied to the declaration of any variable
+      to specify that its value will not be changed.
+    For an array, the const qualifier says that the elements will not be altered.
+    The const declaration can also be used with array arguments,
+      to indicate that the function does not change that array:   e.g. int strlen(const char[]);
+    The result is implementation-defined if an attempt is made to change a const.
+
+#Constants
+  Constant expression: an expression that involves only constants.
+    Such expressions may be evaluated during compilation rather than run-time.
+#Symbolic Constants
+    #define CONSTANTNAME replacement
+  no semicolons at the end of define statements
+#Character Constants
+  Character constant: an integer, written as one character within single quotes
+    '\n' is a single character, and is actually just an integer in character form
+    "\n" is a string constant that contains only one character (and a null terminator '\0')
+    '0' is a character constant with the numerical value of 48 (in ASCII character set)
+    0 is a the numerical value 0 (which corresponds to '\0' null character in ASCII)
+#String Constants / String Literal / Character array
+    char variableName[] = "hello";
+    char variableName[] := string
+    "hello" := ['h','e','l','l','o','\0']
+  a string constant is a sequence of 0 or more characters surrounded by double quotes
+  a string in C is just an array of character with '\0' as terminator
+#Byte-sized bit pattern constant
+  An arbitrary byte-sized bit pattern can be specified by:
+    \000  where 000 is one to three octal digits (0...7) or by
+    \xhh  where hh is one or two hexadecimal digits (0..9, a..f, A..F)
+#Number Constants
+  integer constant        : 123
+  long constant           : 123l, 123L
+  unsigned constant       : 50000u, 50000U
+  unsigned long constant  : 50000ul, 50000UL
+
+  floating-point constant : 1.23, 1e-3, 1.23e-3
+    this type is double unless suffixed:
+      float constant  : f, F
+      long double     : l, L
+
+  octal       : 037
+  hexadecimal : 0x1f, 0X1F
+  Octal and hexadecimal constants may be suffixed by L, U, or even both.
+#Enumeration Constant
+  enumeration is a list of constant integer values
+  The first name in an enum has value 0, the next 1, etc, unless explicit values are specified.
+    enum boolean { NO, YES };
+    enum escapes { BACKSPACE = '\b', TAB = '\t', NEWLINE = '\n' };
+  If not all values are specified, unspecified values continue the progression from the last specified value
+    enum months { JAN = 1, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC };
+  Names in different enumerations must be distinct.
+  Values need not be distinct even in the same enumeration.
+
+#Type conversion
+  See implementation for complete rules
+  When an operator has operands of different types,
+    they are converted to a common type according to a small number of rules.
+  In general, the only automatic conversions are those that convert
+    a "narrower" operand into a "wider" one without losing information.
+  Expressions that might lose information may draw a warning, but they are not illegal.
+  A char is just a small integer, so chars may be freely used in arithmetic expressions.
+  Relational expressions and logical expressions have value 1 if true, and 0 if false.
+  functions may return any non-zero value for true.
+    In the test part of if, while, for, etc., "true" just means "non-zero,"
+    so this makes no difference.
+  when conversions take place across assignments,
+    the value of the right side is converted to the type of the left,
+    which is the type of the result.
+  type conversions also take place when arguments are passed to functions.
+    In the absence of a function prototype, char and short become int, and float becomes double.
+#Explicit type conversion
+  explicit type conversions can be forced ("coerced") in any expression, with a unary operator called a cast.
+    (type-name) expression
+
+#Print formatted
+  printf("%d\t%f\n", int1, float1);
+  %d    print as decimal integer
+  %6d   print as decimal integer, at least 6 characters wide
+  %f    print as floating point
+  %6f   print as floating point, at least 6 characters wide
+  %.2f  print as floating point, 2 characters after decimal point
+  %6.2f print as floating point, at least 6 wide and 2 after decimal point
+  %o    print as octal
+  %x    print as hexadecimal
+  %c    print as character
+  %s    print as character string
+  %%    print % itself
+
+#Scope
+  The scope of a name is the part of the program within which the name can be used.  
+  C has both block and function level scope
+the scope of:
+  automatic variable declared at the beginning of a function is the function in which the name is declared
+    The same is true of the parameters of the function, which are in effect local variables.
+  external variable or a function lasts from the point at which it is declared to the end of the file being compiled.
+    if an external variable is to be referred to before it is defined,
+      or if it is defined in a different source file from the one where it is being used,
+      then an extern declaration is mandatory.
+      
+#------------------------------------------------------------------------------------------
+#Control Flow
+
+#If-else statements
+  if (condition) {
+    statements;
+  }else if (condition) {
+    statements;
+  }else{
+    statements;
+  }
+#Ternary operator
+    condition ? expression1 : expression2
+  ternary operator is an expression
+  you can parenthesize condition to improve readability
+
+#Switch statement
+    switch (expression) {
+      case const-expr:
+        statements;
+        break;
+      case const-expr: case const-expr:
+        statements;
+        break;
+      case const-expr:
+      case const-expr:
+        statements;
+        break;
+      default:
+        statements;
+        break;
+    }
+  Each case is labeled by one or more integer-valued constants or constant expressions.
+
+#While loop
+    while(condition){
+      statements;
+    }
+  while condition is true, execute statements
+#Do-while loop
+  do(condition){
+    statements;
+  }
+
+#For loop
+    //for(initialization; condition; increment or decrement){statements;}
+    int i;
+    for(i=0; i<10; i++){
+    	printf("%d\n",i);
+    }
+    for(;;){statements;}   // infinity loop
+
+#Break
+    for(;;){statements; break;}
+  break statement provides an early exit from for, while, do, and switch statement
+#Continue
+    continue;
+  continue statement causes the next iteration of the enclosing for, while, or do loop to begin.
+
+#Goto and label
+    labelName:
+      statements
+    goto labelName;
+  A label can be attached to any statement in the same function as the goto.
+  The scope of a label is the entire function.
+  Formally, the goto is never necessary, and in practice it is almost always easy to write code without it.
+    Nevertheless, there are a few situations where gotos may find a place.
+    The most common is to abandon processing in some deeply nested structure,
+      e.g. breaking out of nested loops at once.
+
+#------------------------------------------------------------------------------------------
+#Function
+  Functions are always external because C doesn't allow functions to be defined inside other functions.
+  #Function prototype / function declaration
+      return-type function-name (parameter declarations)
+      int add (int m, int n);
+      int add (int, int);     // This is OK
+    a function prototype has to agree with the definition in the return-type, function-name, and parameter type
+     but it's parameter names need not agree
+    parameter name is optional in function declaration (but the names are good for documentation purposes)
+  #Function definition
+      return-type function-name (parameter declarations){statements;}
+      int add(int a, int b){return a+b;}
+    if a function return undefined value, the value will be garbage
+#Call by value vs. reference
+  In C, all function arguments are passed by value.
+  To pass by reference, provide a pointer to the variable,
+    the called function must declare the parameter to be a pointer
+    and access the variable indirectly through it.
+  However, when the name of an array is used as an argument,
+    the value passed to the function is the location or address
+    of the beginning of the array-there is no copying of array elements.
+    By subscripting this value, the function can access and alter any element of the array.
+#Pointer to function
+    int (*comp)(void *, void *);  // comp is a pointer to a function that has two void * arguments and returns an int
+  The parentheses are needed so the components are correctly associated.
+    int *comp(void *, void *);    // comp is a function returning a pointer to an int
+  usage:
+    (*comp)(argument, argument);
+  In C, a function is not a variable,
+    but it is possible to define pointers to functions,
+    which can be assigned, placed in arrays, passed to functions, returned by functions, etc.
+  
+#------------------------------------------------------------------------------------------
+#Array and Pointer
+
+#Declaring Arrays
+    type arrayName [ arraySize ];
+    double balance[10];
+#Initializing Arrays
+    double balance[5] = {1000.0, 2.0, 3.4, 7.0, 50.0};
+    double balance[] = {1000.0, 2.0, 3.4, 7.0, 50.0};
+  The number of values between braces { } cannot be larger
+    than the number of elements that we declare for the array between square brackets [ ].
+  If you omit the size of the array, an array just big enough to hold the initialization is created.
+#Accessing Arrays
+    arrayName[index]
+
+#Pointer
+  pointer: a variable that contains the address of a variable.
+  The unary operator & gives the address of an object
+  The & operator only applies to objects in memory: variables and array elements.
+    It cannot be applied to expressions, constants, or register variables.
+  The unary operator * is the indirection or dereferencing operator
+    when applied to a pointer, it accesses the object the pointer points to.
+  every pointer points to a specific data type.
+    one exception: a "pointer to void" is used to hold any type of pointer but cannot be dereferenced itself.
+  If ip points to the integer x, then *ip can occur in any context where x could
+    e.g. *ip = *ip + 10;  :=  x = x + 10
+  Be careful:
+    *ip++     :!=   x++
+    *ip++     :=    *(ip++)   // because unary operators like * and ++ associate right to left
+    (*ip)++   :=    x++
+    ++*ip     :=    ++x
+  since pointers are variables, they can be used without dereferencing:
+    iq = ip
+    // if iq is another pointer to int,
+    // this copies the contents of ip into iq,
+    // making iq point to whatever ip pointed to.
+
+e.g.
+  int x = 1, y = 2, z[10];
+  int *ip;                  /* ip is a pointer to int */
+  ip = &x;                  /* ip now points to x */
+  y = *ip;                  /* y is now 1 */
+  *ip = 0;                  /* x is now 0 */
+  ip = &z[0];               /* ip now points to z[0] */
+  
+  double *dp, atof(char *); 
+  // dp and atof (s) have values of type double
+  // argument of atof is a pointer to char
+  
+#Passing by reference
+  Pointer arguments enable a function to access and change objects in the function that called it.
+e.g.
+  swap (&a,&b);
+  void swap(int *px, int *py){    /* interchange *px and *py */
+    int temp;
+    temp = *px;
+    *px = *py;
+    *py = temp;
+  }
+
+#Pointer and Array
+  an array-and-index expression is equivalent to one written as a pointer and offset.
+  Any operation that can be achieved by array subscripting can also be done with pointers.
+  The pointer version will in general be faster but can be somewhat harder to understand.
+  There is one difference between an array name and a pointer that must be kept in mind.
+    A pointer is a variable, but an array name is not a variable.
+  
+  the value of a variable or expression of type array is the address of element zero of the array
+  As formal parameters in a function definition, char s[]; and char *s; are equivalent
+    the latter is better because it says more explicitly that the parameter is a pointer.
+  
+  It is possible to pass part of an array to a function, by passing a pointer to the beginning of the subarray.
+    e.g. f(&a[2]); or f(a+2);
+  Within f, the parameter declaration can read:
+    f(int arr[]) { ... }; or f(int *arr) { ... }
+  If one is sure that the elements exist,
+    it is also possible to index backwards in an array; p[-1], p[-2], etc. are syntactically legal,
+    and refer to the elements that immediately precede p[0].
+    Of course, it is illegal to refer to objects that are not within the array bounds.
+i.e.:
+  int a[10];
+  int *pa;
+  
+  pa = &a[0];
+  // *pa == *(&a[0])
+  // *pa == a[0]
+  // *(pa+1) == a[1]
+  // *(pa+i) == a[i]
+  
+  int x=*pa;      //:=  int x=a[0];
+  
+  // the value of a variable or expression of type array is the address of element zero of the array
+  // a == &a[0]
+  // pa = &a[0];
+  //  := pa = a;
+  
+#Address arithmetic
+  Pointers and integers are not interchangeable.
+  Zero is the sole exception:
+    the constant zero may be assigned to a pointer,
+    and a pointer may be compared with the constant zero.
+  The symbolic constant NULL is often used in place of zero,
+    as a mnemonic to indicate more clearly that this is a special value for a pointer.
+  
+  pointers may be compared under certain circumstances
+  If p and q point to members of the same array,
+    then comparison operators work properly.
+  Any pointer can be meaningfully compared for equality or inequality with zero.
+  But the behavior is undefined for arithmetic or comparisons with pointers that do not point to members of the same array.
+    There is one exception: the address of the first element past the end of an array can be used in pointer arithmetic
+
+  Pointer arithmetic is consistent:
+    if we had been dealing with floats, which occupy more storage than chars,
+    and if p were a pointer to float, p++ would advance to the next float.
+  All the pointer manipulations automatically take into account the size of the object pointed to.
+
+  a pointer and an integer may be added or subtracted.
+  p + n means the address of the n-th object beyond the one p currently points to.
+  This is true regardless of the kind of object p points to
+    n is scaled according to the size of the objects p points to,
+    which is determined by the declaration of p.
+    If an int is 4 bytes, for example, the int will be scaled by 4.
+  
+  Pointer subtraction is also valid
+  if p and q point to elements of the same array, and p<q,
+    then q-p+ 1 is the number of elements from p to q inclusive.
+    
+  The valid pointer operations are:
+    assignment of pointers of the same type
+    adding or subtracting a pointer and an integer
+    subtracting or comparing two pointers to members of the same array
+    assigning or comparing to zero
+  All other pointer arithmetic is illegal:
+    add two pointers
+    multiply or divide or shift or mask pointers
+    add float or double to pointers
+    except for void *, assign a pointer of one type to a pointer of another type without a cast
+    
+#Character pointers
+    char amessage[] = "now is the time";
+    char *pmessage = "now is the time";
+  amessaqe is an array holding the sequence of characters and '\0' that initializes it.
+    Individual characters within the array may be changed
+    but amessaqe will always refer to the same storage.
+  pmessaqe is a pointer, initialized to point to a string constant
+    the pointer may subsequently be modified to point elsewhere,
+    but the result is undefined if you try to modify the string contents.
+    This is not a string copy; only pointers are involved.
+    
+#Pointers array
+    type *arrayName[]={element,element,etc};
+  Since pointers are variables themselves, they can be stored in arrays just as other variables can.
+  When this pointers array point to a characters array variable or another type of array variable,
+    they're pointers to pointers, since the variable will point to the zeroth index of the array.
+#Multi-dimensional array
+    type arrayName[i][j]; /* [row][col] */
+    type arrayName[][j];
+  C provides rectangular multi-dimensional arrays
+    not jagged multi-dimensional array
+    so char array[5][10] contains 50 storages of characters
+  the number of rows can be omitted if you initialize the array when you declare it.
+  More generally, only the first dimension (subscript) of an array is free; all the others have to be specified.
+#Pointers Arrays vs. Multi-dimensional Arrays
+    int a [ 10][20] ;
+    int *b[10];
+  a is a true two-dimensional array:
+    200 int-sized locations have been set aside,
+    and the conventional rectangular subscript calculation 20*row+col is used to find the element a[row][col]
+  For b, however, the definition only allocates 10 pointers and does not initialize them
+    initialization must be done explicitly, either statically or with code.
+    Assuming that each element of b does point to a 20-element array,
+      then there will be 200 ints set aside, plus 10 cells for the pointers.
+  The important advantage of the pointer array is that
+    the rows of pointer array may be of different lengths.
+    
+#------------------------------------------------------------------------------------------
+#Structure
+  structure: a collection of one or more variables, possibly of different types,
+    grouped together under a single name for convenient handling.
+  The only legal operations on a structure:
+    copying it or assigning to it as a unit
+      this include passing arguments to functions and returning values from functions.
+    taking its address with &
+    accessing its members.
+  #declaration
+      struct structure-tag {  // structure-tag is optional
+        type variable-name;   // members
+        ...
+      };
+    A struct declaration defines a type.
+    If the declaration is tagged, 
+      the tag can be used later in definitions of instances of the structure.
+  #instantiation
+      struct structure-tag instanceName, instanceName;
+      struct structure-tag instanceName={value, ...};
+    the values (if you supply them) must correspond one-to-one to variables inside struct
+  #declaration and instantiation
+      struct {...} x, y, z;
+    A structure declaration that is not followed by a list of variables reserves no storage;
+      it merely describes a template or the shape of a structure.
+  #Accessing struct members
+      instanceName.variable-name
+  #Pointers to structures
+    If p is a pointer to a structure, then
+      p->member-of-structure
+    refers to the particular member.
+    
+    e.g.:
+    struct rect r, *rp = &r;
+    r.pt1.x   //:=  rp->pt1.x  :=  (r.pt1).x  :=  (rp->pt1).x
+    
+#Array of structures
+    struct structure-tag {
+      type variable-name;
+      ...
+    } arrayName[] = {
+      {value, ...}
+      ...
+    }
+  the inner braces ({value,...}) are not necessary when
+    the initializers are simple variables or character strings, and when all are present.
+#------------------------------------------------------------------------------------------
+case '-' :
+  op2 = pop();
+  push (pop () - op2);
+  break;
+the order in which the two calls of pop are evaluated is not defined. To guarantee the right order, it is necessary to pop the first value into a temporary variable as we did in main.
+
+char **argv
+  argv: pointer to pointer to char
+int (*daytab)[13]
+  daytab: pointer to array[13] of int
+int *daytab[13]
+  daytab: array[13] of pointer to int
+void *comp()
+  comp: function returning pointer to void
+void (*comp)()
+  comp: pointer to function returning void
+char (*(*x())[])()
+  x: function returning pointer to array[] of pointer to function returning char
+char (*(*x[3])())[S]
+  x: array[3] of pointer to function returning pointer to array[S] of char

@@ -1,0 +1,12 @@
+// Linked list
+
+// List-search(L,k) finds the first element with key k in list L by a simple linear search, returning a pointer to this element.
+// If no object with key k appears in the list, then the procedure returns NIL.
+
+// List-insert(x) splices x onto the front of the linked list.
+
+// List-delete(L, x) removes an element of index x from a linked list L.
+// Delete by element vs. delete by value:
+  // It must be given a pointer to x, and it then “splices” x out of the list by updating pointers.
+  // If we wish to delete an element with a given key, we must first call LIST-SEARCH to retrieve a pointer to the element.
+

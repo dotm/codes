@@ -1,0 +1,16 @@
+/* Tests */
+// Check if sorted function (Optional setup)
+  // For all the element in an array
+    // If left element is less than right element
+      // continue to next element
+    // If left element is greater than right element
+      // stop loop and return false
+  // After checking all element, return true
+
+// Sorting algorithm
+  // should sort array with more than 1 element and return the sorted result (nominal case)
+  // should return nothing when given array with 0 element
+  // should just return array if it only contains 1 element
+  // should throw error
+    // when given heterogeneous array
+    // when given array with negative length

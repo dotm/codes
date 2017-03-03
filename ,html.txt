@@ -1,4 +1,4 @@
-#Intro:
+﻿#Intro:
 	(!DOCTYPE html) for document type: html
 	(html) at the start and the end of every html
 	(head), for page (title) etc, and (body), for page body, must be inside	the (html) tag
@@ -42,6 +42,12 @@
     use alt="" if you don’t have alternative explanation
         so that blind people won't hear the image file name as alt
     <img src='https://www.kasandbox.org/programming-images/animals/thumbs/komodo-dragon.png' alt='komodo dragon'>
+#Map
+    you can use image map and area tag to create hyperlink inside image
+    coords for rect: (x1,y1) for top left, (x2,y2) for bottom right
+    coords for circle: (x,y) for center and r for radius
+    <area shape="rect" coords="x1,y1,x2,y2" href="link" target="_blank" alt="Lala"/>
+    <area shape="circle" coords="x,y,r" href="link" target="_blank" alt="Lala">
 
 #Creating ID and Class:
     id and class is an attribute
@@ -69,16 +75,17 @@
     stub URL: an internal hyperlink that goes nowhere
         <a href="#">stub link</a>
     you can use image instead of text as the anchor
-		<a href="https://www.khanacademy.org"><img src="https://www.kasandbox.org/programming-images/cute/Heart.png"></a>
+        <a href="https://www.khanacademy.org"><img src="https://www.kasandbox.org/programming-images/cute/Heart.png"></a>
+    add target="_blank" if you want the link to open at new tab
   #Absolute vs relative path
-	relative links make it very easy to move “chunks” of a site from one location on a web server to another 
-	  without having the links break as long as the chunks maintain their relative structure
-	because large, dynamic sites typically have a shared header file and common assets directory, it makes more sense to use absolute links
-	with relative paths, the local site structure doesn’t need to match the remote one; with absolute paths, it does
-	using fully qualified URLs, without manipulating DNS entries, it’s impossible to work locally. 
-	  the local files will always point to the remote server
-	using a relative path will make your site respond quicker
-	if you're linking to something off your site, then you must use the absolute path
+    relative links make it very easy to move “chunks” of a site from one location on a web server to another 
+      without having the links break as long as the chunks maintain their relative structure
+    because large, dynamic sites typically have a shared header file and common assets directory, it makes more sense to use absolute links
+    with relative paths, the local site structure doesn’t need to match the remote one; with absolute paths, it does
+    using fully qualified URLs, without manipulating DNS entries, it’s impossible to work locally. 
+      the local files will always point to the remote server
+    using a relative path will make your site respond quicker
+    if you're linking to something off your site, then you must use the absolute path
   
 #Table:
     (tr) for each row, (th) as head data entry, (td) for body data entry

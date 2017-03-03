@@ -1,0 +1,262 @@
+init:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>+>>>+++++++++++++[<+++++++++>-]<+[<<[<]+>[+>]>-]<<[<]
+HelloWorld:
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.+++++++++++++++++++++++++++++.+++++++..+++.-------------------------------------------------------------------------------.+++++++++++++++++++++++++++++++++++++++++++++++++++++++.++++++++++++++++++++++++.+++.------.--------.
+HelloWorld2:
+>++++++++[<+++++++++>-]<.>+++++[<++++++>-]<-.+++++++..+++.>>++++[-<++++[-<----->]>]<<+.>+++++++++++[<+++++>-]<.>++++++[<++++>-]<.+++.------.--------.
+
+2 * 2 = 4
+>++[<++>-]<
+2 * 2 * 2 = 8
+>>++[-<++[-<++>]>]<<
+2 * 2 * 2 * 2 = 16
+>>>++[-<++[-<++[-<++>]>]>]<<<
+-16
+>>>++[-<++[-<++[-<-->]>]>]<<<
+
+-----
+function init(){
+  let output = "";
+  let ASCII_Upper_Bound = 127;
+  
+  for (let i=1; i<=ASCII_Upper_Bound; i++){
+    output += ">" + a("+",i);
+  }
+  output += a("<",ASCII_Upper_Bound);
+  
+  return output;
+}
+
+function init(){
+  let output = "";
+  let ASCII_Upper_Bound = 127;
+  output += a(">", ASCII_Upper_Bound)
+  output += "+<"
+  output += a("+>[+>]<[<]", ASCII_Upper_Bound - 1);
+  
+  return output;
+}
+
+-----
+
+function a(str, n){
+  return str.repeat(n);
+}
+
+function init(){
+  let output = "";
+  let ASCII_Upper_Bound = 127;
+  output +=
+    a(">", ASCII_Upper_Bound)
+  + "+"
+  + ">>"
+  + a("+", ASCII_Upper_Bound - 1)
+  + "[<<[<]+>[+>]>-]"
+  + "<<[<]"
+  
+  return output;
+}
+
+function main(){
+  let output = "";
+  output += init();
+  return output;
+}
+main()
+
+Any character not "><+-.,[]" (excluding quotation marks) is ignored.
+
+Brainfuck is represented by an array with 30,000 cells initialized to zero
+and a data pointer pointing at the current cell.
+
+There are eight commands:
++ : Increments the value at the current cell by one.
+- : Decrements the value at the current cell by one.
+> : Moves the data pointer to the next cell (cell on the right).
+< : Moves the data pointer to the previous cell (cell on the left).
+. : Prints the ASCII value at the current cell (i.e. 65 = 'A').
+, : Reads a single input character into the current cell.
+[ : If the value at the current cell is zero, skips to the corresponding ] .
+    Otherwise, move to the next instruction.
+] : If the value at the current cell is zero, move to the next instruction.
+    Otherwise, move backwards in the instructions to the corresponding [ .
+
+ASCII			
+0	  NULL	(Null character)			
+1	  SOH	(Start of Header)			
+2	  STX	(Start of Text)			
+3	  ETX	(End of Text)			
+4	  EOT	(End of Transmission)			
+5	  ENQ	(Enquiry)			
+6	  ACK	(Acknowledgement)			
+7	  BEL	(Bell)			
+8	  BS	(Backspace)			
+9	  HT	(Horizontal Tab)			
+10	LF	(Line feed)			
+11	VT	(Vertical Tab)			
+12	FF	(Form feed)			
+13	CR	(Carriage return)			
+14	SO	(Shift Out)			
+15	SI	(Shift In)			
+16	DLE	(Data link escape)			
+17	DC1	(Device control 1)			
+18	DC2	(Device control 2)			
+19	DC3	(Device control 3)			
+20	DC4	(Device control 4)			
+21	NAK	(Negative acknowledgement)			
+22	SYN	(Synchronous idle)			
+23	ETB	(End of transmission block)			
+24	CAN	(Cancel)			
+25	EM	(End of medium)			
+26	SUB	(Substitute)			
+27	ESC	(Escape)			
+28	FS	(File separator)			
+29	GS	(Group separator)			
+30	RS	(Record separator)			
+31	US	(Unit separator)			
+
+32	 	(space)			
+33	!	(exclamation mark)			
+34	"	(Quotation mark)			
+35	#	(Number sign)			
+36	$	(Dollar sign)			
+37	%	(Percent sign)			
+38	&	(Ampersand)			
+39	'	(Apostrophe)			
+40	(	(round brackets or parentheses)			
+41	)	(round brackets or parentheses)			
+42	*	(Asterisk)			
+43	+	(Plus sign)			
+44	,	(Comma)			
+45	-	(Hyphen)			
+46	.	(Full stop , dot)			
+47	/	(Slash)			
+48	0
+49	1
+50	2
+51	3	
+52	4
+53	5
+54	6
+55	7	
+56	8	
+57	9
+58	:	(Colon)			
+59	;	(Semicolon)			
+60	<	(Less-than sign )			
+61	=	(Equals sign)			
+62	>	(Greater-than sign ; Inequality) 			
+63	?	(Question mark)			
+64	@	(At sign)			
+65	A
+66	B
+67	C
+68	D
+69	E
+70	F
+71	G
+72	H
+73	I
+74	J
+75	K
+76	L
+77	M
+78	N
+79	O
+80	P
+81	Q
+82	R
+83	S
+84	T
+85	U
+86	V
+87	W
+88	X
+89	Y
+90	Z
+91	[	(square brackets or box brackets)			
+92	\	(Backslash)			
+93	]	(square brackets or box brackets)			
+94	^	(Caret or circumflex accent)			
+95	_	(underscore , understrike , underbar or low line)			
+96	`	(Grave accent)			
+97	a	
+98	b	
+99	c	
+100	d	
+101	e	
+102	f	
+103	g	
+104	h	
+105	i	
+106	j	
+107	k	
+108	l	
+109	m	
+110	n	
+111	o	
+112	p	
+113	q	
+114	r	
+115	s	
+116	t	
+117	u	
+118	v	
+119	w	
+120	x	
+121	y	
+122	z	
+123	{	(curly brackets or braces)			
+124	|	(vertical-bar, vbar, vertical line or vertical slash)			
+125	}	(curly brackets or braces)			
+126	~	(Tilde ; swung dash)			
+127	DEL	(Delete)
+
+----
+go to pos 5
++     pos 5 000001
+<     pos 4 000001
++     pos 4 000011
+>     pos 5 000011
+[+>]  pos 6 000012
+<     pos 5 000012
+[<]   pos 3 000012
++     pos 3 000112
+>     pos 4 000112
+[+>]  pos 6 000123
+<     pos 5 000123
+[<]   pos 2 000123
++     pos 2 001123
+>     pos 3 001123
+[+>]  pos 6 001234
+<     pos 5 001234
+[<]   pos 1 001234
++     pos 1 011234
+>     pos 2 011234
+[+>]  pos 6 012345
+<     pos 5 012345
+[<]   pos 0 012345
+
++<
++>[+>]<[<]
+----
+go to pos 5
++     pos 5 000001
+go to pos 7
+add4  pos 7 000001 4
+
+start loop
+<<    pos 5 000001
+[<]   pos 4 000001
++     pos 4 000011
+>     pos 5 000011
+[+>]  pos 6 000012
+>     pos 7 000012
+-     pos 7 000012 3
+end loop
+
+<<    pos 5 012345
+[<]   pos 0 012345
+
+<<[<]+>[+>]>-
+<<[<]

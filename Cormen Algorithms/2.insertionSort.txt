@@ -16,3 +16,11 @@
       // Else if it's greater than or equal to the compared element,
         // Leave the element as is and stop comparing
   // Return the result of insertion sort
+
+/* Tests */
+// Structural Basis Testing
+1.Nominal (covered in generic nominal case)
+2.When input array is less than 1 (covered in generic test)
+3.Throw error if array length is negative (covered in generic test)
+4.Swap the unsorted element with sorted element if unsorted element is less than sorted element
+5.Don't swap the unsorted element with sorted element if unsorted element is greater than sorted element

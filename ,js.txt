@@ -1,7 +1,9 @@
-var variableName='value';
+var variableName='value';   #function-level scope
   var a = b = 1;
   var a = 1,
       b = 2;
+let variableName='value';   #block-level scope
+const variableName='value'; #block-level scope constant variable
 
 // single line comment
 /* multi line comment */
@@ -92,6 +94,12 @@ strings.function()
     e.g., methods that set or change the state of an object .
   If we have those methods return this instead of undefined, we can enable cascades.
 
+#Arrow function
+  function(parameter1, parameter2){return parameter1 + parameter2}
+    :=  (parameter1, parameter2) => parameter1 + parameter2
+  (function(parameter){return parameter + 1})(5)  ->  6
+    :=  ((parameter) => parameter + 1)(5)  ->  6
+
 #Inner functions
   inner functions (nested functions): functions defined inside of another function (the outer function)
   each time the outer function is called, an instance of the inner function is created
@@ -172,6 +180,8 @@ strings.function()
   for (var i = 0; i < integer; i++){ statements };
   for (var i = 0; i < array.length; i++){ statements };
   for (var i in lala){ statements };            #lala can be an array or object
+  arr.forEach(callback(element, index, array), thisArg = this)
+
 #While loop
   while(condition===true){ statements };
     while(condition){ statements };
@@ -365,7 +375,7 @@ Object.prototype.constructor returns a reference to the constructor function tha
     This keeps going upwards until it stops all the way at the top: Object.prototype
     By default, all classes inherit directly from Object, unless we change the class's prototype
 
-#Class implementation example:
+#Class inheritance example:
   function ParentClass(a){
     this.a = a;
   }

@@ -1,0 +1,11 @@
+// Logic gates here are implemented from abstract switches instead of concrete transistors
+// Logic gates are build from switches
+// These are the basic logic gates:
+  // NOT
+  // AND
+  // OR
+// These are the logic gates build from the basic logic gates:
+  // XOR
+  // NAND
+  // NOR
+  // XNOR

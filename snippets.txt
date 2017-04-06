@@ -12,6 +12,16 @@ function a (x){
  else{return "Please enter a string" }
 }
 
+#CSS basic visible element
+width: 100px;
+height: 100px;
+background-color: aqua;
+border: 1px black solid;
+box-sizing: border-box;
+
+#Compile less
+lessc a.less a.css
+
 #recommit git
 git add .
 git commit --amend

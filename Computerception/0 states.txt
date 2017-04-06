@@ -1,0 +1,4 @@
+// States here are substitute for electrons
+// There are two states (binary):
+  // ON-state
+  // OFF-state

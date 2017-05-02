@@ -1,0 +1,38 @@
+#Installing the CLI: npm install -g grunt-cli
+  This will put the grunt command in your system path, allowing it to be run from any directory.
+  Note that installing grunt-cli does not install the Grunt task runner!
+  The job of the Grunt CLI is simple: run the version of Grunt which has been installed next to a Gruntfile.
+  This allows multiple versions of Grunt to be installed on the same machine simultaneously.
+
+#How the CLI works
+  Each time grunt is run, it looks for a locally installed Grunt using node's require() system.
+    Because of this, you can run grunt from any subfolder in your project.
+  If a LOCALLY installed Grunt is found,
+    the CLI loads the local installation of the Grunt library,
+    applies the configuration from your Gruntfile,
+    and executes any tasks you've requested for it to run.
+  
+#Working with an existing Grunt project
+  Assuming that the Grunt CLI has been installed 
+    and that the project has already been configured with a package.json and a Gruntfile, 
+    it's very easy to start working with Grunt:
+      Change to the project's root directory.
+      Install project dependencies with npm install.
+      Run Grunt with grunt.
+  That's really all there is to it.
+  Installed Grunt tasks can be listed by running grunt --help
+    but it's usually a good idea to start with the project's documentation.
+
+#Preparing a new Grunt project
+  A typical setup will involve adding two files to your project: package.json and the Gruntfile.
+  package.json is used by npm to store metadata for projects published as npm modules.
+    You will list grunt and the Grunt plugins your project needs as devDependencies in this file.
+  Gruntfile is used to configure or define tasks and load Grunt plugins.
+    This file is named Gruntfile.js or Gruntfile.coffee 
+
+#package.json
+  There are a few ways to create a package.json file for your project:
+    Most grunt-init templates will automatically create a project-specific package.json file.
+    The npm init command will create a basic package.json file.
+
+#Installing Grunt and gruntplugins

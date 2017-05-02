@@ -1,0 +1,196 @@
+#Hello World App
+
+!main.js -----------
+var http = require("http");
+
+http.createServer(function (request, response) {
+  // Send the HTTP header
+  // HTTP Status: 200 : OK
+  // Content Type: text/plain
+  response.writeHead(200, {'Content-Type': 'text/plain'});
+
+  // Send the response body as "Hello World"
+  response.end('Hello World\n');
+}).listen(8081);
+
+// Console will print the message
+console.log('Server running at http://127.0.0.1:8081/');
+EOF -------------------
+
+!cmd.exe -------
+node main.js
+
+#---------------------------------------------------------------------------------------
+#REPL
+
+You can use underscore (_) to get the last result
+
+#REPL Commands
+ctrl + c - terminate the current command.
+ctrl + c twice - terminate the Node REPL.
+ctrl + d - terminate the Node REPL.
+Up/Down Keys - see command history and modify previous commands.
+Tab Keys - list of current commands.
+.help - list of all commands.
+.break - exit from multiline expression.
+.clear - exit from multiline expression.
+.save filename - save the current Node REPL session to a file.
+.load filename - load file content in current Node REPL session.
+.editor - enter editor mode
+.exit - exit the repl
+
+#---------------------------------------------------------------------------------------
+#NPM
+
+#Common commands
+  Update npm: npm install npm -g
+  Generate package.json: npm init
+  npm install moduleName [-g]
+  npm uninstall moduleName
+  npm ls [moduleName] [-g]
+    list := ls
+    npm ls must be executed from nodejs folder
+    npm ls [moduleName] can be used to check module version or to check if module exist
+  Search a Module: npm search moduleName
+  Using module in js file: var moduleName = require('moduleName');
+
+#Global vs Local Installation
+  #Local
+    By default, NPM installs any dependency in the local mode. 
+    Local mode refers to the package installation in node_modules directory lying in the folder where Node application is present. 
+    Locally deployed packages are accessible via require() method.
+  #Global
+    Globally installed packages/dependencies are stored in system directory. 
+    Such dependencies can be used in CLI (Command Line Interface) function of any node.js 
+      but cannot be imported using require() in Node application directly.
+
+#package.json
+  package.json is present in the root directory of any Node application/module 
+    and is used to define the properties of a package.
+#Attributes of Package.json
+  name - name of the package
+  version - version of the package
+  description - description of the package
+  homepage - homepage of the package
+  author - author of the package
+  contributors - name of the contributors to the package
+  dependencies - list of dependencies. NPM automatically installs all the dependencies mentioned here in the node_module folder of the package.
+  repository - repository type and URL of the package
+  main - entry point of the package
+  keywords - keywords
+#dependencies vs devDependencies
+  dependencies are required to run, e.g. express.js  devDependencies only to develop, e.g. unit tests, transpilation, minification, etc.
+
+#Update module
+  Update package.json and change the version of the dependency to be updated
+  run the following command: npm update
+#Create a Module
+  Creating a module requires package.json to be generated.
+  "npm init" will generate the basic skeleton of the package.json.
+  You will need to provide all the required information about your module.
+  Once package.json is generated, use "npm adduser" to register yourself with NPM repository site using a valid email address.
+  Then publish your module: npm publish
+  If everything is fine with your module, 
+    it will be published in the repository 
+    and will be accessible to install using NPM
+  
+#---------------------------------------------------------------------------------------
+#Callback Concept
+  Callback is an asynchronous equivalent for a function. 
+  callback function is called at the completion of a given task. 
+  All the APIs of Node are written in such a way that they support callbacks.
+    So there is no blocking (wait for operation) in Node.
+    This makes Node.js highly scalable, as it can process a high number of requests
+      without waiting for any function to return results.
+
+#Blocking Code Example
+  var fs = require("fs");
+  var data = fs.readFileSync('input.txt');
+  console.log(data.toString());
+  console.log("Program Ended");
+#Non-Blocking Code Example
+  var fs = require("fs");
+  fs.readFile('input.txt', function (err, data) {
+    if (err) return console.error(err);
+    console.log(data.toString());
+  });
+  console.log("Program Ended");
+
+#---------------------------------------------------------------------------------------
+#Event Loop
+  Node.js is a single-threaded application,
+    but it can support concurrency via the concept of event and callbacks.
+  Every API of Node.js is asynchronous and being single-threaded,
+    they use async function calls to maintain concurrency.
+  Node uses observer pattern.
+  Node thread keeps an event loop and whenever a task gets completed,
+    it fires the corresponding event which signals the event-listener function to execute.
+#Event-Driven Programming
+  Node.js uses events heavily.
+  As soon as Node starts its server, it simply
+    initiates its variables, declares functions, and then simply waits for the event to occur.
+  In an event-driven application, there is generally a main loop that listens for events,
+    and then triggers a callback function when one of those events is detected.
+  
+                           +-------------->
+  EventEmitters --> Events +  Event Loop  + Event Handlers
+                           <--------------+
+  
+  Callback functions are called when an asynchronous function returns its result, 
+    whereas event handling works on the observer pattern.  The functions that listen to events act as Observers.
+    Whenever an event gets fired, its listener function starts executing. 
+  Node.js has multiple in-built events available through events module and EventEmitter class
+    which are used to bind events and event-listeners as follows:
+      // Import events module
+      var events = require('events');
+      // Create an eventEmitter object
+      var eventEmitter = new events.EventEmitter();
+      // Bind event and even handler as follows
+      eventEmitter.on('eventName', eventHandler);
+      // Fire an event programmatically
+      eventEmitter.emit('eventName');
+
+  In Node Application, any async function accepts a callback as the last parameter
+    and a callback function accepts an error as the first parameter.
+      fs.readFile('input.txt', function (err, data) {
+        if (err){
+          console.log(err.stack);
+          return;
+        }
+        console.log(data.toString());
+      });
+      
+#---------------------------------------------------------------------------------------
+#Event Emitter
+  Many objects in a Node emit events
+  All objects which emit events are the instances of events.EventEmitter
+#EventEmitter Class
+  As we have seen in the previous section, EventEmitter class lies in the events module.
+    // Import events module
+    var events = require('events');
+    // Create an eventEmitter object
+    var eventEmitter = new events.EventEmitter();
+  When an EventEmitter instance faces any error, it emits an 'error' event.
+  When a new listener is added, 'newListener' event is fired 
+  When a listener is removed, 'removeListener' event is fired.
+  EventEmitter provides multiple properties like on and emit.
+    on property is used to bind a function with the event
+    emit is used to fire an event
+
+#Methods
+  addListener(event, listener)
+  on(event, listener)
+  once(event, listener)
+  removeListener(event, listener)
+  removeAllListeners([event])
+  setMaxListeners(n)
+  listeners(event)
+  emit(event, [arg1], [arg2], [...])
+#Class Methods
+  listenerCount(emitter, event)
+#Events
+  newListener
+  removeListener
+
+#---------------------------------------------------------------------------------------
+#Buffers

@@ -1,0 +1,243 @@
+End every line with semicolon
+Single quotation string won't parse your variable
+  "Use this to parse $varName"
+
+#Comment
+  // single line comment
+  # single line comment
+  /* multi line comment */
+
+#PHP File
+  .php file is .html file with php code in it
+    <?php "enter code here" ?>
+
+#Variable declaration
+  $varName = value;
+    $myName = "Beyonce";
+    $myAge = 32;
+#Constant declaration
+    const constantName = value;
+    define("constantName", value);
+  const defines constants at compile time, whereas define defines them at run time
+    if (...) {const FOO = 'BAR';} // invalid
+    for ($i = 0; $i < 32; ++$i) {
+        define('BIT_' . $i, 1 << $i); // dynamic constant declaration
+    }
+  Unless you need any type of conditional or expressional definition, 
+    use consts instead of define for the sake of readability!
+#Accessing class constant: Classname::constantName
+
+#String output
+    <p> <?php echo ""; ?> </p>
+    <p> <?php print ""; ?> </p>
+  echo has no return value while print has a return value of 1 so it can be used in expressions. 
+    $b ? print "true" : print "false";
+  echo can take multiple parameters while print can take one argument.
+    echo  "and a ", 1, 2, 3; echo ("and a 123");
+    print ("and a 123");   print  "and a 123";
+  echo is marginally faster than print.
+#Concatenate string
+  use dot to concatenate string
+    <?php echo "Hello," . " " . "world" . "!"; ?>
+#Newline
+    <?php echo "first line" . "<br>" . "second line"; ?>
+    
+#Arithmetic operator: + - * /
+#Comparison operator: > < <= >= == !=
+
+#--------------------------------------------------------------------------------
+#Conditional
+
+#If statement
+  if(false) {
+    echo "if";
+  }
+  elseif(true) {
+    echo "elseif";
+  }
+  else {
+    echo "else";
+  }
+
+#Switch statement
+  normal version
+    switch (2) {
+      case 0:
+        echo 'The value is 0';
+        break;
+      case 1:
+        echo 'The value is 1';
+        break;
+      default:
+        echo "The value isn't 0 or 1";
+    }
+  endswitch syntactic sugar version
+    switch ($i):
+      case 0:
+        echo '$i is 0.';
+        break;
+      case 1: //falling through switch cases
+      case 2:
+      case 3:
+      case 4:
+      case 5:
+        echo '$i is somewhere between 1 and 5.';
+        break;
+      default:
+        echo "I don't know how much \$i is.";
+    endswitch;
+
+#--------------------------------------------------------------------------------
+#Loop
+
+#For loop
+  for ($i = 0; $i < 10; $i++) {
+    echo $i;
+  }
+#For each loop
+  foreach($array as $i) {
+    echo $i;
+  }
+  foreach($associative_array as $key=>$value) {
+    echo $i;
+  }
+  foreach($multidimensional_array as $i){
+    foreach($i as $j){
+      echo $j;
+    }
+  }
+
+#While loop syntax
+  while(condition) {
+     // looped statements go here;
+  }
+  while($varName){"loop code here";}
+  while(true){break;}
+  while(true):
+    break;
+  endwhile;
+#Do while loop
+  do {
+    "something";
+  } while (condition);
+  
+#--------------------------------------------------------------------------------
+#Function
+
+#Common function
+  Count string length: strlen("string"); // 6
+  Return substring: substr("string", 1, 3); // tri
+    substr(string, starting position, number of characters to return)
+  Uppercase string: strtoupper("string"); // STRING
+  Lowercase string: strtolower("STRING"); // string
+  Find the position of the first occurrence of a substring in a string: strpos("emily", "ily"); // 2
+    if the substring can't be found, this will return false
+      print strpos("string", "a") ? : "Nope!"; // "Nope!"
+  Round number: 
+    round(M_PI); // 3
+    round(M_PI, 2); // 3.14
+  Random number generator: rand(min, max)
+
+#Defining function
+  function functionName($parameters) {
+    statement;
+    return value;
+  }
+#Calling function
+  functionName(arguments)
+  
+#--------------------------------------------------------------------------------
+#Array
+    $varName = array("Egg", "Tomato", "Beans", 3);
+  In PHP arrays aren't even arrays, they're ordered hash-tables.
+#Accessing array value
+    $varName[index]
+    $varName{index}
+  PHP array is zero indexed
+#Assign array element directly
+    $varName[index] = value
+#Delete
+  the whole array: unset($array);
+  an element: unset($array[2]);
+  deleting an element 
+    make the value at the index undefined 
+    reduce the array count/length
+#Pushing an element: array_push($array, value)
+#Counting array elements: count($array)
+#Sort and reverse sort:
+    sort($array); // 1,2,3
+    rsort($array); // 3,2,1
+  sorting will change the original array
+  you can sort number and string
+#Join array into string
+  join(":", $array); // "1:2:3"
+#Multidimensional array
+  $varName = array
+    (
+    array("Volvo",22,18),
+    array("BMW",15,13),
+    array("Saab",5,2),
+    array("Land Rover",17,15)
+    );
+    
+#Associative array (Map)
+    $varName = array("key" => value, "key" => value);
+  associative array makes use of (key => value) pairs
+#Accessing associative array value
+    $varName["key"];
+
+#Iterating over array and associative array
+  see foreach
+#--------------------------------------------------------------------------------
+#Object and Class
+
+class Classname {
+  public $prop = 1;
+  const constantName = 2;
+}
+#Instantiating an object: $obj = new Classname();
+#Access object property value: $obj -> prop // 1
+#Assign object property value: $obj -> prop = 2
+#Accessing class constant: Classname::constantName
+
+class Classname {
+  // the construct method
+  public function __construct($prop1, $prop2) {
+    // default variable type is public
+    $this->prop1 = $prop1;
+    $this->prop2 = $prop2;
+  }
+  
+  public function funcname($optionalParameter) {
+    // Do something
+  }
+}
+
+#Calling the construct method: $obj = new Classname(1,2);
+#Calling a method: $obj -> funcname(arguments);
+
+#Scopes
+  public scope to make that variable/function available from anywhere, other classes and instances of the object.
+  private scope when you want your variable/function to be visible in its own class only.
+  protected scope when you want to make your variable/function visible in all classes that extend current class including the parent class.
+#Scope resolution operator
+  :: is the scope resolution operator
+#Final
+    final public $prop;
+  final keyword prevents overriding
+#Static
+      public static function funcname(){}
+  static keyword lets you use a class' property or method 
+    without having to create an instance of that class
+  class constant can be accessed outside of class too
+#Access static variable: Classname::$varName;
+#Access class constant: Classname::constantName;
+#Calling static method: Classname::funcname();
+
+#Reflection methods
+  if ( is_a ($me, "Person") ) {    echo "I'm a person, ";  }
+  if ( property_exists ($me, "name") ) {    echo "I have a name, ";  }
+  if ( method_exists ($me, "dance") ) {    echo "I can dance!";  }
+  
+#Inheritance
+class Square extends Shape {}

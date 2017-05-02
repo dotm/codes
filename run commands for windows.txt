@@ -1,0 +1,24 @@
+#Run Commands
+
+#Common Default
+  ncpa.cpl - network settings
+  mspaint
+  calc
+  cmd
+  powershell
+  chrome
+  regedit
+  snippingtool
+  stikynot - Sticky Notes
+  explorer
+  wuapp - Windows Update
+  dxdiag - DirectX Diagnostic Tool
+  shell:AppsFolder - Windows Application List
+  ms-settings:bluetooth - Open Bluetooth Settings
+  
+#User-Defined (make sure no default command is overridden)
+  ; - Snipping tool
+  np - Notepad++
+  ev - Evernote
+  c - Google Chrome
+  dropboxsync

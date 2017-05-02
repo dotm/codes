@@ -1,0 +1,12 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_CURRENT_USER\Software\Classes\JSFile]
+
+[HKEY_CURRENT_USER\Software\Classes\JSFile\shell]
+
+[HKEY_CURRENT_USER\Software\Classes\JSFile\shell\Node]
+"Icon"="C:\\Program Files\\nodejs\\node.exe"
+@="Run in Node.js"
+
+[HKEY_CURRENT_USER\Software\Classes\JSFile\shell\Node\command]
+@="cmd /k node \"%1\""

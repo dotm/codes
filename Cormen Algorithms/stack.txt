@@ -1,0 +1,12 @@
+// Stacks
+
+// Check whether the stack is empty by query operation STACK-EMPTY.
+If we try to pop an empty stack, we say the stack underflows, which is normally an error.
+If S.top exceeds n, the stack overflows.
+
+// INSERT operation on a stack is called PUSH
+// DELETE operation on a stack, which does not take an element argument, is called POP
+The order in which plates are popped from the stack is the reverse of the order in which they were pushed onto the stack, since only the top plate is accessible.
+We can implement a stack of at most n elements with an array S[1..n]. The array has an attribute S.top that indexes the most recently inserted element.
+The stack consists of elements S[1..S.top], where S[1] is the element at the bottom of the stack and S[S.top] is the element at the top.
+When S.top=0, the stack contains no elements and is empty.

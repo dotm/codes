@@ -1,0 +1,14 @@
+// Merge Sort
+  // If base case is achieved, just return it
+  // Divide the array evenly into 2 parts
+  // Call merge sort on both parts
+  // Merge the results of the merge sort executed on both parts
+  // Return the sorted result
+  
+// Merge (for merge sort)
+// Take 2 array as input
+  // While both input array is not empty
+    // Take the smallest element from both input array and compare them
+    // Remove the smaller element and put it into the top of the output array
+  // After one input array is empty, put the rest of the other input into the output array
+  // Return the merged result

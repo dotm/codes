@@ -127,8 +127,20 @@ export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"
 
 # shortcut to important folders
 alias code="cd /mnt/c/Users/y6326/Dropbox/Codes"
+export code=="/mnt/c/Users/y6326/Dropbox/Codes"
 alias work="cd /mnt/c/Users/y6326/OneDrive/Documents/Workspace"
+export work="/mnt/c/Users/y6326/OneDrive/Documents/Workspace"
 alias site="cd /mnt/c/Users/y6326/Desktop/Personal\ Site"
+export site="/mnt/c/Users/y6326/Desktop/Personal\ Site"
+
+# backup rc files
+  # go to backup folder
+  # copy all rc files
+alias backuprc="
+  code
+  cp ~/.bashrc bashrc.txt
+  cp ~/.vimrc vimrc.txt
+"
 
 # compile c and run the output file
 function c(){
@@ -139,4 +151,4 @@ function c(){
 alias explorer="/mnt/c/Windows/SysWOW64/explorer.exe ."
 
 # start in this folder
-code
+# code

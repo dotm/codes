@@ -127,19 +127,25 @@ export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"
 
 # shortcut to important folders
 alias code="cd /mnt/c/Users/y6326/Dropbox/Codes"
-export code=="/mnt/c/Users/y6326/Dropbox/Codes"
-alias work="cd /mnt/c/Users/y6326/OneDrive/Documents/Workspace"
-export work="/mnt/c/Users/y6326/OneDrive/Documents/Workspace"
+alias work="cd /mnt/c/Workspace"
+alias mp3="cd /mnt/c/Users/y6326/Desktop/Music\ Bunker"
 alias site="cd /mnt/c/Users/y6326/Desktop/Personal\ Site"
-export site="/mnt/c/Users/y6326/Desktop/Personal\ Site"
 
+# open bashrc
+alias brc="vim ~/.bashrc"
+# open vimrc
+alias vrc="vim ~/.vimrc"
+# open tmux config
+alias trc="vim ~/.tmux.conf"
 # backup rc files
   # go to backup folder
   # copy all rc files
 alias backuprc="
   code
-  cp ~/.bashrc bashrc.txt
-  cp ~/.vimrc vimrc.txt
+  cd rc
+  cp ~/.bashrc .bashrc
+  cp ~/.vimrc .vimrc
+  cp ~/.tmux.conf .tmux.conf
 "
 
 # compile c and run the output file
@@ -149,6 +155,11 @@ function c(){
 
 # open explorer in this directory
 alias explorer="/mnt/c/Windows/SysWOW64/explorer.exe ."
+# open new bash window in this directory (not working)
+# alias nsh="/mnt/c/Windows/System32/bash.exe ."
 
 # start in this folder
 # code
+
+#replacable shortcuts
+alias s1="ls"

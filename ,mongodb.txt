@@ -1,0 +1,208 @@
+Hierarchy
+---------------------------
+Database
+  Collection
+    Document
+      Field
+      Primary Key (Default key _id provided by mongodb itself)
+    Embedded Documents
+
+#Common Commands
+  sudo service mongod start
+  sudo service mongod stop
+  sudo service mongod restart
+  #CLI interface: mongo
+    db.help()
+    db.stats()
+
+Supported Data Type
+  Numeric: integer, double (float)
+  Character: string, symbol
+  Boolean: boolean
+  Min/Max Keys
+  Arrays
+  Timestamp
+  Object
+  Null
+  Date
+  ObjectId
+  Binary Data
+  Code (Javascript)
+  Regular Expression
+    
+#--------------------------------------------------------------------------
+#Database
+  #CREATE: use DATABASE_NAME
+  #CONNECT TO: use DATABASE_NAME
+  #LIST ALL: show dbs
+    To display database,
+      you need to insert at least one document into it: db.movie.insert({"name":"tutorials point"})
+  #CHECK CURRENT: db
+    default database is "test"
+  #DROP (current db): db.dropDatabase()
+  
+#Collection
+  MongoDB creates collection automatically when you insert document.
+    e.g. db.movie.insert({"name":"tutorials point"})  #this will create "movie" collection
+  #CREATE: db.createCollection(name, options) #options are optional
+    db.createCollection("mycol", { capped : true, autoIndexID : true, size : 6142800, max : 10000 })
+  #LIST: show collections
+  #DROP: db.COLLECTION_NAME.drop()
+  
+#Document
+  MongoDB creates collection automatically when you insert document.
+  In the inserted document,
+    if we don't specify the _id parameter, 
+    MongoDB will assign a unique ObjectId for this document.
+  #CREATE: db.COLLECTION_NAME.insert(document)
+    db.mycol.insert({
+      _id: ObjectId(7df78ad8902c),
+      title: 'MongoDB Overview',
+      description: 'MongoDB is no sql database',
+      by: 'tutorials point',
+      url: 'http://www.tutorialspoint.com',
+      tags: ['mongodb', 'database', 'NoSQL'],
+    })
+  #CREATE multiple documents: db.COLLECTION_NAME.insert([document, document])
+  #UPDATE
+    update() method updates the values in the existing document
+    to update multiple documents, set parameter 'multi' to true
+    #Partial UPDATE: db.COLLECTION_NAME.update(selectioin_criteria, updated_data)
+      db.mycol.update({'title':'MongoDB Overview'},
+        {$set:{'title':'New MongoDB Tutorial'}},{multi:true})
+    #Replace Document of ObjectId: db.COLLECTION_NAME.save({_id:ObjectId(),new_data})
+      db.mycol.save({"_id" : ObjectId(5983548781331adf45ec7),
+        "title":"Tutorials Point New Topic", "by":"Me"})
+  #DROP: db.COLLECTION_NAME.remove(deletion_criteria, justOne)  #justOne flag is optional
+      db.mycol.remove({'title':'MongoDB Overview'})
+    #DROP just one: db.COLLECTION_NAME.remove(deletion_criteria, 1)
+    #DROP ALL: db.COLLECTION_NAME.remove()
+
+#Index
+  #CREATE: db.COLLECTION_NAME.ensureIndex({KEY:1})
+    1 is for ASC, -1 for DESC
+  #with options
+  
+#--------------------------------------------------------------------------
+#Document Query: db.COLLECTION_NAME.find()
+  #Prettify output: db.COLLECTION_NAME.find().pretty()
+  #find one: db.COLLECTION_NAME.findOne()
+  
+#Where Clause
+  #Equality: {<key>:<value>}
+    db.mycol.find({"by":"tutorials point"})
+      := where by = 'tutorials point'
+  #Less Than: {<key>:{$lt:<value>}}
+    db.mycol.find({"likes":{$lt:50}})
+      := where likes < 50
+  #Less Than Equals: {<key>:{$lte:<value>}}
+    db.mycol.find({"likes":{$lte:50}})
+      := where likes <= 50
+  #Greater Than: {<key>:{$gt:<value>}}
+    db.mycol.find({"likes":{$gt:50}})
+      := where likes > 50
+  #Greater Than Equals: {<key>:{$gte:<value>}}
+    db.mycol.find({"likes":{$gte:50}})
+      := where likes >= 50
+  #Not Equals: {<key>:{$ne:<value>}}
+    db.mycol.find({"likes":{$ne:50}})
+      := where likes != 50
+#AND
+  db.COLLECTION_NAME.find({key1:value1, key2:value2})
+#OR
+  db.COLLECTION_NAME.find({ $or: [ {key1: value1}, {key2:value2} ] })
+  
+#Projection (selecting only the necessary data)
+    db.mycol.find({},{"title":1,_id:0})   #show title, hide _id
+  the 1 will specify what fields should be shown
+    _id will default to shown (if you want to hide it, you must explicitly specify it)
+  the 0 will specify what fields should be hidden
+  
+#LIMIT: db.COLLECTION_NAME.find().limit(NUMBER)
+  If you don't specify the number argument,
+    it will display all documents from the collection.
+  #OFFSET: db.COLLECTION_NAME.find().limit(NUMBER).skip(NUMBER)
+
+#ORDER BY "KEY"
+  default is ASC
+  #ASC: db.COLLECTION_NAME.find().sort({KEY:1})
+  #DESC: db.COLLECTION_NAME.find().sort({KEY:-1})
+
+#--------------------------------------------------------------------------
+#Relationship
+
+#Embedded Relationship
+  !user document
+  {
+    "_id":ObjectId("52ffc33cd85242f436000001"),
+    "name": "Tom Benzamin",
+    "dob": "01-01-1991",
+    "address": [
+      {
+        "building": "22 A, Indiana Apt",
+        "city": "Los Angeles",
+        "state": "California"
+      },
+      {
+        "building": "170 A, Acropolis Apt",
+        "city": "Chicago",
+        "state": "Illinois"
+      }
+    ]
+  }
+var address = db.users.findOne({"name":"Tom Benzamin"},{"address":1})
+
+#Referenced Relationships with Manual References
+  !user document
+  {
+    "_id":ObjectId("52ffc33cd85242f436000001"),
+    "name": "Tom Benzamin",
+    "dob": "01-01-1991",
+    "address_ids": [
+      ObjectId("52ffc4a5d85242602e000000"),
+      ObjectId("52ffc4a5d85242602e000001")
+    ]
+  }
+var result = db.users.findOne({"name":"Tom Benzamin"},{"address_ids":1})
+var addresses = db.address.find({"_id":{"$in":result["address_ids"]}})  
+
+#DBRefs
+  In cases where a document contains references from different collections,
+    we can use MongoDB DBRefs.
+  There are three fields in DBRefs:
+    $ref: specifies the collection of the referenced document
+    $id: specifies the _id field of the referenced document
+    $db (optional): specifies the name of the database of the referenced document
+  !user document
+  {
+    "_id":ObjectId("52ffc33cd85242f436000001"),
+    "name": "Tom Benzamin",
+    "dob": "01-01-1991",
+    "address": {
+      "$ref": "address_home",
+      "$id": ObjectId("534009e4d852427820000002"),
+      "$db": "tutorialspoint"
+    },
+  }
+var user = db.users.findOne({"name":"Tom Benzamin"})
+var dbRef = user.address
+var address = db[dbRef.$ref].findOne({"_id":(dbRef.$id)})
+
+#--------------------------------------------------------------------------
+#Aggregation: db.COLLECTION_NAME.aggregate(AGGREGATE_OPERATION)
+  e.g.:
+    db.mycol.aggregate([
+      {$group : 
+        {_id : "$user",
+        posts : {
+          $sum : 1}}}])
+    := SELECT user AS _id, COUNT(*) AS posts FROM mycol GROUP BY user
+  you can replace $sum above with another available aggregation expressions:
+    $sum
+    $avg
+    $min
+    $max
+    $push
+    $addToSet
+    $first    #use sort before using this aggregation
+    $last     #use sort before using this aggregation

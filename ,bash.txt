@@ -1,0 +1,227 @@
+﻿#Bash configuration files
+  main user config files: ~/.bashrc and ~/.profile
+  main global config files: /etc/bash.bashrc and /etc/profile
+
+#Multiple option for commands
+  ls -ar := ls --all --reverse
+  ls -sS := ls --size -S
+#Basic internal commands (commands that are built into the shell)
+  exit  exit shell
+  ^d    exit shell or terminate input
+  ^c    terminate operation (keyboard interrupt)
+  clear clear screen
+  echo  output text
+  file  give a one-line summary of what kind of file you’re looking at, based on its extension
+
+#Getting Help
+  just google it
+  man
+    see "man man" for more information (and to see manual's section pages)
+  info    hypertext man page
+    info info
+  help
+  --help
+  -h
+  -?
+
+#Command history
+  history
+  history | grep keyword
+  history -c -> clear history
+#Arrow key history
+  use up arrow and down arrow to navigate history line by line
+#Search backward
+  press Ctrl+r and type keyword
+    after you type a keyword, press Ctrl+r again to search further backward
+  press Enter to execute command, Esc to exit search mode
+#Bash history expansion (substitution)
+  You can use all combination of !xxx in any part of the command (start, middle, end of line)
+  !n            execute command number n from history
+    !5          execute command number 5 from history
+    !-2         execute the second previous command from history
+    !-1         execute the first previous command from history
+    !!          execute the first previous command from history
+  !string       execute last command from history that starts with string
+  !?string      execute last command from history that contains string
+    !?/etc
+  ^str1^str2    quick substitution for last command
+    ^-l         remove '-l' (substitute it with empty string)
+    ^mkdir^cd
+    ^mkdir^rm -rf   #the '-rf' or any other string will be appended
+  :p            print command expansion without executing it
+  :s            sed substitution for command
+    !n:s/str1/str2
+  :gs           sed global substitution for command
+  :^            get the first argument of a command
+    !n:^
+    !string:^
+    !?string:^
+  :$            get the last argument of a command
+  :n            get the nth argument of a command
+    !!:2
+  :*            get all the arguments from a command
+  :x-y          get x-th to y-th arguments from a command
+    !!:2-$        get second argument to the last
+  !^            get first argument from last command
+    !$
+    !*
+    !n
+    !x-y
+
+#Tab completion
+  type part of command or file name, then press tab
+    if nothing happens, press tab again and you'll see all possible completion
+    if you hear a beep, then there's no command or file that match
+
+#---------------------------------------------------------------------------
+#Browsing Files and Directory
+  pwd   print working (current) directory
+  cd    change directory
+    -     back
+    ..    up
+    ~     home
+  less  read file
+  cat
+  ls    list working directory content
+    -a    all (including dot files)
+    -l    verbose / long listing
+    -t    sort by time modified (newest first)
+    -S    sort by size
+    -r    reverse current sort order
+    -X    group by extension (type)
+    -R    recursive
+    -s    show size
+    -h    show human readable size (used with -s or -l)
+  
+#Searching Files and Directory
+  #find [list of dirs] [option(s) and test(s)] [action(s)]
+    get a complete list of files recursively (including relative paths)
+      -help   get help
+    #operators
+    #global options
+      -maxdepth       limit recursive find
+        -maxdepth 1     := ls -a
+    #positional options
+    #tests
+      -type d   find directories
+      -type f   find files
+      -type l   find symbolic links
+      -name     find by name
+        -name '*.c'
+      -iname    find by name (case-insensitive)
+      -path     find by path
+        -path '*app/view*'
+      -ipath    find by path (case-insensitive)
+      -size     find by size
+        -size +1000000c     #'+1000000c' means more than 1 million characters (bytes)
+      -mtime    find by last modified time
+        -mtime -7           #'-7' means less than 7 days
+    #actions
+      -print    default action if none given
+      -ls       verbose long listing (USE THIS BEFORE USING -delete or -exec FOR PRECAUTION)
+      -delete   delete files
+  $ find | [sort][grep [-i]]
+  $ find -ls | sort -k 11
+
+  #grep
+    -R  search content of all files under current directory tree
+    -i  case insensitive
+    -F  fixed case
+    -v  exclude
+    -l  list file only (match not displayed)
+  $ grep -R string | grep -vF .git
+
+#Managing Files and Directory
+  #Moving file: 
+    mv old/path/filename new/path/
+    mv old/path/old_filename new/path/new_filename
+  #Renaming file: mv old_filename new_filename
+  #Copying file: cp
+  #Create file: touch filename
+  #Create directory: mkdir dirname
+  #Remove file: rm filename filename
+  #Remove directory: rm -r dirname
+  #Force remove: rm -f filename
+
+#Batch Processing
+  #using find
+    find <tests> -exec <command> {} <terminator>
+    find -name '*.pl' -exec perl -c {} \;
+    find -name '*.c' -exec vim {} +
+    
+#---------------------------------------------------------------------------
+#Filename expansion (globs)
+  *   expands to 0 or more characters
+  ?   expands to 1 character
+  #Bracket: [ad]  match only a or d characters
+  #Ranged bracket: [a-z] match range of a to z characters
+
+#Brace expansion
+    ,{html,css,js}.txt      ->  ,html.txt ,css.txt ,js.txt
+  #Ranged:    test{A..E}    ->  testA testB testC testD testE
+  #Multiple:  {a,b}{1,2}    ->  a1 a2 b1 b2
+  #Nested:    {{,s}bin,etc} ->  bin sbin etc
+$ rm test{A..E}
+  := rm testA; rm testB; rm testC; rm testD; rm testE
+  
+#---------------------------------------------------------------------------
+#Using Streams, Redirection, and Pipes
+
+#Streams
+  streams === files
+  #types: stdin, stdout, stderr
+
+#redirection operators:
+  >     if file exist, then overwrite, else create new      stdout > file
+  >>    if file exist, then append, else create new         stdout >> file
+  2>    if file exist, then overwrite, else create new      stderr > file
+  2>>   if file exist, then append, else create new         stderr >> file
+  &>    if file exist, then overwrite, else create new      stdout + stderr &> file
+  <     sends the contents of the specified file to be used as standard input
+    grep txt < tmpfile
+  <<    accepts text on the following lines as standard input
+    cat << heredoc
+  <>    causes the specified file to be used for both standard input and standard output ???
+  tee file.txt
+        redirect stdin both to stdout and file
+#here document (heredoc): arbitrary word used to mark the end of input
+#/dev/null
+  use this if you want to get rid of output stream from stdout or stderr
+#multiple redirection
+  cat << heredoc > file.txt
+  
+#data pipe (pipeline): redirects first program’s stdout to second program’s stdin
+  first | second
+    :=  first > tmpfile; second < tmpfile; rm tmpfile
+
+############################################################################
+#Run program
+  #with exec: exec path/to/aProgram
+    this will replace shell with aProgram
+  #directly: path/to/aProgram
+    this will initiate a new process for aProgram
+    
+#Clipboard
+  windows 10 linux subsystem: echo "text" | clip.exe
+  
+#Timing an operation: time
+  Three times are displayed:
+    total execution time (a.k.a. real time)
+    user CPU time
+    system CPU time
+    
+#Alias
+  alias code="cd /mnt/c/Users/y6326/Dropbox/Codes"
+  alias backuprc="
+    code
+    cp ~/.bashrc bashrc.txt
+    cp ~/.vimrc vimrc.txt
+  "
+
+#Environment variables
+  #Set: export NNTPSERVER=news.abigisp.com
+  #Access: echo $NNTPSERVER
+  #Unset: unset NNTPSERVER
+#Set to PATH
+
+p.17

@@ -1,0 +1,79 @@
+check version: tmux -V
+default PREFIX: ^b
+  custom: ^z (in DVORAK)
+enter command mode (from inside tmux): PREFIX : (colon)
+list default keybinding: PREFIX ?
+  quit by pressing Escape or "q"
+
+create session: tmux
+create named session: tmux new -s session_name
+kill session (from inside the session): exit
+kill session (from inside the session): ^d
+kill session: tmux kill-session -t session_name
+kill session: tmux kill-session
+  omitting "-t session_name", the top session (from tmux ls) will be killed
+list session: tmux ls
+attach session: tmux attach -t session_name
+attach session: tmux attach
+  omitting "-t session_name", the top session (from tmux ls) will be attached
+detach session: PREFIX d
+
+create named window: tmux new [-s session_name] -n window_name
+create new window (from inside the session): PREFIX c
+kill window (from inside the window): exit
+kill window (from inside the window): ^d
+rename current window: PREFIX , (comma)
+move to next window: PREFIX n
+move to previous window: PREFIX p
+move to window using index: PREFIX 0 (zero)
+  the first window is 0, second window is 1, third is 2, etc. just like array index
+  maximal number is 9 (if you have 10 or more windows, use other methods of moving to another window)
+move to window using finding by name: PREFIX f
+move to window using windowed menu: PREFIX w
+
+create new pane (split to top and bottom): PREFIX "
+  custom: PREFIX -
+create new pane (split to left and right): PREFIX %
+  custom: PREFIX /
+kill pane (from inside the pane): exit
+kill pane (from inside the pane): ^d
+cycle through pane: PREFIX o (the letter o)
+cycle through pane: PREFIX <arrow-key> (up, down, left, right)
+  custom: j (down)
+  custom: k (up)
+  custom: h (left)
+  custom: l (right)
+change pane layout (using tmux default pane layout): PREFIX <spacebar>
+tmux default pane layout (cyclical):
+  even-horizontal (stack all panes horizontally, left to right)
+  even-vertical (stack all panes vertically, top to bottom)
+  main-horizontal (one larger pane on top, the rest underneath)
+  main-vertical (one large pane on left, the rest on the right)
+  tiled (arrange all panes evenly on the screen)
+resize pane
+  custom: H (pull left), J (pull down), K (pull up), L (pull right)
+  
+#--------------------------------------------------------------------------------------
+#Commands for scripting
+  #Creates a new session without a name:
+    tmux new-session
+    tmux new
+    tmux
+  #Creates a new session called “development”
+    tmux new -s development
+  #Creates a session named “development” and names the first window “editor”
+    tmux new -s development -n editor
+  #Attaches to a session named “development”
+    tmux attach -t development
+  #Loads a configuration file
+    source-file [file]
+  #Displays the given text in the status message
+    display-message
+    display
+  #Sets options for sessions
+    set-option [flags] [option] [value]
+    # Using the -g flag sets the option for all sessions.
+  #Sets options for windows
+    set-window-option [option] [value]
+  #Appends values onto existing options rather than replacing the option’s value
+    set -a

@@ -1,0 +1,141 @@
+#################################################################################
+Common Commands
+  Start DB:
+  Stop DB:
+  Open CLI interface:
+  Common CLI Commands
+
+Supported Data Type
+  Numeric: (e.g. smallint, integer, bigint)
+  Character: (e.g. char, varchar, text)
+  Boolean: boolean
+  Serial (Auto-increment)
+  etc.
+
+Operators
+  Arithmetic
+  Boolean/Logical
+  Comparators (Comparison operator)
+  Bitwise
+
+User
+  Create
+  
+Privilege
+  GRANT
+  REVOKE
+#################################################################################
+
+DATABASE
+  List All (with CLI)
+  Check current (with CLI)
+  Connect to (with CLI)
+  CREATE
+  DROP
+  
+CONSTRAINT
+  PRIMARY KEY
+  FOREIGN KEY
+  NOT NULL
+  UNIQUE
+  CHECK
+  etc.
+  
+TABLE
+  List All (with CLI)
+  CREATE
+  ALTER
+    Drop Column
+    Change Data Type
+    Add Constraint
+    Drop Constraint
+  TRUNCATE
+  DROP
+  
+SCHEMA
+  CREATE
+  DROP
+
+TRIGGER
+  List All
+  CREATE
+  DROP
+  
+INDEX
+  CREATE
+  DROP
+
+VIEW
+  CREATE
+  DROP
+  
+TRANSACTION
+  BEGIN
+  END
+  ROLLBACK
+
+LOCK
+
+#################################################################################
+Query
+
+INSERT
+DELETE
+UPDATE
+
+SELECT (String output)
+  DISTINCT
+  
+Sub-Query
+
+Useful Functions
+  SUBSTRING(string, position, length)
+    LEFT
+    RIGHT
+  CHAR_LENGTH(string)
+
+#################################################################################
+Clause
+
+WHERE
+  AND Conjunctive Operator
+  OR Conjunctive Operator
+  LIKE Clause
+    Wildcards: % _
+  IS NOT NULL
+  IN
+  BETWEEN AND
+  
+LIMIT
+  OFFSET Clause
+
+ORDER BY
+  ASC, DESC
+  Multiple ORDER BY
+  
+WITH
+
+AS
+
+UNION
+  UNION ALL
+
+JOIN
+  INNER JOIN
+  LEFT OUTER JOIN
+  RIGHT OUTER JOIN
+  FULL OUTER JOIN
+  CROSS JOIN
+
+#################################################################################
+#Aggregation
+  
+GROUP BY
+  HAVING
+
+Useful Functions
+  COUNT
+  MIN
+  MAX
+  AVG
+  SUM

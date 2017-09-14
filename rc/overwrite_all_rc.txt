@@ -1,0 +1,22 @@
+# To execute: bash <name_of_this_file>
+#-------------
+echo ""
+echo "This will OVERWRITE all current .rc files in your home directory!"
+echo "Changes not yet backed up will be lost!"
+echo ""
+echo "Press Ctrl+C to cancel, Enter to continue"
+read -i tmp
+echo "Are you sure? Press Ctrl+C to cancel, Enter to continue"
+read -i tmp
+#-------------
+# Put rc here
+cat .bashrc > ~/.bashrc
+echo "cat .bashrc > ~/.bashrc"
+cat .vimrc > ~/.vimrc
+echo "cat .vimrc > ~/.vimrc"
+cat .tmux.conf > ~/.tmux.conf
+echo "cat .tmux.conf > ~/.tmux.conf"
+#-------------
+# Report success
+echo ""
+echo "All rc has been overwritten."

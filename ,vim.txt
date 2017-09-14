@@ -1,3 +1,14 @@
+j down
+k up
+ctrl+b page up
+ctrl+f page down
+0 home
+I insert from home
+$ end
+A append from EOL
+S substitute current line
+
+
 #Enter Vim from command prompt
 	vim FILENAME <ENTER>
 

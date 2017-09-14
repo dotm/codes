@@ -454,10 +454,10 @@ we can build this into the methods we define using the yield keyword
 #Class and object
 
 #Type of variable / attribute
-  variable_name    local variables: can only be used in the same place as where it is defined
+  variable_name     local variables: can only be used in the same place as where it is defined
   $variable_name    global variables: available everywhere
-              if you want to call $variable_name you must not omit the $
-  @@variable_name    class variables: members of a certain class
+    if you want to call $variable_name you must not omit the $
+  @@variable_name   class variables: members of a certain class
   @variable_name    instance variables: only available to particular instances of a class
 
 #Initializing syntax

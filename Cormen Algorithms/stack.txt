@@ -1,12 +1,43 @@
 // Stacks
+  // You can implement a stack internally using an array
+    // You can limit the length of the array to create a fixed-length stack (use a "max" variable)
+    // Use a "top" variable to store total elements in the stack
+  
+  // STACK-EMPTY operation
+    // return true if top is 0
+    // return false is top is greater than 0
+    // return error if top is less than 0 (logically impossible)
+  
+  // INSERT(element) operation (PUSH)
+    // if the maximum amount of a fixed-length stack is achieved ("top" >= "max"), return a STACK-OVERFLOW error
+    // add element to the top of the stack
+    // increment the "top" variable
+    // You can return the stack so that you can chain methods
+    
+  // DELETE operation (POP)
+    // if the stack is empty, return a STACK-UNDERFLOW error
+    // the top element is at "top" variable - 1 (the length of stack's array - 1) if array is zero-indexed
+    // store the top element on a temporary variable
+    // delete the top element
+    // decrement the "top" variable
+    // return the (temporarily) stored element
+    
+// Stacks
+  // You can implement a variable-sized stack internally using a doubly linked list
+  
+  // STACK-EMPTY operation
+    // invoke LIST-EMPTY operation
+  
+  // INSERT operation (PUSH)
+    // add element to the top of the stack (head of the linked list)
+    // You can return the stack so that you can chain methods
+  
+  // DELETE operation (POP)
+    // if the stack is empty, return a STACK-UNDERFLOW error
+    // invoke LIST-GET-HEAD-DATA and store the result (the top element) on a temporary variable
+    // invoke LIST-DELETE-HEAD to delete the top element
+    // return the (temporarily) stored element
 
-// Check whether the stack is empty by query operation STACK-EMPTY.
-If we try to pop an empty stack, we say the stack underflows, which is normally an error.
-If S.top exceeds n, the stack overflows.
-
-// INSERT operation on a stack is called PUSH
-// DELETE operation on a stack, which does not take an element argument, is called POP
-The order in which plates are popped from the stack is the reverse of the order in which they were pushed onto the stack, since only the top plate is accessible.
-We can implement a stack of at most n elements with an array S[1..n]. The array has an attribute S.top that indexes the most recently inserted element.
-The stack consists of elements S[1..S.top], where S[1] is the element at the bottom of the stack and S[S.top] is the element at the top.
-When S.top=0, the stack contains no elements and is empty.
+You can implement the stack operations using both
+  OOP style         : aStack.push(element)
+  Imperative style  : stackPush(aStack,element)

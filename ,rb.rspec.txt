@@ -1,118 +1,308 @@
-#Setting up RSpec in Rails 4
+#Setting up
+  #automatically
+    $ rspec --init
+    see Basic structure
+    $ rspec
+  #manually
+    $ touch a.rb          #subject code lives here
+    $ touch s.rb          #spec file
+    !s.rb
+      require "./a.rb"
+      ...                 #code examples go here
+    $ rspec s.rb          #run spec file manually
+  #in one file
+    $ touch a.rb          #write subject code and examples here
+    $ rspec a.rb          #run spec file manually
+    
+#Terms
 
-#Create the app
-	rails new app_name
+   TDD        vs       BDD
+Assertion     ->   Expectation
+Test method   ->   Code example
+Test case     ->   Example group
 
-#Install RSpec
-	!Gemfile
-		group :development, :test do
-		  gem 'rspec-rails', '~> 2.0'
-		end
-	bundle install
-	rails generate rspec:install
-	bundle binstubs rspec-core			#create RSpec binstub to allow you to run RSpec with bin/rspec instead of bundle exec rspec
-	
-	
-#--------------------------------------------------------------------------------
-#Initialize RSpec
-	go to project directory in cmd, then type: rspec --init
-	
-project source will be in lib/name.rb
-test will be in spec/lib/name_spec.rb
+Subject code: the code whose behavior we are specifying with RSpec.
+Matcher: an object that tries to match against an expected outcome.
+Expectation: an expression of how the subject code is expected to behave.
+Code example: an executable example of how the subject code can be used and its expected behavior (expressed with expectations) in a given context.
+Example group: a group of code examples.
+Spec/spec file: a file that contains one or more example groups.
 
-#Running the test
-	go to project directory in cmd, then type: rake
+Dummy objects are passed around but never actually used.
+  Usually they are just used to fill parameter lists.
+Fake objects have working implementations,
+  but usually take some shortcut which makes them not suitable for production (e.g. in memory database)
+Stubs provide canned answers to calls made during the test,
+  usually not responding at all to anything outside what's programmed in for the test.
+  Stubs may also record information about calls.
+Mocks are objects pre-programmed with expectations
+  which form a specification of the calls they are expected to receive.
+  
+Test double: an object that stands in for another object in an example.
+Method stub: a method that we can program to return predefined responses during the execution of a code example.
+Message expectation/mock expectation: a method stub that will raise an error if it is never called.
+Test-specific extension: an extension of an object that is specific to a particular test, or example in our case.
 
-#--------------------------------------------------------------------------------
-#Basic structure
+#Additional resources
+http://www.betterspecs.org/
+#-----------------------------------------------------------------------------
+#RSpec Core
 
-!lib/name.rb
-class ClassName
-	attr_accessor :name
-	def initialize
-		@name="Lala"
-	end
-end
+#Basic structure + nested groups
+  !lib/a.rb                           #subject code lives here
+    def a
+      return 1
+    end
+  !spec/a_spec.rb                     #spec file must end with "_spec.rb"
+    require "a"                       #require the subject code
+    describe a do                     #describe the example group
+      context "in all situation" do   #context of example group (since describe() == context(), you are actually declaring a nested example group here)
+        it "should return 1" do       #code example
+          ...
+          expect(a).to eq(1)          #expectation
+        end
+      end
+    end
+  $ rspec                             #run spec files in the spec directory
 
-!spec/lib/name_spec.rb						#a specification := one test file
-require "spec_helper"
+#Share example group
+  shared_examples_for "something" do  #define the shared example group
+    it "..." {...}
+  end
+  describe aClass do
+    it_behaves_like "something"       #include the shared example group
+  end
 
-describe ClassName do
-	#examples code_block
-	it "is named Lala" do					#an examples := a test inside the "it end" block
-		instance = ClassName.new
-		instance.name.should == "Lala"		#an expectation := assertion (assert_equal)
-		#'should' is the modifier, == is matcher
-	end
-end
+#With hooks
+  describe aClass do
+    context "first instantiated" do
+      before :each do                 #the hook
+        a = aClass.new
+      end
+    end
+  end
+  
+#Helper method
+  describe aClass do
+    def helper_method params          #define the helper method
+      ...
+    end
+    it "..." {... helper_method(args) ...}     #using the helper method
+  end
+#Sharing helper methods across example groups
+  module UsefulHelpers                #define helper methods here
+  end
+  describe aClass                     #aClass example group that contains many examples
+    include UsefulHelpers             #include shared helper method
+    ...
+  end
+#Share helper methods to all example groups
+  RSpec.configure do |config|
+    config.include(UsefulHelpers)
+  end
+  
+#let helper method
+    $count = 0
+    RSpec.describe "let" do
+      let(:count) { $count += 1 }
+      it "memoizes the value" do
+        expect(count).to eq(1)
+        expect(count).to eq(1)
+      end
+      it "is not cached across examples" do
+        expect(count).to eq(2)
+      end
+    end
+  Use let to define a memoized helper method.
+    The value will be cached across multiple calls in the same example but not across examples.
+  let is lazy-evaluated: it is not evaluated until the first time the method it defines is invoked.
+    You can use let! to force the method's invocation before each example.
+  By default, let is threadsafe,
 
-#--------------------------------------------------------------------------------
-#Matchers
-	instance.attribute.should == value					# == can be replaced by other comparator
-		instance.attribute.should be < value			#the be is optional
-	instance.attribute.should_not == value
-	instance.attribute.should == false
-		instance.attribute.should be_false
-	instance.attribute.should == true
-		instance.attribute.should be_true
-	instance.attribute.should be_within(0.1).of(98.6)	#use this instead of == when testing floating point operation
+#Implicit Subject
+  If the first argument to the outermost example group is a class,
+    an instance of that class is exposed to each example via the subject method.
+  RSpec.describe Array do
+    describe "when first created" do
+      #not using subject
+      it "should be empty" do
+        expect(subject).to be_empty
+      end
+      #using subject
+      it { is_expected.to be_empty }
+      it { should be_empty }
+    end
+  end
+#Explicit Subject
+  RSpec.describe Array do
+    describe "with 3 items" do
+      subject { [1,2,3] }
+      #using subject
+      it { is_expected.not_to be_empty }
+      it { should_not be_empty }
+    end
+  end
 
+#-----------------------------------------------------------------------------
+#Basic
+  #Example group: describe something do ... end
+    describe(aClass OR aModule OR string, optional[string])
+    describe() == context()
+  #Context: context "given this situation" do ... end
+  #Code example: it "description" do ... end
+    it(string, optional[hash]) {[optional block]}
+    it() == specify() == example()
+    Sometimes we end up with an example docstring that is nearly an exact duplication of the expectation expressed in the example.
+      In this case, we can rely on RSpec’s automatic example-name generation to produce the name you’re looking for:
+        it "should have 32 pieces" { @board.should have(32).pieces }
+        specify { @board.should have(32).pieces }
+  #Pending code example: it "description"
+    it() with no block is pending
+  #Pending code example: it "description" { ... pending ... }
+    pending(string) {[optional block]}
+    any code after the pending will not be executed
+    if you supply a block to the pending method,
+      if the block fails or raises an error,
+        RSpec proceeds as with any other pending example
+      if the code executes without incident,
+        RSpec raises a Pending-Example-FixedError,
+        letting you know that you have an example that is pending for no reason
+  #Shared example group: shared_examples_for something do ... end
+
+#Hooks
+  #Run this before each example: before(:each) do ... end
+  #Run once before all example: before(:all) do ... end
+  #Run this after each example: before(:each) do ... end
+  #RSpec provides an around() hook to support APIs that require a block
+    around do |i| ... end
+
+#-----------------------------------------------------------------------------
+#RSpec Expectations + Built-in Matchers
+
+#Equivalence
+  expect(actual).to eq(expected)          # passes if actual == expected
+  expect(actual).to eql(expected)         # passes if actual.eql?(expected)
+  expect(actual).not_to eql(not_expected) # passes if not(actual.eql?(expected))
+#Identity
+  expect(actual).to be(expected)    # passes if actual.equal?(expected)
+  expect(actual).to equal(expected) # passes if actual.equal?(expected)
+#Comparisons
+  expect(actual).to be >  expected
+  expect(actual).to be >= expected
+  expect(actual).to be <= expected
+  expect(actual).to be <  expected
+  expect(actual).to be_within(delta).of(expected)
+#Regular expressions
+  expect(actual).to match(/expression/)
+#Types/classes
+  expect(actual).to be_an_instance_of(expected) # passes if actual.class == expected
+  expect(actual).to be_a(expected)              # passes if actual.kind_of?(expected)
+  expect(actual).to be_an(expected)             # an alias for be_a
+  expect(actual).to be_a_kind_of(expected)      # another alias
+#Truthiness
+  expect(actual).to be_truthy   # passes if actual is truthy (not nil or false)
+  expect(actual).to be true     # passes if actual == true
+  expect(actual).to be_falsy    # passes if actual is falsy (nil or false)
+  expect(actual).to be false    # passes if actual == false
+  expect(actual).to be_nil      # passes if actual is nil
+  expect(actual).to_not be_nil  # passes if actual is not nil
+#Expecting errors
+  expect { ... }.to raise_error
+  expect { ... }.to raise_error(ErrorClass)
+  expect { ... }.to raise_error("message")
+  expect { ... }.to raise_error(ErrorClass, "message")
+#Expecting throws
+  expect { ... }.to throw_symbol
+  expect { ... }.to throw_symbol(:symbol)
+  expect { ... }.to throw_symbol(:symbol, 'value')
+#Yielding
+  #passes regardless of yielded args
+    expect { |b| 5.tap(&b) }.to yield_control
+  #passes only if no args are yielded
+    expect { |b| yield_if_true(true, &b) }.to yield_with_no_args 
+  #with args
+    expect { |b| 5.tap(&b) }.to yield_with_args(5)
+    expect { |b| 5.tap(&b) }.to yield_with_args(Integer)
+    expect { |b| "a string".tap(&b) }.to yield_with_args(/str/)
+  #successive args
+    expect { |b| [1, 2, 3].each(&b) }.to yield_successive_args(1, 2, 3)
+    expect { |b| { :a => 1, :b => 2 }.each(&b) }.to yield_successive_args([:a, 1], [:b, 2])
 #Predicate matchers
-!lib/name
-	class ClassName
-		@hungry=true
-		def hungry?
-			@hungry
-		end
-	end
-	
-	instance=ClassName.new
+  expect(actual).to be_xxx         # passes if actual.xxx? is true where xxx? is a predicate method owned by actual
+    expect(7).not_to be_zero       # calls 7.zero?
+    expect([]).to be_empty         # calls [].empty?
+    expect(x).to be_multiple_of(3) # calls x.multiple_of?(3)
+  expect(actual).to have_xxx(:arg) # passes if actual.has_xxx?(:arg) is true where has_xxx? is a predicate method owned by actual
+    expect(hash).to have_key(:foo)       # calls hash.has_key?(:foo)
+    expect(array).not_to have_odd_values # calls array.has_odd_values?
+#Ranges (Ruby >= 1.9 only)
+  expect(1..10).to cover(3)
+#Collection membership
+  expect(actual).to include(expected)
+  expect(actual).to start_with(expected)
+  expect(actual).to end_with(expected)
+  expect(actual).to contain_exactly(individual, items)
+  expect(actual).to match_array(expected_array)
 
-!spec/lib/name_spec
-	instance.hungry?.should == true
-	instance.hungry?.should be_true
-	instance.should be_hungry					#best matcher for readability
-	
-#--------------------------------------------------------------------------------
-#Mark as pending
-	#Leave of the example body and use it
-		it "should be / has /is / etc ...."
-	#Use xit
-		xit "should be / has /is / etc ...." do
-			code_block
-		end
-	#Use pending keyword
-		it "should be / has /is / etc ...." do
-			pending
-			code_block
-		end
+#Multiline Text:
+    expected = File.open('expected_statement.txt','r') {|f| f.read}
+    expect(actual).to eq(expected)
+  Golden Master technique is
+    reading a file that contains text that has been reviewed and approved
+    and then comparing generated results to that text
 
-#--------------------------------------------------------------------------------
-#Instantiating class
-describe Book do
+#Compound Matcher Expressions
+  You can also create compound matcher expressions using and or or:
+    expect(alphabet).to start_with("a").and end_with("z")
+    expect(stoplight.color).to eq("red").or eq("green").or eq("yellow")
 
-  before do
-    @book = Book.new
-  end
-  
-  describe ClassName do
-	#examples code_block
-  end
-  
-end
+#Composing Matchers
+  Many of the built-in matchers are designed to take matchers as arguments,
+    to allow you to flexibly specify only the essential aspects of an object or data structure.
+  In addition, all of the built-in matchers have one or more aliases
+    that provide better phrasing for when they are used as arguments to another matcher.
+#Changes Observation
+  expect { object.action }.to change(object, :value).from(old).to(new)
+    expect { a += 3 }.to change { a }.from(2)
+  expect { object.action }.to change(object, :value)
+  expect { object.action }.to change(object, :value).by(delta)
+  expect { object.action }.to change(object, :value).by_at_least(minimum_delta)
+  expect { object.action }.to change(object, :value).by_at_most(maximum_delta)
+#Other Examples:
+expect(["barn", 2.45]).to contain_exactly(
+  a_value_within(0.1).of(2.5),
+  a_string_starting_with("bar")
+)
 
-#--------------------------------------------------------------------------------
-before :all
-before :each := before do
+expect(["barn", "food", 2.45]).to end_with(
+  a_string_matching("foo"),
+  a_value > 2
+)
 
-using lambda to test function output
+expect(["barn", 2.45]).to include( a_string_starting_with("bar") )
 
-rspec <directory>/<file> --format nested
-Using a "." or "::"in describe signify that you’re testing a class method, 
-	using "#" signify that it’s an instance method
+expect(:a => "food", :b => "good").to include(:a => a_string_matching(/foo/))
 
-built-in matchers
-	def has_ketchup_on_it?
-		@ketchup
-	end
-	it { should have_ketchup_on_it }
+hash = {
+  :a => {
+    :b => ["foo", 5],
+    :c => { :d => 2.05 }
+  }
+}
+
+expect(hash).to match(
+  :a => {
+    :b => a_collection_containing_exactly(
+      a_string_starting_with("f"),
+      an_instance_of(Integer)
+    ),
+    :c => { :d => (a_value < 3) }
+  }
+)
+
+expect { |probe|
+  [1, 2, 3].each(&probe)
+}.to yield_successive_args( a_value < 2, 2, a_value > 2 )
+
+#-----------------------------------------------------------------------------
+#RSpec Mocks

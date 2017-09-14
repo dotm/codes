@@ -1,507 +1,378 @@
-#Setting up Rails
-  Set rails alias to bin/rails (or just type every rails commands below as bin/rails)
-  Set rake alias to bin/rake (or just type every rake commands below as bin/rake)
-  rails new project_name
-    you can add --skip-bundle to postpone bundle install call
-  cd project_name
-  git init
-  git add -A
-  git commit -m 'Initial commit'
-  Modify README.rdoc
-    you can also add README.md (rdoc for gems documentation, md for GitHub)
-    or you can rename the rdoc: git mv README.rdoc README.md
-  git commit -am 'Modify README'
-  Push to GitHub
-    Create a new repo in GitHub
-    git remote add origin https://github.com/dotm/project_name.git
-    git push --set-upstream origin master
+------------------------------------------------------------------------------
+#Create new project: rails new sampleapp
+  #using PGSQL:
+    $ rails new sampleapp -d postgresql
+    $ cd sampleapp
+    insert database username and password to config/routes.rb
+    $ bin/rails db:create
+#Run server: bin/rails server
+#Check routes: bin/rails routes
+#Run console: bin/rails console [--sandbox] [test]
+#Heroku
+  #create: heroku create
+  #push: git push heroku master
 
-#Setting up RSpec
-  Add RSpec to the Gemfile
-    !Gemfile
-    ...
-    group :development, :test do
-      gem 'rspec-rails'
-      #add above line
-      ...
-    end
-  bundle
-  rails generate rspec:install
-    rspec --init
-  To run test use
-    rake
-  
-#Setting up Model
-  rails g model ModelName  [ field[:type][:index]... ] [options]  #g := generate
-    rails g model User username:string email:string password:string
-  Modify the migration file
-  rake db:migrate
-    bin/rake db:migrate
-    bundle exec db:migrate
-  git add -A
-  git commit -m 'Generate model ModelName'
-  
-#Setting up routes
-  Write in config/routes
-    resources :controllers
-    root 'controllers#action'
-  rake routes
-#Setting up Controller
-  rails g controller controllers
-  Add actions based on routes you have set
-    class ControllersController < ApplicationController
-      def new
+#Create Static Page
+  *create the controller:
+    $ bin/rails generate controller Welcome index
+  *insert static page:
+    vim app/views/welcome/index.html.erb
+  *insert to config/routes.rb:
+    !config/routes.rb
+      Rails.application.routes.draw do
+        get 'welcome/index'
+        root 'welcome#index'            #change root route (optional)
       end
-      ...
+  *Add Link to index of the main controller (if any) (e.g. article)
+  
+#Create Form
+  #For New Action
+      by default, this form will try to POST to /articles/new
+        but you must POST to /articles to call the articles#create action (check routes)
+        the url option below is added to POST to articles_path that call the create action by default (check routes)
+    <%= form_for :article, url: articles_path do |f| %>
+      <p>
+        <%= f.label :title %><br>
+        <%= f.text_field :title %>
+      </p>
+      <p>
+        <%= f.label :text %><br>
+        <%= f.text_area :text %>
+      </p>
+      <p>
+        <%= f.submit %>
+      </p>
+    <% end %>
+  #For Edit Action
+    <%= form_for @article do |f| %>
+      // you could reuse the form layout from new action as it is or with some parts removed
+    <% end %>
+
+#Add Link using link_to and (Path and URL) helper
+  <%= link_to 'My Blog', controller: 'articles' %>
+  <%= link_to 'New article', new_article_path %>
+    If you want to link to an action in the same controller, 
+      you don't need to specify the :controller option,
+      as Rails will use the current controller by default.
+  <% @articles.each do |article| %>
+    <tr>
+      <td><%= article.title %></td>
+      <td><%= article.text %></td>
+      <td><%= link_to 'Show', article_path(article) %></td>
+      <td><%= link_to 'Edit', edit_article_path(article) %></td>
+      <td><%= link_to 'Destroy', article_path(article),
+              method: :delete,
+              data: { confirm: 'Are you sure?' } %></td>
+    </tr>
+  <% end %>
+
+#Add Validation
+  *edit the model:
+    !app/models/article.rb
+    class Article < ApplicationRecord
+      validates :title, presence: true, length: { minimum: 5 }
     end
-
-#Setting up View
-  touch app/views/models/new.html.erb
-  
-#--------------------------------------------------------------------------------
-#Important commands
-
-bundle := bundle install
-rails s := rails server
-heroku run rake db:migrate
-rails console
-rails console --sandbox
-reload! #to refresh any code changes.
-bundle show [gemname]
-heroku run console
-heroku run console --sandbox
-rails console test
-rails server --environment production
-bundle exec rake db:migrate RAILS_ENV=production
-
-duplicate_user = @user.dup
-@user.save
-
-debugger
-
-#--------------------------------------------------------------------------------
-#Model
-communicate with data storage system
-
-#Empty model file
-  !app/models/person.rb
-  class Person < ActiveRecord::Base
-
-  end
-the < means: inherit from
-this file enable us to use the Person.find and other Person's methods in our Rails application
-
-#Validation
-  !app/models/person.rb
-  class Person < ActiveRecord::Base
-    validates_presence_of :key      #make sure that key's value is not null
-  end
-
-  !lib
-  var=Person.new
-  var.save      -> false      #false because the key is null (haven't been specified)
-  var.errors.messages
-    -> {key:["can't be blank"]}
-  var.errors[:key][0]            #[0] because ["can't be blank"] is an array
-    -> "can't be blank"
-  
-  #Other built-in validation
-    validates_presence_of :key            #make sure that key's value:
-    validates_numericality_of :key          #  is a number
-    validates_uniqueness_of :key          #  is unique
-    validates_confirmation_of :key          #  if we have 2 fields that should be equal e.g. password confirmation
-    validates_acceptance_of :key          #  if we have check-boxes that need to be checked e.g. terms of servi
-    validates_length_of :key            #  have certain length
-      validates_length_of :password, minimum:6
-    validates_format_of :key            #  is valid by using a regex e.g. E-mail must have @domain.com at the end
-      validates_format_of :email, with: /regex/i
-    validates_inclusion_of :key            #  is in between (inside) a range
-      validates_inclusion_of :age, in 18..99
-    validates_exclusion_of :key            #  is NOT in between (inside) a range
-      validates_inclusion_of :age, in 0...18, message: "Sorry, you must be over 18"
-  #Alternative syntax
-    validates :key, presence: true          #watch out for the position of :
-    validates :key, length: { minimum: 3 }
-            presence: true
-            uniqueness: true
-            numericality: true
-            length: { minimum: 0, maximum: 2000 }
-            format: { with: /regex/ }
-            acceptance: true
-            confirmation: true
-    #multiple validation
-    validates :key, presence: true, length: { minimum: 3 }
+  *update create method to add case when validation fail: (you can skip this if you use scaffold)
+    def create
+      @article = Article.new(article_params)
+     
+      if @article.save        #if save is successful (validation OK) this will return true
+        redirect_to @article
+      else
+        render 'new'          #render method is used so the @article object is passed back to the new template
+      end
+    end
+  *add this to the 'new' method view to display validation errors: (you can skip this if you use scaffold)
+    !app/views/articles/new.html.erb
+    <% if @article.errors.any? %>
+      <div id="error_explanation">
+        <h2>
+          <%= pluralize(@article.errors.count, "error") %> prohibited this article from being saved:
+        </h2>
+        <ul>
+          <% @article.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+  *Rails automatically wraps fields that contain an error
+    with a div with class field_with_errors.
+    You can define a css rule to make them standout.
+    (you can skip this if you use scaffold)
     
-#Relationship
-defining relationship of RDBMS relations in Rails
-  !app/models/person.rb
-  class Person < ActiveRecord::Base
-    has_many :tweets            #notice that the key is plural and lower-case, like it's name in the RDBMS as relation
-  end                      #because a person can has_many tweets
-  
-  class Tweet < ActiveRecord::Base
-    belongs_to :person            #notice that the key is singular and upper-case
-  end                      #because a tweet can only belongs_to a person
-  
-  !lib
-  Tweet create(status: "140 characters of string", person: Person.find(id))  #creating a new tweet (key: value pair)
-    #even if the foreign key is person_id, you just have to type person: because Rails maps it automatically
-  Person.find(id).tweets    #accessing all tweets; remember that .tweets := (:tweets)
+#Using Partials (to clean view duplication)
+  #by convention, partial files are prefixed with an underscore.
+  *create the partial file (and fill it): touch app/views/articles/_form.html.erb
+  *using the partial file in view:
+    !app/views/articles/xxx.html.erb    #where xxx can be any view of articles (new, edit, etc.)
+    <%= render 'form' %>
+#Using Partials in different view directory
+  *create the partial file: touch app/views/comments/_form.html.erb
+  *using the partial file in a different view:
+    !app/views/articles/xxx.html.erb    #notice that the partial in the comments' view is rendered in an articles' view
+    <%= render 'comments/form' %>
+    
+#Create Basic CRUD with Scaffold
+  *create the scaffold: bin/rails generate scaffold Article title:string text:text
+  *migrate the database: bin/rails db:migrate
+  #CREATE with New and Create Action
+    *Add Validation if necessary
+  #UPDATE with Edit Action
+    *Add Validation if necessary
 
-#--------------------------------------------------------------------------------
-#View
-visual representation of Rails application, user interface, what user see
-
-!app/views/people/    #erb is embedded Ruby (embedding Ruby in HTML file)
-  ../index.html.erb  #list all people
-  ../ahow.html.erb  #view a person
-
-!app/views/people/show.html.erb
-  <!DOCTYPE html>
-  <html>
-    <head> <title>Web Application</title>    </head>
-    <body>
-      <header>...</header>
-      <% var=Person.find(id) %>    #the embedded Ruby code that will be evaluated
-      <h1> <%= var.key %> </h1>    #the %= means the evaluated result must be printed to the HTML
-    </body>
-  </html>
-
-#Using layouts to template HTML
-!app/views/people/show.html.erb
-  <% var=Person.find(id) %>
-  <h1> <%= var.key %> </h1>
-!app/views/layouts/application.html.erb
-  <html>
-    <head> <title>Web Application</title>    </head>
-    <body>
-      <header>...</header>
-      <%= yield %>          #mark where the Ruby code should go in an HTML template
-    </body>
-  </html>
-  
-#Creating a link
-  <%= link_to text_to_show, model_instance (URL) %>        #text_to_show := anchor text
-  <%= link_to text_to_show, model_instance, confirm:"string" %>
-  
-#Looping
-  <h1>Person and key list</h1>
-  <table>
-    <tr>
-      <th>Person</th>
-      <th>key</th>
-    </tr>
-  <% var=Person.all %> 
-  <% var.each do |person| %>        #the |person| is just local iterator variable placeholder
-    <tr>
-      <td> <%= person.name %> </td>
-      <td> <%= person.key  %> </td>
-    </tr>
-  <% end %> 
-  <% if var.size==0 %>           #size can be replaced by the count method
-    <em>No Person Found</em>      #so that user don't get confused when they see empty table
-  <% end %> 
-  </table>
-  
-#Creating a code link
-  <%= link_to text_to_show, code %>
- e.g.
-  <%= link_to "Edit tweet", edit_tweet_path (tweet) %>
-  <%= link_to "Destroy tweet", tweet, method: :delete %>
-  
-#URL generator methods
-  Action       Code (URL generator)    The URL
-list all tweets    tweets_path          /tweets
-go to a tweet    tweets_path(1)        /tweets/1    ?? probably
-new tweet form    new_tweet_path        /tweets/new
-  #all methods below need: tweet=Tweet.find(1)
-show a tweet    tweet            /tweets/1
-edit a tweet    edit_tweet_path(tweet)    /tweets/1/edit
-delete a tweet    tweet, method: :delete    /tweets/1
-
-#Rake routes
-Prefix      Verb   URI Pattern                  Controller#Action
-articles    GET    /articles(.:format)          articles#index
-             POST   /articles(.:format)          articles#create
-new_article  GET    /articles/new(.:format)      articles#new
-edit_article GET    /articles/:id/edit(.:format) articles#edit
-article    GET    /articles/:id(.:format)      articles#show
-             PATCH  /articles/:id(.:format)      articles#update
-             PUT    /articles/:id(.:format)      articles#update
-             DELETE /articles/:id(.:format)      articles#destroy
+#Create Basic CRUD
+  *create the model: bin/rails generate model Article title:string text:text
+  *migrate the database: bin/rails db:migrate
+  *add routes:
+    !config/routes.rb
+    Rails.application.routes.draw do
+      resources :articles
+    end
+  *create the controller: bin/rails generate controller Articles
+  #Summary
+    *check bin/rails routes
+    *add action to controller
+    *create the view (if necessary)
+    *create form in view (if necessary)
+    *add link in view (if necessary)
+    *save or update data with controller action (if necessary)
+    *add validation (if necessary)
+    *refactor using partial (if necessary)
+  #CREATE with New and Create Action
+    *add action to controller:
+      class ArticlesController < ApplicationController
+        def new
+          @article = Article.new
+        end
+        ...
+    *create the view:
+      $ touch app/views/articles/new.html.erb
+    *Create Form in app/views/articles/new.html.erb
+    *save data using create action in controller:
+      class ArticlesController < ApplicationController
+        ...
+        def create
+          @article = Article.new(article_params)              #the 'Article' is from the article model
+         
+          #use this when no validation
+          @article.save
+          redirect_to @article
+          #use this if with validation
+          if @article.save
+            redirect_to @article
+          else
+            render 'new'
+          end
+        end
+         
+        private
+          def article_params
+            params.require(:article).permit(:title, :text)    #rails use strong parameters
+          end
+        ...
+    *Add Link to index with articles_path
+    *Add Validation if necessary
+  #READ with Show Action
+    *add action to controller:
+      class ArticlesController < ApplicationController
+        def show
+          @article = Article.find(params[:id])
+        end
+    *create the view:
+      $ touch app/views/articles/show.html.erb
+      $ vim app/views/articles/show.html.erb
+      !app/views/articles/show.html.erb
+      <p>
+        <strong>Title:</strong><%= @article.title %>
+      </p>       
+      <p>
+        <strong>Text:</strong><%= @article.text %>
+      </p>
+    *Add Link to
+      index with articles_path
+      edit with edit_article_path(@article)
+      destroy with
+        article_path(@article), method: :delete, data: { confirm: 'Are you sure?' }
+  #READ ALL with Index action
+    *add action to controller:
+      class ArticlesController < ApplicationController
+        def index
+          @articles = Article.all
+        end
+    *create the view:
+      $ touch app/views/articles/index.html.erb
+      $ vim app/views/articles/index.html.erb
+      !app/views/articles/index.html.erb
+      <h1>Listing articles</h1>       
+      <table>
+        <tr>
+          <th>Title</th>
+          <th>Text</th>
+        </tr>
        
-#--------------------------------------------------------------------------------
-#Controller
-the brain that control Model and View
-
-!app/views/people/show.html.erb
-  <% var=Person.find(id) %>    #line like this should not be in the View, instead it must be in Controller
-  <h1> <%= var.key %> </h1>
-
-When a request come in such as /tweets/1 (show a tweet)
-  before it get into !app/views/tweets/show.html.erb
-  it will first hit !app/controllers/tweets_controller.rb
-    notice the same tweets syntax(name) in the request, view sub-folder, and controller name
-  then it will run the show method
-  finally it will render the show.html.erb
-
-!app/controllers/tweets_controller.rb
-  class TweetsController < ApplicationController
-    def show                #the show method (action) maps to the !app/views/tweets/show.html.erb (notice the SHOW file)
-
-      #this is where we call our models
-      @tweet=Tweet.find(1)        #never forget the @ so that the View can access the class local instance variable
-      #if you want to render it to an html.erb with different name, you can use:
-      #render action: 'filename'      #will render it to !app/views/tweets/filename.html.erb
-    end
-  end
-
-!app/views/tweets/show.html.erb
-  <h1><%= @tweet.status %></h1>
-  <p>Posted by: <%= @tweet.name %></p>
-
-notice that the @tweet above can only render the tweet with id of 1
-  to load the proper tweet being clicked by user, use: @tweet=Tweet.find(params[:id])
-  this works because Rails generate a new hash: params{id: '1'}
-
-if we have a url: /tweets?status=I'm dead
-  Rails will create the hash: params = {status: "I'm dead" }
-  and you can create a new tweet by using: @tweet=Tweet.create(status: params[:status])
-however, sometime a URL can be like: /tweets?tweet[status]=I'm dead
-  Rails will create a nested hash: params = { tweet: {status: "I'm dead" }}
-  if we want to access it we can use: @tweet=Tweet.create(status: params[:tweet][:status])
-  or we can simply use: @tweet=Tweet.create(params[:tweet])
-    this work because our tweet method is expecting a hash
-    and params[:tweet] returns  ->  {status: "I'm dead"}
-
-#Creating strong parameter to secure input
-  strong params only required when create or update with multiple attributes
-  we need to specify the parameter key we require: require(:tweet)
-  and the attributes we will permit to be set by user: permit(:status)
-  the @tweet then become: @tweet=Tweet.create(params.require(:tweet).permit(:status))
-  #multiple attributes permit by using array
-  params.require(:tweet).permit([:status, :location])  #you don't have to type the [] ?? probably
-  
-#Parsing JSON and XML
-!app/controllers/tweets_controller.rb
-  class TweetsController < ApplicationController
-    def show
-      @tweet=Tweet.find(params[:id])
-      respond_to do |format|
-        format.html                #will show the default show.html.erb if request is /tweets/1
-        format.json { render json: @tweet }    #render json representation if request is /tweets/1.json
-        format.xml { render xml: @tweet }    #render xml representation if request is /tweets/1.xml
-      end
-    end
-  end
-  
-#Controller actions in a typical Rails application
-!app/controllers/tweets_controller.rb
-  class TweetsController < ApplicationController
-    def index    #list all tweet
-    def show    #show a single tweet
-    def new      #show a new tweet form
-    def edit    #show an edit tweet form
-    def create    #create a new tweet
-    def update    #update a tweet
-    def destroy    #delete a tweet
-  end
-  most of the actions above will be associated with a View file
-  
-#Adding authentication
-!app/controllers/tweets_controller.rb
-  class TweetsController < ApplicationController
-    def edit
-      @tweet=Tweet.find(params[:id])
-      if session[:person_id] != @tweet.person_id      #session works like a per user hash used to store things required in a log in session
-        flash[:notice] = "You can't edit this tweet"  #flash is used to send message to the user
-        redirect_to(tweets_path)            #go back to tweets list
-        #you can combine flash and redirect_to:
-        #redirect_to(tweets_path, notice: "You can't edit this tweet")
-      end
-    end
-  end
-
-!app/views/layouts/application.html.erb
-  <!DOCTYPE html>
-  <html>
-    <head> <title>Web Application</title>    </head>
-    <body>
-      <header>...</header>
-      <% if flash[:notice] %>
-        <div id='notice'><%= flash[:notice] %></div>  #this will be where the notice located
+        <% @articles.each do |article| %>
+          <tr>
+            <td><%= article.title %></td>
+            <td><%= article.text %></td>
+            <td><%= link_to 'Show', article_path(article) %></td>
+          </tr>
+        <% end %>
+      </table>
+    *Add Link to
+      new with new_article_path
+     for each article:
+      show with article_path(article)
+      edit with edit_article_path(article)
+      destroy with article_path(article)
+      <% @articles.each do |article| %>
+        <tr>
+          <td><%= article.title %></td>
+          <td><%= article.text %></td>
+          <td><%= link_to 'Show', article_path(article) %></td>
+          <td><%= link_to 'Edit', edit_article_path(article) %></td>
+          <td><%= link_to 'Destroy', article_path(article),
+                  method: :delete,
+                  data: { confirm: 'Are you sure?' } %></td>
+        </tr>
       <% end %>
-      <%= yield %>
-    </body>
-  </html>
+  #UPDATE with Edit and Update Action
+    *add action to controller:
+      def edit
+        @article = Article.find(params[:id])
+      end
+    *create the view:
+      $ touch app/views/articles/edit.html.erb
+    *Create Form in app/views/articles/edit.html.erb
+    *Add Link to index with articles_path
+    *update data using update action in controller:
+      class ArticlesController < ApplicationController
+        ...
+        def update
+          @article = Article.find(params[:id])                #the 'Article' is from the article model
+         
+          #use this when no validation
+          @article.update(article_params)                     
+            #you don't have to update all the attributes (you can update partially)
+            #but if you update partially, the article_params of create and update must be different and separated
+          redirect_to @article
+          #use this if with validation
+          if @article.update(article_params)
+            redirect_to @article
+          else
+            render 'edit'
+          end
+        end
+         
+        private
+          def article_params
+            params.require(:article).permit(:title, :text)    #same parameters as create params
+          end
+        ...
+    *Add Validation if necessary
+  #DELETE with Destroy Action
+    *add action to controller:
+      def destroy
+        @article = Article.find(params[:id])
+        @article.destroy
+       
+        redirect_to articles_path
+      end
+    *Add Link to destroy
 
-#Avoiding repetition
-!app/controllers/tweets_controller.rb
-  class TweetsController < ApplicationController
-    before_action :get_tweet, only: [:edit, :update, :destroy]
-      #if we don't specify the :only, the :get_tweet will be executed in ALL the controller's actions
-    before_action :check_auth, :only => [:edit, :update, :destroy]
-    
-    def get_tweet
-      @tweet=Tweet.find(params[:id])
+#Second Model with Association
+  *create the model: bin/rails generate model Comment commenter:string body:text article:references
+    #this will create "belongs_to :article" in the comment model and a migration files (along with test-related stuffs)
+  *migrate the database: bin/rails db:migrate
+  *complete the model associations:
+    !app/models/comment.rb    
+    class Comment < ApplicationRecord
+      belongs_to :article                       #this is auto-generated
     end
-    
-    def check_auth
-      if session[:person_id] != @tweet.person_id      #session works like a per user hash used to store things required in a log in session
-        flash[:notice] = "You can't edit this tweet"  #flash is used to send message to the user
-        redirect_to(tweets_path)            #go back to tweets list
-        #you can combine flash and redirect_to:
-        #redirect_to(tweets_path, notice: "You can't edit this tweet")
+    !app/models/article.rb
+    class Article < ApplicationRecord           #add this manually
+      has_many :comments, dependent: :destroy   #dependent is used so that when an article is deleted, all associate
+    end
+  *add routes:
+    !config/routes.rb
+    Rails.application.routes.draw do
+      resources :articles do
+        resources :comments
       end
     end
-    
-  end
-  
-#--------------------------------------------------------------------------------
-#Route
-used in order to route the URL path (see URL generator) into the action in controller
+  *create the controller: bin/rails generate controller Comments
+  #CREATE with Create action
+    #we don't need the new action since comment will be inside articles/show view
+    *Create Form (in articles/show view):
+      !app/views/articles/show.html.erb
+      <h2>Add a comment:</h2>
+      <%= form_for([@article, @article.comments.build]) do |f| %>
+        <p>
+          <%= f.label :commenter %><br>
+          <%= f.text_field :commenter %>
+        </p>
+        <p>
+          <%= f.label :body %><br>
+          <%= f.text_area :body %>
+        </p>
+        <p>
+          <%= f.submit %>
+        </p>
+      <% end %>
+    *save data using create action in controller:
+      !app/controllers/comments_controller.rb
+      class CommentsController < ApplicationController
+        def create
+          @article = Article.find(params[:article_id])
+          @comment = @article.comments.create(comment_params)
+          redirect_to article_path(@article)
+        end
+       
+        private
+          def comment_params
+            params.require(:comment).permit(:commenter, :body)
+          end
+      end
+  #READ
+    *show comments in the articles/show view:
+      !app/views/articles/show.html.erb
+      <h2>Comments</h2>
+      <% @article.comments.each do |comment| %>
+        <p>
+          <strong>Commenter:</strong>
+          <%= comment.commenter %>
+        </p>
+       
+        <p>
+          <strong>Comment:</strong>
+          <%= comment.body %>
+        </p>
+      <% end %>
+  #DELETE
+    *add action to controller:
+      !app/controllers/comments_controller.rb
+      class CommentsController < ApplicationController
+        def destroy
+          @article = Article.find(params[:article_id])
+          @comment = @article.comments.find(params[:id])
+          @comment.destroy
+          redirect_to article_path(@article)
+        end
+    *Add Link to destroy (in articles/show view):
+      <%= link_to 'Destroy Comment', [comment.article, comment], method: :delete, data: { confirm: 'Are you sure?' } %>
+  #Refactor as necessary
 
-!config/routes.rb
-Twitter::Application.routes.draw do    #multiple words follow CamelCase e.g. MyTwitter
-  resource :tweets          #create default RESTful resource
-end
+#Basic Authentication (using http_basic_authenticate_with)
+  #with except (preferred since it gives minimum set of permissions)
+    !app/controllers/articles_controller.rb
+    class ArticlesController < ApplicationController
+      http_basic_authenticate_with name: "dhh", password: "secret", except: [:index, :show]
+  #with only
+    !app/controllers/comments_controller.rb
+    class CommentsController < ApplicationController 
+      http_basic_authenticate_with name: "dhh", password: "secret", only: :destroy
 
-    Code        The URL      TweetsController
-tweets_path        /tweets          def index
-tweet          /tweet/<id>        def show
-new_tweet_path      /tweets/new        def new
-edit_tweet_path(tweet)  /tweets/<id>/edit    def edit
-etc...
-
-#Custom routes
-  domain.com/all  render  domain.com/tweets
-  
-  Twitter::Application.routes.draw do
-    get '/all' => 'tweets#index', as: 'all_tweets'  #controller name is lower-cased
-     #get 'path' => 'controller#action', as: 'string'  #the 'as' alias is considered best practice when linking in erb
-  end
-
-  <%= link_to "All Tweets", all_tweets_path %>  #tweets_path wouldn't work
-
-#Redirect URL
-custom routes replace the URL in browser, redirect will simply redirect a path to another path
-
-  domain.com/all  render  domain.com/tweets
-  
-  Twitter::Application.routes.draw do
-    get '/all' => redirect('/tweets')
-     #get '/all', to: redirect('/tweets')    #alternative syntax
-  end
-  
-#Root route
-  domain.com
-  
-  Twitter::Application.routes.draw do
-    root to: 'tweets#index'
-  end
-  
-  <%= link_to "All Tweets", root_path %>
-  
-#Route with parameter
-  e.g. domain.com/local_tweets/32828    #zipcode is 32828
-  
-!app/controllers/tweets_controller.rb
-  def index
-    if params[:zipcode]            #if the local tweet in zipcode exist, display it
-      @tweets = Tweet.where(zipcode: params[:zipcode])
-    else
-      @tweets = Tweet.all
-    end
-    respond_to do |format|
-      format.html
-      format.xml { render xml: @tweet }
-    end
-  end
-
-!config/routes.rb
-  Twitter::Application.routes.draw do
-     #get '/local_tweets/:zipcode' => 'tweets#index'    #:zipcode because referenced by params[:zipcode] in controller
-    get '/local_tweets/:zipcode' => 'tweets#index', as: 'local_tweets'  #again the alias is for linking
-  end
-
-  <%= link_to "Tweets in 32828", local_tweets_path(32828) %>
-  
-  #Name as parameter
-  e.g. domain.com/yoshua    #name is yoshua
-  
-!config/routes.rb
-  Twitter::Application.routes.draw do
-     get ':name' => 'tweets#index', as: 'person_tweets'
-  end
-
-  <%= link_to "Yoshua Elmaryono", person_tweets_path(yoshua) %>
-
-!app/controllers/tweets_controller.rb
-  def index
-    if params[:name]
-      @person = Person.where(name: params[:name]).first    #.first because where method will return an array
-      @tweets = @person.tweets
-    else
-      @tweets = Tweet.all
-    end
-    #if we don't have to respond_to JSON or XML (we only respond_to HTML), it's OK to not use the respond_to method
-  end
-
-#--------------------------------------------------------------------------------
-#Basic CRUD Query
-
-#Accessing table
-table name is singular and upper-case in rails e.g. Person, MultiWordsTable
-  calling the above will access the plural and lower-case table in database e.g. people
-  as a hash {key: value}
-
-#Read
-  #with id
-    var=Person.find(id)
-    var[:key]
-    var.key
-  #multiple id
-    Person.find(id, id, id)    #return array of hashes
-  #other parameter
-    Person.first
-    Person.last
-    Person.all          #return array of hashes
-  
-  #other read function
-    Person.count        #count the number of person
-    Person.order(:key)      #order by key
-    Person.limit(10)      #return first 10 (or other integer) person
-    Person.where(key: value)  #DBMS where statement
-
-#Create
-    var=Person.new
-    var.key=value
-    var.save
-  #multiple input
-    var=Person.new(        #don't mistake () with {}
-    key: value,
-    key: value)
-    var.save
-  #auto-save
-    Person.create(key: value, key: value)    #you can omit the arguments if you want to construct a new empty Person
-  
-#Update
-    var=Person.find(id)
-    var.key=new_value
-    var.save
-  #multiple attribute update
-    var=Person.find(id)
-    var.attribute={key: value,
-    key: value}
-    var.save
-  #auto-save
-    var=Person.find(id)
-    var.update(key: value, key: value)
-#Delete
-    var=Person.find(id)
-    var.destroy
-  #without declaring var
-    Person.find(id).destroy
-  #delete all
-    Person.destroy_all
-    
+------------------------------------------------------------------------------
+#Web request from console
+  app.get "/post/new"
+  p app.response.body

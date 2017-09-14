@@ -1,0 +1,237 @@
+#################################################################################
+General
+
+#Statements
+Comments
+  Single-line
+  Multi-line
+Input/Output
+  String input
+    Multi-line string input
+  String output
+  Serialization
+  Deserialization
+  File I/O
+  Command line arguments input
+Hold execution (sleep, halt) (wait for a certain time delay before resuming program execution)
+Date and Time
+  current
+  create
+
+#Etc.
+Reserved keyword
+Data types
+Type reflection (find data types of a variable)
+Type conversion
+Operators
+  Arithmetic
+  Boolean/Logical
+  Comparators (Comparison operator)
+  Bitwise operator
+  Advanced mathematic
+    random number generator
+    max
+    min
+    abs
+    floor
+    ceiling
+    round
+Range
+HTTP REST function
+Exception
+Error Handling
+
+#--------------------------------------------------------------------------------
+String
+  printf
+  substring (slicing)
+  length
+  split (into array of substring)
+  strip
+  reverse
+  uppercase
+  lowercase
+  capitalize
+  concatenate
+  interpolation
+Regex
+  find (if exists)
+    find global
+  find position
+    find position global
+  replace
+    replace global
+
+#################################################################################
+Imperative, Structured, Procedural
+
+#Statements
+Local variable declaration
+Local variable definition (assignment)
+Global variable declaration
+Global variable definition (assignment)
+Constant declaration
+Constant definition
+
+#--------------------------------------------------------------------------------
+Conditional
+
+If statement
+Ternary operator statement
+Case statement (switch statement)
+
+#--------------------------------------------------------------------------------
+Loop
+
+For loop
+While loop
+Do while loop
+
+Iterate over data structures (array, object)
+
+Break out of loop
+  Break with goto (label)
+Continue to next iteration
+
+#--------------------------------------------------------------------------------
+Array
+(zero index, homogenous heterogenous, fixed-length variable-length)
+  Create (declaration and definition)
+  Length
+  Access element by index
+  Access element by value
+  Insert (assign), edit (reassign) element by index
+  Add and get value (get := access, return, then remove that value)
+    pop (get last)
+    push (add to last)
+    shift (get first)
+    unshift (add to first)
+    Stack operations: push, pop
+    Queue operations: push, shift
+  Delete element
+    by index
+      single element
+      multiple elements
+    by value
+      with condition
+  Sort
+  Iteration over array 
+    for each (by index and value)
+    map
+    filter
+  Concatenate
+  Slicing (like substring but for array)
+  Max
+  Min
+  Sum
+  First
+  Last
+  Reverse
+  Get unique elements
+  Join into string (with separator)
+  
+Multidimensional array
+
+Extending array with User Defined Function
+
+#--------------------------------------------------------------------------------
+Associative array [key: value] (value can't be function here, but can be method in object)
+  Create (declaration and definition)
+  Access value by key
+    static access (dot notation)
+    dynamic access (with string evaluation)
+  Add, edit key-value pair
+  Delete key-value pair
+    by key
+    by value
+      with condition
+  Sort
+  Iteration over associative array
+    for each (by key and value)
+    map
+    filter
+  
+Extending associative array with User Defined Function
+
+#################################################################################
+Functional
+
+Function
+  Declaration
+  Definition
+  Call
+  Change context
+  Default arguments (if arguments are not supplied, use default value)
+    Optional parameter (some arguments use null as default value)
+  Variadic function (variable number of arguments)
+Anonymous function
+Higher order function
+  Closure (a function with access to the referencing environment)
+  Nested function
+  Callback (a function passed to another function as an argument)
+  Currying (a function that return another function after filling it with some arguments)
+    e.g. add = function(a) { return function(b) { return a + b; }; };
+  
+Common function
+  sort
+  filter
+  map
+  each
+  reduce
+  comprehension (map + filter)
+  
+#################################################################################
+Class-Based Object Oriented Programming
+
+#--------------------------------------------------------------------------------
+Class
+  Creating class (with parameter or object specifier for init method)
+    Initialization (init method) (used to set some of the class attributes)
+      using object specifier ({a: 1, b: 2, ...}) instead of requesting multiple parameter (a, b, ...)
+    Attribute (object's variable) declaration and definition: 
+      global (public), local (private), class, instance (object) attribute
+    Method (object's function) declaration and definition: 
+      class, instance (object), public, private method
+  Creating class with inheritance
+    Attribute and method overriding
+    Access superclass attribute and method
+  Reflection (list all attributes or methods)
+  
+Nested class
+
+#--------------------------------------------------------------------------------  
+Object
+(pass by value, pass by reference)
+  Create object (class instantiation)
+  Call class method
+  Call object method
+  Read object attribute
+    Direct read
+    Using accessor method (preferred)
+  Write attribute
+    Direct write
+    Using accessor method (preferred)
+  
+#--------------------------------------------------------------------------------
+Module (used to store constant and function)
+  Creating module
+    Variable declaration and definition: global, local variable
+    Constant declaration and definition: global, local constant
+    Function declaration and definition: public, private method
+  Instantiating module (import module from the same file)
+  Accessing module's constant and function
+  Module as mixins for class
+    Mixins for class
+    Mixins for object
+
+Import module (from another file)
+  Import
+  Import as (alias)
+  Import subset (don't import all)
+  
+#################################################################################
+Event-Driven Programming
+
+Callback function
+Listeners
+Promises

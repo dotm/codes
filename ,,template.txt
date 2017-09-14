@@ -1,0 +1,40 @@
+Template engine/system embed code to text files
+  used for views in MVC
+  used to create template before inputting data (to make the text file dynamic)
+
+#Delimiter
+  Default Delimiter
+  Create Custom Delimiter
+#Tags
+  Expression Tag (output string after evaluation)
+  Execution Tag (not printed)
+  Comment Tag (not printed nor executed)
+  Escaped Tag
+  Unescaped Tag
+  
+#-------------------------------------------------------------------------------------------
+#Expression
+
+Variable access
+Array or hash access
+Array or hash size
+
+#Block Expression
+
+#-------------------------------------------------------------------------------------------
+#Filters (used to modify the output)
+
+#-------------------------------------------------------------------------------------------
+#Logic
+
+If statement
+Case statement (switch statement)
+Loop
+Iterate over data structures
+
+#-------------------------------------------------------------------------------------------
+#Compilation Process
+
+Compile Template Object from Template File
+Compile Text File from Template Object
+  Input Data as Context

@@ -1,3 +1,12 @@
+#recommit git
+git add .
+git commit --amend
+
+#Github Pages project page
+git checkout --orphan gh-pages
+git commit -am"initial commit"
+git push origin gh-pages
+
 <script src="jquery.min.js"></script>
 <link rel="stylesheet" type="text/css" href="stylesheet.css">
 
@@ -39,15 +48,6 @@ box-sizing: border-box;
 
 #Compile less
 lessc a.less a.css
-
-#recommit git
-git add .
-git commit --amend
-
-#Github Pages project page
-git checkout --orphan gh-pages
-git commit -am"initial commit"
-git push origin gh-pages
 
 #Parsing Ajax html
 var a=$.get("http://dotm.github.io/")

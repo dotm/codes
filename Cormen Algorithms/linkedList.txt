@@ -1,12 +1,54 @@
-// Linked list
+// Node
+  // Linked Lists are made of Nodes
+  // The Nodes have
+    // a value as the key of that node
+    // a next pointer to the next Node
+    // a prev pointer to the previous Node (in case of Doubly Linked List)
+    // any kind of satellite data (Object, Database Entry, etc.)
+      // You can put the satellite data directly in the "value"
+  // To initialize the Node, you can use:
+    // regular multiple arguments init(value,next,prev=NULL)
+    // an object argument: init({value: ..., next:..., prev:...})
+  // GET-VALUE operation
+  // GET-NEXT-NODE operation
+  // GET-PREV-NODE operation
+    // this will return NULL with Singly Linked List's Node
+  // SET-VALUE operation
+  // SET-NEXT-NODE operation  
+  // SET-PREV-NODE operation
 
-// List-search(L,k) finds the first element with key k in list L by a simple linear search, returning a pointer to this element.
-// If no object with key k appears in the list, then the procedure returns NIL.
+// Doubly Linked List (Non-Circular)
+  // You can implement Doubly Linked List using a series of Nodes with no prev pointers
+    // L.head points to the first Node or to NULL (if the list is empty)
+  // LIST-INSERT(value) splices node onto the front of the linked list
+    // create a new node with:
+      // "value" that come from LIST-INSERT argument
+      // "next" that point to the node that is currently at the head
+      // "prev" that is NULL since it will be spliced onto the front of the list
+    // if the list is not empty (L.head != NULL)(there exist at least one node in the list)
+      // point the old head node prev pointer to the new node
+    // point L.head to the new node
+    // You can return a pointer to the new node so you can access it quickly (e.g. for reading, updating or deleting)
+    // You can return the list so that you can chain methods
+  // LIST-SEARCH(value) finds the first node by key/value in the linked list L using a simple linear search
+    // start searching from the head (if the head is NULL, get out of the function and return NULL)
+    // while there's still any unsearched node in the list (you haven't reach the end of the list) and the wanted node hasn't been found
+      // search the wanted node linearly using the next pointer
+      // You MUST keep the order of the logical checking or you'll get an error for trying to check the key of NULL
+    // return a pointer to the wanted node (if no node with the key appears in the list, this will return NULL)
+  // LIST-DELETE-BY-NODE(node) removes a node from the linked list by the pointer to that node
+    // if the deleted node is currently at the head
+      // set the head to the next node of this node
+      // the head will be set to NULL if there's no node after this node (if this node is the only node in the list)
+    // if there's a node before this deleted node
+      // point the next pointer of the previous node (of the deleted node) to the next node (of the deleted node)
+    // if there's a node after this deleted node
+      // point the prev pointer of the next node (of the deleted node) to the previous node (of the deleted node)
+    // You can return the list so that you can chain methods
+  // LIST-DELETE-BY-VALUE(value) removes a node from the linked list by the value to that node
+    // find the pointer to the wanted node using LIST-SEARCH(value)
+    // then delete that node with LIST-DELETE-BY-NODE(node)
 
-// List-insert(x) splices x onto the front of the linked list.
-
-// List-delete(L, x) removes an element of index x from a linked list L.
-// Delete by element vs. delete by value:
-  // It must be given a pointer to x, and it then “splices” x out of the list by updating pointers.
-  // If we wish to delete an element with a given key, we must first call LIST-SEARCH to retrieve a pointer to the element.
-
+You can implement the list operations using both
+  OOP style         : aLinkedList.insert(value)
+  Imperative style  : insertTo(aLinkedList,value)

@@ -1,0 +1,42 @@
+// Queue
+  // You can implement a queue internally using a fixed sized array
+    // Use a "queue_capacity" variable to limit the length of the fixed sized array
+    // Use a "total" variable to keep the total number of element in the queue
+    // Use a "head" variable to point to the front index of the queue where the first element is in
+    // Use a "tail" variable to point to the back index of the queue where the latest element will be inserted
+  // QUEUE-EMPTY operation
+    // if total <= 0, then the queue is empty
+  // QUEUE-FULL operation
+    // if "total" >= "queue_capacity" then queue is full
+  // INSERT(element) operation (ENQUEUE)
+    // if queue is full, return QUEUE-OVERFLOW error
+    // add element to the back ("tail") of the queue
+    // increment "tail" with mod operator (to make sure it loop back when we get to the end of array)
+      // tail = (tail + 1) % queue_capacity
+    // increment "total"
+    // You can return the queue so you can chain operation
+  // DELETE operation (DEQUEUE)
+    // if queue is empty, return QUEUE-UNDERFLOW error
+    // store the element at the front of the queue in a temporary variable
+    // OPTIONAL: set the element at the front of the queue to NULL
+    // move the "head" to the next element on the queue (increment "head" with mod operator to make sure it loop back when we get to the end of the array)
+      // head = (head + 1) % queue_capacity
+    // decrement "total"
+    // return the temporary stored element
+
+// Queue
+  // You can implement a variable-sized queue internally using a doubly linked list
+  // QUEUE-EMPTY operation
+    // invoke LIST-EMPTY operation
+  // INSERT operation (ENQUEUE)
+    // add element to the back ("tail") of the queue (head of linked list)
+    // You can return queue so you can chain operation
+  // DELETE operation (DEQUEUE)
+    // if queue is empty, return QUEUE-UNDERFLOW error
+    // store the element at the front of the queue (tail of linked list) in a temporary variable
+    // remove the element from the queue
+    // return the temporary stored element
+    
+You can implement the queue operations using both
+  OOP style         : aQueue.enqueue(element)
+  Imperative style  : enqueue(aQueue,element)

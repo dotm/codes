@@ -77,7 +77,7 @@ http://www.betterspecs.org/
   describe aClass do
     context "first instantiated" do
       before :each do                 #the hook
-        a = aClass.new
+        @a = aClass.new
       end
     end
   end

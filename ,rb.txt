@@ -270,9 +270,9 @@ variable_name.method1.method2.method3        #multiple method (method chaining)
 
 #Array class
   meals = ["Breakfast", "Lunch", "Dinner"]  -> ["Breakfast", "Lunch", "Dinner"]
-  meals << "Dessert"              -> ["Breakfast", "Lunch", "Dinner", "Dessert"]
-  meals[2]                  -> "Dinner"
-  meals.last                  -> "Dessert"
+  meals << "Dessert"                        -> ["Breakfast", "Lunch", "Dinner", "Dessert"]
+  meals[2]                                  -> "Dinner"
+  meals.last                                -> "Dessert"
   #Multidimensional array: array of arrays
   s = [  ["ham", "swiss"],
       ["turkey", "cheddar"],

@@ -136,7 +136,8 @@
     mv old/path/filename new/path/
     mv old/path/old_filename new/path/new_filename
   #Renaming file: mv old_filename new_filename
-  #Copying file: cp
+  #Copying file: cp source destination
+  #Copying directory: cp -r source destination
   #Create file: touch filename
   #Create directory: mkdir dirname
   #Remove file: rm filename filename

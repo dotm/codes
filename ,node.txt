@@ -43,16 +43,25 @@ Tab Keys - list of current commands.
 #NPM
 
 #Common commands
-  Update npm: npm install npm -g
-  Generate package.json: npm init
+  npm help
+  npm install npm -g            #update npm
+  npm init                      #generate package.json
+    npm init --scope=<username>
   npm install moduleName [-g]
   npm uninstall moduleName
-  npm ls [moduleName] [-g]
+    uninstall := rm
+  npm update                    #update all of your dependencies to the max version you allow in your package.json
+    npm update := npm outdated (then automatically run npm install on all outdated dependencies)
+  npm ls [moduleName] [-g]      #list dependencies and name of current package/version type
     list := ls
     npm ls must be executed from nodejs folder
     npm ls [moduleName] can be used to check module version or to check if module exist
-  Search a Module: npm search moduleName
-  Using module in js file: var moduleName = require('moduleName');
+  npm search moduleName
+    Using module in js file: var moduleName = require('moduleName');
+  npm whoami    #see who you're logged in as
+  npm adduser   #create new account
+  npm test      #run the test script specified at package.json
+  npm publish   #publish package
 
 #Global vs Local Installation
   #Local
@@ -83,7 +92,12 @@ Tab Keys - list of current commands.
 
 #Update module
   Update package.json and change the version of the dependency to be updated
-  run the following command: npm update
+    1.2.3
+    ^ ^ ^
+    | | `-- Patch version. Update for every change.
+    | `---- Minor version. Update for API additions.
+    `------ Major version. Update for breaking API changes.
+  run the following command: npm update (you can also run: npm publish)
 #Create a Module
   Creating a module requires package.json to be generated.
   "npm init" will generate the basic skeleton of the package.json.
@@ -93,6 +107,18 @@ Tab Keys - list of current commands.
   If everything is fine with your module, 
     it will be published in the repository 
     and will be accessible to install using NPM
+  
+#Distribution Tags (dist-tag)
+    npm dist-tag add <pkg>@<version> [<tag>]
+    npm dist-tag rm <pkg> <tag>
+    npm dist-tag ls [<pkg>]
+    npm help dist-tag
+  dist-tag maps strings like "latest" to version numbers like "1.2.48"
+  By default, the "latest" version is what gets installed. 
+  When you publish, the version that you publish gets tagged as "latest".
+    you publish things when you're ready for users to use them, isn't it?
+  if you need to publish something, and *not* make it the default version of a package,
+    then you can manually manage these distribution tags with 'dist-tag' command.
   
 #---------------------------------------------------------------------------------------
 #Callback Concept

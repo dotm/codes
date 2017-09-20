@@ -1,294 +1,464 @@
-#Initialize cmd
-	ghci
-	:set prompt "ghci> "
-#Exit ghci
-	:quit	#or ctrl-D
+Haskell is statically typed (with automatic type inference).
 
+You can use tab completion in GHCi
+  You can see all function using tab completion (in an empty command line, press tab, press y to display all possibilities)
+
+  :{ GHCi multiline command :}
 #Comment
-{- A multiline comment  -}
--- a single line comment
+  {- A multiline comment  -}
+  -- a single line comment
 
-#Loading function(module)
-:l file_name
+#Loading function(module):
+  !file_name.hs
+  $ :l file_name
+#Reload function:
+  :r (or just repeat :l file_name)
 
 #Let keyword
-Doing let a = 1 inside GHCI is equivalent of writing a = 1 in a script and then loading it.
+Doing let a = 1 inside GHCi is equivalent of writing a = 1 in a script and then loading it.
 let can NOT be used when using copmiler
 
+#-------------------------------------------------------------------------------------
+#Operators
+  pretty much all operators is a function.
+  if a function is comprised only of special characters (like == operator),
+    it is considered an infix function by default.
+  if we want to examine the type of such function, pass it to another function or call it as a prefix function,
+    we have to surround it in parentheses: (+) 1 2 -> 3
+    
 #Arithmetic operators: + - * / div mod
-#Boolean operators: && || not
 #Comparators: == /= <= >= < >
+#Boolean operators: && || not
+  #Boolean data type: True False
 
 #-------------------------------------------------------------------------------------
 #Functions
-	function_name parameter1 parameter2 etc = operations
-function definitions don't have to be in a linear order, can't begin with uppercase letters
-separate the function name from the parameter with a space
-	#Successor function
-	takes anything that has a defined successor, returns successor. 
-		ghci> succ 8  ->9
-#With several parameters
-	#Min and max function
-	min max take two things that can be put in an order. min returns the lesser one and max the greater one.
-		ghci> min 3.4 3.2  ->3.2  
-		ghci> max 100 101  ->101   
+  function can't begin with uppercase letter
+  single quotes (') is a valid character (you can use it in function_name)
+  a function has no side-effects
+    function can only calculate something and return it as a result
+  every expression and function must return something
+#Assertion of Equivalence (Definition/Name/Constant)
+    myName = "Yoshua"
+  a definition (or a name) is a function that
+    doesn't take any parameters and always return the same value
+
+#Definition
+    name = value
+  #define string using double quotes: myName = "Yoshua"
+  #define character using single quotes: a = 'a'
+  
+#Function definition (in Haskell source file)
+  function_name parameter1 parameter2 = statements
+    e.g. add x y = x+y
+#Function definition (in GHCi interpreter)
+  let function_name parameter1 parameter2 = statements
+#Function call/application
+  function_name parameter1 parameter2
+  (function_name parameter1 parameter2) #you can put () around function call to make it clearer
 #Infix function
-functions that take two parameters can be called as an infix function to avoid confusion between parameters
-	#div and mod function 
-		div 92 10 		-> 9 	#infix function is below
-		92 `div` 10		-> 9 	#surround it with `` (below ~) NOT ''.
-#Parentheses in function
-	bar (bar 3) means: call bar with 3 as parameter, return result, call bar again with that result; not that bar is called with bar and 3 as parameters
-	In C, that would be something like bar(bar(3))
+  functions with 2 parameters can be called and defined as infix function using backticks to avoid confusion between parameters
+    div a b = function_body
+      := a `div` b = function_body
+    (div 92 10) := (92 `div` 10)
 
 #-------------------------------------------------------------------------------------
-#Conditional
-conditional is an expression in Haskell; the else part is mandatory in Haskell
-Because the else is mandatory, an if statement will always return something and that's why it's an expression
-	#Multiple line
-	doubleSmallNumber x = if x > 100  
-							then x  
-							else x*2   
-	#Single line
-	doubleSmallNumber' x = (if x > 100 then x else x*2) + 1  #a different function with + 1
+#Conditional (if expression)
+  the else part is mandatory,
+    hence every conditional statements is also an expressions in Haskell
+    (you'll always get a value whatever branch get executed)
+  
+#If expression
+  #Multiple line
+    doubleSmallNumber x =
+      if x > 100
+      then x
+      else x*2
+  #Single line
+    doubleSmallNumber x = if x > 100 then x else x*2
+    doubleSmallNumber' x = (if x > 100 then x else x*2) + 1  #a different function with + 1
 
 #-------------------------------------------------------------------------------------
 #Lists
-	In Haskell, lists are a homogenous data structure. we can't have a list that has more than one type of data.
-		ghci> let lostNumbers = [4,8,15,16,23,42]  
-	[1,2,3] is actually just 1:2:3:[]. [] is an empty list
-	strings are lists, we can use list functions on them
-	#Appending/Combining lists
-	putting something at the end of a list
-		ghci> [1] ++ [2,3]  			->	[1,2,3]  
-		ghci> "sup" ++ " " ++ "bro" 	->	"sup bro"  
-		ghci> ['w','o'] ++ ['o','t']  	->	"woot"  
-	#Prepending lists
-	putting something at the beginning of a list
-		ghci> 'A':" SMALL CAT"  ->		"A SMALL CAT"  
-		ghci> 5:[1,2]  			->		[5,1,2]
-	#Access an element by index
-		ghci> "Steve Buscemi" !! 6  			->		'B'  
-		ghci> [[1,2],[3,4]]	!! 0 !! 1			->		2
-	Lists can contain another lists		e.g. [[],[],[1,2]]
-	The lists within a list can be of different lengths but can't be of different types
-	#Comparing lists
-	Lists can be compared if they elements is comparable. list are compared in lexicographical order. 
-	First the heads are compared. If equal, the second elements are compared, etc.
-		ghci> [3,2,1] > [2,100,1010]  ->	True  
-#Basic list functions: takes a list / lists and then
-	#Head:
-		ghci> head [5,4,3,2,1]  ->	5   
-	#Tail: chops off head
-		ghci> tail [5,4,3,2,1]  ->	[4,3,2,1]   
-	#Last
-		ghci> last [5,4,3,2,1]  ->	1   
-	#Init
-		ghci> init [5,4,3,2,1]  ->	[5,4,3,2]   
-	#Length
-		ghci> length [5,4,3,2,1]  ->	5  
-	#Null 
-		ghci> null [1,2,3]  ->	False  
-		ghci> null []  		->	True
-	#Reverse
-		ghci> reverse [3,2,1]  ->	[1,2,3]  
-	#Take
-	takes number and a list. extracts that many elements from the beginning of the list.
-		ghci> take 3 [5,4,3,2,1]  ->	[5,4,3]  
-	take more elements than there are in the list, get original list. take 0 elements, get an empty list.
-	#Drop 
-	similar to take, only it drops the number of elements from the beginning of a list.
-		ghci> drop 3 [8,4,2,1,5,6]  ->	[1,5,6]  
-	#Maximum, minimum, sum, and product
-		ghci> minimum [8,4,2,1,5,6]  ->	1  
-		ghci> maximum [1,9,2,3,4]  	 ->	9   
-		ghci> sum [5,2,1,6,3,2,5,7]  ->	31  
-		ghci> product [6,2,1,2]  	->	24  
-	#Elem
-	check if a thing is an element of a list
-		ghci> 4 `elem` [3,4,5,6]  ->		True  
+  are a zero indexed, homogenous, variable-length data structure
+  [1,2,3] is syntactic sugar for 1:2:3:[]
+    [] is an empty list
+  jagged multi-dimensional list is allowed
+#Strings
+  strings are lists, we can use list functions on them
+  "hello" is just syntactic sugar for ['h','e','l','l','o']
+#Ranges
+  floating point range are not completely precise by definition (e.g. instead of 1, you may get 0.999)
+  you can only specify arithmetic sequences (sequences with constant difference between terms) with range
+#List comprehension
+    in math, set comprehensions are normally used for building more specific sets out of general sets.
+    in Haskell, list comprehensions are used for building more specific lists out of general lists.
+#Nested list comprehensions
+  nested list comprehensions are possible if you're operating on lists that contain lists.
+  if you're not in GHCi, it's better to split longer list comprehensions across multiple lines.
+
+#List (and String)
+  #Definition: a = [1,2,3]
+  #Appending lists
+    [1] ++ [2,3]            ->  [1,2,3]
+    ['w','o'] ++ ['o','t']  ->  "woot"
+  #Prepending lists
+    'A':" SMALL CAT"  ->    "A SMALL CAT"
+    5:[1,2]        ->    [5,1,2]
+  #String interpolation
+    "length: " ++ show 3 ++ " elements"   -> "length: 3 elements"
+  #Access element by index
+    "Yoshua" !! 1      ->  'o'
+    [[1,2],[3]]!!0!!1  ->  2    #accessing multi-dimensional list
+  #Comparing lists
+      [3,2,1] > [2,100,1010]  ->  True
+    lists can be compared in lexicographical order if they elements is comparable
+#Basic list (and String) functions:
+  length    [5,4,3,2,1]     ->  5
+  null      []              ->  True      #check if list is empty
+  head      [5,4,3,2,1]     ->  5
+  tail      [5,4,3,2,1]     ->  [4,3,2,1]
+  last      [5,4,3,2,1]     ->  1
+  init      [5,4,3,2,1]     ->  [5,4,3,2]
+  reverse   [3,2,1]         ->  [1,2,3]
+  take      3 [5,4,3,2,1]   ->  [5,4,3]
+    #if you take more elements than there are in the list, you'll just get original list
+    #if you take 0 elements, you'll get an empty list.
+  drop      3 [8,4,2,1,5,6] ->  [1,5,6]
+    #works just like take
+  minimum   [8,4,2,1,5,6]   ->  1
+  maximum   [1,9,2,3,4]     ->  9
+  sum       [5,2,1]         ->  8
+  product   [6,2,1,2]       ->  24
+  4 `elem`  [3,4,5,6]       ->  True    #check if a thing is an element of a list
 
 #Ranges
-	ghci> ['a'..'z'] 	-> "abcdefghijklmnopqrstuvwxyz"  
-	ghci> ['K'..'Z']	-> "KLMNOPQRSTUVWXYZ"   
-	ghci> [2,4..10] 	-> [2,4,6,8,10]    				#with step
-	ghci> [5,4..1]		-> [5,4,3,2,1]					#negative step
-ranges with steps limitation: You can't do [1,2,4,8,16..100] and expect to get all the powers of 2. 
-	you can only specify one step and some non-arithmetic sequences are ambiguous if given only by a few of their first terms
-Watch out when using floating point numbers in ranges since they are not completely precise (by definition)
-	ghci> [0.1, 0.3 .. 1]  ->	[0.1,0.3,0.5,0.7,0.8999999999999999,1.0999999999999999]  
-You can use ranges to make infinite lists by not specifying an upper limit. 
-		take 24 [13,26..]	#	get the first 24 multiples of 13 
-	Haskell won't evaluate the infinite list immediately because it would never finish
-	It'll wait to see what you want to get out of that infinite lists. here it sees you just want the first 24 elements and it gladly obliges.
+    [0..3]      -> [0,1,2,3]
+    ['a'..'z']  -> "abcdefghijklmnopqrstuvwxyz"
+    ['K'..'Z']  -> "KLMNOPQRSTUVWXYZ"
+  #with step other than +1, you must specify the second element
+    [5,4..1]    -> [5,4,3,2,1]  #negative (-1) step
+    [2,4..10]   -> [2,4,6,8,10] #with +2 step
+    ['a','j'..'z'] -> "ajs"
 
-#A handful of functions that produce infinite lists:
-	#Cycle
-	takes a list and cycles it into an infinite list.
-		ghci> take 10 (cycle [1,2,3])  ->	[1,2,3,1,2,3,1,2,3,1]  
-		ghci> take 12 (cycle "LOL ")   ->	"LOL LOL LOL "   
-	#Repeat
-	takes an element and produces an infinite list of just that element. It's cycling a list with only one element.
-		ghci> take 10 (repeat 5)  ->	[5,5,5,5,5,5,5,5,5,5]  
-	Although it's simpler to just use the replicate function if you want some number of the same element in a list. 
-		ghci> replicate 3 10 returns ->	[10,10,10]
-
+#Infinite list 
+  #with range
+      take 24 [13,26..]  #get the first 24 multiples of 13
+    Haskell won't evaluate the infinite list immediately (lazy evaluation).
+  #with cycle
+      take 10 (cycle [1,2,3])  ->  [1,2,3,1,2,3,1,2,3,1]
+      take 12 (cycle "LOL ")   ->  "LOL LOL LOL "
+  #with repeat
+    a list cycle with only one element.
+      take 10 (repeat 5)  ->  [5,5,5,5,5,5,5,5,5,5]
+  
 #List comprehension
-  ghci> [x*2 | x <- [1..10], x*2 >= 12]  -> [12,14,16,18,20]  
-  x (variable), x*2 (output function), x <- [1..10] (input set), x*2 >= 12 (predicate/condition)
-  filtering: weeding out lists by predicates
-  lists can be compared with each other if their components can be compared
-	#Adding conditional
-		ghci> boomBangs xs = [ if x < 10 then "BOOM!" else "BANG!" | x <- xs, odd x]   
-		ghci> boomBangs [7..13]  ->	["BOOM!","BOOM!","BANG!","BANG!"]   
-	  The function odd returns True on an odd number and False on an even one. 
-	  The element is included in the list only if all the predicates evaluate to True.
-	#Multiple predicates
-	  If we wanted all numbers from 10 to 20 that are not 13, 15 or 19, we'd do:
-		ghci> [ x | x <- [10..20], x /= 13, x /= 15, x /= 19]  ->	[10,11,12,14,16,17,18,20]  
-	#Multiple input
-		ghci> [ x*y | x <- [2,5,10], y <- [8,10,11], x*y > 50]  ->	[55,80,100,110] 
-	#Placeholder
-		length' xs = sum [1 | _ <- xs]   #replaces every element of a list with 1 and then sums that up
-	 _ is a placeholder. instead of writing a variable name that we'll never use, we just write _ 
-	#With `elem`
-		removeNonUppercase st = [ c | c <- st, c `elem` ['A'..'Z']]   #takes a string and removes everything except uppercase letters
-	#Nested list comprehensions
-		ghci> let xxs = [[1,3,5,2,3,1,2,4,5],[1,2,3,4,5,6,7,8,9],[1,2,4,2,1,6,3,1,3,2,3,6]]  
-		ghci> [ [ x | x <- xs, even x ] | xs <- xxs]  ->	[[2,2,4],[2,4,6,8],[2,4,2,6,2,6]]  
-	If you're not in GHCI, it's better to split longer list comprehensions across multiple lines, especially if they're nested.
+  #with input_set only
+    [constant | input_set ]
+    ['a' | x <- [1..3]] -> "aaa"
+  #the _ placeholder
+    instead of making a variable name that we'll never use (like x in the example above), we can just write _ as the variable
+    ['a' | _ <- [1..3]] -> "aaa"
+    [1 | _ <- [1..3]]   -> [1,1,1]
+    length xs = sum [1 | _ <- xs]
+  #with variable
+    [variable | input_set ]
+    [x | x <- ['a'..'e']] -> "abcde"
+  #basic with output_function
+    [output_function | input_set ]
+    [x*2 | x <- [6..10]]  -> [12,14,16,18,20]
+      x (variable), x*2 (output function), x <- [1..10] (input set)
+  #filtering using predicate/condition
+    [output_function | input_set, predicate]
+    [output_function | input_set, predicate, predicate]
+    [x*2 | x <- [1..10], x*2 >= 12]  -> [12,14,16,18,20]
+  #multiple input
+    [output_function | input_set, input_set]
+    [output_function | input_set, input_set, predicate]
+    [x*y | x <- [2,5,10], y <- [8,10,11], x*y > 50] ->  [55,80,100,110]
+    [(x,y) | x <- [2,5,10], y <- [8,10,11]]         ->  [(2,8),(2,10),(2,11),(5,8),(5,10),(5,11),(10,8),(10,10),(10,11)]
+  #conditional output_function
+    [ if x < 10 then "BOOM!" else "BANG!" | x <- [7..13], odd x]  ->  ["BOOM!","BOOM!","BANG!","BANG!"]
+  #with `elem` (is element of) in predicate
+    [variable | input_set, variable `elem` a_list]    #include in the output only if it's an element of a_list
+    removeNonUppercase string = [ c | c <- string, c `elem` ['A'..'Z']]
+  #with pattern matching
+    [output_function | pattern matching input_set ]
+    [a+b | (a,b) <- [(1,3), (4,3), (2,4)]] -> [4,7,6]
+#Nested list comprehensions
+  #basic
+    [[output_function | variable <- inner_list_variable ] | inner_list_variable <- outer_list]
+  #with predicate to filter the inner_list
+    [[output_function | variable <- inner_list_variable, predicate ] | inner_list_variable <- outer_list]
+  #with predicate to filter the outer_list
+    [[output_function | variable <- inner_list_variable ] | inner_list_variable <- outer_list, predicate]
 
 #-------------------------------------------------------------------------------------
 #Tuple
-  can be heterogeneous
-  a tuple list must have the same type config
-    ghci> let x=[(1,"la"),(2,3)]				->		ERROR!!!
-	ghci> let x=[(1,2),(8,11,5),(4,5)]		->		ERROR!!!
-  tuples can contain lists with the same type config; don't have to have the same length
-	ghci> let ye=[	([1,2],["a","b"]),		#tuple 1
-					([3],["c"])				#tuple 2	]
+    tuple_name = (element, element, ...)
+  is a fixed-length and heterogeneous data structure
   tuples can be compared with each other if their components is comparable
-	#Pair tuple's fst and snd function
-	fst takes a pair, returns first component. snd returns second component
-		ghci> fst (8,11)  ->	8  
-		ghci> snd (8,11)  ->	11  
-	#Zip function
-	takes TWO lists (can be heterogeneous), zips them together into one by joining matching elements into pairs
-	  	ghci> zip [1 .. 5] ["one", "two", "three", "four", "five"]  ->	[(1,"one"),(2,"two"),(3,"three"),(4,"four"),(5,"five")]
-	  when the length doesn't match:
-		ghci> zip [5,3,2,6] ["im","a","turtle"]  	->	[(5,"im"),(3,"a"),(2,"turtle")]  
-		ghci> zip [1..] ["a", "b", "c", "d"]  		->	[(1,"a"),(2,"b"),(3,"c"),(4,"d")]  
+  Use tuples instead of list when
+    you know in advance how many components some piece of data should have
+    you need heterogeneous data structure
+  pair: tuple of size 2
+  triple: tuple of size 3
+#List of tuples
+  must have the same type configuration (the tuple must be of the same size and each elements must be of the same type)
+    let x=[(1,"la"),(2,3)]        ->    ERROR!!!
+    let x=[(1,2),(8,11,5),(4,5)]  ->    ERROR!!!
+  the tuples in a list of tuples can contain lists with different length but of the same type
+    let x=[([1,2],["a","b"]),([3],["c"])]
+
+#first and second function
+    fst (8,11)  ->  8
+    snd (8,11)  ->  11
+  this will only work on pairs
+#zip function
+  takes 2 lists (can be of different type), zips them together into a list of pairs:
+    zip [1 .. 5] ["one", "two", "three", "four", "five"]  ->  [(1,"one"),(2,"two"),(3,"three"),(4,"four"),(5,"five")]
+  when the length doesn't match:
+    zip [1..] ["a", "b", "c", "d"]      ->  [(1,"a"),(2,"b"),(3,"c"),(4,"d")]
 
 #-------------------------------------------------------------------------------------
-Haskell has type inference. 
-we don't have to explicitly write out the types of our functions and expressions
-
-#Check type of a data
-	ghci> :t data  ->	data :: data type 	e.g.Char, [Char], Bool, (Bool, Char)
-	  :: means has/have type of
-
-#Functions explicit type declaration
-	removeNonUppercase :: [Char] -> [Char]  						#[Char] is replaceable by String
-	removeNonUppercase st = [ c | c <- st, c `elem` ['A'..'Z']]   
-  #Multiple parameter function
-	addThree :: Integer -> Integer -> Integer -> Integer
-	addThree x y z = x + y + z  
-
 #Data Types
-	#Int vs Integer
-		Int is bounded (have min and max value) but more efficient. Integer is not bounded.
-	#Float vs Double
-			circumference :: Float -> Float  	#real floating point with single precision
-			circumference r = 2 * pi * r  
-			ghci> circumference 4.0  			->		25.132742  
-			circumference' :: Double -> Double  #real floating point with double the precision
-			circumference' r = 2 * pi * r  
-			ghci> circumference' 4.0  			->		25.132741228718345  
-	#Bool 
-		a boolean type. can have only two values: True and False.
-	#Char 
-		represents a character. denoted by single quotes ''. A list of characters is a string.
-	#Tuples 
-		dependent on their length as well as the types of their components
-		there is theoretically an infinite number of tuple types
-		Note that the empty tuple () is also a type which can only have a single value: ()
+  #Int vs Integer: Int is bounded (have min and max value) but more efficient. Integer is not bounded.
+  #Float vs Double: Double have more floating point precision than Float
+  #Bool: True, False
+  #Char (character) denoted by single quotes ''. 
+    A list of characters is a string: [Char] := String
+  #Tuples
 
-#Check data type and type signature
-	ghci> :t fst  
-	fst :: (a, b) -> a  
-  #Check operators data type and type signature
-	ghci> :t (==)  
-	(==) :: (Eq a) => a -> a -> Bool 	#takes any two values of the same type, returns a Bool.
-		The type of those two values must be a member of the Eq class (class constraint).
-	Note: pretty much all operators is a function. 
-		a function comprised only of special characters, is considered an infix function by default. 
-		Examining operators type: pass it to another function or call it as a prefix function, surround it in parentheses.
+#Type reflection from GHCi
+  :t expression  ->  expression :: data type
+    :t True
+    :t (==)
+  a::b means "a has/have type of b"
+
+#Giving function an explicit type declaration/signature/annotation
+    removeNonUppercase :: [Char] -> [Char]
+    removeNonUppercase st = [ c | c <- st, c `elem` ['A'..'Z']]
+#Declaring type signature in GHCi using let and semicolon:
+    let add :: Int -> Int -> Int; add x y = x + y
+#Multiple parameter function type signature
+    addThree :: Integer -> Integer -> Integer -> Integer
+    addThree x y z = x + y + z
+  The return type is the last item in the declaration and the parameters are the first three.
+  Haskell use -> and not comma for multiple parameters because currying
+    i.e. addThree :: Integer -> Integer -> Integer -> Integer
+      := addThree :: Integer -> (Integer -> (Integer -> Integer))
+    the parentheses are implied and so can be ignored
+#function as parameter
+    check :: (t -> Bool) -> t -> Bool
+    check f x = if (f x) then True else False
+  here the parentheses are necessary and so must be written (unlike with currying)
+  
 #Class constraint: everything before the => symbol
-	Multiple class constraints:
-		fromIntegral :: (Num b, Integral a) => a -> b. 
-	the class constraints are separated by commas inside the parentheses.
+  odd :: Integral a => a -> Bool
+  class constraint => type signature
+#Multiple class constraints: fromIntegral :: (Num b, Integral a) => a -> b
 
 #Type variables
-a and b are not types, they're type variables. they can be of any types.
-different type variables may or may not have different types
-Polymorphic functions: functions that have type variables, so it can be different types on different occasion
+    fst :: (a, b) -> a
+  a and b here are not (explicit) types, they're type variables (they can be of any types)
+  same type variable in the same signature must be of the same type
+    i.e. in fst signature above, if a is Int in the input, it must also be Int in the output
+  different type variables don't have to be of different types
+    i.e. a and b can be of the same type as in: fst (1,2)
+  type variable is much like generics, only much more powerful
+    because it allows us to easily write very general functions
+    if they don't use any specific behavior of the types in them.
+#Polymorphism
+  Polymorphic functions: functions that have type variables, so it can be different types on different occasion
+  polymorphic constants: constants that can be of different types on different occasion
 
-#Typeclasses
-a sort of interface that defines some behavior. 
-If a type is a part of a typeclass, then it inherits the behaviour of the typeclass.
-	
+#Typeclass
+  typeclass: a sort of interface that defines some behavior.
+  If a type is a part of a typeclass, then it inherits the behaviour of the typeclass.
+
 #Basic typeclasses
-	#Eq
-		Any type that support equality testing is a member of the Eq class. 
-		All standard Haskell types except for I/O and functions are a part of the Eq typeclass.
-		If there's an Eq class constraint for a type variable in a function, it uses == or /= somewhere inside its definition. 
-	#Ord 
-		is for types that have an ordering
-			ghci> :t (>)  
-			(>) :: (Ord a) => a -> a -> Bool  
-		Ord covers all the standard comparing functions such as >, <, >= and <=. 
-		The compare function takes two Ord members of the same type and returns an ordering. 
-		Ordering is a type that can be GT (greater than), LT(lesser than) or EQ (equal)
-		To be a member of Ord, a type must be a member of Eq.
-			ghci> "Abrakadabra" `compare` "Zebra"  		->		LT  
-	#Show
-		Members of Show can be presented as strings. 
-		The most used function that deals with the Show typeclass is show. 
-			ghci> show 3  ->	"3"  	#takes a value whose type is a member of Show and presents it to us as a string
-	#Read 
-		the opposite typeclass of Show. 
-		The read function takes a string and returns a type which is a member of Read.
-			ghci> read "4"	-> exception error			#because of ambiguous type (read is polymorphic). it doesn't know what we want in return
-			ghci> read "True" || False  	->	True	#not ambiguous because we did something with the result afterwards; GHCI could infer the result type
-	  #Using explicit type annotations to clear ambiguity
-		Type annotations: a way of explicitly saying what the type of an expression should be. 
-			ghci> (read "5" :: Float) * 4  			->		20.0  
-			ghci> read "[1,2,3,4]" :: [Int]  		->		[1,2,3,4]  
-			ghci> read "(3, 'a')" :: (Int, Char)  	->		(3, 'a')  
-		Haskell is statically typed, it has to know all the types before the code is compiled or evaluated. 
-	#Enum
-		members are sequentially ordered types (can be enumerated). we can use its types in list ranges. 
-		have defined successors and predecesors, which you can get with the succ and pred functions. 
-		Types in this class: ()/tuple, Bool, Char, Ordering (LT,ET,GT), Int, Integer, Float and Double.
-	#Bounded 
-		members have an upper and a lower bound.
-			ghci> minBound :: Char 				->	'\NUL'  
-			ghci> maxBound :: (Bool, Int, Char) ->	(True, 2147483647, '\1114111')  	#all tuples are also part of Bounded if the components are also in it
-		minBound and maxBound have a type of (Bounded a) => a. they are polymorphic constants.
-	#Num (numeric typeclass)
-		members have the property of being able to act like numbers.
-			ghci> :t 20  ->		20 :: (Num t) => t  
-		whole numbers are polymorphic constants. They can act like any type that's a member of the Num typeclass.
-		member of the Num typeclass: Int, Integer, Float, Double, etc
-		To join Num, a type must be a member of Show and Eq.
-	#Integral (numeric typeclass)
-		Num includes all numbers: real numbers and integral numbers
-		Integral includes only integral (whole) numbers. In this typeclass are Int and Integer.
-	#Floating 
-		includes only floating point numbers: Float and Double
-		
-#fromIntegral function
-		fromIntegral :: (Num b, Integral a) => a -> b 	#takes an integral number, turns it into a more general number
-		fromIntegral (length [1,2,3,4]) + 3.2		#delete the fromIntegral and you'll get an error of adding Int (length) with Float (3.2)
+  #Eq: types that support equality testing
+    all standard Haskell types except for I/O and functions are a part of the Eq typeclass.
+    if there's an Eq class constraint for a type variable in a function, it uses == or /= somewhere inside its definition.
+  #Ord: types that have an ordering
+    Ordering is a type that can be GT (greater than), LT(lesser than) or EQ (equal)
+    Ord covers all the standard comparing functions such as >, <, >= and <=.
+      The compare function takes two Ord members of the same type and returns an ordering.
+    to be a member of Ord, a type must also be a member of Eq.
+  #Show: types that can be presented as strings.
+    The most used function that deals with the Show typeclass is show.
+      show 3 -> "3"   #takes a value whose type is a member of Show and presents it to us as a string
+  #Read: types that can be read from strings.
+    The read function takes a string and returns a type which is a member of Read.
+      read "True" || False  ->  True  #not ambiguous because we did something with the result afterwards; GHCi could infer the result is Bool (not String)
+      read "4" -> exception error     #ambiguous type; read doesn't know what type we want in return
+    #Using type annotations with read to clear ambiguity
+      Type annotations: a way of explicitly saying what the type of an expression should be using double semicolon (::)
+        (read "5" :: Float) * 4        ->  20.0
+        read "[1,2,3,4]" :: [Int]      ->  [1,2,3,4]
+        read "(3, 'a')" :: (Int, Char) ->  (3, 'a')
+      Haskell is statically typed, it has to know all the types before the code is compiled (or evaluated in GHCi).
+  #Enum: sequentially ordered types (can be enumerated)
+    we can use Enum types in ranges: [1..3]
+    have defined successors and predecesors (which you can get with the succ and pred functions)
+    types in this class: ()/tuple, Bool, Char, Ord, Int, Integer, Float and Double.
+  #Bounded: types have an upper and a lower bound.
+    minBound and maxBound have a type of (Bounded a) => a. they are polymorphic constants.
+      minBound :: Char ->  '\NUL'
+    all tuples are also part of Bounded if the components are also in it
+      maxBound :: (Bool, Int, Char) ->  (True, 2147483647, '\1114111')
+  #Num (numeric typeclass): types that have the property of being able to act like numbers.
+      :t 20  ->  20 :: (Num t) => t
+    numbers are polymorphic constants. they can act like any type that's a member of the Num typeclass.
+    members of the Num typeclass: Int, Integer, Float, Double, etc
+    to be a member of Num, a type must also be a member of Show and Eq.
+    Num includes all numbers: real numbers and integral numbers
+  #Floating (numeric typeclass): includes only floating point numbers (Float and Double)
+  #Integral (numeric typeclass): includes only integral/whole numbers (Int and Integer)
+    #fromIntegral function
+      fromIntegral :: (Num b, Integral a) => a -> b   #takes an integral number, turns it into a more general number
+      fromIntegral (length [1,2,3,4]) + 3.2           #delete fromIntegral and you'll get an error of adding Int (length) with Float (3.2)
 
 #-------------------------------------------------------------------------------------
+#Pattern matching
+  pattern matching: specifying patterns to which some data should conform
+    and then checking to see if it does and deconstructing the data according to those patterns.
+  you can pattern match on any data type.
+  when defining functions, you can define separate function bodies for different patterns
+    the patterns will be checked from top to bottom
+    and when it conforms to a pattern, the corresponding function body will be used.
+  order is important when specifying patterns
+    specify the most specific ones first (e.g. base case in recursion first to avoid infinite recursion)
+    and then the more general ones later
+    and the catch-all default case last (if you put the catch-all at the top, the patterns after it won't get executed)
+  pattern matching can fail if we try to call it with an input that we didn't expect
+    i.e. pattern will fail if we supply a data and it can't find any pattern that match the data
+    we should always include a catch-all pattern so that our program doesn't crash if we get some unexpected input
+#list pattern matching with as pattern
+  the 'as pattern' is a handy way of
+    breaking something up according to a pattern and binding it to names
+    whilst still keeping a reference to the whole thing
+    by putting a name and an @ in front of a pattern.
+  we use as patterns to avoid repeating ourselves when matching against a bigger pattern
+    when we have to use the whole thing again in the function body.
+      e.g. the pattern xs@(x:y:ys) will match exactly the same thing as x:y:ys
+        but you can easily get the whole list via xs
+        instead of repeating yourself by typing out x:y:ys in the function body again.
+
+#Pattern matching
+  #basic
+    sayMe :: (Integral a) => a -> String
+    sayMe 1 = "One!"
+    sayMe 2 = "Two!"
+    sayMe 3 = "Three!"
+    sayMe 4 = "Four!"
+    sayMe 5 = "Five!"
+    sayMe x = "Not between 1 and 5"       #without this catch-all pattern, sayMe 6 would return an error (the pattern matching will fail)
+  #for recursion
+    factorial :: (Integral a) => a -> a
+    factorial 0 = 1
+    factorial n = n * factorial (n - 1)
+  #with tuple
+    addVectors :: (Num a) => (a, a) -> (a, a) -> (a, a)
+    addVectors a b = (fst a + fst b, snd a + snd b)     #without pattern matching
+    addVectors (x1, y1) (x2, y2) = (x1 + x2, y1 + y2)   #with pattern matching (using only one catch-all pattern)
+  #with list comprehension
+    [a+b | (a,b) <- [(1,3), (4,3), (2,4)]] -> [4,7,6]   #the pattern specified here is (a,b)
+  #with list
+    #basic (x:xs) pattern
+        head :: [a] -> a
+        head [] = error "Can't call head on an empty list, dummy!"
+        head (x:_) = x
+      pattern like x:xs will bind the head of the list to x and the rest of it to xs,
+        even if there's only one element so xs ends up being an empty list.
+      if you want to bind to several variables
+        (even if one of them is just _ and doesn't actually bind at all),
+        we have to surround them in parentheses.
+    #with recursion
+        last :: [a] -> a
+        last [] = error "empty list"
+        last [x] = x                             #(x:[]) could be rewriten as [x]
+        last (_:x) = last x
+    #binding to more than two variable
+        tell :: (Show a) => [a] -> String
+        tell [] = "The list is empty"
+        tell (x:[]) = "The list has one element: " ++ show x
+        tell (x:y:[]) = "The list has two elements: " ++ show x ++ " and " ++ show y
+        tell (x:y:_) = "This list is long. The first two elements are: " ++ show x ++ " and " ++ show y
+      if you want to bind, say, the first three elements to variables
+        and the rest of the list to another variable,
+        you can use something like x:y:z:zs. 
+          this will only match against lists that have 3 elements or more.
+    #as patterns
+        capital :: String -> String
+        capital "" = "empty string!"
+        capital all@(x:xs) = "The first letter of " ++ all ++ " is " ++ [x]
+
+#-------------------------------------------------------------------------------------
+#Guards
+  guards are a way of testing whether some property of a value (or several of them) are True or False
+    and then running the function body associated with the guard if it evaluates to True
+  guards are a lot more readable than if expression when you have several conditions
+    and they play really nicely with patterns.
+  
+#Guards
+  #basic
+    type_signature
+    function_name parameters
+      | guard = function_body
+      | guard = function_body
+      | otherwise = function_body   #otherwise always evaluate to True
+    max' :: (Ord a) => a -> a -> a
+    max' a b
+      | a > b = a
+      | otherwise = b
+  #single line
+    max' :: (Ord a) => a -> a -> a
+    max' a b | a > b = a | otherwise = b
+  #with where clause to bind local names
+    type_signature
+    function_name parameters
+      | guard = function_body
+      | guard = function_body
+      | otherwise = function_body
+      where
+        name = value
+        name = value
+    bmiTell :: (RealFloat a) => a -> a -> String
+    bmiTell weight height
+      | bmi <= skinny = "You're underweight, you emo, you!"
+      | bmi <= normal = "You're supposedly normal. Pffft, I bet you're ugly!"
+      | bmi <= fat = "You're fat! Lose some weight, fatty!"
+      | otherwise = "You're a whale, congratulations!"
+      where 
+        bmi = weight / height ^ 2
+        (skinny, normal, fat) = (18.5, 25.0, 30.0)
+
+#-------------------------------------------------------------------------------------
+#Where binding clause
+  #in guards
+    type_signature
+    function_name parameters
+      | guard = function_body
+      | guard = function_body
+      | otherwise = function_body
+      where
+        name = value
+        name = value
+  #with pattern matching
+    initials :: String -> String -> String
+    initials firstname lastname = [f] ++ ". " ++ [l] ++ "."
+      where (f:_) = firstname
+            (l:_) = lastname
+  #in list comprehension
+    calcBmis :: (RealFloat a) => [(a, a)] -> [a]
+    calcBmis xs = [bmi w h | (w, h) <- xs]
+      where bmi weight height = weight / height ^ 2
+  #nested
+    it's a common idiom to make a function
+      and define some helper function in its where clause
+      and then to give those functions helper functions as well,
+      each with its own where clause.
+      
+#-------------------------------------------------------------------------------------
+#Let binding clause

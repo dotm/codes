@@ -172,12 +172,12 @@ Higher order function
   Currying (a function that return another function after filling it with some arguments)
     e.g. add = function(a) { return function(b) { return a + b; }; };
   
-Common function
+Common iteration function
   sort
   filter
   map
   each
-  reduce
+  reduce/fold
   comprehension (map + filter)
   
 #################################################################################

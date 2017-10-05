@@ -199,6 +199,10 @@ Class
   
 Nested class
 
+Class relationship
+  Association
+  Aggregation
+  Composition
 #--------------------------------------------------------------------------------  
 Object
 (pass by value, pass by reference)

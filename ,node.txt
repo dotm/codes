@@ -220,3 +220,227 @@ Tab Keys - list of current commands.
 
 #---------------------------------------------------------------------------------------
 #Buffers
+  While dealing with TCP streams or the file system, it's necessary to handle octet streams. 
+  Node provides Buffer class which provides instances to store raw data similar to an array of integers 
+    but corresponds to a raw memory allocation outside the V8 heap.
+
+#Creating Buffers
+  var buf = new Buffer(10);                               #create an uninitiated Buffer of 10 octets
+  var buf = new Buffer([10, 20, 30, 40, 50]);             #create a Buffer from a given array
+  var buf = new Buffer("Simply Easy Learning", "utf-8");  #create a Buffer from a given string and optionally encoding type
+    other encodings: "ascii", "utf8", "utf16le", "ucs2", "base64" or "hex".
+
+#Writing to Buffers
+  buf.write(string[, offset][, length][, encoding])
+     string - the string data to be written to buffer.
+     offset - the index of the buffer to start writing at. Default value is 0.
+     length - the number of bytes to write. Defaults to buffer.length.
+     encoding - the encoding to use. 'utf8' is the default encoding.
+  This write method returns the number of octets written.
+    buf = new Buffer(256);
+    len = buf.write("Simply Easy Learning"); len = 20
+  If there is not enough space in the buffer to fit the entire string,
+    it will write a part of the string.
+    
+#Reading from Buffers
+  buf.toString([encoding][, start][, end])
+     encoding - Encoding to use. 'utf8' is the default encoding.
+     start - Beginning index to start reading, defaults to 0.
+     end - End index to end reading, defaults is complete buffer.
+  This method decodes and returns a string from buffer data
+    encoded using the specified character set encoding.
+    
+#Convert Buffer to JSON
+  buf.toJSON()
+  This method returns a JSON-representation of the Buffer instance.
+  
+#Concatenate Buffers
+  Buffer.concat(list[, totalLength])
+     list - Array List of Buffer objects to be concatenated.
+     totalLength - This is the total length of the buffers when concatenated.
+  This method returns a Buffer instance.
+    var buffer1 = new Buffer('TutorialsPoint ');
+    var buffer2 = new Buffer('Simply Easy Learning');
+    var buffer3 = Buffer.concat([buffer1,buffer2]);
+    
+#Compare Buffers
+  buf.compare(otherBuffer);
+    var result = buffer1.compare(buffer2);
+    if(result < 0) {
+      console.log(buffer1 +" comes before " + buffer2);
+    }else if(result == 0){
+      console.log(buffer1 +" is same as " + buffer2);
+    }else {
+      console.log(buffer1 +" comes after " + buffer2);
+    }
+  This method returns a number indicating whether it
+    comes before or after or is the same as the otherBuffer in sort order.
+  
+#Copy Buffer
+  buf.copy(targetBuffer[, targetStart][, sourceStart][, sourceEnd])
+     targetBuffer - Buffer object where buffer will be copied.
+     targetStart - Number, Optional, Default: 0
+     sourceStart - Number, Optional, Default: 0
+     sourceEnd - Number, Optional, Default: buffer.length
+    
+#Slice Buffer
+  buf.slice([start][, end])
+     start - Number, Optional, Default: 0
+     end - Number, Optional, Default: buffer.length
+  This method returns a new buffer
+    which references the same memory as the old one,
+    but offset and cropped by the start (defaults to 0) and end (defaults to buffer.length) indexes.
+  Negative indexes start from the end of the buffer.
+  
+#Check Buffer Length: buf.length;
+
+#Buffer.isEncoding(encoding)
+  Returns true if the encoding is a valid encoding argument, false otherwise.
+  
+#Buffer.isBuffer(obj)
+  Tests if obj is a Buffer.
+  
+#---------------------------------------------------------------------------------------
+#Streams
+  Streams are objects that let you read data from a source
+    or write data to a destination in continuous fashion.
+  In Node.js, there are four types of streams:
+     Readable - Stream which is used for read operation.
+     Writable - Stream which is used for write operation.
+     Duplex - Stream which can be used for both read and write operation.
+     Transform - A type of duplex stream where the output is computed based on input.
+  Each type of Stream is an EventEmitter instance and throws several events at different instance of times. 
+  Some of the commonly used events are:
+     data - This event is fired when there is data is available to read.
+     end - This event is fired when there is no more data to read.
+     error - This event is fired when there is any error receiving or writing data.
+     finish - This event is fired when all the data has been flushed to underlying system.
+  
+#Reading from a Stream
+  var fs = require("fs");
+  var data = '';
+  // Create a readable stream
+  var readerStream = fs.createReadStream('input.txt');
+  // Set the encoding to be utf8.
+  readerStream.setEncoding('UTF8');
+  // Handle stream events --> data, end, and error
+  readerStream.on('data', function(chunk) {
+    data += chunk;
+  });
+  readerStream.on('end',function(){
+    console.log(data);
+  });
+  readerStream.on('error', function(err){
+    console.log(err.stack);
+  });
+  console.log("Program Ended");
+  
+#Writing to a Stream
+  var fs = require("fs");
+  var data = 'Simply Easy Learning';
+  // Create a writable stream
+  var writerStream = fs.createWriteStream('output.txt');
+  // Write the data to stream with encoding to be utf8
+  writerStream.write(data,'UTF8');
+  // Mark the end of file
+  writerStream.end();
+  // Handle stream events --> finish, and error
+  writerStream.on('finish', function() {
+    console.log("Write completed.");
+  });
+  writerStream.on('error', function(err){
+    console.log(err.stack);
+  });
+  console.log("Program Ended");
+  
+#Piping the Streams
+  var fs = require("fs");
+  // Create a readable stream
+  var readerStream = fs.createReadStream('input.txt');
+  // Create a writable stream
+  var writerStream = fs.createWriteStream('output.txt');
+  // Pipe the read and write operations
+  // read input.txt and write data to output.txt
+  readerStream.pipe(writerStream);
+  console.log("Program Ended");
+  
+#Chaining the Streams
+  var fs = require("fs");
+  var zlib = require('zlib');
+  // Compress the file input.txt to input.txt.gz
+  fs.createReadStream('input.txt')
+    .pipe(zlib.createGzip())
+    .pipe(fs.createWriteStream('input.txt.gz'));
+  console.log("File Compressed.");
+
+#---------------------------------------------------------------------------------------
+#File System (File I/O)
+  Every method in the fs module has synchronous as well as asynchronous forms.
+  Asynchronous methods take the last parameter as the completion function callback
+    and the first parameter of that callback function is error.
+    
+#Open a file
+#Get File Information
+#Writing a File
+#Reading a Fil
+#Closing a File
+#Truncate a File
+#Delete a File
+#Create a Directory
+#Read a Directory
+#Remove a Directory
+
+#---------------------------------------------------------------------------------------
+#Global Objects
+
+#__filename: the filename of the code being executed
+  console.log( __filename );  -> /web/com/1427091028_21099/main.js
+#__dirname: the directory name that the currently executing script resides in
+  console.log( __dirname );   -> /web/com/1427091028_21099
+  
+#setTimeout(cb, ms): run callback cb after at least ms milliseconds sleep time.
+  function printHello(){console.log( "Hello, World!");}
+  setTimeout(printHello, 2000);
+#clearTimeout (t)
+    var t = setTimeout(printHello, 2000);
+    clearTimeout(t);
+  stop a timer that was previously created with setTimeout().
+    the callback inside setTimeout won't get executed
+  t is the timer returned by the setTimeout() function.
+
+#setInterval(cb, ms): run callback cb repeatedly after at least ms milliseconds.
+  setInterval(printHello, 2000);
+#clearInterval(t)
+  var t = setInterval(printHello, 2000);
+  clearInterval(t);
+  
+#Console: used to print information on stdout and stderr
+  console.log
+  console.error
+  console.dir
+  console.trace
+#console.time(label)
+  console.time("Getting data");
+  //
+  // Do some processing here...
+  //
+  console.timeEnd('Getting data');
+
+#Process: used to get information on current process. provides multiple events related to process activities.
+#Process Events
+  The process object is an instance of EventEmitter and emits the following events:
+    exit: Emitted when the process is about to exit.
+    beforeExit: emitted when node empties its event loop and has nothing else to schedule.
+    uncaughtException: Emitted when an exception bubbles all the way back to the event loop. 
+      If a listener is added for this exception,
+        the default action (which is to print a stack trace and exit) will not occur.
+    Signal Events: Emitted when the processes receives a signal such as SIGINT, SIGHUP, etc.
+#Exit codes (see docs)
+#Process Properties
+  process.stdout
+  process.stderr
+  process.stdin
+  process.argv
+  
+#---------------------------------------------------------------------------------------
+#Utility Modules

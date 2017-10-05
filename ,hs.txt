@@ -1,4 +1,5 @@
 Haskell is statically typed (with automatic type inference).
+Whitespace matters in Haskell
 
 You can use tab completion in GHCi
   You can see all function using tab completion (in an empty command line, press tab, press y to display all possibilities)
@@ -26,7 +27,7 @@ let can NOT be used when using copmiler
   if we want to examine the type of such function, pass it to another function or call it as a prefix function,
     we have to surround it in parentheses: (+) 1 2 -> 3
     
-#Arithmetic operators: + - * / div mod
+#Arithmetic operators: + - * / div mod ^
 #Comparators: == /= <= >= < >
 #Boolean operators: && || not
   #Boolean data type: True False
@@ -83,6 +84,7 @@ let can NOT be used when using copmiler
   are a zero indexed, homogenous, variable-length data structure
   [1,2,3] is syntactic sugar for 1:2:3:[]
     [] is an empty list
+  multi-dimensional list := nested list
   jagged multi-dimensional list is allowed
 #Strings
   strings are lists, we can use list functions on them
@@ -90,12 +92,6 @@ let can NOT be used when using copmiler
 #Ranges
   floating point range are not completely precise by definition (e.g. instead of 1, you may get 0.999)
   you can only specify arithmetic sequences (sequences with constant difference between terms) with range
-#List comprehension
-    in math, set comprehensions are normally used for building more specific sets out of general sets.
-    in Haskell, list comprehensions are used for building more specific lists out of general lists.
-#Nested list comprehensions
-  nested list comprehensions are possible if you're operating on lists that contain lists.
-  if you're not in GHCi, it's better to split longer list comprehensions across multiple lines.
 
 #List (and String)
   #Definition: a = [1,2,3]
@@ -113,6 +109,7 @@ let can NOT be used when using copmiler
   #Comparing lists
       [3,2,1] > [2,100,1010]  ->  True
     lists can be compared in lexicographical order if they elements is comparable
+
 #Basic list (and String) functions:
   length    [5,4,3,2,1]     ->  5
   null      []              ->  True      #check if list is empty
@@ -131,6 +128,18 @@ let can NOT be used when using copmiler
   sum       [5,2,1]         ->  8
   product   [6,2,1,2]       ->  24
   4 `elem`  [3,4,5,6]       ->  True    #check if a thing is an element of a list
+#zip function
+  takes 2 lists (can be of different type), zips them together into a list of pairs:
+    zip [1 .. 5] ["one", "two", "three", "four", "five"]  ->  [(1,"one"),(2,"two"),(3,"three"),(4,"four"),(5,"five")]
+  when the length doesn't match:
+    zip [1..] ["a", "b", "c", "d"]      ->  [(1,"a"),(2,"b"),(3,"c"),(4,"d")]
+#zipWith function
+    zipWith (+) [4,2,5,6] [2,6,2,3]    ->     [6,8,7,9]
+  takes a function and two lists as parameters
+    and joins the two lists by applying the function between corresponding elements
+#Operation on nested list
+  zipWith (zipWith (*)) [[1,2,3],[3,5,6],[2,3,4]] [[3,2,2],[3,4,5],[5,4,3]]   ->    [[3,4,6],[9,20,30],[10,12,12]]
+  map (map (^2)) [[1,2],[3,4,5,6],[7,8]]    ->    [[1,4],[9,16,25,36],[49,64]]
 
 #Ranges
     [0..3]      -> [0,1,2,3]
@@ -141,7 +150,7 @@ let can NOT be used when using copmiler
     [2,4..10]   -> [2,4,6,8,10] #with +2 step
     ['a','j'..'z'] -> "ajs"
 
-#Infinite list 
+#Infinite list
   #with range
       take 24 [13,26..]  #get the first 24 multiples of 13
     Haskell won't evaluate the infinite list immediately (lazy evaluation).
@@ -151,7 +160,15 @@ let can NOT be used when using copmiler
   #with repeat
     a list cycle with only one element.
       take 10 (repeat 5)  ->  [5,5,5,5,5,5,5,5,5,5]
-  
+
+#-------------------------------------------------------------------------------------
+#List comprehension
+    in math, set comprehensions are normally used for building more specific sets out of general sets.
+    in Haskell, list comprehensions are used for building more specific lists out of general lists.
+#Nested list comprehensions
+  nested list comprehensions are possible if you're operating on lists that contain lists.
+  if you're not in GHCi, it's better to split longer list comprehensions across multiple lines.
+
 #List comprehension
   #with input_set only
     [constant | input_set ]
@@ -185,6 +202,9 @@ let can NOT be used when using copmiler
   #with pattern matching
     [output_function | pattern matching input_set ]
     [a+b | (a,b) <- [(1,3), (4,3), (2,4)]] -> [4,7,6]
+  #with let binding
+    [output_function | input_set, let binding, predicate]
+    [bmi | (w, h) <- [(1,3), (4,3), (2,4)], let bmi = w / h ^ 2, bmi >= 25.0]
 #Nested list comprehensions
   #basic
     [[output_function | variable <- inner_list_variable ] | inner_list_variable <- outer_list]
@@ -214,12 +234,7 @@ let can NOT be used when using copmiler
     fst (8,11)  ->  8
     snd (8,11)  ->  11
   this will only work on pairs
-#zip function
-  takes 2 lists (can be of different type), zips them together into a list of pairs:
-    zip [1 .. 5] ["one", "two", "three", "four", "five"]  ->  [(1,"one"),(2,"two"),(3,"three"),(4,"four"),(5,"five")]
-  when the length doesn't match:
-    zip [1..] ["a", "b", "c", "d"]      ->  [(1,"a"),(2,"b"),(3,"c"),(4,"d")]
-
+    
 #-------------------------------------------------------------------------------------
 #Data Types
   #Int vs Integer: Int is bounded (have min and max value) but more efficient. Integer is not bounded.
@@ -346,7 +361,7 @@ let can NOT be used when using copmiler
         instead of repeating yourself by typing out x:y:ys in the function body again.
 
 #Pattern matching
-  #basic
+  #basic pattern matching on parameters in function definitions
     sayMe :: (Integral a) => a -> String
     sayMe 1 = "One!"
     sayMe 2 = "Two!"
@@ -435,6 +450,11 @@ let can NOT be used when using copmiler
         (skinny, normal, fat) = (18.5, 25.0, 30.0)
 
 #-------------------------------------------------------------------------------------
+#Where bindings 
+  where bindings are a syntactic construct
+    that let you bind to variables at the end of a function
+    and the whole function can see them, including all the guards.
+
 #Where binding clause
   #in guards
     type_signature
@@ -461,4 +481,165 @@ let can NOT be used when using copmiler
       each with its own where clause.
       
 #-------------------------------------------------------------------------------------
+#Let binding
+  Let bindings let you bind to variables anywhere
+    but are very local, so they don't span across guards.
+  Let bindings are expressions (like if expression)
+    you can cram it almost anywhere
+
 #Let binding clause
+      let <bindings> in <expression>
+      4 * (let a = 9 in a + 1) + 2  -> 42
+      ghci> let zoot x y z = x * y + z
+    The names that you define in the let part are accessible to the expression after the in part.
+    We omitted the in part of the let binding when we used them in list comprehensions
+      because the visibility of the names is already predefined there. 
+        But, we could use a let in binding in a predicate and the names defined would only be visible to that predicate. 
+    The in part can also be omitted when defining functions and constants directly in GHCi.
+      If we do that, then the names will be visible throughout the entire interactive session.
+  #to introduce function in a local scope
+    [let square x = x * x in (square 5, square 3, square 2)] -> [(25,9,4)]
+  #with pattern matching
+    cylinder :: (RealFloat a) => a -> a -> a
+    cylinder r h =
+      let sideArea = 2 * pi * r * h
+          topArea = pi * r ^2
+      in sideArea + 2 * topArea
+  #destructuring tuple with pattern matching
+    (let (a,b,c) = (1,2,3) in a+b+c) * 100  ->  600
+  #bind to several variables inline
+    (let a = 100; b = 200; c = 300 in a*b*c, let foo="Hey "; bar = "there!" in foo ++ bar)
+    ->  (6000000,"Hey there!")
+  #in list comprehension
+    calcBmis :: (RealFloat a) => [(a, a)] -> [a]
+    calcBmis xs = [bmi | (w, h) <- xs, let bmi = w / h ^ 2]
+    
+#-------------------------------------------------------------------------------------
+#Case expressions
+  It's about taking a variable and then executing blocks of code for specific values of that variable
+    and then maybe including a catch-all block of code in case the variable has some value for which we didn't set up a case.
+  
+#Case expressions
+  case expression of
+    pattern -> result
+    pattern -> result
+    pattern -> result
+    ...
+  describeList :: [a] -> String
+  describeList xs = "The list is " ++ case xs of [] -> "empty."
+                                                 [x] -> "a singleton list."
+                                                 xs -> "a longer list."
+#using pattern matching
+  pattern matching on parameters in function definitions
+    is just a syntactic sugar for case expressions.
+  Because pattern matching in function definitions is syntactic sugar for case expressions,
+    we could have also defined the above function like so:
+      describeList :: [a] -> String
+      describeList xs = "The list is " ++ what xs
+        where what [] = "empty."
+              what [x] = "a singleton list."
+              what xs = "a longer list."
+
+#-------------------------------------------------------------------------------------
+#Recursion 
+  a way of defining functions in which the function is applied inside its own definition.
+  making a recursive function:
+    you define an edge case
+    you define a function that does something between some element and the function applied to the rest.
+  usually the identity of an operation used in the recursion is the edge case. e.g.
+    in recursive sum (with + operator), the identity and edge case is 0 (since n+0=n)
+    with list, the identity is usually an empty list []
+  see Learn You a Haskell for Great Good! chapter 5
+    to see these standard library function is implemented with recursion:
+      maximum, replicate, take, reverse, repeat, zip, elem
+      
+quicksort :: (Ord a) => [a] -> [a]
+quicksort [] = []
+quicksort (x:xs) =
+  let smallerSorted = quicksort [a | a <- xs, a <= x]
+      biggerSorted = quicksort [a | a <- xs, a > x]
+  in smallerSorted ++ [x] ++ biggerSorted
+  
+#-------------------------------------------------------------------------------------
+#Higher order functions
+  higher order function is a function that
+    take functions as parameters 
+    and/or return functions as return values
+#Curried functions
+  every function in Haskell only takes one parameter
+  functions that take more than one parameter is implemented as curried function
+  if we call a (multi-parameter) function with too few parameters,
+    we get back a partially applied function,
+    meaning a function that takes as many parameters as we left out
+#Map + Filter = List comprehension
+  you can express list comprehension using a combination of map and filter
+    this will make the expression more readable and composable (in some cases)
+  The filter equivalent of applying several predicates in a list comprehension
+    is either filtering something several times or joining the predicates with the logical && function.
+#Fold (reduce)
+  fold takes a binary function, a starting value (accumulator), and a list to fold up.
+  the binary function itself takes two parameters
+    which is the accumulator and the first (or last) element (current element)
+    and it produces a new accumulator
+#Lambdas
+    Lambdas are basically anonymous functions that are used because we need some functions only once.
+    Normally, we make a lambda with the sole purpose of passing it to a higher-order function.
+    \ is used because it kind of looks like the greek letter lambda
+    if you don't wrap lambda inside parentheses, the function_body will be from '->' to the end of line
+    like normal functions, you can pattern match in lambdas
+      the only difference is that you can't define several patterns for one parameter
+    People who are not well acquainted with how currying and partial application works
+      often use lambdas where they don't need to.
+        e.g. using (map (\x -> x + 3)[1,6,3,2]) instead of (map (+3)[1,6,3,2])
+      but it's OK to use lambda instead of partial application if it makes your code more readable
+      
+#Currying infix function
+    divideByTen :: (Floating a) => a -> a
+    divideByTen = (/10)
+    isUpperAlphanum :: Char -> Bool
+    isUpperAlphanum = (`elem` ['A'..'Z'])
+  Infix functions can also be partially applied by using sections
+  To section an infix function,
+    simply surround it with parentheses
+    and only supply a parameter on one side.
+      That creates a function that takes one parameter
+      and then applies it to the side that's missing an operand.
+  #Exception
+    subtractByFour :: (Floating a) => a -> a
+    subtractByFour = (subtract 4)
+  you can't use (-4) here because (-4) denotes negative integer 4 (and will not return a partially applied function)
+  
+#Map
+    map :: (a -> b) -> [a] -> [b]
+    map _ [] = []
+    map f (x:xs) = f x : map f xs
+  map takes a function and a list, and applies that function to every element in the list, producing a new list.
+    map (+3) [1,5,3,1,6]    ->    [4,8,6,4,9]
+    map (*) [0..]           ->    [(0*),(1*),(2*),(3*),(4*),(5*)...]
+      (map (*) [0..]) !! 100        ->    (100*)
+      ((map (*) [0..]) !! 100) 4    ->    400
+    map fst [(1,2),(3,5),(6,3),(2,6),(2,5)]     ->    [1,3,6,2,2]
+#Filter 
+    filter :: (a -> Bool) -> [a] -> [a]
+    filter _ [] = []
+    filter p (x:xs)
+    | p x = x : filter p xs
+    | otherwise = filter p xs
+  filter takes a predicate and a list, and then returns the list of elements in the list that satisfy the predicate.
+  a predicate is a function that tells whether something is true or not (a function that returns a boolean value)
+    filter (==3) [1,2,3,4,5]    ->    [3]
+    filter even [1..10]         ->    [2,4,6,8,10]
+    let notNull x = not (null x) in filter notNull [[1,2,3], [], [3,4,5], [2,2], [], [], []]    ->    [[1,2,3],[3,4,5],[2,2]]
+    filter (`elem` ['A'..'Z']) "i lauGh At You BecAuse u r aLL the Same"    ->    "GAYBALLS"
+#Fold (reduce)
+  foldl (left fold) function folds the list up from the left side
+  foldr folds the list up from the right side
+    sum :: (Num a) => [a] -> a
+    sum xs = foldl (\acc x -> acc + x) 0 xs
+#Lambdas
+  #basic
+    (\parameter1 parameter2 -> function_body)
+    (\xs -> length xs > 15)
+    (\a b -> a+b) 1 2   ->    3
+  #with pattern matching
+    map (\(a,b) -> a + b) [(1,2),(3,5),(6,3),(2,6),(2,5)]

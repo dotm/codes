@@ -1,4 +1,4 @@
-Array.prototype.isEmpty = function(){return this.length === 0}
+Array.prototype.isEmpty = function(){return this.length === 0;};
   
 // Merge (for merge sort)
 // Take 2 array as input
@@ -37,18 +37,19 @@ function mergeSort(array){
   
   // Divide the array evenly into 2 parts
   var midPoint = Math.floor( array.length/2 );
-  var topArray = array.splice(midPoint)
-  var bottomArray = array
+  var topArray = array.splice(midPoint);
+  var bottomArray = array;
   
   // Call merge sort on both parts
-  topArray = mergeSort(topArray)
-  bottomArray = mergeSort(bottomArray)
+  topArray = mergeSort(topArray);
+  bottomArray = mergeSort(bottomArray);
   
   // Merge the results of the merge sort executed on both parts
-  var sortedArray = merge(topArray, bottomArray)
+  var sortedArray = merge(topArray, bottomArray);
   
   // Return the sorted result
-  return sortedArray
+  return sortedArray;
 }
 
-console.log(mergeSort([6,11,2,8,99,0,-1,0.1]))
+mergeSort([6,11,2,8,99,0,-1,0.1]);
+// console.log();

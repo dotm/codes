@@ -88,32 +88,32 @@ Supported Data Type
   #Prettify output: db.COLLECTION_NAME.find().pretty()
   #find one: db.COLLECTION_NAME.findOne()
   
-#Where Clause
+#Where Clause (Predicate)
   #Equality: {<key>:<value>}
     db.mycol.find({"by":"tutorials point"})
-      := where by = 'tutorials point'
+      := WHERE by = 'tutorials point'
   #Less Than: {<key>:{$lt:<value>}}
     db.mycol.find({"likes":{$lt:50}})
-      := where likes < 50
+      := WHERE likes < 50
   #Less Than Equals: {<key>:{$lte:<value>}}
     db.mycol.find({"likes":{$lte:50}})
-      := where likes <= 50
+      := WHERE likes <= 50
   #Greater Than: {<key>:{$gt:<value>}}
     db.mycol.find({"likes":{$gt:50}})
-      := where likes > 50
+      := WHERE likes > 50
   #Greater Than Equals: {<key>:{$gte:<value>}}
     db.mycol.find({"likes":{$gte:50}})
-      := where likes >= 50
+      := WHERE likes >= 50
   #Not Equals: {<key>:{$ne:<value>}}
     db.mycol.find({"likes":{$ne:50}})
-      := where likes != 50
+      := WHERE likes != 50
 #AND
   db.COLLECTION_NAME.find({key1:value1, key2:value2})
 #OR
   db.COLLECTION_NAME.find({ $or: [ {key1: value1}, {key2:value2} ] })
   
 #Projection (selecting only the necessary data)
-    db.mycol.find({},{"title":1,_id:0})   #show title, hide _id
+    db.mycol.find({where clause a.k.a predicate goes here},{"title":1,_id:0})   #show title, hide _id
   the 1 will specify what fields should be shown
     _id will default to shown (if you want to hide it, you must explicitly specify it)
   the 0 will specify what fields should be hidden
@@ -206,3 +206,10 @@ var address = db[dbRef.$ref].findOne({"_id":(dbRef.$id)})
     $addToSet
     $first    #use sort before using this aggregation
     $last     #use sort before using this aggregation
+  #with match
+    db.mycol.aggregate([
+      {$match : {predicate}},
+      {$group : 
+        {_id : "$user",
+        posts : {
+          $sum : 1}}}])

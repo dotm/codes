@@ -124,11 +124,12 @@ set -o vi
 export PATH="$HOME/.rbenv/bin:$PATH"
 eval "$(rbenv init -)"
 export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"
+# insert node modules to PATH
+export PATH="$HOME/.npm-global/bin:$PATH"
 
 # shortcut to important folders
 alias code="cd /mnt/c/Users/y6326/Dropbox/Codes"
 alias work="cd /mnt/c/Workspace"
-alias mp3="cd /mnt/c/Users/y6326/Desktop/Music\ Bunker"
 alias site="cd /mnt/c/Users/y6326/Desktop/Personal\ Site"
 
 # open bashrc

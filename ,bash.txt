@@ -92,7 +92,52 @@
     -R    recursive
     -s    show size
     -h    show human readable size (used with -s or -l)
+#ls -l output explained
+    drwxrwxrwx 0 root root 4096 Apr 14 12:04 Documents
+    -rw-r--r-- 1 root root  767 Jan  4 04:40 netconfig
+  first word:
+    first character is file type flag:
+      - means file
+      d means directory
+      l means link
+    first rwx: owner's permission to Read, Write, and eXecute
+    second rwx: group member's permission to Read, Write, and eXecute
+    third rwx: other's (everyone else's) permission to Read, Write, and eXecute
+      - means you don't have the permission to do the action
+  second word: number of links to this file
+  third word: file's owner
+  fourth word: the group to whom the file belongs
+  fifth word: file size in blocks
+  sixth-ninth(penultimate) word: file mtime (last modified date and time)
+  tenth (final) word: file name
   
+#Changing file permissions using chmod
+    chmod options permissions file name
+    chmod u=rwx,g=rx,o=r filename
+  u means user
+  g means group
+  o means other
+  = means set the permissions exactly like this
+  r means read
+  w means write
+  x means execute
+#Changing the owner and owning group of files using chown
+    chown [OPTION]... [OWNER][:[GROUP]] FILE...
+  Set the owner of file file.txt to admin: chown admin file.txt
+  Recursively grant ownership of the directory /files/work, and all files and subdirectories within it to admin: chown -R admin /files/work
+  If only an owner (a user name or numeric user ID) is given, 
+    that user is made the owner of each given file, and the files' group is not changed.
+  If the owner is followed by a colon and a group name (or numeric group ID), with no spaces between them,
+    the group ownership of the files is changed as well.
+  If a colon but no group name follows the user name,
+    that user is made the owner of the files and the group of the files is changed to that user's login group.
+  If the colon and group are given, but the owner is omitted,
+    only the group of the files is changed;
+    in this case, chown performs the same function as chgrp.
+  If only a colon is given, or if the entire operand is empty,
+    neither the owner nor the group is changed.
+#Changing the group ownership of files or directories chgrp
+
 #Searching Files and Directory
   #find [list of dirs] [option(s) and test(s)] [action(s)]
     get a complete list of files recursively (including relative paths)

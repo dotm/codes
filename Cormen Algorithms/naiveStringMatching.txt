@@ -1,0 +1,9 @@
+// Naive String Matching
+  // if string or matcher is empty, return -1
+  // check if any character in string match the first character of matcher
+    // if there is a match
+      // check if the string match all character in the matcher
+        // if the index currently checked is outside the string index (overflow), return -1
+        // if any character doesn't match, go back to checking if any character in string match the first character of matcher
+      // if all the character in the matcher match, return the index of the string character that match the first character of the matcher
+  // if no match detected, return -1

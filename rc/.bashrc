@@ -127,10 +127,12 @@ export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"
 # insert node modules to PATH
 export PATH="$HOME/.npm-global/bin:$PATH"
 
+# shortcut to open PowerShell in current directory
+alias p="/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe"
 # shortcut to important folders
 alias code="cd /mnt/c/Users/y6326/Dropbox/Codes"
 alias work="cd /mnt/c/Workspace"
-alias site="cd /mnt/c/Users/y6326/Desktop/Personal\ Site"
+alias site="cd /mnt/c/Users/y6326/Desktop/Site"
 
 # open bashrc
 alias brc="vim ~/.bashrc"

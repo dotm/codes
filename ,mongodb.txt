@@ -113,7 +113,8 @@ Supported Data Type
   db.COLLECTION_NAME.find({ $or: [ {key1: value1}, {key2:value2} ] })
   
 #Projection (selecting only the necessary data)
-    db.mycol.find({where clause a.k.a predicate goes here},{"title":1,_id:0})   #show title, hide _id
+    db.mycol.find({},{"title":1,_id:0})   #select all documents in mycol collection, show title, hide _id
+    db.mycol.find({where clause a.k.a predicate goes here},{"title":1,_id:0})
   the 1 will specify what fields should be shown
     _id will default to shown (if you want to hide it, you must explicitly specify it)
   the 0 will specify what fields should be hidden

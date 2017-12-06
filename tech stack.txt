@@ -1,22 +1,7 @@
-[Note: delete things in bracket and before question mark?]
-
 # Yoshua Elmaryono
 yoshua.elmaryono@gmail.com
 083897020226 (WhatsApp available)
 github.com/dotm
-
-Dalam rangka ... saya mengajukan CV ini kepada ... ini untuk dipertimbangkan oleh Bapak/Ibu.
-[Keterangan-keterangan tambahan mengenai tujuan]
-
-## Education
-Undergraduate Bachelor (Sarjana/S1) in University of Indonesia
-  Major: Business Administration
-  Minor: Finance
-  GPA  :
-Currently learning programming (full-stack web development) as a hobby since February 2015
-
-## Projects
-Refer to online portfolio for source code and live projects: https://dotm.github.io/frontend_portfolio/
 
 ## Languages and Technology Stack
 Asterisks (*) means I'm proficient enough with said language or technology, so that I can use it in a professional setting without requiring familiarization. Question mark (?) means I'm still experimenting with it
@@ -37,11 +22,12 @@ Static Site Generator: Jekyll on GitHub Pages
 Other: HTTP, DNS, IP, Client-Server Model, DOM, Ajax, JSON, SQL, Node
 
 ### [Specialization]
-Front-End Development Technology Stack:
+Full-Stack Web Development Technology Stack:
   - HTML*
     - Preprocessor: Pug.js
     - Templating: handlebar.js
     - Validator
+    - Minificator
   - CSS*
     - Normalize/Reset: normalize.css
     - Framework: Twitter Bootstrap
@@ -52,13 +38,14 @@ Front-End Development Technology Stack:
     - Libraries:
       - jQuery* UI Framework
       - underscore.js
-      - Jasmine Test Framework
     - Framework: React?
-    - Preprocessor/Transpiler: CoffeeScript?, TypeScript?
-    - Lint
+    - Testing: 
+    - Preprocessor/Transpiler: ES6, CoffeeScript?, TypeScript?
+    - Linter
     - Minificator
-  - Package Manager: npm, bower
+  - Package Manager: npm, bower?
   - Build System/Task Runner: grunt?
+  - Bundler: Webpack
   - Adobe Photoshop
 
 ## Just Skip This

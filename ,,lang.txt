@@ -7,8 +7,8 @@ Comments
   Multi-line
 Input/Output
   String input
-    Multi-line string input
   String output
+    Multi-line string output
   Serialization
   Deserialization
   File I/O
@@ -20,14 +20,15 @@ Date and Time
 
 #Etc.
 Reserved keyword
+  Boolean value
 Data types
 Type reflection (find data types of a variable)
 Type conversion
 Operators
-  Arithmetic
-  Boolean/Logical
-  Comparators (Comparison operator)
-  Bitwise operator
+  Arithmetic operators
+  Boolean/Logical operators
+  Comparison operators
+  Bitwise operators
   Advanced mathematic
     random number generator
     max
@@ -195,6 +196,7 @@ Class
   Creating class with inheritance
     Attribute and method overriding
     Access superclass attribute and method
+  Using interface
   Reflection (list all attributes or methods)
   
 Nested class

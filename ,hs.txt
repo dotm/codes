@@ -140,6 +140,13 @@ let can NOT be used when using copmiler
 #Operation on nested list
   zipWith (zipWith (*)) [[1,2,3],[3,5,6],[2,3,4]] [[3,2,2],[3,4,5],[5,4,3]]   ->    [[3,4,6],[9,20,30],[10,12,12]]
   map (map (^2)) [[1,2],[3,4,5,6],[7,8]]    ->    [[1,4],[9,16,25,36],[49,64]]
+#takeWhile function
+    takeWhile (<3) [0,1,2,3,4]    ->    [0,1,2]
+  takes a predicate and a list
+    and goes from the beginning of the list
+    and returns its elements while the predicate holds true.
+      Once an element is found for which the predicate doesn't hold, it stops.
+  takeWhile works well with infinite lists
 
 #Ranges
     [0..3]      -> [0,1,2,3]
@@ -578,9 +585,16 @@ quicksort (x:xs) =
     is either filtering something several times or joining the predicates with the logical && function.
 #Fold (reduce)
   fold takes a binary function, a starting value (accumulator), and a list to fold up.
+  the accumulator usually use the identity of the operation used in the binary function
   the binary function itself takes two parameters
     which is the accumulator and the first (or last) element (current element)
     and it produces a new accumulator
+  many function can be defined using both foldl or foldr
+    choose one implementation that is more performant or readable
+  we usually use right folds when we're building up new lists from a list (even though we can also use foldl)
+    e.g. the first function below is more performant (less expensive) than the second one:
+      map f xs = foldr (\x acc -> f x : acc) [] xs
+      map f xs = foldl (\acc x -> acc ++ [f x]) [] xs
 #Lambdas
     Lambdas are basically anonymous functions that are used because we need some functions only once.
     Normally, we make a lambda with the sole purpose of passing it to a higher-order function.
@@ -592,7 +606,12 @@ quicksort (x:xs) =
       often use lambdas where they don't need to.
         e.g. using (map (\x -> x + 3)[1,6,3,2]) instead of (map (+3)[1,6,3,2])
       but it's OK to use lambda instead of partial application if it makes your code more readable
-      
+#Operator's associativity
+  left-associative: the operation is evaluated left to right
+    e.g. usual function application with space
+  left-associative: the operation is evaluated right to left
+    e.g. function composition
+
 #Currying infix function
     divideByTen :: (Floating a) => a -> a
     divideByTen = (/10)
@@ -631,11 +650,7 @@ quicksort (x:xs) =
     filter even [1..10]         ->    [2,4,6,8,10]
     let notNull x = not (null x) in filter notNull [[1,2,3], [], [3,4,5], [2,2], [], [], []]    ->    [[1,2,3],[3,4,5],[2,2]]
     filter (`elem` ['A'..'Z']) "i lauGh At You BecAuse u r aLL the Same"    ->    "GAYBALLS"
-#Fold (reduce)
-  foldl (left fold) function folds the list up from the left side
-  foldr folds the list up from the right side
-    sum :: (Num a) => [a] -> a
-    sum xs = foldl (\acc x -> acc + x) 0 xs
+
 #Lambdas
   #basic
     (\parameter1 parameter2 -> function_body)
@@ -643,3 +658,253 @@ quicksort (x:xs) =
     (\a b -> a+b) 1 2   ->    3
   #with pattern matching
     map (\(a,b) -> a + b) [(1,2),(3,5),(6,3),(2,6),(2,5)]
+#Fold (reduce)
+    (fold binary_function accumulator list)
+  #foldl: folds the list up from the left side
+    sum :: (Num a) => [a] -> a
+    sum xs = foldl (\acc x -> acc + x) 0 xs
+  #foldr: folds the list up from the right side
+    map :: (a -> b) -> [a] -> [b]
+    map f xs = foldr (\x acc -> f x : acc) [] xs    #notice that the order of x and acc in the binary function is swapped than in foldl
+  #foldl1 and foldr1
+    foldl1 and foldr1 functions work much like foldl and foldr,
+      only you don't need to provide them with an explicit starting value.
+    they assume the first (or last) element of the list to be the starting value
+      and then start the fold with the element next to it.
+    since they depend on the lists they fold up having at least one element,
+      they cause runtime errors if called with empty lists.
+    if a function doesn't make sense when given an empty list,
+      you can probably use a foldl1 or foldr1 to implement it.
+#Scan
+    scanl (+) 0 [3,5,2,1]         ->    [0,3,8,10,11]
+    scanr (+) 0 [3,5,2,1]         ->    [11,8,3,1,0]
+    scanl (flip (:)) [] [3,2,1]   ->    [[],[3],[2,3],[1,2,3]]
+  scanl and scanr are like foldl and foldr,
+    only they report all the intermediate accumulator states in the form of a list.
+  When using a scanl, the final result will be in the last element of the resulting list
+    while a scanr will place the result in the head.
+  there are also scanl1 and scanr1, which are analogous to foldl1 and foldr1.
+
+#The $ function (a.k.a function application)
+    ($) :: (a -> b) -> a -> b
+    f $ x = f x
+  Whereas normal function application (putting a space between two things) has a really high precedence,
+    the $ function has the lowest precedence.
+  Function application with a space is left-associative
+    (so f a b c is the same as ((f a) b) c)),
+    function application with $ is right-associative.
+  Most of the time, $ is a convenience function so that we don't have to write so many parentheses.
+    f (g (h x))
+      f $ g $ h x
+    sum (filter (> 10) (map (*2) [2..10])) 
+      sum $ filter (>10) $ map (*2) [2..10]
+  the existence of $ means that function application can be treated just like another function
+    map ($ 3) [(4+), (10*), (^2), sqrt]   ->    [7.0,30.0,9.0,1.7320508075688772]
+    
+#Function composition
+    (.) :: (b -> c) -> (a -> b) -> a -> c  
+    f . g = \x -> f (g x) 
+  One of the uses for function composition is making functions on the fly to pass to other functions. 
+  You can use lambdas for that, but many times, function composition is clearer and more concise.
+    map (\x -> negate (abs x)) [5,-3,-6,7,-3,2,-19,24]    ->    [-5,-3,-6,-7,-3,-2,-19,-24]
+    map (negate . abs) [5,-3,-6,7,-3,2,-19,24]            ->    [-5,-3,-6,-7,-3,-2,-19,-24]
+    map (\xs -> negate (sum (tail xs))) [[1..5],[3..6],[1..7]]    ->    [-14,-15,-27]
+    map (negate . sum . tail) [[1..5],[3..6],[1..7]]              ->    [-14,-15,-27]
+  To use functions that take several parameters in function composition,
+  we have to partially apply them just so much that each function takes just one parameter.
+    sum (replicate 5 (max 6.7 8.9))
+    := (sum . replicate 5 . max 6.7) 8.9   #compose the function and then apply it with 8.9
+    := sum . replicate 5 . max 6.7 $ 8.9
+  If you want to rewrite an expression with a lot of parentheses by using function composition,
+  start by putting the last parameter of the innermost function after a $ 
+  and then compose all the other function calls,
+  writing them without their last parameter and putting dots between them.
+    replicate 100 (product (map (*3) (zipWith max [1,2,3,4,5] [4,5,6,7,8])))
+    := replicate 100 . product . map (*3) . zipWith max [1,2,3,4,5] $ [4,5,6,7,8]
+  
+#-------------------------------------------------------------------------------------
+#Tacit programming
+  Defining function in point free style (a.k.a pointless style):
+    sum :: (Num a) => [a] -> a
+    sum xs = foldl (+) 0 xs     #not written in point free style
+    sum = foldl (+) 0           #written in point free style
+  Using function composition to write function in point free style:
+    fn x = ceiling (negate (tan (cos (max 50 x))))
+    fn = ceiling . negate . tan . cos . max 50
+  Many times, a point free style is more readable and concise,
+    because it makes you think about functions and what kind of functions composing them results in
+    instead of thinking about data and how it's shuffled around.
+  You can take simple functions and use composition as glue to form more complex functions.
+  However, many times, writing a function in point free style can be less readable if a function is too complex.
+    That's why making long chains of function composition is discouraged.
+    The prefered style is to
+      use let bindings to give labels to intermediary results
+      or split the problem into sub-problems and then put it together
+        so that the function makes sense to someone reading it instead of just making a huge composition chain.
+
+#-------------------------------------------------------------------------------------
+#Modules
+  module is a collection of related functions, types and typeclasses.
+  program is a collection of modules
+    where the main module loads up the other modules
+    and then uses the functions defined in them to do something.
+  Haskell standard library is split into modules
+  the Prelude module is imported by default
+  When you import a module, all the functions that module exports become available in the global namespace
+  You can choose to import all of the functions of a module except a few select ones. 
+    That's often useful when several modules export functions with the same name
+    and you want to get rid of the offending ones.
+  Another way of dealing with name clashes is to do qualified imports.
+  To search for functions or to find out where they're located, use Hoogle.
+  
+#Basic import module: import module_name
+#Selective import
+  import Data.List (nub, sort)    #import only nub and sort
+  import Data.List hiding (nub)   #import everything except nub
+#Qualified import: import qualified Data.Map
+  This makes it so that if we want to reference Data.Map's filter function,
+    we have to do Data.Map.filter,
+    whereas just filter refers to the normal filter from Prelude
+#Alias for qualified import: import qualified Data.Map as M
+  Now, to reference Data.Map's filter function, we just use M.filter.
+  
+#Data modules
+  see Learn You a Haskell book chapter 7
+  Data.List
+  Data.Char
+  Data.Map
+  Data.Set
+  
+#Making module
+  At the beginning of a module, we specify the module name.
+    If we have a file called Geometry.hs, then we should name our module Geometry.
+  Then, we specify the functions that it exports
+    and after that, we can start writing the functions.
+  In the example below, we have a function that's not exported (rectangleArea)
+#Example:
+  !Geometry.hs
+    module Geometry  
+    ( cubeArea  
+    , cuboidArea  
+    ) where 
+
+    cubeArea :: Float -> Float  
+    cubeArea side = cuboidArea side side side  
+      
+    cuboidArea :: Float -> Float -> Float -> Float  
+    cuboidArea a b c = rectangleArea a b * 2 + rectangleArea a c * 2 + rectangleArea c b * 2  
+      
+    rectangleArea :: Float -> Float -> Float  
+    rectangleArea a b = a * b
+    
+  !ghci
+    import Geometry
+  
+#Making module with submodules
+  Modules can also be given a hierarchical structures.
+  Each module can have a number of sub-modules and they can have sub-modules of their own.
+#Example:
+    make a folder called Geometry. Mind the capital G.
+    In it, we'll place three files: Sphere.hs, Cuboid.hs, and Cube.hs.
+  !Geometry/Sphere.hs
+    module Geometry.Sphere  
+    ( volume  
+    , area  
+    ) where  
+      
+    volume :: Float -> Float  
+    volume radius = (4.0 / 3.0) * pi * (radius ^ 3)  
+      
+    area :: Float -> Float  
+    area radius = 4 * pi * (radius ^ 2)  
+
+#Exporting user-defined type
+  module Shapes   
+  ( Shape                     #don't export any value constructors; use other exported functions (e.g. createBaseCircle or createBaseRect) to make Shape
+  , Shape(Rectangle, Circle)  #export only Rectangle and Circle value constructors
+  , Shape(..)                 #export all value constructors
+  , surface  
+  , nudge  
+  , createBaseCircle  
+  , createBaseRect  
+  )
+#-------------------------------------------------------------------------------------
+#User-defined Types
+  value constructors specify the different values that this type can have
+  Both the type name and the value constructors have to be capital cased.
+  When we write a value constructor,
+    we can optionally add some types (fields) after it
+    and those types define the values it will contain.
+      e.g. data Shape = Circle Float Float Float
+           Float deriving (Show)
+  It's common to use the same name as the type if there's only one value constructor
+    e.g. data Point = Point Float Float deriving (Show)  
+  Value constructors are actually functions
+    that ultimately return a value of a data type
+    fields := parameters
+      :t Circle  
+      Circle :: Float -> Float -> Float -> Shape
+  Since value constructors are functions,
+    we can do functional things to them (map them, partially apply them, etc.)
+      e.g. map (Circle 10 20) [4,5,6,6]   ->    [Circle 10.0 20.0 4.0, Circle 10.0 20.0 5.0, Circle 10.0 20.0 6.0, Circle 10.0 20.0 6.0]
+  We pattern matched against constructors before (all the time actually)
+    when we pattern matched against values like [], False, or 5,
+    only those values didn't have any fields.
+  Not exporting the value constructors of a data types
+    makes them more abstract in such a way that we hide their implementation,
+    and whoever uses our module can't pattern match against the value constructors.
+  
+
+#Using the data keyword to define type
+  data TypeName = Value_constructor fields | Value_constructor fields | Value_constructor fields
+  data Bool = False | True
+  data Shape = Circle Float Float Float | Rectangle Float Float Float Float
+    The Circle value constructor has three fields, which take floats.
+      Here, the first two fields are the coordinates of its center, the third one its radius.
+    The Rectangle value constructor has four fields which accept floats.
+      The first two are the coordinates to its upper left corner and the second two are coordinates to its lower right one.
+#Pattern matching against fields
+  surface :: Shape -> Float
+  surface (Circle _ _ r) = pi * r ^ 2
+  surface (Rectangle x1 y1 x2 y2) = (abs $ x2 - x1) * (abs $ y2 - y1)
+#Deriving type from other types
+  data Shape = Circle Float Float Float
+  Float deriving (Show)
+  
+#Nesting user-defined types
+  data Point = Point Float Float deriving (Show)
+  data Shape = Rectangle Point Point deriving (Show)  
+  surface :: Shape -> Float
+  surface (Rectangle (Point x1 y1) (Point x2 y2)) = (abs $ x2 - x1) * (abs $ y2 - y1)
+  surface (Rectangle (Point 0 0) (Point 100 100))  ->   10000.0
+  
+#Record syntax to define type
+  data Person = Person { firstName :: String  
+                       , lastName :: String  
+                       , age :: Int  
+                       , height :: Float  
+                       , phoneNumber :: String  
+                       , flavor :: String  
+                       } deriving (Show) 
+  By using record syntax to create this data type,
+    Haskell automatically made these functions that return the data of that Person: 
+      firstName, lastName, age, height, phoneNumber and flavor.
+      e.g. :t firstName
+           firstName :: Person -> String
+#Calling type defined using record syntax
+  proper ordering is optional with record syntax, as long as we list all of them:
+    data Car = Car {company :: String, model :: String, year :: Int} deriving (Show)
+    ghci> Car {model="Mustang", company="Ford", year=1967}
+    ->  Car {company = "Ford", model = "Mustang", year = 1967}
+    
+#Type parameters
+  A value constructor can take some values parameters and then produce a new value.
+    e.g. the Car constructor takes three values and produces a car value.
+  In a similar manner, type constructors can take types as parameters to produce new types.
+    e.g. data Maybe a = Nothing | Just a
+    'a' is the type parameter
+    Maybe is the type constructor
+    the output can be 'Just a' which is of the type 'Maybe a' or the output can be 'Nothing'
+      So if we pass Char as the type parameter to Maybe, we get a type of Maybe Char (or Nothing).
+  
+  

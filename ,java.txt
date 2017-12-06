@@ -1,0 +1,712 @@
+Source file (.java file) contains classes
+  there can only be one public class per file
+    (since public class must have the same name as source file)
+  multiple private (and default) class is allowed
+
+#The process:
+  create the source file with one entry point : ! MyApp.java
+  compile the source file into bytecode       : $ javac MyApp.java   ->   MyApp.class
+  run the compiled bytecode in JVM            : $ java MyApp              (omit the .class)
+    running a program in java is telling the JVM
+      to load a class (in this case MyApp)
+      start executing its main method
+      keep running until all the code in main is finished
+
+#------------------------------------------------------------------------------------
+#Hello World
+  !MyApp.java
+  public class MyApp{
+    // main method
+    public static void main (String[] args){
+      System.out.print("Hello World!");
+    }
+  }
+
+#------------------------------------------------------------------------------------
+#Comments
+  // single line comment
+  /* multi line comment*/
+  /** comment for javadoc */
+
+#Arithmetic operators: + - * / %
+#Boolean/Logical operators: && || !
+#Comparison operators: == != > >= < <=
+  the == operator with object reference variable will
+    examine equality of references and not values
+
+#Primitive data types: byte short int long float double boolean char
+  #Boolean: true false
+  #Integer:
+    byte  (8bit  -128..127)
+    short (16bit -32768..32767)
+    int   (32bit -2147483648..2147483647)
+    long  (64bit)
+  #Floating point:
+    float (32bit)
+    double (64bit)
+#Reference data types: object array String
+
+#Type casting
+  implicit: MoreGeneralType variable_after_casting = variable_from_more_specific_type
+    int i = 999999999;
+    float f = i;      // implicit type casting
+  explicit: MoreSpecificType variable_after_casting = (MoreSpecificType) variable_from_more_general_type
+    // MountainBike is a child of GenericBike
+    MountainBike myBike = (MountainBike)genericBikeObject;  // explicit type casting
+
+#------------------------------------------------------------------------------------
+#Wrapper Classes
+  The classes below wrap primitive types in an object
+
+#Numeric Wrapper Classes
+    Common: Byte, Integer, Double, Float, Long, Short
+    Other: BigDecimal and BigInteger (used for high-precision calculations), AtomicInteger and AtomicLong (used for multi-threaded applications)
+  All of the above classes are subclass of the Number class
+#Useful methods: https://docs.oracle.com/javase/tutorial/java/data/numberclasses.html
+
+#Character Wrapper Classes: Character
+#Useful methods:
+  boolean isLetter(char ch)
+  boolean isDigit(char ch)
+  boolean isWhitespace(char ch)
+  boolean isUpperCase(char ch)
+  boolean isLowerCase(char ch)
+  char toUpperCase(char ch)
+  char toLowerCase(char ch)
+  toString(char ch)
+
+#Autoboxing and Unboxing [u]
+
+#------------------------------------------------------------------------------------
+#String
+
+#String output:
+  System.out.print("Hello World!");
+  System.out.println("Hello World!");   // print with new line
+#String output with formatting
+    public PrintStream format(String format, Object... args)
+    public PrintStream printf(String format, Object... args)
+  #directly
+    System.out.format("The value of " + "the float variable is " + "%f, " +
+      "integer variable is %d, " + "and the string is %s", floatVar, intVar, stringVar);
+  #from variable
+    String format_string = String.format("The value of " + "the float variable is " + "%f, " +
+      "integer variable is %d, " + "and the string is %s", floatVar, intVar, stringVar);
+    System.out.printf(format_string);
+  Notes:
+    The format string contains plain text as well as format specifiers
+    Format specifiers begin with a percent sign (%) and end with a converter
+    In between the percent sign (%) and the converter you can have optional flags and specifiers
+
+#Create string
+  #String literal: String greeting = "Hello world!";
+  #from array:
+    char[] helloArray = { 'h', 'e', 'l', 'l', 'o', '.' };
+    String helloString = new String(helloArray);
+  #from object: object.toString()
+
+#String Methods
+  #get length: stringVar.length()
+  #concatenation
+    "My name is ".concat("Rumplestiltskin");
+    "Hello," + " world" + "!";
+
+#Convert String to Number
+  Numeric wrapper classes each provide a class method named valueOf that converts a string to an object of that type
+    float a = (Float.valueOf(args[0])).floatValue();
+  Each numeric wrapper classes also provides a parseXXXX() method that can be used to convert strings to primitive numbers
+    float a = Float.parseFloat(float_in_a_string);
+#Convert Number to String
+  String s1 = "" + number;
+  String s2 = String.valueOf(number);
+  String s3 = Integer.toString(integer);
+
+#------------------------------------------------------------------------------------
+#Types of variable
+  local variable: variable available inside a method or code block
+  instance variable (object state): variable available inside an object
+  static variable: variable available inside a class
+  fields: member variables in a class
+  parameters: variables in method declaration
+
+#Variable declaration: type variableName;
+#Variable assignment: type variableName = value;
+  if you have initialize (declare) the variableName: variableName = value;
+#Floating point assignment:
+  double x = 3.123123123;   #Java assumes that floating point without 'f' at the end is a double
+  float x = 3.14f;          #note the f; without the 'f' you'll encounter lossy conversion error (trying to convert double to float)
+
+#------------------------------------------------------------------------------------
+#Modifier
+  #Variable declaration with modifiers: public int x;
+  #Constant declaration: static final int CONSTANT_NAME;
+  #Access modifier:
+    public modifier: accessible from all classes.
+    protected modifier: accessible from subclass even if the subclass is not in the same package
+    default modifier := no modifier := package-private: accessible within the same package
+    private modifier: accessible only within its own class.
+  #Access Levels
+    Modifier        Class    Package    Subclass    World
+    -----------------------------------------------------
+    public           Y        Y          Y           Y
+    protected        Y        Y          Y           N
+    (Default)        Y        Y          N           N
+    private          Y        N          N           N
+#The static modifier
+  static field := class variable
+  static keyword create fields and methods that belong to the class, rather than to an instance of the class.
+  Class methods cannot access instance variables or instance methods directly—they must use an object reference.
+  Class methods cannot use the this keyword as there is no instance for 'this' to refer to.
+#The final modifier
+  final variableName means that the value of this field cannot change
+  final methodName means that the method can't be overridden
+  final className means that the class can't be inherited (and all its methods can't be overridden)
+#The abstract modifier
+  Abstract classes cannot be instantiated, but they can be subclassed.
+  Abstract method is declared without an implementation (without braces, and followed by a semicolon)
+    e.g. abstract return_type methodName (parameter_type parameter_name);
+    methods in an interface are implicitly abstract (unless they're declared static or default)
+
+#------------------------------------------------------------------------------------
+#Enum Types
+    modifier enum EnumTypeName { CONSTANT_NAME, CONSTANT_NAME }
+    public enum Day { SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY }
+  Enum type: a special data type that enables for a variable to be a set of predefined constants.
+  The variable of an enum type must be equal to one of the values that have been predefined for it.
+  Because they are constants, the names of an enum type's fields are in uppercase letters.
+  Java enum types are much more powerful than enum in other languages.
+    The enum declaration defines a class (called an enum type).
+    The enum class body can include methods and other fields.
+#------------------------------------------------------------------------------------
+#Conditional statement
+
+#If statement
+  if (testscore >= 90) {
+      grade = 'A';
+  } else if (testscore >= 80) {
+      grade = 'B';
+  } else {
+      grade = 'C';
+  }
+  if (isMoving) currentSpeed--;
+
+#Ternary operator statement
+  sign = (num >= 0) ? "positive" : "negative";
+
+#Switch statement
+  int day = 3;
+  String dayString;
+  switch (day) {
+    case 1:  dayString = "Sunday";
+             break;
+    case 2:  dayString = "Monday";
+             break;
+    case 3:  dayString = "Tuesday";
+             break;
+    case 4:  dayString = "Wednesday";
+             break;
+    case 5:  dayString = "Thursday";
+             break;
+    case 6:  dayString = "Friday";
+             break;
+    case 7:  dayString = "Saturday";
+             break;
+    default: dayString = "Invalid day";
+             break;
+  }
+#Multiple case in switch statement
+  switch (month) {
+    case 1: case 3: case 5: case 7:
+    case 8: case 10: case 12:
+      numDays = 31;
+      break;
+    case 4: case 6:
+    case 9: case 11:
+      numDays = 30;
+      break;
+    case 2:
+      if (((year % 4 == 0) &&
+           !(year % 100 == 0))
+           || (year % 400 == 0))
+          numDays = 29;
+      else
+          numDays = 28;
+      break;
+    default:
+      System.out.println("Invalid month.");
+      break;
+  }
+
+#------------------------------------------------------------------------------------
+#Loop
+
+#For loop
+  for(int i=1; i<=3; i++){
+    System.out.println("Count is: " + i);
+  }
+#Enhanced for loop (iterate over array)
+  for (type element : array) {
+    statements;
+  }
+
+#While loop
+  while (expression) { statements; }
+  while (true){ /* infinite loop */ }
+
+#Do while loop
+  do {
+    statements
+  } while (expression);
+
+#Break out of loop
+  for (i = 0; i < arrayOfInts.length; i++) {
+    if (arrayOfInts[i] == searchfor) {
+      foundIt = true;
+      break;
+    }
+  }
+#Break with label
+  search:
+    for (i = 0; i < arrayOfInts.length; i++) {
+      for (j = 0; j < arrayOfInts[i].length; j++) {
+        if (arrayOfInts[i][j] == searchfor) {
+          foundIt = true;
+          break search;
+        }
+      }
+    }
+  A labeled break statement terminates an outer statement.
+#Continue to next iteration
+  for (int i = 0; i < max; i++) {
+    // interested only in p's
+    if (searchMe.charAt(i) != 'p')
+      continue;
+
+    // process p's
+    numPs++;
+  }
+#Continue with label
+  test:
+    for (int i = 0; i <= max; i++) {
+      int n = substring.length();
+      int j = i;
+      int k = 0;
+      while (n-- != 0) {
+        if (searchMe.charAt(j++) != substring.charAt(k++)) {
+          continue test;
+        }
+      }
+      foundIt = true;
+        break test;
+    }
+  A labeled continue statement skips the current iteration of an outer loop marked with the given label.
+
+#--------------------------------------------------------------------------------
+#Array
+  in Java array is zero index, homogenous, fixed-length
+  if you want variable length array, check ArrayList
+  #Create array
+    public static void main(String[] args) {
+      // declare an array of integers (declare a variable to refer to an array)
+      int[] anArray;
+
+      // allocate memory for 10 integers (create a new array)
+      anArray = new int[2];
+
+      // initialize first element
+      anArray[0] = 100;
+      // initialize second element
+      anArray[1] = 200;
+    }
+    public static void main(String[] args) {
+      // create and initialize array
+      int[] anArray = {100, 200};
+    }
+  #Copying array with System.arraycopy
+      public static void arraycopy(Object src, int srcPos, Object dest, int destPos, int length)
+      System.arraycopy(copyFromThisObject, 2, copyToThatObject, 0, 7);
+    The two Object arguments specify the array to copy from (source object) and the array to copy to (destination object).
+    The three int arguments specify the
+      starting position in the source array
+      starting position in the destination array
+      number of array elements to copy
+  #Copying array with java.util.Arrays.copyOfRange
+      char[] copyTo = java.util.Arrays.copyOfRange(copyFrom, 2, 9);
+    the second parameter of the copyOfRange method is the initial index of the range to be copied, inclusively
+    the third parameter is the final index of the range to be copied, exclusively
+  #Other methods of java.util.Arrays
+
+#Multidimensional array
+  public static void main(String[] args) {
+    String[][] names = {
+      {"Mr. ", "Mrs. ", "Ms. "},
+      {"Smith", "Jones"}
+    };
+  }
+
+#--------------------------------------------------------------------------------
+#Method
+  the first (or only) word in a method name should be a verb and should be lowercased
+  void return type means the method doesn't return any value
+  method signature: the method's name and the parameter types
+  Java supports overloading methods
+    This means that methods within a class can have the same name
+    if they have different parameter lists (method signature)
+  primitive data types are passed to parameter by value
+    when the method returns, any changes to the parameters are lost
+  reference data types are passed to parameter by value
+    when the method returns, the passed-in reference still references the same object as before
+      (you can't replace the object with another object)
+    However, the values of the object's fields can be changed in the method, if they have the proper access level.
+  When a method uses a class name as its return type,
+    the class of the type of the returned object must be
+    either a subclass of, or the exact class of, the return type.
+  Using interface as return type means the object returned must implement the specified interface.
+  Main method can be used as
+    an entry point for for starting your program
+    a test drive for a class
+  covariant return type: the return type is allowed to vary in the same direction as the subclass.
+    You can override a method and define it to return a subclass of the original method
+  the this keyword
+    Within an instance method or a constructor, 'this' is a reference to the current object — the object whose method or constructor is being called.
+
+#Method declaration
+  modifier return_type methodName (parameter_type parameter_name, parameter_type parameter_name){method body}
+#Variadic method using varargs syntax (...)
+  modifier return_type methodName (parameter_type... parameter_name){method body}
+  // parameter_name here will be an array of parameter_type: parameter_type[]
+  modifier return_type methodName (parameter_type parameter_name, parameter_type... parameter_name){method body}
+
+#Main method definition
+  public static void main (String[] args) {/* code statements here */}
+  public static void main (String... args) {/* code statements here */}
+
+#Lambda Expression [u]
+#Method Reference [u]
+
+#--------------------------------------------------------------------------------
+#Class and Object
+  public class should be in their own source file named after the class name
+  the first letter of a class name should be capitalized
+  constructor: methods that use the name of the class, have no return type, and are invoked to initialize objects from the class blueprint.
+  a class can have many constructor (with different method signature) but only one main method
+  explicit constructor invocation: using the this keyword to call a constructor from another constructor in the same class
+    the invocation of another constructor must be the first line in the constructor
+    you can use this to set default values for any member variable whose initial value is not provided by an argument
+  Object
+    Declaration: associate a variable name to refer to an object type (e.g. MyClass variableName;)
+    Instantiation: The new keyword creates the object by
+      allocating memory for a new object
+      and returning a reference to that memory (returning an object reference)
+      (new MyClass;)
+    Initialization: The new operator call a constructor, which initializes the new object (new MyClass(argument, argument);)
+  null reference: a reference variable (a variable that is associated to an object type) that doesn't reference (point to) any object at all
+  Java runtime environment has a garbage collector that periodically frees the memory used by objects that are no longer referenced
+
+#Declaring Classes (with constructor)
+  modifier class MyClass {      // access modifier here is usually public or default
+    // field declarations
+    modifier type field_name;   // access modifier here is usually private (and can only be accesses using getter and setter)
+    modifier type field_name;
+    // static field (class variable)
+    modifier static type static_field_name;
+
+    // main method
+    public static void main (String[] args) {/* code statements here */}
+
+    // basic constructor example
+    // you need to use the this keyword so the field_name point to the object field and not the parameter_name
+    public Point(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+    // no-argument constructor
+    modifier MyClass(){         // access modifier here is usually public
+      field_name = value;
+      field_name = value;
+    }
+    // explicit constructor invocation
+    modifier MyClass(){         // access modifier here is usually public
+      this(value, value)        // this will call the constructor below with the specified (value, value)
+    }
+    // constructor
+    modifier MyClass(parameter_type parameter_name, parameter_type parameter_name){   // access modifier here is usually public
+      field_name = parameter_name;
+      field_name = parameter_name;
+    }
+
+    // getter
+    public type getFieldName(){
+      // you can do some processing here before returning the field
+      return field_name;
+    }
+
+    // setter
+    public type setFieldName (parameter_type parameter_name){
+      // you can do some processing here before setting the field to a new value
+      field_name = parameter_name;
+    }
+
+    // static method (class method)
+    modifier static staticMethodName(){method body}
+
+    // other method declarations
+  }
+#Initialize class variable
+    You can often provide an initial value for a field in its declaration: private boolean full = false;
+    But, if initialization requires some logic (e.g. error handling or a for loop to fill a complex array), simple assignment is inadequate.
+    Instance variables can be initialized in constructors, where logic can be used.
+    For class variables, you can use static initialization block or private static method
+    The advantage of private static methods is that
+      they can be reused later if you need to reinitialize the class variable.
+  #using static initialization block
+    static URL url;
+    static {
+        try {
+            url = new URL("https://blahblah.com");
+        }
+        catch (MalformedURLException mue) {
+            //log exception or handle otherwise
+        }
+    }
+  #using private static method
+    class MyClass {
+      public static varType myVar = initializeClassVariable();
+      private static varType initializeClassVariable() {
+        // initialization code
+      }
+    }
+#Initialize instance variable
+    There are two alternatives to using a constructor to initialize instance variables:
+      initializer blocks and final methods.
+    Initializer blocks for instance variables look just like static initializer blocks, but without the static keyword
+    The Java compiler copies initializer blocks into every constructor.
+      Therefore, this approach can be used to share a block of code between multiple constructors.
+    A final method cannot be overridden in a subclass.
+      This is especially useful if subclasses might want to reuse the initialization method and you want to prevent overriding
+      The method is final because calling non-final methods during instance initialization can cause problems.
+  #using initialization block
+    {
+        // initialization code
+    }
+  #using final method
+    class MyClass {
+      private varType myVar = initializeInstanceVariable();
+      protected final varType initializeInstanceVariable() {
+        // initialization code
+      }
+    }
+
+#Creating Object
+  Rectangle rectTwo = new Rectangle(0, 0, 50, 100);
+#Read object field
+  #Direct read: objectReference.fieldName
+  #Using accessor method: objectReference.getFieldName()
+    define getter: public type getFieldName(){return field_name;}
+    call getter: new MyClass().getFieldName();
+#Read class field: MyClass.static_field_name
+#Call object method: objectReference.methodName(argument, argument)
+#Call class method: MyClass.staticMethodName(argument, argument)
+#Write field
+  #Direct write: objectReference.fieldName
+  #Using accessor method: objectReference.setFieldName(newValue)
+    define setter: public type setFieldName (parameter_type parameter_name){field_name = parameter_name;}
+    call setter: new MyClass().setFieldName(newValue)
+#Drop object reference manually
+  set the object reference variable to null: objectReference = null
+#Useful methods on Object class
+  protected Object clone() throws CloneNotSupportedException
+    Creates and returns a copy of this object.
+  public boolean equals(Object obj)
+    Indicates whether some other object is "equal to" this one.
+  protected void finalize() throws Throwable
+    Called by the garbage collector on an object when garbage
+    collection determines that there are no more references to the object
+  public final Class getClass()
+    Returns the runtime class of an object.
+  public int hashCode()
+    Returns a hash code value for the object.
+  public String toString()
+    Returns a string representation of the object.
+
+#Abstract class
+  Abstract classes cannot be instantiated, but they can be subclassed
+  If a class includes abstract methods, then the class itself must be declared abstract
+  When an abstract class is subclassed,
+    the subclass usually provides implementations for all of the abstract methods in its parent class.
+    if it does not, then the subclass must also be declared abstract.
+#Abstract class vs. interface
+  with abstract classes, you can
+    declare fields that are not static and final,
+    define public, protected, and private concrete methods.
+  with interfaces,
+    all fields are automatically public, static, and final,
+    all methods that you declare or define (as default methods) are public.
+  you can extend only one class (abstract or not), but you can implement any number of interfaces.
+
+#Nested class
+    class OuterClass {
+        ...
+        static class StaticNestedClass {
+            ...
+        }
+        // non-static nested classes are called inner classes
+        class InnerClass {
+            ...
+        }
+    }
+  Non-static nested classes (inner classes) have access to other members of the enclosing class, even if they are declared private.
+  Static nested classes do not have access to other members of the enclosing class
+  a nested class can be declared private, public, protected, or package private
+    in contrast, outer classes can only be declared public or package private
+#Shadowing
+  the declaration of a type in a particular scope shadows the declaration of the enclosing scope (with the same name)
+  you cannot refer to a shadowed declaration by its name alone (you must use qualified name)
+#Static nested class
+    like static class methods, a static nested class
+      cannot refer directly to instance variables or methods defined in its enclosing class
+      it can use them only through an object reference
+    static nested class interacts with the instance members of its outer class (and other classes) just like any other top-level class
+      a static nested class is behaviorally a top-level class that has been nested in another top-level class for packaging convenience
+    As with instance methods and variables, an inner class is associated with an instance of its enclosing class and has direct access to that object's methods and fields. Also, because an inner class is associated with an instance, it cannot define any static members itself.
+  #Accessing static nested class: OuterClass.StaticNestedClass
+#Inner class
+    an inner class is associated with an instance of its enclosing class, and so
+      has direct access to that object's methods and fields
+      cannot define any static members, static initializers, or member interfaces itself
+    Objects that are instances of an inner class exist within an instance of the outer class
+    To instantiate an inner class, you must first instantiate the outer class.
+      Then, create the inner object within the outer object with this syntax:
+        OuterClass.InnerClass innerObject = outerObject.new InnerClass();
+    two special kinds of inner classes: local classes and anonymous classes
+#Local class: class defined inside a block
+#Anonymous Classes: nameless local class
+  #Creating anonymous class
+      HelloWorld frenchGreeting = new HelloWorld() {
+        String name = "tout le monde";
+        public void greet() {
+          greetSomeone("tout le monde");
+        }
+        public void greetSomeone(String someone) {
+          name = someone;
+          System.out.println("Salut " + name);
+        }
+      };
+    The anonymous class expression consists of the following:
+      The new operator
+      The name of an interface to implement or a class to extend.
+      Parentheses that contain the arguments to a constructor, just like a normal class instance creation expression.
+        Note: When you implement an interface, there is no constructor, so you use an empty pair of parentheses.
+      A body, which is a class declaration body.
+        More specifically, in the body, method declarations are allowed but statements are not.
+
+#------------------------------------------------------------------------------------
+#Inheritance
+  A subclass inherits all the members (fields, methods, and nested classes) of its superclass.
+  Constructors are not members, so they are not inherited by subclasses,
+    but the constructor of the superclass can be invoked from the subclass.
+  An instance method in a subclass with the same signature and return type
+    as an instance method in the superclass OVERRIDES the superclass's method.
+  If a subclass defines a static method with the same signature as a static method in the superclass,
+    then the method in the subclass HIDES the one in the superclass
+    (you can still use the superclass's static method using superclass.methodName).
+
+  class MyClass extends MySuperClass {
+    modifier MyClass(parameter_type parameter_name, parameter_type parameter_name){
+      // you CAN'T add anything here. superclass constructor invocation must be in first line
+      super(parameter_name, parameter_name)   // this will call the constructor of MySuperClass
+      // you can add logic here
+    }
+    modifier methodName(){
+      super.methodName()                      // this will call MySuperClass.methodName()
+    }
+  }
+
+#------------------------------------------------------------------------------------
+#Interface
+  interface is a reference type, similar to a class, that can contain ONLY
+    constants, method signatures, default methods, static methods, and nested types.
+  The only methods that have implementations are default and static methods.
+  Interfaces cannot be instantiated—only implemented by classes or extended by other interfaces.
+  When you define a new interface, you are defining a new reference data type.
+    An interface name can be used anywhere a type can be used.
+  If you want to add additional methods to a production interface, you have several options.
+    You could create a new interface that extends the existing interface
+    You can define your new methods as default methods
+      you must provide an implementation for default methods
+    You could also define new static methods to existing interfaces
+  When you extend an interface that contains a default method, you can do the following:
+    not mention the default method at all, which lets your extended interface inherit the default method.
+    redeclare the default method, which makes it abstract.
+    redefine the default method, which overrides it.
+  Default vs static method
+    Default methods can be overriden in implementing class, while static cannot.
+    Static method belongs to the interface (and not to the concrete class)
+
+#Defining Interface
+  modifier interface InterfaceName {
+    return_type abstractMethodName (parameter_type parameter_name, parameter_type parameter_name);
+    static public return_type staticMethodName (parameter_type parameter_name, parameter_type parameter_name){method body}
+    default public return_type defaultMethodName (parameter_type parameter_name, parameter_type parameter_name){method body}
+  }
+#Extending Interface
+  modifier interface InterfaceName extends Interface1, Interface2 {/* interface body */}
+#Implementing Interface
+  class MyClass implements Interface, Interface {
+    // implement all things declared in interface body except default and static method
+  }
+#Casting to Interface (interface as type)
+  public Object findLargest(Object object1, Object object2) {
+    Relatable obj1 = (Relatable)object1;    // By casting object1 to a Relatable type, it can invoke the isLargerThan method
+    Relatable obj2 = (Relatable)object2;
+    if ((obj1).isLargerThan(obj2) > 0)
+      return object1;
+    else
+      return object2;
+  }
+
+#Default Method [u]
+
+#------------------------------------------------------------------------------------
+#Annotations
+  Annotations, a form of metadata,
+    provide data about a program that is not part of the program itself.
+    have no direct effect on the operation of the code they annotate.
+  Annotations can be applied to declarations (of classes, fields, methods, etc.)
+    @Override
+    void mySuperMethod() { ... }
+  Annotations can also be applied to the use of types (type annotation)
+    new @Interned MyObject();                                                       // class instance creation expression
+    myString = (@NonNull String) str;                                               // type casting
+    class UnmodifiableList<T> implements @Readonly List<@Readonly T> { ... }        // implements clause
+    void monitorTemperature() throws @Critical TemperatureException { ... }         // thrown exception declaration
+#multi element annotation
+  @AnnotationName(
+    elementName = value,
+    elementName = value
+  )
+  @AnnotationName(elementName = value, elementName = value)
+#one element annotation
+  @AnnotationName(elementName = value)
+  @AnnotationName(value)
+#no element annotation
+  @AnnotationName
+
+#Declaring an Annotation Type (User-Defined Annotation Type)
+  @interface AnnotationName {
+    type elementName();                   // don't forget the ()
+    type elementName() default value;     // using default value
+    String lastModified() default "N/A";
+    String[] reviewers();                 // note the use of array
+  }
+#Using User-Defined Annotation Type
+  @AnnotationName (
+    elementName = value,
+    reviewers = {"Alice", "Bob", "Cindy"} // Note array notation
+  )
+
+#Predefined Annotation Types
+
+#Type Annotations and Pluggable Type Systems
+
+#Repeating Annotations

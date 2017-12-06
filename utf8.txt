@@ -30,6 +30,7 @@
 ⌊⌋ floor
 ⌈⌉ ceiling
 ∫ integral
+ℓ liter
 
 Common: “ ” ‘ ’ – — … ‐ ‒ ° © ® ™ • ½ ¼ ¾ ⅓ ⅔ † ‡ µ ¢ £ € « » ♠ ♣ ♥ ♦ ¿ �
 Math      : ∄ ← ↑ → ↓ ↔ ↕ ↖ ↗ ↘ ↙ ↺ ↻ 

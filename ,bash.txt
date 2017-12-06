@@ -74,6 +74,10 @@
     if you hear a beep, then there's no command or file that match
 
 #---------------------------------------------------------------------------
+#dot files
+  dot files start with dot as a name: .rc
+  dot files is automatically hidden
+  
 #Browsing Files and Directory
   pwd   print working (current) directory
   cd    change directory
@@ -83,7 +87,7 @@
   less  read file
   cat
   ls    list working directory content
-    -a    all (including dot files)
+    -a    all (including hidden dot files)
     -l    verbose / long listing
     -t    sort by time modified (newest first)
     -S    sort by size
@@ -136,6 +140,14 @@
     in this case, chown performs the same function as chgrp.
   If only a colon is given, or if the entire operand is empty,
     neither the owner nor the group is changed.
+#Using binary to chmod
+  chmod u=rwx,g=rx,o=r filename
+    := chmod 754 filename
+  first convert to binary, then to decimal, then concat all three result for all three permissions (user, group, other):
+    rwx -> 111 -> 7
+    rx  -> 101 -> 5
+    r   -> 100 -> 4
+                    -> 754
 #Changing the group ownership of files or directories chgrp
 
 #Searching Files and Directory

@@ -685,7 +685,7 @@ quicksort (x:xs) =
     while a scanr will place the result in the head.
   there are also scanl1 and scanr1, which are analogous to foldl1 and foldr1.
 
-#The $ function (a.k.a function application)
+#The $ function (a.k.a function application operator)
     ($) :: (a -> b) -> a -> b
     f $ x = f x
   Whereas normal function application (putting a space between two things) has a really high precedence,
@@ -699,7 +699,7 @@ quicksort (x:xs) =
     sum (filter (> 10) (map (*2) [2..10])) 
       sum $ filter (>10) $ map (*2) [2..10]
   the existence of $ means that function application can be treated just like another function
-    map ($ 3) [(4+), (10*), (^2), sqrt]   ->    [7.0,30.0,9.0,1.7320508075688772]
+    map ($ 3) [(4+), (10*), (^2), sqrt]   ->    [7, 30, 9, 1.7320508075688772]
     
 #Function composition
     (.) :: (b -> c) -> (a -> b) -> a -> c  

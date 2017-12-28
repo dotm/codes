@@ -23,105 +23,6 @@ Source file (.java file) contains classes
   }
 
 #------------------------------------------------------------------------------------
-#Comments
-  // single line comment
-  /* multi line comment*/
-  /** comment for javadoc */
-
-#Arithmetic operators: + - * / %
-#Boolean/Logical operators: && || !
-#Comparison operators: == != > >= < <=
-  the == operator with object reference variable will
-    examine equality of references and not values
-
-#Primitive data types: byte short int long float double boolean char
-  #Boolean: true false
-  #Integer:
-    byte  (8bit  -128..127)
-    short (16bit -32768..32767)
-    int   (32bit -2147483648..2147483647)
-    long  (64bit)
-  #Floating point:
-    float (32bit)
-    double (64bit)
-#Reference data types: object array String
-
-#Type casting
-  implicit: MoreGeneralType variable_after_casting = variable_from_more_specific_type
-    int i = 999999999;
-    float f = i;      // implicit type casting
-  explicit: MoreSpecificType variable_after_casting = (MoreSpecificType) variable_from_more_general_type
-    // MountainBike is a child of GenericBike
-    MountainBike myBike = (MountainBike)genericBikeObject;  // explicit type casting
-
-#------------------------------------------------------------------------------------
-#Wrapper Classes
-  The classes below wrap primitive types in an object
-
-#Numeric Wrapper Classes
-    Common: Byte, Integer, Double, Float, Long, Short
-    Other: BigDecimal and BigInteger (used for high-precision calculations), AtomicInteger and AtomicLong (used for multi-threaded applications)
-  All of the above classes are subclass of the Number class
-#Useful methods: https://docs.oracle.com/javase/tutorial/java/data/numberclasses.html
-
-#Character Wrapper Classes: Character
-#Useful methods:
-  boolean isLetter(char ch)
-  boolean isDigit(char ch)
-  boolean isWhitespace(char ch)
-  boolean isUpperCase(char ch)
-  boolean isLowerCase(char ch)
-  char toUpperCase(char ch)
-  char toLowerCase(char ch)
-  toString(char ch)
-
-#Autoboxing and Unboxing [u]
-
-#------------------------------------------------------------------------------------
-#String
-
-#String output:
-  System.out.print("Hello World!");
-  System.out.println("Hello World!");   // print with new line
-#String output with formatting
-    public PrintStream format(String format, Object... args)
-    public PrintStream printf(String format, Object... args)
-  #directly
-    System.out.format("The value of " + "the float variable is " + "%f, " +
-      "integer variable is %d, " + "and the string is %s", floatVar, intVar, stringVar);
-  #from variable
-    String format_string = String.format("The value of " + "the float variable is " + "%f, " +
-      "integer variable is %d, " + "and the string is %s", floatVar, intVar, stringVar);
-    System.out.printf(format_string);
-  Notes:
-    The format string contains plain text as well as format specifiers
-    Format specifiers begin with a percent sign (%) and end with a converter
-    In between the percent sign (%) and the converter you can have optional flags and specifiers
-
-#Create string
-  #String literal: String greeting = "Hello world!";
-  #from array:
-    char[] helloArray = { 'h', 'e', 'l', 'l', 'o', '.' };
-    String helloString = new String(helloArray);
-  #from object: object.toString()
-
-#String Methods
-  #get length: stringVar.length()
-  #concatenation
-    "My name is ".concat("Rumplestiltskin");
-    "Hello," + " world" + "!";
-
-#Convert String to Number
-  Numeric wrapper classes each provide a class method named valueOf that converts a string to an object of that type
-    float a = (Float.valueOf(args[0])).floatValue();
-  Each numeric wrapper classes also provides a parseXXXX() method that can be used to convert strings to primitive numbers
-    float a = Float.parseFloat(float_in_a_string);
-#Convert Number to String
-  String s1 = "" + number;
-  String s2 = String.valueOf(number);
-  String s3 = Integer.toString(integer);
-
-#------------------------------------------------------------------------------------
 #Types of variable
   local variable: variable available inside a method or code block
   instance variable (object state): variable available inside an object
@@ -177,6 +78,139 @@ Source file (.java file) contains classes
   Java enum types are much more powerful than enum in other languages.
     The enum declaration defines a class (called an enum type).
     The enum class body can include methods and other fields.
+    
+#------------------------------------------------------------------------------------
+#Comments
+  // single line comment
+  /* multi line comment*/
+  /** comment for javadoc */
+
+#Arithmetic operators: + - * / %
+#Boolean/Logical operators: && || !
+#Comparison operators: == != > >= < <=
+  the == operator with object reference variable will
+    examine equality of references and not values
+
+#Primitive data types: byte short int long float double boolean char
+  #Boolean: true false
+  #Integer:
+    byte  (8bit  -128..127)
+    short (16bit -32768..32767)
+    int   (32bit -2147483648..2147483647)
+    long  (64bit)
+  #Floating point:
+    float (32bit)
+    double (64bit)
+#Reference data types: object array String
+
+#Type casting
+  implicit: MoreGeneralType variable_after_casting = variable_from_more_specific_type
+    int i = 999999999;
+    float f = i;      // implicit type casting
+  explicit: MoreSpecificType variable_after_casting = (MoreSpecificType) variable_from_more_general_type
+    // MountainBike is a child of GenericBike
+    MountainBike myBike = (MountainBike)genericBikeObject;  // explicit type casting
+
+#------------------------------------------------------------------------------------
+#Wrapper Classes
+  The classes below wrap primitive types in an object
+    Primitive type	| Wrapper class
+    ----------------|---------------
+    boolean	        | Boolean
+    byte	          | Byte
+    char	          | Character
+    float	          | Float
+    int	            | Integer
+    long	          | Long
+    short	          | Short
+    double	        | Double
+
+#Autoboxing and Unboxing
+  Autoboxing: automatic conversion the compiler makes between primitive types and their corresponding object wrapper classes
+    e.g. converting an int to an Integer, a double to a Double, etc.
+  If the conversion goes the other way, this is called unboxing.
+    e.g. Integer -> int
+
+#Numeric Wrapper Classes
+    Common: Byte, Integer, Double, Float, Long, Short
+    Other: BigDecimal and BigInteger (used for high-precision calculations), AtomicInteger and AtomicLong (used for multi-threaded applications)
+  All of the above classes are subclass of the Number class
+#Useful methods: https://docs.oracle.com/javase/tutorial/java/data/numberclasses.html
+
+#Character Wrapper Classes: Character
+#Useful methods:
+  boolean isLetter(char ch)
+  boolean isDigit(char ch)
+  boolean isWhitespace(char ch)
+  boolean isUpperCase(char ch)
+  boolean isLowerCase(char ch)
+  char toUpperCase(char ch)
+  char toLowerCase(char ch)
+  toString(char ch)
+
+#------------------------------------------------------------------------------------
+#String
+  String is a zero-indexed, immutable list of characters
+#StringBuilder
+  StringBuilder objects are like String objects, except that they can be modified.
+  String should always be used unless StringBuilder offer simpler code or better performance.
+  A string can be converted to a string builder using a StringBuilder constructor.
+  A string builder can be converted to a string with the toString() method.
+
+#String output:
+  System.out.print("Hello World!");
+  System.out.println("Hello World!");   // print with new line
+#String output with formatting
+    public PrintStream format(String format, Object... args)
+    public PrintStream printf(String format, Object... args)
+  #directly
+    System.out.format("The value of " + "the float variable is " + "%f, " +
+      "integer variable is %d, " + "and the string is %s", floatVar, intVar, stringVar);
+  #from variable
+    String format_string = String.format("The value of " + "the float variable is " + "%f, " +
+      "integer variable is %d, " + "and the string is %s", floatVar, intVar, stringVar);
+    System.out.printf(format_string);
+  Notes:
+    The format string contains plain text as well as format specifiers
+    Format specifiers begin with a percent sign (%) and end with a converter
+    In between the percent sign (%) and the converter you can have optional flags and specifiers
+
+#Create string
+  #String literal: String greeting = "Hello world!";
+  #from array:
+    char[] helloArray = { 'h', 'e', 'l', 'l', 'o', '.' };
+    String helloString = new String(helloArray);
+  #from object: object.toString()
+
+#String Methods
+  #get length: stringVar.length()
+  #concatenation
+    "My name is ".concat("Rumplestiltskin");
+    "Hello," + " world" + "!";
+  #get character at index: "Hello".charAt(0)    // return 'H'
+  #get substring: "Hello world".substring(1,4)  // return "ell"
+  #uppercase: "Hello world".toUpperCase()       // "HELLO WORLD"
+  #lowercase: string.toLowerCase()
+  #trim leading and trailing space: string.trim()
+  #search for character or substring
+    string.indexOf(whatToSearch)                // whatToSearch can be char or String
+    string.lastIndexOf(whatToSearch)
+    string.indexOf(whatToSearch, fromIndex)     // fromIndex is int
+    string.lastIndexOf(whatToSearch, fromIndex)
+    boolean contains(CharSequence s)	          // Returns true if the string contains the specified character sequence
+  #replace character or substring [u]
+  #compare string or substring [u]
+
+#Convert String to Number
+  Numeric wrapper classes each provide a class method named valueOf that converts a string to an object of that type
+    float a = (Float.valueOf(args[0])).floatValue();
+  Each numeric wrapper classes also provides a parseXXXX() method that can be used to convert strings to primitive numbers
+    float a = Float.parseFloat(float_in_a_string);
+#Convert Number to String
+  String s1 = "" + number;
+  String s2 = String.valueOf(number);
+  String s3 = Integer.toString(integer);
+
 #------------------------------------------------------------------------------------
 #Conditional statement
 
@@ -668,6 +702,96 @@ Source file (.java file) contains classes
 #Default Method [u]
 
 #------------------------------------------------------------------------------------
+#Packages
+  the types that comprise a package are known as the package members
+  allowed package members: classes, interfaces, enumerations, and annotation types
+  For convenience, the Java compiler automatically imports two entire packages for each source file:
+    (1) the java.lang package and (2) the current package (the package for the current file).
+  At first, packages appear to be hierarchical, but they are not
+    e.g. java.awt.color, java.awt.font, and other java.awt.xxxx packages are NOT included in the java.awt package
+    the prefix java.awt is used to make the relationship evident, but not to show inclusion.
+      import java.awt.*;        // this will NOT import java.awt.color
+      import java.awt.color.*;
+  
+#Creating a Package
+  To create a package, put a package statement at the top of every source file
+  There can be only one package statement in each source file,
+    and it applies to all types in the file.
+  If you do not use a package statement, your type ends up in an unnamed package.
+!Draggable.java file
+  package graphics;
+  public interface Draggable {/* body */}
+  public abstract class Graphic {/* body */}
+
+#Package Naming Convention
+  Package names are written in lower case to avoid conflict with the names of classes or interfaces.
+  Packages in the Java language itself begin with java. or javax.
+  Companies use their reversed Internet domain name to begin their package names
+    com.example.mypackage for a package named mypackage created by a programmer at example.com
+  Name collisions that occur within a single company need to be handled by convention within that company,
+    e.g. including the region or project name after the company name (com.example.region.mypackage)
+#Legalizing Package Names
+  hyphenated-name.example.org	  ->  org.example.hyphenated_name
+  example.int	                  ->  int_.example
+  123name.example.com	          ->  com.example._123name
+
+#Using Package Members
+  To use a public package member from outside its package, you must do one of the following:
+    Refer to the member by its fully qualified name
+    Import the package member
+      put an import statement at the beginning of the file
+      before any type definitions but after the package statement, if there is one
+    Import the member's entire package
+  #Referring to a Package Member by Its Qualified Name
+    graphics.Rectangle myRect = new graphics.Rectangle();
+  #Importing a Package Member
+    import graphics.Rectangle;
+    Rectangle myRectangle = new Rectangle();
+  #Importing an Entire Package
+    import graphics.*;
+    Circle myCircle = new Circle();
+    Rectangle myRectangle = new Rectangle();
+    
+#Static Import Statement
+  You can use the static import statement to import static members (constants or static method) of a package
+    import static java.lang.Math.PI;
+    import static java.lang.Math.*;
+    
+#Resolve Name Ambiguity
+  if a member in one package shares its name with a member in another package and both packages are imported,
+    you must refer to each member by its qualified name.
+    
+#Managing Source and Class Files
+  Many implementations of the Java platform rely on hierarchical file systems to manage source and class files
+  The qualified name of the package member and the path name to the file are parallel
+    class name – graphics.Rectangle
+    file path – graphics\Rectangle.java
+  by convention a company uses its reversed Internet domain name for its package names
+    class name - com.example.graphics package contains a Rectangle.java source file
+    file path - ....\com\example\graphics\Rectangle.java
+  When you compile a source file, the compiler creates a different output file for each type defined in it.
+    !Rectangle.java file
+      package com.example.graphics;
+      public class Rectangle {}
+      class Helper{}
+    then the compiled files will be located at:
+      <path to the parent directory of the output files>\com\example\graphics\Rectangle.class
+      <path to the parent directory of the output files>\com\example\graphics\Helper.class
+  Like the .java source files, the compiled .class files should be
+    in a series of directories that reflect the package name.
+  However, the path to the .class files does not have to be the same as the path to the .java source files.
+    You can arrange your source and class directories separately, as:
+      <path_one>\sources\com\example\graphics\Rectangle.java
+      <path_two>\classes\com\example\graphics\Rectangle.class
+    By doing this, you can give the classes directory to other programmers without revealing your sources. 
+  The full path to the classes directory, <path_two>\classes,
+    is called the class path, and is set with the CLASSPATH system variable (you can set it in CLI).
+  Both the compiler and the JVM construct the path to your .class files by adding the package name to the class path.
+    CLASSPATH: <path_two>\classes
+    package name: com.example.graphics
+    path to package: <path_two>\classes\com\example\graphics.
+
+#------------------------------------------------------------------------------------
 #Annotations
   Annotations, a form of metadata,
     provide data about a program that is not part of the program itself.
@@ -710,3 +834,175 @@ Source file (.java file) contains classes
 #Type Annotations and Pluggable Type Systems
 
 #Repeating Annotations
+
+#------------------------------------------------------------------------------------
+#Generics
+  type variable is an unqualified identifier
+  generic type (generic class, interface, etc.) declares one or more type variables as type parameters of the class
+  type variable can be any non-primitive type you specify:
+    any class type, any interface type, any array type,
+    or even another type variable.
+      OrderedPair<String, Box<Integer>> p = new OrderedPair<>("primes", new Box<Integer>(...));
+  parameterized type is an instantiation of a generic type with actual type arguments
+  
+#Generic class declaration:
+    class name<T1, T2, ..., Tn> { /* ... */ }
+  The type parameter section, delimited by angle brackets (<>), follows the class name.
+  It specifies the type parameters (a.k.a. type variables) T1, T2, ..., and Tn.
+  the type variable, T, that can be used anywhere inside the class.
+
+#Type Parameter Naming Conventions
+  By convention, type parameter names are single, uppercase letters.
+  The most commonly used type parameter names are:
+    E - Element (used extensively by the Java Collections Framework)
+    K - Key
+    N - Number
+    T - Type
+    V - Value
+    S,U,V etc. - 2nd, 3rd, 4th types
+
+#Example generic class:
+  public class Box<T> {
+    // T stands for "Type"
+    private T t;
+
+    public void set(T t) { this.t = t; }
+    public T get() { return t; }
+  }
+  public interface Pair<K, V> {
+    public K getKey();
+    public V getValue();
+  }
+
+
+#Invoking a Generic Type (Type Parameterization)
+  generic type invocation: replaces T with some concrete value, such as Integer
+    Box<Integer> integerBox;
+  Like any other variable declaration, this code does not actually create a new Box object.
+    It simply declares that integerBox will hold a reference to a "Box of Integer", which is how Box<Integer> is read.
+  generic type invocation is similar to ordinary method invocation, but instead of passing an argument to a method, you are passing a type argument 
+#Instantiating a Generic Type
+    Box<Integer> integerBox = new Box<Integer>();
+    Box<Integer> integerBox = new Box<>();
+  you can replace the type arguments required to invoke the constructor of a generic class
+    with an empty set of type arguments (<>)
+    as long as the compiler can determine, or infer, the type arguments from the context.
+    This pair of angle brackets, <>, is informally called the diamond.
+    
+#Raw Types
+  raw type: a generic type without any type arguments
+    To create a parameterized type of Box<T>, you supply an actual type argument for the formal type parameter T:
+      Box<Integer> intBox = new Box<>();
+    If the actual type argument is omitted, you create a raw type of Box<T>:
+      Box rawBox = new Box();
+
+#Generic Methods
+  modifier <T1, T2, ..., Tn> return_type methodName (parameter_type parameter_name, parameter_type parameter_name){method body}
+  modifier static <T1, T2, ..., Tn> return_type methodName (parameter_type parameter_name, parameter_type parameter_name){method body}
+#Invoking Generic Method
+  #with type witness:
+    <T1, T2, ...>methodName(arguments)
+  #omitting type witness (using type inference):
+    methodName(arguments)
+#Example:
+  public class Util {
+    public static <K, V> boolean compare(Pair<K, V> p1, Pair<K, V> p2) {method body}
+  }
+  Pair<Integer, String> p1 = new Pair<>(1, "apple");
+  Pair<Integer, String> p2 = new Pair<>(2, "pear");
+  boolean same = Util.<Integer, String>compare(p1, p2);
+  boolean same = Util.compare(p1, p2);                    // the types can be left out because of type inference
+
+#Generic Constructors
+  constructors can be generic in both generic and non-generic classes
+#Example:
+    class MyClass<X> {
+      <T> MyClass(T t) {
+        // ...
+      }
+    }
+    MyClass<Integer> myObject = new MyClass<>("");
+  In this example, the compiler infers the type:
+    Integer for the formal type parameter, X, of the generic class MyClass<X>. 
+    String for the formal type parameter, T, of the constructor of this generic class.
+
+#Bounded Type Parameters
+  bounded type parameters restrict the types that can be used as type arguments in a parameterized type
+  extends is used in a general sense to mean either "extends" (as in classes) or "implements" (as in interfaces)
+  bounded type parameters allow you to invoke methods defined in the bounds
+#Declaring bounded type parameters
+    public <U extends Number> void inspect(U u){}
+  To declare a bounded type parameter, list the type parameter's name, followed by the extends keyword, followed by its upper bound
+#Declaring multiple bounds
+    <T extends B1 & B2 & B3>
+  If one of the bounds is a class, it must be specified first (else you get a compile-time error)
+
+#Type Inference
+    Type inference is a Java compiler's ability to look at each method invocation and corresponding declaration
+      to determine the type argument (or arguments) that make the invocation applicable.
+    The inference algorithm determines the types of the arguments
+      and, if available, the type that the result is being assigned, or returned.
+    Finally, the inference algorithm tries to find the most specific type that works with all of the arguments.
+  #in generic methods
+    public class BoxDemo {
+      public static <U> void addBox(U u, java.util.List<Box<U>> boxes) {}
+    }
+    BoxDemo.<Integer>addBox(Integer.valueOf(10), listOfIntegerBoxes);
+    BoxDemo.addBox(Integer.valueOf(20), listOfIntegerBoxes);                // type inference
+  #in instantiation of generic classes
+    Map<String, List<String>> myMap = new HashMap<String, List<String>>();
+    Map<String, List<String>> myMap = new HashMap<>();                      // type inference here must still use <>
+    // unchecked conversion warning (the HashMap() constructor below refers to the HashMap raw type, not the Map<String, List<String>> type)
+    Map<String, List<String>> myMap = new HashMap();
+    
+#Wildcards
+  In generic code, the question mark (?), called the wildcard, represents an unknown type.
+  The wildcard can be used in a variety of situations:
+    as the type of a parameter, field, or local variable;
+    sometimes as a return type (though it is better programming practice to be more specific).
+  The wildcard is never used as a type argument for
+    a generic method invocation, a generic class instance creation, or a supertype.
+#Upper Bounded Wildcards
+  upper bounded wildcard restricts the unknown type to be a specific type or a subtype of that type
+    <? extends UpperBound>
+  #Example:
+    To write the method that works on lists of Number and the subtypes of Number (e.g. Integer, Double, and Float),
+      you would specify: List<? extends Number>.
+    The term List<Number> is more restrictive than List<? extends Number>
+      because the former matches a list of type Number only,
+      whereas the latter matches a list of type Number or any of its subclasses.
+    public static double sumOfList(List<? extends Number> list) {
+      double s = 0.0;
+      for (Number n : list)
+        s += n.doubleValue();
+      return s;
+    }
+#Unbounded Wildcards
+  The unbounded wildcard type is specified using the wildcard character (?), e.g. List<?> (this is called a list of unknown type)
+  There are two scenarios where an unbounded wildcard is a useful approach:
+    If you are writing a method that can be implemented using functionality provided in the Object class.
+    When the code is using methods in the generic class that don't depend on the type parameter. 
+      e.g. List.size or List.clear
+      Class<?> is so often used because most of the methods in Class<T> do not depend on T.
+  #Example:
+    public static void printList(List<?> list) {
+      for (Object elem: list)
+          System.out.print(elem + " ");
+      System.out.println();
+    }
+#Lower Bounded Wildcards
+  lower bounded wildcard restricts the unknown type to be a specific type or a super type of that type
+    <? super LowerBound>
+  #Example:
+    Say you want to write a method that puts Integer objects into a list.
+      To maximize flexibility, you would like the method to work on List<Integer>, List<Number>, and List<Object>
+        - anything that can hold Integer values.
+      you would specify List<? super Integer>.
+    The term List<Integer> is more restrictive than List<? super Integer>
+      because the former matches a list of type Integer only,
+      whereas the latter matches a list of any type that is a supertype of Integer.
+    public static void addNumbers(List<? super Integer> list) {
+      for (int i = 1; i <= 10; i++) {
+        list.add(i);
+      }
+    }

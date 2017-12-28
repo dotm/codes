@@ -1,91 +1,85 @@
-﻿#Intro:
-	(!DOCTYPE html) for document type: html
-	(html) at the start and the end of every html
-	(head), for page (title) etc, and (body), for page body, must be inside	the (html) tag
-	(meta charset) for character coding set used in page: utf-8
-        meta charset should be directly below head so that browser doesn't reparse much text
-        you can use non-ASCII utf-8 character by using: HTML special characters encoding
-            e.g. &#x232b;
-    conditional comment to make HTML suited to a certain version of IE
-        <!--[if IE]><![endif]-->
-        <!--[if IE 9]><![endif]-->
-        <!--[if gte IE 8]>IE 8 or higher<![endif]-->
-        <!--[if lt IE 9]>IE lower than 9<![endif]-->
-        <!--[if !IE]> -->not IE 5-9<!-- <![endif]-->    #note the '-->' in the opening tag
-
+﻿#HTML Element Structure:
+  Basic element:
+    <startTag attribute=value attribute=value> element body </endTag>
+  Empty element:
+    <tag attribute=value attribute=value>
+  Boolean attribute:
+    <tag attribute>
+#Basic HTML Document Structure:
+	<!DOCTYPE html>
+	<html>
+    <head>
+      <title>The Webpage Title </title>
+    </head>
+    <body>
+      page body goes here
+    </body>
+  </html>
+  
 #Basic of writing text:
-    (h#) for header, (p) for paragraph body, (br) for break
+  <h#> for header
+  <p> for paragraph body
+  <br> for break
 #Text emphasis:
-    (em) for weak emphasis, (strong) for strong emphasis
+  <em> for weak emphasis
+  <strong> for strong emphasis
 
 #List:
-    (ol) for ordered list, (ul) for unordered list
-    (li) for the list points
-    <ol>  <li>Math</li> <li>Physics</li> <l>Spanish</li>    </ol>
-
+    <ol>
+      <li>Math</li>
+      <li>Physics</li>
+    </ol>
+  <ol> for ordered list
+  <ul> for unordered list
+  <li> for the list points
 #Definition List:
-	(dl) for definition list
-	use definition terms (dt) followed by definition descriptions (dd) instead of (li)
-	
-	<dl>
-		<dt>HTML</dt>
-			<dd>Abbreviation for HyperText Markup Language - a language used to make web pages.</dd>
-		<dt>Dog</dt>
-			<dd>Any carnivorous animal belonging to the family Canidae.</dd>
-			<dd>The domesticated sub-species of the family Canidae, Canis lupus familiaris.</dd>
-		<dt>Moo juice</dt>		<dt>Cat beer</dt>		<dt>Milk</dt>
-			<dd>A white liquid produced by cows and used for human consumption.</dd>					</dl>
-	
-#Image:
-    (img) for image, no (/img) required
-    src as source, alt as alternative source 
-    use alt="" if you don’t have alternative explanation
-        so that blind people won't hear the image file name as alt
+    <dl>
+      <dt>HTML</dt>
+        <dd>Abbreviation for HyperText Markup Language - a language used to make web pages.</dd>
+      <dt>Dog</dt>
+        <dd>Any carnivorous animal belonging to the family Canidae.</dd>
+        <dd>The domesticated sub-species of the family Canidae, Canis lupus familiaris.</dd>
+      <dt>Moo juice</dt>
+    </dl>
+	<dl> for definition list
+	<dt> for definition terms 
+  <dd> for definition descriptions
+
+#Image (empty element)
     <img src='https://www.kasandbox.org/programming-images/animals/thumbs/komodo-dragon.png' alt='komodo dragon'>
 #Map
-    you can use image map and area tag to create hyperlink inside image
-    coords for rect: (x1,y1) for top left, (x2,y2) for bottom right
-    coords for circle: (x,y) for center and r for radius
-    <area shape="rect" coords="x1,y1,x2,y2" href="link" target="_blank" alt="Lala"/>
-    <area shape="circle" coords="x,y,r" href="link" target="_blank" alt="Lala">
+    <img src="/wp-content/uploads/shapes.png" usemap="shapes-map">
+    <map name="shapes-map">
+      <area shape="rect" title="Square" coords="19,28,222,228" href="square.com" target="_blank" />
+      <area shape="circle" title="Circle" coords="361,132,96" href="circle.com" target="_blank" />
+    </map>
+  you can use image map and area tag to create hyperlink inside image
+    <area shape="rect" coords="x1,y1,x2,y2" href="link when area is clicked" target="_blank" alt="alternative text"/>
+    <area shape="circle" coords="x,y,r" href="link when area is clicked" target="_blank" alt="alternative text">
+  coords for rect: (x1,y1) for top left, (x2,y2) for bottom right
+  coords for circle: (x,y) for center and r for radius
 
 #Creating ID and Class:
-    id and class is an attribute
+  id and class is an attribute
+    <h2 id="summer" class="section-header season">Summer</h2>
 	to select an id use #
-	to select a class use .      
-	You can attribute multiple class to the same element using space ' '
-    
-	<h2 id="summer">Summer</h2>    
-		<style>#summer{background-color: red; color: rgb(255, 255, 0);}</style>
-    <p> <strong class="apples">apples</strong> and <strong class="bananas">bananas</strong>.
-        <strong class="apples bananas">apples and bananas</strong>.            </p>    
-		<style>     .apples{color:red;}
-					.bananas{background-color:yellow;}        </style>
+	to select a class use .
 
-#Hyperlink (Anchor):
-    (a) for hyperlink text, href attrib for html reference
+#Hyperlink (Anchor)
+    <a href='html/reference'>hyperlink text</a>
     absolute path gives the location of a file or directory in reference to a root directory
 	  fully qualified URLs:		<a href="http://www.youtube.com">Youtube</a>
 	  if the the location is on the same server, you can use / as root instead of the server URL
     relative path is a path to a given file or directory starting from another file or directory
 		e.g. <a href="assets/stylesheet.css">Assets</a>		is a relative path from current file
 		e.g. <a href="/assets/stylesheet.css">Assets</a>		is an absolute path from root
-    internal hyperlink (link to the same page) use id attrib
+  internal hyperlink (link to the same page) use id attribute in href
 		<a href="#top">Jump to the top</a>
-    stub URL: an internal hyperlink that goes nowhere
+  stub URL: an internal hyperlink that goes nowhere
         <a href="#">stub link</a>
-    you can use image instead of text as the anchor
-        <a href="https://www.khanacademy.org"><img src="https://www.kasandbox.org/programming-images/cute/Heart.png"></a>
-    add target="_blank" if you want the link to open at new tab
-  #Absolute vs relative path
-    relative links make it very easy to move “chunks” of a site from one location on a web server to another 
-      without having the links break as long as the chunks maintain their relative structure
-    because large, dynamic sites typically have a shared header file and common assets directory, it makes more sense to use absolute links
-    with relative paths, the local site structure doesn’t need to match the remote one; with absolute paths, it does
-    using fully qualified URLs, without manipulating DNS entries, it’s impossible to work locally. 
-      the local files will always point to the remote server
-    using a relative path will make your site respond quicker
-    if you're linking to something off your site, then you must use the absolute path
+  you can use image instead of text as the anchor
+      <a href="https://www.khanacademy.org"><img src="https://www.kasandbox.org/programming-images/cute/Heart.png"></a>
+  add target="_blank" if you want the link to open at new tab
   
 #Table:
     (tr) for each row, (th) as head data entry, (td) for body data entry
@@ -117,27 +111,25 @@
 #---------------------------------------------------------------------------------------------------
 #Audio
   #single-source audio
-	<audio src="music.mp3" type="audio/mpeg" controls autoplay loop preload="auto">
-		Audio element is not supported by your browser
-	</audio>
+    <audio src="music.mp3" type="audio/mpeg" controls autoplay loop preload="auto">
+      Audio element is not supported by your browser
+    </audio>
   #multi-sources audio
-	<audio controls autoplay loop>
-		<source src="music.mp3" type="audio/mpeg">
-		<source src="music.ogg" type="audio/ogg; codecs=vorbis">
-		Audio element is not supported by your browser.
-		Please download the music <a href="music.mp3">here</a>.
-	</audio>
-  controls, autoplay, and loop is a boolean attribute
-  preload has 3 values: none, auto, metadata
-  the page will try to render the sources top to bottom
-	the mp3 is rendered first
-	the ogg will be rendered if the first one failed
-	and the text will be rendered last if all the above sources failed
+    <audio controls autoplay loop>
+      <source src="music.mp3" type="audio/mpeg">
+      <source src="music.ogg" type="audio/ogg; codecs=vorbis">
+      Audio element is not supported by your browser.
+      Please download the music <a href="music.mp3">here</a>.
+    </audio>
+    the page will try to render the sources top to bottom
+      mp3, ogg, then the text with hyperlink
+  #attributes
+    controls, autoplay, and loop is a boolean attribute
+    preload has 3 values: none, auto, metadata
 	
 #Video
   the video syntax is the same as audio element
-  the type attribute contains container MIME type, video codecs, then audio
-codecs
+  the type attribute contains container MIME type, video codecs, then audio codecs
   poster attribute allows us to specify an image, in the form of a URL, to be shown before a video is played. 
 	<video src="mv.mp4" type="video/mp4" poster="movie-screenshot.jpg" controls autoplay loop>
 		Video element is not supported by your browser
@@ -202,22 +194,22 @@ you can use label to label input
   <label for="email">Your Email</label>
   <input type="email" name="email">
 		
-#Input
+#Input (empty element)
 The input tag can take a multitude of guises, the most common ones are:
-<input type="text"> or simply <input> is a standard textbox. 
-	can have a value attribute, which sets the initial text in the textbox
-	placeholder can be used as an attribute to create description of input
-<input type="password"> is similar to the textbox, but the characters typed in by the user will be hidden.
-<input type="checkbox"> is a checkbox, which can be toggled on and off by the user. 
-	can have a checked attribute, and makes the initial state of the check box to be switched on, as it were. 
-	<input type="checkbox" checked> - the attribute doesn’t require a value
-<input type="radio"> is similar to a checkbox, but user can only select one radio button in a group
-	can have a checked attribute
-	you can select multiple radio buttons with different NAME attribute
-<input type="submit"> is a button that when selected will submit the form. 
-	you can control the text that appears on the submit button with the value attribute
-	<input type="submit" value="Ooo. Look. Text on a button. Wow">
-Note that, like img and br tags, the input tag, which doesn’t surround any content, doesn’t require a closing tag.
+  <input type="text"> or simply <input>
+    a standard textbox
+    value attribute sets the initial text in the textbox
+    placeholder attribute
+  <input type="password">
+  <input type="checkbox">
+    a checkbox which can be toggled on and off
+    can have a checked boolean attribute
+  <input type="radio"> 
+    user can only select one radio button in a group
+      you can select multiple radio buttons with different NAME attribute
+    can have a checked boolean attribute
+  <input type="submit">
+    value attribute control the text that appears on the button
 
 #Textarea
 textarea is, basically, a large, multi-line textbox. 

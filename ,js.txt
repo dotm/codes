@@ -315,7 +315,9 @@ Object.prototype.constructor returns a reference to the constructor function tha
     this.parameter2 = 'value';                #you can use value instead of argument
     var _parameter  = value;                  #a private variable
     this.methodName = function() {            #defining method in class
-      codes}    };                            #you must use ;
+      codes
+    }
+  }
   #Instantiate object from class
     var objectName = new ClassName(argument1, argument2);
   #New function

@@ -39,8 +39,11 @@ Operators
     round
 Range
 HTTP REST function
-Exception
-Error Handling
+Exception Handling
+  try-catch-finally
+    conditional catch
+    nested try-catch-finally
+Error
 
 #--------------------------------------------------------------------------------
 String

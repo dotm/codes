@@ -233,20 +233,10 @@ Array is a zero-indexed heterogeneous, linear, ordered collection of elements
   #Sorting numerical array
     arrayName.sort(function(a,b){return a-b})
   #Iterating over an array to print every elements in it
-      for (var i = 0; i < arrayName.length; i++){
-      console.log(arrayName[i]);}
-    you can also use the for in loop: for (i in arrayName)
-      but for in makes no guarantee about the order of the properties,
-      and there is still the problem with unexpected properties being dredged up from the prototype chain.
-
+    arrayName.forEach(function(element, index, currentArray){/* function body */})
   #Extending Array's method
-    store user defined method in Array.prototype to make it available to all arrays
-      Array.prototype.lala = function(){alert("lala")}
-    store user defined method directly to an individual array:
-      var arrayName = []; arrayName.lala = function(){alert("lala")}
-    storing user defined method in an individual array
-      won't change its length since the methodName is not an integer
-      will make the method visible in a for in loop
+    Array.prototype.lala = function(){alert("lala")}
+    var arrayName = []; arrayName.lala = function(){alert("lala")}
 
 #-----------------------------------------------------------------------------------------------------------------
 Object data properties' attributes
@@ -438,20 +428,13 @@ Object.prototype.constructor returns a reference to the constructor function tha
     var instance1 = new MyClass(); var instance2 = new MyClass();
     instance1.go(); -> instance1
     instance2.go(); -> instance2
-  this: a reference to the context object in which the executing method is bound to
-  this is not assigned a value until an object invokes the function where this is defined
+  this: a reference to the context object of the executing method
   this is assigned the value of the object where the function is invoked, not where the function is defined
   jQuery library automatically binds this to the selector object that invokes the event handler
   if you want to override the default this definition you can use .bind(), .apply(), or .call() method
     see Manipulate function context
-  overriding is usually necessary when:  borrowing methods, assigning object method to global or non-local variable, using callbacks
-  closures (inner functions) cannot access the outer function’s this
+  closures (inner functions) cannot access the outer function’s "this"
     to fix the problem, store the this as a variable inside the outer function
-  if you declare var objectName.functionName, the this will only refer to the objectName object
-    but, if you declare functionName like this:    var functionName= function (parameters) { this.property=value; }
-    you can assign it later to an object
-      objectName.methodName=functionName  #assigning global functionName to objectName as a method
-      objectName.methodName(arguments)    #calling the method
 
 #-----------------------------------------------------------------------------------------------------------------
 #Module and Namespace

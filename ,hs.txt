@@ -21,11 +21,6 @@ let can NOT be used when using copmiler
 
 #-------------------------------------------------------------------------------------
 #Operators
-  pretty much all operators is a function.
-  if a function is comprised only of special characters (like == operator),
-    it is considered an infix function by default.
-  if we want to examine the type of such function, pass it to another function or call it as a prefix function,
-    we have to surround it in parentheses: (+) 1 2 -> 3
     
 #Arithmetic operators: + - * / div mod ^
 #Comparators: == /= <= >= < >
@@ -64,12 +59,10 @@ let can NOT be used when using copmiler
     (div 92 10) := (92 `div` 10)
 
 #-------------------------------------------------------------------------------------
-#Conditional (if expression)
-  the else part is mandatory,
-    hence every conditional statements is also an expressions in Haskell
-    (you'll always get a value whatever branch get executed)
+#Conditional
   
 #If expression
+  the else part is mandatory,
   #Multiple line
     doubleSmallNumber x =
       if x > 100

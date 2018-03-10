@@ -168,22 +168,31 @@ Function
   Default arguments (if arguments are not supplied, use default value)
     Optional parameter (some arguments use null as default value)
   Variadic function (variable number of arguments)
-Anonymous function
+Anonymous function (Lambda)
 Higher order function
   Closure (a function with access to the referencing environment)
   Nested function
   Callback (a function passed to another function as an argument)
   Currying (a function that return another function after filling it with some arguments)
     e.g. add = function(a) { return function(b) { return a + b; }; };
-  
+Function composition
 Common iteration function
   sort
   filter
   map
   each
   reduce/fold
-  comprehension (map + filter)
+  list comprehension (map + filter)
   
+Pattern matching
+Guards
+Where binding clause
+Let binding
+
+Type signature
+User-defined types
+  Defining new type
+
 #################################################################################
 Class-Based Object Oriented Programming
 
@@ -196,12 +205,13 @@ Class
       global (public), local (private), class, instance (object) attribute
     Method (object's function) declaration and definition: 
       class, instance (object), public, private method
-  Creating class with inheritance
+  Inheritance
     Attribute and method overriding
     Access superclass attribute and method
-  Using interface
+  Interface
   Reflection (list all attributes or methods)
   
+Abstract class
 Nested class
 
 Class relationship
@@ -236,11 +246,13 @@ Module (used to store constant and function)
 Import module (from another file)
   Import
   Import as (alias)
-  Import subset (don't import all)
+  Selective import (don't import all)
+  Qualified import (import but refer to the imported entity using fully qualified name)
   
 #################################################################################
-Event-Driven Programming
+Event-Driven (Asynchronous) Programming
 
 Callback function
 Listeners
 Promises
+Generator

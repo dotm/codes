@@ -1,4 +1,4 @@
-Haskell is statically typed (with automatic type inference).
+Haskell is statically typed (with automatic type inference)
 Whitespace matters in Haskell
 
 You can use tab completion in GHCi
@@ -14,18 +14,267 @@ You can use tab completion in GHCi
   $ :l file_name
 #Reload function:
   :r (or just repeat :l file_name)
+#get information on a token
+  :t
+  :info
+  :k    #get the kinds of a token
 
 #Let keyword
 Doing let a = 1 inside GHCi is equivalent of writing a = 1 in a script and then loading it.
-let can NOT be used when using copmiler
+let can NOT be used when using compiler
+
+#Running Haskell program
+  $ runhaskell helloworld.hs
+#Compiling Haskell program
+  $ ghc --make helloworld
+#Running Haskell program from compiled file
+  $ ./helloworld
+
+#-------------------------------------------------------------------------------------
+#Main keyword
+  An I/O action will be performed when we give it a name of main and then run our program.
+  By convention, we don't usually specify a type declaration for main.
+  in a do block, the last action cannot be bound to a name
+    the do block automatically extracts the value from the last action and binds it to its own result.
+  use <- when you want to bind results of I/O actions to names
+    and use let bindings to bind pure expressions to names
+
+#Using main keyword
+  #for one I/O action
+    main = putStrLn "hello, world"
+  #for multiple I/O action
+    main = do
+        putStrLn "Hello, what's your name?"
+        name <- getLine
+        putStrLn ("Hey, " ++ name ++ "!")
+  #with let binding
+    main = do
+      putStrLn "What's your first name?"
+      firstName <- getLine
+      putStrLn "What's your last name?"
+      lastName <- getLine
+      let bigFirstName = map toUpper firstName
+          bigLastName = map toUpper lastName
+      putStrLn $ "hey " ++ bigFirstName ++ " " ++ bigLastName ++ ", how are you?"
+  #recursive main
+    main = do
+    line <- getLine
+    if null line        #if line is empty
+        then return ()  #then do nothing
+        else do
+            putStrLn $ reverseWords line
+            main
+#-------------------------------------------------------------------------------------
+#Exceptions
+  Despite having expressive types that support failed computations (Maybe, Either),
+    Haskell still has support for exceptions
+  Exceptions make more sense in I/O contexts
+    A lot of things can go wrong when dealing with the outside world because it is so unreliable.
+    I/O code (i.e. impure code) can throw and handle exceptions.
+  Pure code can throw exceptions
+    but exceptions can only be caught in the I/O part of our code
+      (when we're inside a do block that goes into main)
+    And that's bad, because we want to keep the I/O part as small as possible.
+      Even when glueing together I/O actions that might fail,
+        I prefer to have their type be something like IO (Either a b)
+        than to throw and catch an exception
+    But, if we don't catch the exception, our program crashes.
+    The solution? Don't mix exceptions and pure code. Minimize exception occurrence.
+      use types like Either and Maybe to represent results that may have failed.
+      use functions that handle edge cases that may throw exceptions
+      create function that handle exceptions manually using pattern matching, if expression, etc.
+
+#Catching exception
+  System.IO.Error.catch :: IO a -> (IOError -> IO a) -> IO a
+    It takes two parameters.
+    The first one is an I/O action. e.g. read a file.
+    The second one is the exception handler.
+  Using catch as an infix function makes it more readable
+    toTry `catch` handler
+  The handler takes a value of type IOError,
+    which carries information regarding the type of the exception that was thrown.
+  How IOError type is implemented depends on the implementation of the language itself,
+    we can't inspect values of the type IOError by pattern matching against them
+    We use predicate functions from System.IO.Error to inspect values of type IOError:
+      isAlreadyExistsError
+      isDoesNotExistError
+      isAlreadyInUseError
+      isFullError
+      isEOFError
+      isIllegalOperation
+      isPermissionError
+      isUserError
+#isUserError
+  isUserError evaluates to True when we use the function userError to make the exception,
+    which is used for making exceptions from our code and equipping them with a string.
+  e.g. ioError $ userError "remote computer unplugged!"
+#ioError :: IOException -> IO a
+  it takes an IOError and produces an I/O action that will throw it
+#Example
+    import System.IO.Error
+    main = toTry `catch` handler
+    handler :: IOError -> IO ()
+    handler e
+      | isDoesNotExistError e =
+        case ioeGetFileName e of
+          Just path -> putStrLn $ "Whoops! File does not exist at: " ++ path
+          Nothing -> putStrLn "Whoops! File does not exist at unknown location!"
+      | otherwise = ioError e
+  We use guard syntax here, but we could have also used an if else.
+  if the exception thrown is not handled by the other predicate, it will just be re-thrown by ioError
+    if you don't re-throw the exception, your program will fail silently (this may be bad)
+
+#-------------------------------------------------------------------------------------
+#I/O
+  I/O actions are values much like any other value in Haskell
+  I/O action is something that, when performed, will carry out an action with a side-effect
+    (that's usually either reading from the input or printing stuff to the screen)
+    and will also contain some kind of return value inside it
+  the 'IO ()' means an I/O action that has a result type of '()' (i.e. the empty tuple, also know as unit)
+    the IO type represents I/O action
+    since string output doesn't really have any kind of meaningful return value,
+      a dummy value of () is used.
+  the only way to get the tainted data inside string input I/O action is to use the <- construct
+    and we can only take data out of an I/O action when we're inside another I/O action.
+  This is how Haskell neatly separate the pure and impure parts of our code.
+    I/O action is impure because its result value is not guaranteed to be the same when performed twice.
+    the data inside of IO is sort of tainted with the IO type constructor and we can only get that data out in I/O code.
+    And because I/O code is tainted too, any computation that depends on tainted I/O data will have a tainted result.
+    we temporarily un-taint the data inside an I/O action when we bind it to a name.
+      When we do name <- getLine, name is just a normal string
+  The impure part of the code exists in the do block of main
+    I/O actions will only be performed when they are given a name of main
+    or when they're inside a bigger I/O action that we composed with a do block of main.
+  I/O actions will also be performed when we type out an I/O action in GHCI and press return.
+    GHCI uses 'print' on that value to display it on our terminal!
+#Do keyword
+  The do keyword wraps one or multiple line of I/O action into one I/O action
+#Return keyword
+  return keyword doesn't end execution
+  return just does the opposite of <-
+  return takes a value and wraps it in an I/O action box
+  When dealing with I/O do blocks, we mostly use return either because
+    we need to create an I/O action that doesn't do anything (i.e. 'return ()')
+    or we don't want the I/O action that's made up from a do block
+      to have the result value of its last action,
+      but we want it to have a different result value,
+      so we use return to make an I/O action
+        that always has our desired result contained and we put it at the end.
+#I/O module
+  Control.Monad
+  System.IO
+  System.Directory
+  System.Environment
+
+#Binding I/O action result to a name
+  variableName <- getLine
+  _ <- putStrLn "Hello"     #the _ will be () which is useless
+#User string input
+  getLine :: IO String
+  getChar :: IO Char
+  getContents :: IO String        #get all lines until end of file character (CTRL+D)
+#String output
+  putStr :: String -> IO ()
+  putStrLn :: String -> IO ()     #put string with new line at the end
+  print :: Show a => a -> IO ()   #if a is String, it will have "" around it, unlike putStr or putStrLn
+#interact function
+    interact :: (String -> String) -> IO ()
+  getContents, transform the string using the function supplied as argument, output the result
+
+#File handler I/O functions
+  hGetContents, hGetLine, hGetChar  #read from file inside file handler
+  hPutStr, hPutStrLn                #write to file inside file handler
+#Manual File I/O
+    openFile :: FilePath -> IOMode -> IO Handle
+    type FilePath = String
+    data IOMode = ReadMode | WriteMode | AppendMode | ReadWriteMode
+    hGetContents: is like getContents but for file handle
+    hClose: takes a handle and returns an I/O action that closes the file
+  import System.IO
+  main = do
+      handle <- openFile "a.txt" ReadMode
+      contents <- hGetContents handle
+      putStr contents
+      hClose handle
+#Using withFile
+    withFile :: FilePath -> IOMode -> (Handle -> IO a) -> IO a
+  import System.IO
+  main = do
+      withFile "girlfriend.txt" ReadMode (\handle -> do
+          contents <- hGetContents handle
+          putStr contents)
+#Automatic File I/O
+  #readFile :: FilePath -> IO String
+    import System.IO
+    main = do
+        contents <- readFile "girlfriend.txt"
+        putStr contents
+  #writeFile :: FilePath -> String -> IO ()
+  #appendFile :: FilePath -> String -> IO ()
+
+#-------------------------------------------------------------------------------------
+#System.Random
+  The RandomGen typeclass is for types that can act as sources of randomness.
+  The Random typeclass is for things that can take on random values.
+    check ':info Random' to see what are the instances of Random
+
+#Manual random generator
+    random :: (RandomGen g, Random a) => g -> (a, g)
+    mkStdGen :: Int -> StdGen
+  random (mkStdGen 100)
+  random (mkStdGen 100) :: (Bool, StdGen)
+#Generate array of random
+  randoms takes a generator and returns an infinite sequence of values based on that generator
+    take 5 $ randoms (mkStdGen 11) :: [Float]
+
+#Random with range
+  randomR takes as its first parameter a pair of values that set the lower and upper bounds of random
+    randomR (1,6) (mkStdGen 359353)
+#Generate array of random within a range
+  take 10 $ randomRs ('a','z') (mkStdGen 3) :: [Char]
+
+#System random generator
+    import System.Random
+    main = do
+      gen <- getStdGen
+      putStr $ take 20 (randomRs ('a','z') gen)
+  System.Random offers the getStdGen I/O action, which has a type of IO StdGen.
+  When your program starts,
+    it asks the system for a good random number generator
+    and stores that in a so called global generator.
+  getStdGen fetches you that global random generator when you bind it to something.
+#Multiple getStdGen
+    import System.Random
+    main = do
+      gen <- getStdGen
+      putStrLn $ take 20 (randomRs ('a','z') gen)
+      gen' <- newStdGen
+      putStr $ take 20 (randomRs ('a','z') gen')
+    main = do
+      gen <- getStdGen
+      putStrLn $ take 20 (randomRs ('a','z') gen)
+      newStdGen
+      gen' <- getStdGen
+      putStr $ take 20 (randomRs ('a','z') gen')
+  just performing getStdGen twice will ask the system for the same global generator twice.
+  use the newStdGen action,
+    which splits our current random generator into two generators.
+    It updates the global random generator with one of them
+    and encapsulates the other as its result.
 
 #-------------------------------------------------------------------------------------
 #Operators
-    
+
 #Arithmetic operators: + - * / div mod ^
 #Comparators: == /= <= >= < >
 #Boolean operators: && || not
   #Boolean data type: True False
+
+#Fixity declarations
+    infixl 7 *        #is for multiplication
+    infixr 5 :        #is for list cons
+  When we define functions as operators, we can give them a fixity.
+  A fixity states how tightly the operator binds and whether it's left-associative or right-associative.
 
 #-------------------------------------------------------------------------------------
 #Functions
@@ -43,7 +292,7 @@ let can NOT be used when using copmiler
     name = value
   #define string using double quotes: myName = "Yoshua"
   #define character using single quotes: a = 'a'
-  
+
 #Function definition (in Haskell source file)
   function_name parameter1 parameter2 = statements
     e.g. add x y = x+y
@@ -60,7 +309,7 @@ let can NOT be used when using copmiler
 
 #-------------------------------------------------------------------------------------
 #Conditional
-  
+
 #If expression
   the else part is mandatory,
   #Multiple line
@@ -161,6 +410,30 @@ let can NOT be used when using copmiler
     a list cycle with only one element.
       take 10 (repeat 5)  ->  [5,5,5,5,5,5,5,5,5,5]
 
+#Difference List
+  difference list is similar to a list,
+    only instead of being a normal list,
+    it's a function that takes a list and prepends another list to it.
+  difference lists support efficient appending (++)
+  
+#Bytestring
+  processing files as strings has one drawback: it tends to be slow
+    since list is lazy, you can think of lists as promises (thunks)
+      that the next element will be delivered once it really has to
+      and along with it, the promise of the element after it.
+    processing a simple list of numbers as a series of promises might not be the most efficient way
+  Bytestrings come in two flavors: strict and lazy ones.
+    Data.ByteString
+    Data.ByteString.Lazy
+  Strict bytestrings remove laziness completely.
+    There are no promises involved
+    a strict bytestring represents a series of bytes in an array.
+    If you evaluate the first byte of a strict bytestring, you have to evaluate it whole.
+    You can't have things like infinite strict bytestrings, since you don't have infinite memory.
+  Lazy bytestrings are stored in chunks with a size of 64K.
+    Lazy bytestrings are kind of like lists of strict bytestrings with a size of 64K.
+  Whenever you need better performance in a program that reads a lot of data into strings, give bytestrings a try
+
 #-------------------------------------------------------------------------------------
 #List comprehension
     in math, set comprehensions are normally used for building more specific sets out of general sets.
@@ -234,15 +507,32 @@ let can NOT be used when using copmiler
     fst (8,11)  ->  8
     snd (8,11)  ->  11
   this will only work on pairs
-    
+
 #-------------------------------------------------------------------------------------
 #Data Types
   #Int vs Integer: Int is bounded (have min and max value) but more efficient. Integer is not bounded.
   #Float vs Double: Double have more floating point precision than Float
   #Bool: True, False
-  #Char (character) denoted by single quotes ''. 
+  #Char (character) denoted by single quotes ''.
     A list of characters is a string: [Char] := String
   #Tuples
+  #Data modules
+    see Learn You a Haskell book chapter 7
+    Data.List (for List and String)
+    Data.Char (for Char and String)
+    Data.Map (for Map, which is a list of key-value pair tuple)
+    Data.Set (for Set, which is an ordered list with unique element)
+    Data.Maybe
+      data Maybe a = Nothing | Just a
+    Data.Either
+      data Either a b = Left a | Right b deriving (Eq, Ord, Read, Show)
+        sometimes, Maybe a isn't good enough
+          because Nothing doesn't really convey much information other than that something has failed.
+        when we're interested in how some function failed or why,
+          we usually use the result type of Either a b,
+            where 'a' is some sort of type that can tell us something about the possible failure
+            and 'b' is the type of a successful computation.
+          Hence, errors use the Left value constructor while results use Right.
 
 #Type reflection from GHCi
   :t expression  ->  expression :: data type
@@ -267,11 +557,12 @@ let can NOT be used when using copmiler
     check :: (t -> Bool) -> t -> Bool
     check f x = if (f x) then True else False
   here the parentheses are necessary and so must be written (unlike with currying)
-  
+
 #Class constraint: everything before the => symbol
   odd :: Integral a => a -> Bool
   class constraint => type signature
-#Multiple class constraints: fromIntegral :: (Num b, Integral a) => a -> b
+#Multiple class constraints:
+  sum :: (Num a, Foldable t) => t a -> a
 
 #Type variables
     fst :: (a, b) -> a
@@ -287,6 +578,7 @@ let can NOT be used when using copmiler
   Polymorphic functions: functions that have type variables, so it can be different types on different occasion
   polymorphic constants: constants that can be of different types on different occasion
 
+#-------------------------------------------------------------------------------------
 #Typeclass
   typeclass: a sort of interface that defines some behavior.
   If a type is a part of a typeclass, then it inherits the behaviour of the typeclass.
@@ -312,11 +604,16 @@ let can NOT be used when using copmiler
         (read "5" :: Float) * 4        ->  20.0
         read "[1,2,3,4]" :: [Int]      ->  [1,2,3,4]
         read "(3, 'a')" :: (Int, Char) ->  (3, 'a')
-      Haskell is statically typed, it has to know all the types before the code is compiled (or evaluated in GHCi).
-  #Enum: sequentially ordered types (can be enumerated)
+    #Read parameterized type
+      We can also read parameterized types, but we have to fill in the type parameters.
+      So we can't do
+        read "Just 't'" :: Maybe a
+      but we can do
+        read "Just 't'" :: Maybe Char
+  #Enum: sequentially ordered types (can be enumerated, have successor and predecesor)
     we can use Enum types in ranges: [1..3]
     have defined successors and predecesors (which you can get with the succ and pred functions)
-    types in this class: ()/tuple, Bool, Char, Ord, Int, Integer, Float and Double.
+    types in this class are Enum: ()/tuple, Bool, Char, Ord, Int, Integer, Float and Double.
   #Bounded: types have an upper and a lower bound.
     minBound and maxBound have a type of (Bounded a) => a. they are polymorphic constants.
       minBound :: Char ->  '\NUL'
@@ -334,11 +631,238 @@ let can NOT be used when using copmiler
       fromIntegral :: (Num b, Integral a) => a -> b   #takes an integral number, turns it into a more general number
       fromIntegral (length [1,2,3,4]) + 3.2           #delete fromIntegral and you'll get an error of adding Int (length) with Float (3.2)
 
+#Functor: things that can be mapped over (things whose output can be transformed by a unary function)
+    class Functor f where                 #the f here stands for a type constructor that accepts one type parameter
+      fmap :: (a -> b) -> f a -> f b      #we can think of fmap as a function that takes a function and a functor and then maps that function over the functor
+      fmap :: (a -> b) -> (f a -> f b)    #we can think of fmap as a function that takes a function and lifts that function so that it operates on functors
+    instance Functor [] where
+      fmap = map
+    instance Functor Maybe where
+      fmap f (Just x) = Just (f x)        #the f here stands for the function that will be used to map values
+      fmap f Nothing = Nothing
+    instance Functor Tree where
+      fmap f EmptyTree = EmptyTree
+      fmap f (Node x leftsub rightsub) = Node (f x) (fmap f leftsub) (fmap f rightsub)
+    instance Functor (Either a) where     #we do 'Either a' instead of just Either because Functor only takes a type constructor with one type parameter
+      fmap f (Right x) = Right (f x)      #only the Right will be mapped
+      fmap f (Left x) = Left x            #the Left is left as it is
+    instance Functor IO where
+      fmap f action = do
+        result <- action
+        return (f result)
+    instance Functor ((->) r) where       #we can treat (->) as type constructor that takes two type parameters
+      fmap f g = (\x -> f (g x))          #this line and the line below conveys the same behavior
+      fmap = (.)                          #fmap is function composition when used on functions
+  If you think of functors as things that output values,
+    you can think of mapping over functors
+    as attaching a transformation to the output of the functor that changes the value.
+#Two Functor Laws
+  fmap id = id
+    if we map the id function over a functor,
+    the functor that we get back should be the same as the original functor
+  fmap (f . g) = fmap f . fmap g
+    composing two functions and then mapping the resulting function over a functor
+    should be the same as first mapping one function over the functor and then mapping the other one.
+  Every functor must obey the two laws above
+
+#Applicative functors
+    class (Functor f) => Applicative f where
+      pure :: a -> f a                        #takes a value and puts it in a default context (a minimal context that still yields that value)
+      (<*>) :: f (a -> b) -> f a -> f b
+      (<$>) :: (a -> b) -> f a -> f b
+      f <$> x = fmap f x                      #An infix synonym for fmap
+    instance Applicative Maybe where
+      pure = Just
+      Nothing <*> _ = Nothing
+      (Just f) <*> something = fmap f something
+    instance Applicative [] where
+      pure x = [x]
+      fs <*> xs = [f x | f <- fs, x <- xs]
+    instance Applicative IO where
+      pure = return
+      a <*> b = do
+        f <- a
+        x <- b
+        return (f x)
+    instance Applicative ZipList where
+      pure x = ZipList (repeat x)
+      ZipList fs <*> ZipList xs = ZipList (zipWith (\f x -> f x) fs xs)
+  With ordinary functors, we can just map functions over one functor.
+    But with applicative functors, we can apply a function between several functors.
+  there are actually more ways for lists to be applicative functors
+    with [], calling <*> with a list of functions and a list of values
+      results in a list which has all the possible combinations of applying functions
+      from the left list to the values in the right list.
+    with ZipList
+      the first function in the left list gets applied to the first value in the right one,
+      the second function gets applied to the second value, etc.
+  we have to use the getZipList function to extract a raw list out of a zip list
+#Lifting function to operates on multiple functor
+    liftA2 :: (Applicative f) => (a -> b -> c) -> f a -> f b -> f c
+    liftA2 f a b = f <$> a <*> b
+  liftA2 takes a normal binary function and promotes it to a function that operates on two functors
+  similar function:
+    liftA
+    liftA3
+#Example usage
+  (++) <$> Just "johntra" <*> Just "volta"        #return Just "johntravolta"
+  filter (>50) $ (*) <$> [2,5,10] <*> [8,10,11]   #return [55,80,100,110]
+  main = do
+    a <- (++) <$> getLine <*> getLine
+    putStrLn $ "The two lines concatenated is: " ++ a
+  getZipList $ (+) <$> ZipList [1,2,3] <*> ZipList [100,100..]
+    #returns [101,102,103]
+  getZipList $ (,,) <$> ZipList "dog" <*> ZipList "cat" <*> ZipList "rat"
+    #returns [('d','c','r'),('o','a','a'),('g','t','t')]
+
+#Monad
+    class Applicative m => Monad m where
+      return :: a -> m a                  #the same as pure for Applicative; it just takes a normal value and puts it in a context
+      (>>=) :: m a -> (a -> m b) -> m b
+      (>>) :: m a -> m b -> m b
+      x >> y = x >>= \_ -> y              #this doesn't completely ignore x (if x is Nothing or empty list, this will return Nothing or [])
+      fail :: String -> m a
+      fail msg = error msg
+    instance Monad Maybe where
+      return x = Just x
+      Nothing >>= f = Nothing
+      Just x >>= f = f x
+      fail _ = Nothing
+    instance Monad [] where
+      return x = [x]
+      xs >>= f = concat (map f xs)
+      fail _ = []
+    newtype Writer w a = Writer { runWriter :: (a, w) }
+    instance (Monoid w) => Monad (Writer a) where
+      return x = Writer (x, mempty)
+      (Writer (x,v)) >>= f = let (Writer (y, v')) = f x in Writer (y, v `mappend` v')
+  the attached value of a Writer (the right element of the pair)
+    is usually a String used for logging purpose,
+    but it can be any monoid value
+  when using Writer, use difference list as the monoid for efficient appending (++)
+#do notation
+  do expressions are just different syntax for chaining monadic values
+  the 3 function declaration below is the same:
+    foo :: Maybe String
+    foo = Just 3 >>= (\x -> Just "!" >>= (\y -> Just (show x ++ y)))
+    foo =
+      Just 3   >>= (\x ->
+      Just "!" >>= (\y ->
+      Just (show x ++ y)))
+    foo = do
+      x <- Just 3
+      y <- Just "!"
+      Just (show x ++ y)
+  if we change Just 3 or Just "!" to Nothing, the whole function would return Nothing
+  When we write a line in do notation without binding the monadic value with <-,
+    it's just like putting >> after the monadic value whose result we want to ignore
+      routine :: Maybe Pole
+      routine = do
+          start <- return (0,0)
+          first <- landLeft 2 start
+          Nothing
+          second <- landRight 2 first
+          landLeft 1 second
+  In do notation, when we bind monadic values to names, we can utilize pattern matching
+    justH :: Maybe Char
+    justH = do
+      (x:xs) <- Just "Hello"
+      return x
+  When pattern matching fails in a do expression, the fail function is called.
+
+#MonadPlus
+    class Monad m => MonadPlus m where
+      mzero :: m a                      #the same as mempty in Monoid
+      mplus :: m a -> m a -> m a        #the same as mappend in Monoid
+    instance MonadPlus [] where
+      mzero = []
+      mplus = (++)
+  The MonadPlus type class is for monads that can also act as monoids
+#List comprehension
+  list comprehensions are just syntactic sugar for using lists as monads
+  the 3 function declaration below is the same:
+    [1,2] >>= \n -> ['a','b'] >>= \ch -> return (n,ch)    #returns [(1,'a'),(1,'b'),(2,'a'),(2,'b')]
+    [ (n,ch) | n <- [1,2], ch <- ['a','b'] ]
+    listOfTuples = do
+      n <- [1,2]
+      ch <- ['a','b']
+      return (n,ch)
+  with guard:
+    guard :: (MonadPlus m) => Bool -> m ()
+    guard True = return ()
+    guard False = mzero
+    [ x | x <- [1..50], '7' `elem` show x ]
+    [1..50] >>= (\x -> guard ('7' `elem` show x) >> return x)
+    sevensOnly = do
+      x <- [1..50]
+      guard ('7' `elem` show x)
+      return x
+
+#Monoid
+    class Monoid m where
+      mempty :: m                       #mempty is a polymorphic constant that represents the identity value for a particular monoid
+      mappend :: m -> m -> m            #mappend is the binary function of that monoid
+      mconcat :: [m] -> m               #mconcat takes a list of monoid values and reduces them to a single value by doing mappend between the list's elements
+      mconcat = foldr mappend mempty
+    instance Monoid [a] where
+      mempty = []
+      mappend = (++)
+    newtype Product a =  Product { getProduct :: a }  #Sum can also be a monoid with Num
+      deriving (Eq, Ord, Read, Show, Bounded)
+    instance Num a => Monoid (Product a) where        #notice the 'Num a' class constraint
+      mempty = Product 1
+      Product x `mappend` Product y = Product (x * y)
+    newtype Any = Any { getAny :: Bool }              #All can also be a monoid with Bool
+      deriving (Eq, Ord, Read, Show, Bounded)
+    instance Monoid Any where
+      mempty = Any False
+      Any x `mappend` Any y = Any (x || y)
+    instance Monoid a => Monoid (Maybe a) where
+      mempty = Nothing
+      Nothing `mappend` m = m
+      m `mappend` Nothing = m
+      Just m1 `mappend` Just m2 = Just (m1 `mappend` m2)
+    newtype First a = First { getFirst :: Maybe a }
+      deriving (Eq, Ord, Read, Show)
+    instance Monoid (First a) where                   #there's also Data.Monoid.Last
+      mempty = First Nothing
+      First (Just x) `mappend` _ = First (Just x)
+      First Nothing `mappend` x = x
+  Monoid characteristics:
+    binary function whose parameters and returned value have the same type.
+    have identity element
+    is associative (the order of application of the binary function doesn't matter)
+  Monoid laws:
+    mempty `mappend` x = x
+    x `mappend` mempty = x
+    (x `mappend` y) `mappend` z = x `mappend` (y `mappend` z)
+
+#Foldable
+    class Foldable t where
+      foldMap :: (Monoid m, Foldable t) => (a -> m) -> t a -> m
+    data Tree a = Empty | Node a (Tree a) (Tree a) deriving (Show, Read, Eq)
+    instance Data.Foldable.Foldable Tree where
+      foldMap f Empty = mempty
+      foldMap f (Node x left right) =
+        Data.Foldable.foldMap f left
+        `mappend` f x
+        `mappend` Data.Foldable.foldMap f right
+  the minimal complete definition of Foldable is foldMap or foldr
+    once you define one of foldMap or foldr, you'll get all Foldable function automatically:
+      fold, foldMap, foldr, foldl, foldr1, foldl1, etc.
+  Notice that when we define a minimal complete definition
+    we didn't have to provide the function f :: (a -> m)
+    we receive that function as a parameter to foldMap
+      and all we have to decide is where to apply that function and how to join up the resulting monoids from it.
+#foldMap
+  foldMap comes in handy for reducing a non-monoid Foldable to a single monoid value
+    Data.Monoid.getSum $ foldMap (\x -> (Data.Monoid.Sum x)) [1,2,3]          #returns 6
+    Data.Monoid.getAny $ foldMap (\x -> Data.Monoid.Any $ x == 3) [1,2,3]     #returns True
+    foldMap (\x -> [x]) tree  #turns tree into a list
+
 #-------------------------------------------------------------------------------------
 #Pattern matching
-  pattern matching: specifying patterns to which some data should conform
-    and then checking to see if it does and deconstructing the data according to those patterns.
-  you can pattern match on any data type.
+  pattern matching: matching a type's value to its value constructor using patterns and extract the data according to those patterns.
   when defining functions, you can define separate function bodies for different patterns
     the patterns will be checked from top to bottom
     and when it conforms to a pattern, the corresponding function body will be used.
@@ -366,9 +890,7 @@ let can NOT be used when using copmiler
     sayMe 1 = "One!"
     sayMe 2 = "Two!"
     sayMe 3 = "Three!"
-    sayMe 4 = "Four!"
-    sayMe 5 = "Five!"
-    sayMe x = "Not between 1 and 5"       #without this catch-all pattern, sayMe 6 would return an error (the pattern matching will fail)
+    sayMe x = "Not between 1 and 3"       #without this catch-all pattern, sayMe 5 would return an error (the pattern matching will fail)
   #for recursion
     factorial :: (Integral a) => a -> a
     factorial 0 = 1
@@ -402,12 +924,14 @@ let can NOT be used when using copmiler
         tell (x:y:_) = "This list is long. The first two elements are: " ++ show x ++ " and " ++ show y
       if you want to bind, say, the first three elements to variables
         and the rest of the list to another variable,
-        you can use something like x:y:z:zs. 
+        you can use something like x:y:z:zs.
           this will only match against lists that have 3 elements or more.
     #as patterns
         capital :: String -> String
         capital "" = "empty string!"
         capital all@(x:xs) = "The first letter of " ++ all ++ " is " ++ [x]
+  #with let expression
+  #with do notation
 
 #-------------------------------------------------------------------------------------
 #Guards
@@ -415,7 +939,7 @@ let can NOT be used when using copmiler
     and then running the function body associated with the guard if it evaluates to True
   guards are a lot more readable than if expression when you have several conditions
     and they play really nicely with patterns.
-  
+
 #Guards
   #basic
     type_signature
@@ -445,12 +969,12 @@ let can NOT be used when using copmiler
       | bmi <= normal = "You're supposedly normal. Pffft, I bet you're ugly!"
       | bmi <= fat = "You're fat! Lose some weight, fatty!"
       | otherwise = "You're a whale, congratulations!"
-      where 
+      where
         bmi = weight / height ^ 2
         (skinny, normal, fat) = (18.5, 25.0, 30.0)
 
 #-------------------------------------------------------------------------------------
-#Where bindings 
+#Where bindings
   where bindings are a syntactic construct
     that let you bind to variables at the end of a function
     and the whole function can see them, including all the guards.
@@ -479,7 +1003,7 @@ let can NOT be used when using copmiler
       and define some helper function in its where clause
       and then to give those functions helper functions as well,
       each with its own where clause.
-      
+
 #-------------------------------------------------------------------------------------
 #Let binding
   Let bindings let you bind to variables anywhere
@@ -493,8 +1017,8 @@ let can NOT be used when using copmiler
       ghci> let zoot x y z = x * y + z
     The names that you define in the let part are accessible to the expression after the in part.
     We omitted the in part of the let binding when we used them in list comprehensions
-      because the visibility of the names is already predefined there. 
-        But, we could use a let in binding in a predicate and the names defined would only be visible to that predicate. 
+      because the visibility of the names is already predefined there.
+        But, we could use a let in binding in a predicate and the names defined would only be visible to that predicate.
     The in part can also be omitted when defining functions and constants directly in GHCi.
       If we do that, then the names will be visible throughout the entire interactive session.
   #to introduce function in a local scope
@@ -513,12 +1037,12 @@ let can NOT be used when using copmiler
   #in list comprehension
     calcBmis :: (RealFloat a) => [(a, a)] -> [a]
     calcBmis xs = [bmi | (w, h) <- xs, let bmi = w / h ^ 2]
-    
+
 #-------------------------------------------------------------------------------------
 #Case expressions
   It's about taking a variable and then executing blocks of code for specific values of that variable
     and then maybe including a catch-all block of code in case the variable has some value for which we didn't set up a case.
-  
+
 #Case expressions
   case expression of
     pattern -> result
@@ -541,7 +1065,7 @@ let can NOT be used when using copmiler
               what xs = "a longer list."
 
 #-------------------------------------------------------------------------------------
-#Recursion 
+#Recursion
   a way of defining functions in which the function is applied inside its own definition.
   making a recursive function:
     you define an edge case
@@ -549,28 +1073,24 @@ let can NOT be used when using copmiler
   usually the identity of an operation used in the recursion is the edge case. e.g.
     in recursive sum (with + operator), the identity and edge case is 0 (since n+0=n)
     with list, the identity is usually an empty list []
-  see Learn You a Haskell for Great Good! chapter 5
-    to see these standard library function is implemented with recursion:
-      maximum, replicate, take, reverse, repeat, zip, elem
-      
+
 quicksort :: (Ord a) => [a] -> [a]
 quicksort [] = []
 quicksort (x:xs) =
   let smallerSorted = quicksort [a | a <- xs, a <= x]
       biggerSorted = quicksort [a | a <- xs, a > x]
   in smallerSorted ++ [x] ++ biggerSorted
-  
+
 #-------------------------------------------------------------------------------------
 #Higher order functions
   higher order function is a function that
-    take functions as parameters 
+    take functions as parameters
     and/or return functions as return values
 #Curried functions
   every function in Haskell only takes one parameter
   functions that take more than one parameter is implemented as curried function
   if we call a (multi-parameter) function with too few parameters,
-    we get back a partially applied function,
-    meaning a function that takes as many parameters as we left out
+    we get back a partially applied function (curried function)
 #Map + Filter = List comprehension
   you can express list comprehension using a combination of map and filter
     this will make the expression more readable and composable (in some cases)
@@ -585,24 +1105,23 @@ quicksort (x:xs) =
   many function can be defined using both foldl or foldr
     choose one implementation that is more performant or readable
   we usually use right folds when we're building up new lists from a list (even though we can also use foldl)
-    e.g. the first function below is more performant (less expensive) than the second one:
+    e.g. foldr is more performant (less expensive) than foldl:
       map f xs = foldr (\x acc -> f x : acc) [] xs
       map f xs = foldl (\acc x -> acc ++ [f x]) [] xs
 #Lambdas
-    Lambdas are basically anonymous functions that are used because we need some functions only once.
+    Lambdas: anonymous functions that are used once.
     Normally, we make a lambda with the sole purpose of passing it to a higher-order function.
-    \ is used because it kind of looks like the greek letter lambda
+    \ is used because it looks like the greek letter lambda without the small left leg
     if you don't wrap lambda inside parentheses, the function_body will be from '->' to the end of line
     like normal functions, you can pattern match in lambdas
       the only difference is that you can't define several patterns for one parameter
-    People who are not well acquainted with how currying and partial application works
-      often use lambdas where they don't need to.
-        e.g. using (map (\x -> x + 3)[1,6,3,2]) instead of (map (+3)[1,6,3,2])
-      but it's OK to use lambda instead of partial application if it makes your code more readable
+    People who are not well acquainted with how currying works often use lambdas where they don't need to
+      e.g. using (map (\x -> x + 3)[1,6,3,2]) instead of (map (+3)[1,6,3,2])
+      it's OK to use lambda instead of partial application if it makes your code more readable
 #Operator's associativity
   left-associative: the operation is evaluated left to right
     e.g. usual function application with space
-  left-associative: the operation is evaluated right to left
+  right-associative: the operation is evaluated right to left
     e.g. function composition
 
 #Currying infix function
@@ -620,7 +1139,7 @@ quicksort (x:xs) =
     subtractByFour :: (Floating a) => a -> a
     subtractByFour = (subtract 4)
   you can't use (-4) here because (-4) denotes negative integer 4 (and will not return a partially applied function)
-  
+
 #Map
     map :: (a -> b) -> [a] -> [b]
     map _ [] = []
@@ -631,7 +1150,7 @@ quicksort (x:xs) =
       (map (*) [0..]) !! 100        ->    (100*)
       ((map (*) [0..]) !! 100) 4    ->    400
     map fst [(1,2),(3,5),(6,3),(2,6),(2,5)]     ->    [1,3,6,2,2]
-#Filter 
+#Filter
     filter :: (a -> Bool) -> [a] -> [a]
     filter _ [] = []
     filter p (x:xs)
@@ -689,15 +1208,15 @@ quicksort (x:xs) =
   Most of the time, $ is a convenience function so that we don't have to write so many parentheses.
     f (g (h x))
       f $ g $ h x
-    sum (filter (> 10) (map (*2) [2..10])) 
+    sum (filter (> 10) (map (*2) [2..10]))
       sum $ filter (>10) $ map (*2) [2..10]
   the existence of $ means that function application can be treated just like another function
     map ($ 3) [(4+), (10*), (^2), sqrt]   ->    [7, 30, 9, 1.7320508075688772]
-    
+
 #Function composition
-    (.) :: (b -> c) -> (a -> b) -> a -> c  
-    f . g = \x -> f (g x) 
-  One of the uses for function composition is making functions on the fly to pass to other functions. 
+    (.) :: (b -> c) -> (a -> b) -> a -> c
+    f . g = \x -> f (g x)
+  One of the uses for function composition is making functions on the fly to pass to other functions.
   You can use lambdas for that, but many times, function composition is clearer and more concise.
     map (\x -> negate (abs x)) [5,-3,-6,7,-3,2,-19,24]    ->    [-5,-3,-6,-7,-3,-2,-19,-24]
     map (negate . abs) [5,-3,-6,7,-3,2,-19,24]            ->    [-5,-3,-6,-7,-3,-2,-19,-24]
@@ -709,31 +1228,11 @@ quicksort (x:xs) =
     := (sum . replicate 5 . max 6.7) 8.9   #compose the function and then apply it with 8.9
     := sum . replicate 5 . max 6.7 $ 8.9
   If you want to rewrite an expression with a lot of parentheses by using function composition,
-  start by putting the last parameter of the innermost function after a $ 
+  start by putting the last parameter of the innermost function after a $
   and then compose all the other function calls,
   writing them without their last parameter and putting dots between them.
     replicate 100 (product (map (*3) (zipWith max [1,2,3,4,5] [4,5,6,7,8])))
     := replicate 100 . product . map (*3) . zipWith max [1,2,3,4,5] $ [4,5,6,7,8]
-  
-#-------------------------------------------------------------------------------------
-#Tacit programming
-  Defining function in point free style (a.k.a pointless style):
-    sum :: (Num a) => [a] -> a
-    sum xs = foldl (+) 0 xs     #not written in point free style
-    sum = foldl (+) 0           #written in point free style
-  Using function composition to write function in point free style:
-    fn x = ceiling (negate (tan (cos (max 50 x))))
-    fn = ceiling . negate . tan . cos . max 50
-  Many times, a point free style is more readable and concise,
-    because it makes you think about functions and what kind of functions composing them results in
-    instead of thinking about data and how it's shuffled around.
-  You can take simple functions and use composition as glue to form more complex functions.
-  However, many times, writing a function in point free style can be less readable if a function is too complex.
-    That's why making long chains of function composition is discouraged.
-    The prefered style is to
-      use let bindings to give labels to intermediary results
-      or split the problem into sub-problems and then put it together
-        so that the function makes sense to someone reading it instead of just making a huge composition chain.
 
 #-------------------------------------------------------------------------------------
 #Modules
@@ -744,12 +1243,12 @@ quicksort (x:xs) =
   Haskell standard library is split into modules
   the Prelude module is imported by default
   When you import a module, all the functions that module exports become available in the global namespace
-  You can choose to import all of the functions of a module except a few select ones. 
+  You can choose to import all of the functions of a module except a few select ones.
     That's often useful when several modules export functions with the same name
     and you want to get rid of the offending ones.
   Another way of dealing with name clashes is to do qualified imports.
   To search for functions or to find out where they're located, use Hoogle.
-  
+
 #Basic import module: import module_name
 #Selective import
   import Data.List (nub, sort)    #import only nub and sort
@@ -760,39 +1259,31 @@ quicksort (x:xs) =
     whereas just filter refers to the normal filter from Prelude
 #Alias for qualified import: import qualified Data.Map as M
   Now, to reference Data.Map's filter function, we just use M.filter.
-  
-#Data modules
-  see Learn You a Haskell book chapter 7
-  Data.List
-  Data.Char
-  Data.Map
-  Data.Set
-  
+
 #Making module
   At the beginning of a module, we specify the module name.
     If we have a file called Geometry.hs, then we should name our module Geometry.
   Then, we specify the functions that it exports
     and after that, we can start writing the functions.
-  In the example below, we have a function that's not exported (rectangleArea)
 #Example:
   !Geometry.hs
-    module Geometry  
-    ( cubeArea  
-    , cuboidArea  
-    ) where 
+    module Geometry
+    ( cubeArea
+    , cuboidArea
+    ) where
 
-    cubeArea :: Float -> Float  
-    cubeArea side = cuboidArea side side side  
-      
-    cuboidArea :: Float -> Float -> Float -> Float  
-    cuboidArea a b c = rectangleArea a b * 2 + rectangleArea a c * 2 + rectangleArea c b * 2  
-      
-    rectangleArea :: Float -> Float -> Float  
+    cubeArea :: Float -> Float
+    cubeArea side = cuboidArea side side side
+
+    cuboidArea :: Float -> Float -> Float -> Float
+    cuboidArea a b c = rectangleArea a b * 2 + rectangleArea a c * 2 + rectangleArea c b * 2
+
+    rectangleArea :: Float -> Float -> Float
     rectangleArea a b = a * b
-    
+
   !ghci
     import Geometry
-  
+
 #Making module with submodules
   Modules can also be given a hierarchical structures.
   Each module can have a number of sub-modules and they can have sub-modules of their own.
@@ -800,104 +1291,225 @@ quicksort (x:xs) =
     make a folder called Geometry. Mind the capital G.
     In it, we'll place three files: Sphere.hs, Cuboid.hs, and Cube.hs.
   !Geometry/Sphere.hs
-    module Geometry.Sphere  
-    ( volume  
-    , area  
-    ) where  
-      
-    volume :: Float -> Float  
-    volume radius = (4.0 / 3.0) * pi * (radius ^ 3)  
-      
-    area :: Float -> Float  
-    area radius = 4 * pi * (radius ^ 2)  
+    module Geometry.Sphere
+    ( volume
+    , area
+    ) where
+
+    volume :: Float -> Float
+    volume radius = (4.0 / 3.0) * pi * (radius ^ 3)
+
+    area :: Float -> Float
+    area radius = 4 * pi * (radius ^ 2)
 
 #Exporting user-defined type
-  module Shapes   
+  module Shapes               #remember: this should be at the top of the module file
   ( Shape                     #don't export any value constructors; use other exported functions (e.g. createBaseCircle or createBaseRect) to make Shape
   , Shape(Rectangle, Circle)  #export only Rectangle and Circle value constructors
   , Shape(..)                 #export all value constructors
-  , surface  
-  , nudge  
-  , createBaseCircle  
-  , createBaseRect  
-  )
+  , surface
+  , nudge
+  , createBaseCircle
+  , createBaseRect
+  ) where                     #define functions and value constructor below the 'where' line
+
 #-------------------------------------------------------------------------------------
-#User-defined Types
-  value constructors specify the different values that this type can have
-  Both the type name and the value constructors have to be capital cased.
-  When we write a value constructor,
-    we can optionally add some types (fields) after it
-    and those types define the values it will contain.
-      e.g. data Shape = Circle Float Float Float
-           Float deriving (Show)
+#Data declaration (User-defined type)
+  data keyword can be used to declare:
+    a new type (by not specifying any type parameter)
+      data TypeName = Value_constructor fields | Value_constructor fields
+    a type constructor (by specifying one or more typeVariable as type parameter)
+      data TypeConstructor typeVariable typeVariable = Value_constructor fields | Value_constructor fields
+  TYPE NAME AND VALUE CONSTRUCTORS HAVE TO BE CAPITALIZED
   It's common to use the same name as the type if there's only one value constructor
-    e.g. data Point = Point Float Float deriving (Show)  
-  Value constructors are actually functions
-    that ultimately return a value of a data type
-    fields := parameters
-      :t Circle  
+    e.g. data Point = Point Float Float deriving (Show)
+  when we pattern matched against values like [], False, or 5,
+    we actually pattern matched against value constructors with no fields.
+      e.g. False is a value constructor that returns a Bool
+#Value Constructor
+  value constructors specify the different values that a type can have
+  we can optionally add some type variables or type constants (as fields) after a value constructor
+  value constructors are actually functions that return a type
       Circle :: Float -> Float -> Float -> Shape
-  Since value constructors are functions,
-    we can do functional things to them (map them, partially apply them, etc.)
-      e.g. map (Circle 10 20) [4,5,6,6]   ->    [Circle 10.0 20.0 4.0, Circle 10.0 20.0 5.0, Circle 10.0 20.0 6.0, Circle 10.0 20.0 6.0]
-  We pattern matched against constructors before (all the time actually)
-    when we pattern matched against values like [], False, or 5,
-    only those values didn't have any fields.
-  Not exporting the value constructors of a data types
-    makes them more abstract in such a way that we hide their implementation,
-    and whoever uses our module can't pattern match against the value constructors.
-  
+  Since value constructors are functions, we can do functional things to them (like currying, map, etc.)
+      e.g. map (Circle 10 20) [4,5,6,6]
+#Type Constructor
+  type constructors are functions that can take type variables as parameters to produce new types
+    data Maybe a = Nothing | Just a
+      if we pass Char as the type parameter, the Maybe type constructor returns a type of Maybe Char (or Nothing).
+      Nothing is polymorphic since it's type is 'Maybe a' regardless of the type parameter
+  the type produced by a type constructor can then be used in functions type declaration
+    find :: (a -> Bool) -> [a] -> Maybe a
+      the 'Maybe a' type can be used after we define it using the Maybe type constructor
+#Automatically deriving typeclass
+  Haskell can automatically make our type an instance of any of the following typeclasses:
+    Eq, Ord, Enum, Bounded, Show, Read.
+  #Eq
+    When we derive the Eq instance for a type
+      and then try to compare two values of that type with == or /=,
+      Haskell will see if the value constructors match
+      and then it will check if all the data contained inside matches by testing each pair of fields with ==.
+    The types of all the fields (of the value constructor) also have to be part of the Eq typeclass.
+  #Show and Read
+    The Show and Read typeclasses are for things that can be converted to or from strings, respectively.
+    if a value constructors have fields, their type has to be a part of Show or Read
+      if we want to make our type an instance of them.
+  #Ord
+    Ord type class is for types that have values that can be ordered.
+    If we compare two values of the same type that were made using different value constructors,
+      the value which was made with a constructor that's defined first is considered smaller.
+        data Bool = False | True deriving (Ord)
+        (False < True)
+  #Bounded and Enum
+    We can easily use algebraic data types to make enumerations
+      and the Enum and Bounded typeclasses help us with that.
+    If all the value constructors are nullary (take no parameters, i.e. fields), we can make it part of the Enum typeclass.
+      data Day = Monday | Tuesday | Wednesday | Thursday | Friday | Saturday | Sunday
+#Recursive data structures
+  we can make types whose constructors have fields that are of the same type
+    data Tree a = EmptyTree | Node a (Tree a) (Tree a) deriving (Show, Read, Eq)
 
 #Using the data keyword to define type
   data TypeName = Value_constructor fields | Value_constructor fields | Value_constructor fields
   data Bool = False | True
   data Shape = Circle Float Float Float | Rectangle Float Float Float Float
-    The Circle value constructor has three fields, which take floats.
-      Here, the first two fields are the coordinates of its center, the third one its radius.
-    The Rectangle value constructor has four fields which accept floats.
-      The first two are the coordinates to its upper left corner and the second two are coordinates to its lower right one.
 #Pattern matching against fields
   surface :: Shape -> Float
   surface (Circle _ _ r) = pi * r ^ 2
   surface (Rectangle x1 y1 x2 y2) = (abs $ x2 - x1) * (abs $ y2 - y1)
 #Deriving type from other types
-  data Shape = Circle Float Float Float
-  Float deriving (Show)
-  
+  data Person =
+    Person { firstName :: String
+    , lastName :: String
+    , age :: Int
+    } deriving (Eq, Show, Read)
+  data Day =
+    Monday | Tuesday | Wednesday |
+    Thursday | Friday | Saturday | Sunday
+    deriving (Eq, Ord, Show, Read, Bounded, Enum)
+
 #Nesting user-defined types
   data Point = Point Float Float deriving (Show)
-  data Shape = Rectangle Point Point deriving (Show)  
+  data Shape = Rectangle Point Point deriving (Show)
   surface :: Shape -> Float
   surface (Rectangle (Point x1 y1) (Point x2 y2)) = (abs $ x2 - x1) * (abs $ y2 - y1)
   surface (Rectangle (Point 0 0) (Point 100 100))  ->   10000.0
-  
+
 #Record syntax to define type
-  data Person = Person { firstName :: String  
-                       , lastName :: String  
-                       , age :: Int  
-                       , height :: Float  
-                       , phoneNumber :: String  
-                       , flavor :: String  
-                       } deriving (Show) 
-  By using record syntax to create this data type,
-    Haskell automatically made these functions that return the data of that Person: 
-      firstName, lastName, age, height, phoneNumber and flavor.
-      e.g. :t firstName
-           firstName :: Person -> String
+  data Person =
+    Person
+      { firstName :: String
+      , lastName :: String
+      , age :: Int
+      } deriving (Show)
+  By using record syntax, Haskell automatically made functions that return the data of that Person: firstName, lastName, age
+    :t firstName
+    firstName :: Person -> String
 #Calling type defined using record syntax
   proper ordering is optional with record syntax, as long as we list all of them:
     data Car = Car {company :: String, model :: String, year :: Int} deriving (Show)
     ghci> Car {model="Mustang", company="Ford", year=1967}
     ->  Car {company = "Ford", model = "Mustang", year = 1967}
-    
-#Type parameters
-  A value constructor can take some values parameters and then produce a new value.
-    e.g. the Car constructor takes three values and produces a car value.
-  In a similar manner, type constructors can take types as parameters to produce new types.
-    e.g. data Maybe a = Nothing | Just a
-    'a' is the type parameter
-    Maybe is the type constructor
-    the output can be 'Just a' which is of the type 'Maybe a' or the output can be 'Nothing'
-      So if we pass Char as the type parameter to Maybe, we get a type of Maybe Char (or Nothing).
-  
-  
+
+#Using the data keyword to define type constructor
+  data TypeConstructor typeVariable typeVariable = Value_constructor fields | Value_constructor fields
+
+#-------------------------------------------------------------------------------------
+#Type Synonyms
+  type synonym makes a synonym for an already existing type
+    so that the type is easier to refer to
+  type synonyms can be parameterized
+    type Dictionary k v = [(k,v)]
+  this synonym can then be used anywhere the original type can be used
+    type synonyms (and types generally) can only be used in the type portion of Haskell.
+    We're in Haskell's type portion whenever we're
+      defining new types (so in data and type declarations)
+      or when we're located after a ::
+        The :: is in type declarations or in type annotations.
+  Make sure that you really understand the distinction between type constructors and value constructors.
+    Just because we made a type synonym called IntMap or Dictionary
+    doesn't mean that we can do stuff like: Dictionary [(1,2),(4,5),(7,9)]
+
+#Declaring type synonym
+    type Type_Synonym = Original_Type
+  type ID = Int
+  type PhoneNumber = String
+  type Name = String
+  type PhoneBook = [(Name,PhoneNumber)]
+  type IntMap v = Map Int v   #partially applied type constructor
+#Using type synonym
+  inPhoneBook :: Name -> PhoneNumber -> PhoneBook -> Bool
+  inPhoneBook name phone_number phone_book = (name,phone_number) `elem` phone_book
+  read "1" :: ID
+
+#-------------------------------------------------------------------------------------
+#Newtype keyword
+  The newtype keyword is for
+    taking one type and wrapping it in something to present it as another type.
+  If you want to take an existing type
+    and wrap it in a new type in order to make it an instance of a type class,
+    chances are you're looking for a newtype.
+  Whereas data can be used to make your own types from scratch,
+    newtype is for making a completely new type out of an existing type.
+  newtype is faster and lazier than the data keyword
+  when you make a new type from an existing type by using the newtype keyword,
+      you can only have one value constructor
+      and that value constructor can only have one field.
+    With data, you can make data types that have
+      several value constructors and each constructor can have zero or more fields
+  you can use derive with newtype
+
+#Using the newtype keyword to define type
+  newtype ZipList a = ZipList { getZipList :: [a] } deriving (Applicative)
+
+#-------------------------------------------------------------------------------------
+#Class declaration (User-defined typeclass)
+    class TypeClassName typeVariable where
+      functions' type annotations
+      functions' bodies
+    class (SuperTypeClass typeVariable) => SubTypeClassName typeVariable where
+      functions' type annotations
+      functions' bodies
+  you must provide the minimal complete definition for the typeclass
+    — the minimum of functions that we have to implement so that our type can behave like the class advertises
+  you don't have to provide any function body,
+    but doing so can decrease the number of minimal complete definition that you have to provide
+      e.g. with Eq class below, since we have defined the relation between == and /= in the function bodies,
+        we don't have to provide any '/=' definition in the TrafficLight instance declaration
+  class constraint is used to make a new typeclass a subclass of an existing typeclass
+  to instantiate typeclass on type constructor
+    remember to use class constraint on the type constructor's typeVariable (if necessary)
+    and to put parentheses around the TypeConstructor and typeVariable to make the them a concrete polymorphic type
+
+#Defining typeclass
+  class Eq a where
+    (==) :: a -> a -> Bool
+    (/=) :: a -> a -> Bool
+    x == y = not (x /= y)
+    x /= y = not (x == y)
+#Defining typeclass with superclass
+  class (Eq a) => Num a where
+    functions' type annotations
+    functions' bodies
+#Instantiating typeclass (on type)
+  data TrafficLight = Red | Yellow | Green
+  instance Eq TrafficLight where
+    Red == Red = True
+    Green == Green = True
+    Yellow == Yellow = True
+    _ == _ = False
+  instance Show TrafficLight where
+    show Red = "Red light"
+    show Yellow = "Yellow light"
+    show Green = "Green light"
+#Instantiating typeclass on type constructor
+  instance (Eq m) => Eq (Maybe m) where       #remember that (while 'Maybe Char' is a type) 'Maybe' is a type constructor
+    Just x == Just y = x == y                 #since x and y (the content of Maybe) must be equatable, we need a class constraint for the content of Maybe
+    Nothing == Nothing = True
+    _ == _ = False
+  instance Truthy (Maybe m) where             #We didn't need a class constraint if we don't assume anything about the content of Maybe
+    truthy (Just _) = True
+    truthy Nothing = False
+  instance Eq a => Eq [a]
+  instance (Eq a, Eq b) => Eq (Either a b)
+

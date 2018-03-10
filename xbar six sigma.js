@@ -1,5 +1,5 @@
 function sum(array){
-  return array.reduce(function (a, b) { return a + b; }
+  return array.reduce(function (a, b) { return a + b; }, 0)
 }
 
 function count(array){

@@ -415,7 +415,7 @@ let can NOT be used when using compiler
     only instead of being a normal list,
     it's a function that takes a list and prepends another list to it.
   difference lists support efficient appending (++)
-  
+
 #Bytestring
   processing files as strings has one drawback: it tends to be slow
     since list is lazy, you can think of lists as promises (thunks)
@@ -516,6 +516,8 @@ let can NOT be used when using compiler
   #Char (character) denoted by single quotes ''.
     A list of characters is a string: [Char] := String
   #Tuples
+    #Zipper: a pair that contains a focused part of a data structure and its surroundings
+      zipper makes it possible to move to a node without starting every traversal from the root of the data structure
   #Data modules
     see Learn You a Haskell book chapter 7
     Data.List (for List and String)
@@ -631,6 +633,13 @@ let can NOT be used when using compiler
       fromIntegral :: (Num b, Integral a) => a -> b   #takes an integral number, turns it into a more general number
       fromIntegral (length [1,2,3,4]) + 3.2           #delete fromIntegral and you'll get an error of adding Int (length) with Float (3.2)
 
+#Functor, Applicative, Monad
+  Functors are for things that can be mapped over
+  Applicative functors allowed us
+    to apply normal functions between several applicative values
+    to take a normal value and put it in some default context
+  Monad added the ability for these values with context to somehow be fed into normal functions
+
 #Functor: things that can be mapped over (things whose output can be transformed by a unary function)
     class Functor f where                 #the f here stands for a type constructor that accepts one type parameter
       fmap :: (a -> b) -> f a -> f b      #we can think of fmap as a function that takes a function and a functor and then maps that function over the functor
@@ -720,7 +729,7 @@ let can NOT be used when using compiler
       return :: a -> m a                  #the same as pure for Applicative; it just takes a normal value and puts it in a context
       (>>=) :: m a -> (a -> m b) -> m b
       (>>) :: m a -> m b -> m b
-      x >> y = x >>= \_ -> y              #this doesn't completely ignore x (if x is Nothing or empty list, this will return Nothing or [])
+      x >> y = x >>= \_ -> y              #this doesn't completely ignore x (the computational context is still considered)
       fail :: String -> m a
       fail msg = error msg
     instance Monad Maybe where
@@ -732,16 +741,20 @@ let can NOT be used when using compiler
       return x = [x]
       xs >>= f = concat (map f xs)
       fail _ = []
-    newtype Writer w a = Writer { runWriter :: (a, w) }
-    instance (Monoid w) => Monad (Writer a) where
-      return x = Writer (x, mempty)
-      (Writer (x,v)) >>= f = let (Writer (y, v')) = f x in Writer (y, v `mappend` v')
-  the attached value of a Writer (the right element of the pair)
-    is usually a String used for logging purpose,
-    but it can be any monoid value
-  when using Writer, use difference list as the monoid for efficient appending (++)
+    instance (Error e) => Monad (Either e) where
+      return x = Right x
+      Right x >>= f = f x
+      Left err >>= f = Left err
+      fail msg = Left (strMsg msg)
 #do notation
   do expressions are just different syntax for chaining monadic values
+    function_name = Monad value >>= (\variable -> (manipulate variable))
+    function_name = 
+      Monad value >>= (\variable ->
+      Monad (manipulate variable))
+    function_name = 
+      variable <- Monad value
+      Monad (manipulate variable)
   the 3 function declaration below is the same:
     foo :: Maybe String
     foo = Just 3 >>= (\x -> Just "!" >>= (\y -> Just (show x ++ y)))
@@ -769,6 +782,42 @@ let can NOT be used when using compiler
       (x:xs) <- Just "Hello"
       return x
   When pattern matching fails in a do expression, the fail function is called.
+
+#Writer monad
+    newtype Writer w a = Writer { runWriter :: (a, w) }
+    instance (Monoid w) => Monad (Writer a) where
+      return x = Writer (x, mempty)
+      (Writer (x,v)) >>= f = let (Writer (y, v')) = f x in Writer (y, v `mappend` v')
+  the attached value of a Writer (the right element of the pair)
+    is usually a String used for logging purpose,
+    but it can be any monoid value
+  when using Writer, use difference list as the monoid for efficient appending (++)
+#Reader monad
+    instance Monad ((->) r) where
+      return x = \_ -> x
+      h >>= f = \w -> f (h w) w
+    addStuff = (*2) >>= (\a -> (+10) >>= (\b -> return (a+b)))
+    addStuff = do
+      a <- (*2)
+      b <- (+10)
+      return (a+b)
+    addStuff 3      #returns 19
+  the function monad (->) is also called the reader monad
+    since all the functions read from a common source
+#State monad
+    newtype State s a = State { runState :: s -> (a,s) }
+    instance Monad (State s) where
+      return x = State $ \s -> (x,s)
+      (State h) >>= f
+        = State $ \s -> let (a, newState) = h s
+                            (State g) = f a
+                        in  g newState
+  stateful computation is a function
+    that takes some state
+    and returns a value along with some new state
+    (e.g. the random function)
+  State monad is used to represent stateful computation
+  (>>=) :: State s a -> (a -> State s b) -> State s b
 
 #MonadPlus
     class Monad m => MonadPlus m where

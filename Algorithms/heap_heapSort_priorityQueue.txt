@@ -1,0 +1,80 @@
+// Heap
+
+// Array: [1,2,3,4,5,6]
+// Heap:
+   1
+  / \
+ 2   3
+/ \ /
+4 5 6
+
+// Assumption: heap's first element is on index number 1 (not zero-indexed)
+// Heap has:
+// heapSize property
+
+// Get parent method
+  // Divide current node index number by 2 and
+  // round down the result to get parent node index
+// Get left child method
+  // left child index is current node index multiplied by 2
+// Get right child method
+  // right child index is current node index multiplied by 2 and then added by one
+
+//-----------------------
+// Max-heap
+// is a Heap where a node is always greater than or equal to than its children node
+
+// Max-heap has:
+
+// Float-up method: float up an element to its correct position in the heap
+  // While current element is greater than its parent and while it's not at the root of heap
+    // Exchange current element with parent
+    // Reassign pointer to point to the current element
+// Float-down method: float down an element to its correct position in the heap
+  // Find the largest between the parent and its immediate children
+  // If the parent is not the largest,
+    // switch it with the largest child and
+    // do this method again to the switched smaller element until max-heap property is satisfied
+    
+// Build-max-heap method: produces a max-heap from an unordered input array
+  // The elements in the subarray A[(floor(n/2)+1) .. n] are all leaves of the tree, and so
+  // start doing Float-down from the top non-leave element ( floor(A.length/2) ) to the bottom ( A[i] )
+  
+// Max-heap sorting method
+  // Build-max-heap of the array
+  // While heapSize is not zero
+    // Pick the root of the heap, push the whole heap array to the left, put the ex-root at the end of the heap
+    // Decrease the heap size by one
+    // Call Float-down on the heap to maintain the max-heap property
+  // Return the sorted result
+  
+//---------------------------
+// Priority queue
+// can be implemented from a Heap
+
+// Max-priority queue
+// is a priority queue implemented from a Max-heap
+
+// A max-priority queue supports the following operations:
+
+// Insert(S,x) inserts the element x into the set S, which is equivalent to the operation S=S∪{x}
+  // Increase heapSize by one
+  // Assign the new key value to the empty last position of heap
+  // Float-up the new element to its correct position
+// Maximum(S) returns the element of S with the largest key.
+  // Just return the root of the heap
+// Extract-max(S) removes and returns the element of S with the largest key.
+  // Throw heap underflow error if heapSize is less than 1
+  // Store max to be returned at the end of method
+  // Remove the last element and assign it to the root of heap
+  // Decrease heapSize by one
+  // Float-down the root of heap
+  // Return max
+// Increase-key(S,x,k) increases the value of element x’s key to the new value k,
+// which is assumed to be at least as large as x’s current key value.
+  // Throw error if new key value is less than current key value
+  // Assign new value to the key
+  // Float-up the changed key to its correct position
+
+A min-priority queue supports the operations INSERT, MINIMUM, EXTRACT-MIN, and DECREASE-KEY.
+

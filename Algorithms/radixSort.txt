@@ -1,0 +1,5 @@
+// RADIX-SORT(array, digit)
+// this sort assumes each element in the n-element array A has d digits
+// where digit 1 is the lowest-order digit and digit d is the highest-order digit
+  // for all the digit in the array (from i=1 to d)
+    // use a stable sort to sort the array on digit i

@@ -1,0 +1,31 @@
+// SWAP(firstIndex, secondIndex) to swap two elements of an array
+  // store the second element in a temporary variable
+  // store the first element in the secondIndex
+  // store the second element from the temporary variable in the firstIndex
+
+// QUICK-SORT(originalArray, startingSubarrayIndex, endingSubarrayIndex) will sort the array in-place (it will modify the originalArray)
+  // if startingSubarrayIndex < endingSubarrayIndex (if base case has not been achieved)
+    // partition the array and store the resulting partitionIndex
+    // recursively invoke QUICK-SORT both from startingSubarrayIndex to (partitionIndex - 1)
+    // and from (partitionIndex + 1) to endingSubarrayIndex
+// PARTITION(originalArray, startingSubarrayIndex, endingSubarrayIndex) for use in QUICK-SORT
+  // choose pivot
+  // "lastOfSmallerIndex" variable points to the last (most right) index of the subarray for elements that are smaller than or equal to pivot
+    // "lastOfSmallerIndex" is initialized to (startingSubarrayIndex - 1) since at first the number of smaller element is 0
+  // loop through the originalArray from startingSubarrayIndex to (and including) endingSubarrayIndex - 1 (the pivot is in endingSubarrayIndex)
+    // if the current checked element is less than or equal to pivot
+      // increment the "lastOfSmallerIndex" index so that it points to an element not yet checked or an element greater than pivot (breaking the loop invariant)
+      // swap the currently checked element with the element in the "lastOfSmallerIndex" (restoring the loop invariant)
+  // increment the "lastOfSmallerIndex" index so that it points to an element not yet checked or an element greater than pivot (breaking the loop invariant)
+  // and swap the pivot element at endingSubarrayIndex with the element in the "lastOfSmallerIndex" (restoring the loop invariant)
+  // return lastOfSmallerIndex (which now points to the pivot) to be used for the next iteration of QUICK-SORT as the new partitionIndex
+
+// RANDOMIZED-QUICK-SORT(originalArray, startingSubarrayIndex, endingSubarrayIndex)
+  // if startingSubarrayIndex < endingSubarrayIndex (if base case has not been achieved)
+    // partition the array using RANDOMIZED-PARTITION and store the resulting partitionIndex
+    // recursively invoke RANDOMIZED-QUICK-SORT both from startingSubarrayIndex to (partitionIndex - 1)
+    // and from (partitionIndex + 1) to endingSubarrayIndex
+// RANDOMIZED-PARTITION(originalArray, startingSubarrayIndex, endingSubarrayIndex) for use in RANDOMIZED-QUICK-SORT
+  // pick a randomIndex from inside the array (from startingSubarrayIndex to endingSubarrayIndex)
+  // swap the element on endingSubarrayIndex with the randomIndex (since the endingSubarrayIndex will be used as pivot in PARTITION operation)
+  // PARTITION the originalArray as usual and return the result of that PARTITION

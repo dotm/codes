@@ -1,0 +1,251 @@
+% Single-line comment
+%{ Multi-line comment %}
+
+use 'help function_name' to see function signatures
+use 'who' to see all variables in workspace
+  'whos' is a more detailed version of 'who'
+
+semicolon is used to prevent output of an expression result to be displayed
+
+semicolon can be used to chain multiple command in one line
+  command; command;
+to chain multiple command in one line while still displaying output, use comma
+  command, command
+
+#Variable assignment
+  variable_name = expression
+#Destructuring
+  [variable_name, variable_name, ...] = (expression that have multiple results)
+#The ans variable
+  any expression result not stored in a variable will be automatically stored in the 'ans' variable
+#Clear variable
+  clear                 #clear all variable
+  clear variable_name
+  
+#String output
+  disp(variable_name)
+  disp('string')
+  
+#Loading file
+  load file.dat
+  load('path/to/file.dat')
+#Saving variable to a file
+  save file.dat variable_name
+  save file.txt variable_name -ascii  #for human-readable file
+#-------------------------------------------------------------------------------------
+#Operators
+
+#Arithmetic operators: + - * / ^
+#Comparators: == != ~= <= >= < >
+#Boolean operators: & | ~
+  #Boolean data type: 1 0
+#Element wise operators: + - .* ./ .^
+    [1,2,3] .* [1,2,3] == [1,4,9]
+  use element wise operators for operating element by element on matrix or vector
+    the matrices and vectors thus must have the same size
+  element wise operators are very useful when dealing with mathematical function (e.g. x.^2 + 2.*x +2)
+
+#--------------------------------------------------------------------------------
+#If statement
+  if condition
+    statement;
+  elseif condition
+    statement;
+  else condition
+    statement;
+  end
+  
+#--------------------------------------------------------------------------------
+#Loop
+
+#For loop
+  for i = 1:100
+    % loop body
+  end
+
+#While loop
+  while condition
+    % loop body
+  end
+
+#Iterate over vector
+  v = [10,20,30,40]
+  for i = 1:length(v)
+    disp(i)           #display index
+    disp(v(i))        #display element of index i
+  end
+  for i = v
+    disp(i)           #display element of vector
+  end
+  
+#-------------------------------------------------------------------------------------
+#Function
+
+#Function definition
+  function [output_variable,output_variable,...] = function_name(input_variable,input_variable,...)
+    % function body
+    output_variable = expression;
+    ...
+  end
+#Function call/application
+  function_name(parameter, parameter, ...)
+
+#Using function handle
+  #to create anonymous function
+    function_handle_variable = @(input) function_body;
+    f = @(x) x^2 + 2*x + 1
+  #to pass function as input to another function
+    higher_order_function(@function_argument)
+
+#Reshaping
+  v = [1,2,3,4,5,6]
+  M_3x2 = reshape(v,3,2)
+    1   4
+    2   5
+    3   6
+  M_2x3 = reshape(M_3x2, 2, [])
+    1   3   5
+    2   4   6
+  column_vector = M_2x3(:)
+    [1;2;3;4;5;6]
+
+#-------------------------------------------------------------------------------------
+#Vector
+
+#Creating row vector: [1,2,3]
+#Creating column vector: [1;2;3]
+#Creating uniformly spaced vector:
+  #with colon: start:space:end
+    0:2:10              #returns 0,2,4,6,8,10
+    0:3                 #returns 0,1,2,3 (spacing default to +1)
+  #with linspace: linspace(start,end,space)
+    linspace(1,100)     #returns a vector with 100 elements with the spacing calculated evenly between 1 and 100 (1,2,3,4,...,99,100)
+    linspace(10,100,10) #returns a vector with 10 elements with the spacing calculated evenly between 10 and 100 (10,20,30,...,100)
+
+#Accessing vector element: vector(index)
+#Get vector length: length(vector)
+
+#Logical vector
+  Logical vector: a vector filled with Boolean values
+  Logical vector can be used as index to filter or map an ordinary vector in place:
+      v = [1.1, 0.9, 1.3]
+      index = (v >= 1)    #returns the logical vector [1,0,1]
+    filter in place
+      v(index)            #returns [1.1, 1.3]
+    map in place:
+      v(index) = 10       #v becomes [10, 0.9, 10]
+
+#Transpose vector
+    transposed_vector = vector'
+  use single quote to transpose a vector
+  
+#-------------------------------------------------------------------------------------
+#Matrix
+
+#Creating matrix: M_2x3 = [1,2,3;4,5,6]
+#Matrix creation function:
+  zeros, ones,
+  eye (identity matrix)
+  rand (uniformly distributed random number)
+  randi (uniformly distributed random integer)
+  randn (normally distributed random number)
+  diag (diagonal matrix)
+
+You can use all accessing below to manipulate the data of the matrix
+  e.g. M(:, 2) = [0;0;0;0]  #set column 2 to new elements
+#Accessing matrix element:
+    M = [ 1 ,2 ,3 ,4 ,5  ;
+          6 ,7 ,8 ,9 ,10 ;
+          11,12,13,14,15 ;
+          16,17,18,19,20 ]
+  #one element by index: Matrix_name(row_index, col_index)
+    M(2,3) == 8
+  #subset of row or column:
+    row = 2
+    cols = 2:4
+    subset = M(row,cols)
+  #multiple subset of rows or columns:
+    rows = 2:4
+    cols = [1,2,5]
+    M(rows,cols)
+      #returns:
+        6    7   10
+       11   12   15
+       16   17   20
+  #all elements of row(s) or column(s) using colon:
+    column_2 = M(:, 2)
+    row_2and3 = M([2,3], :)
+    
+#Get matrix dimension: size(M)
+  #with destructuring: [m,n] = size(M)
+
+#Combining/Concatenating Matrix
+    A = [ 1 ,2 ,3 ;
+          4 ,5 ,6 ]
+    B = [ 11,12,13 ;
+          14,15,16 ]
+  #Horizontal concatenation: [A,B]
+    1    2    3   11   12   13
+    4    5    6   14   15   16
+  #Vertical concatenation: [A;B]
+     1    2    3
+     4    5    6
+    11   12   13
+    14   15   16
+
+#-------------------------------------------------------------------------------------
+#Plotting
+
+See documentation of Matlab to see all function signature of the plotting function
+  function_name(vector_y)
+  function_name(vector_x, vector_y)
+#Line plot: plot(vector_x, vector_y, LineSpec)
+  #manually:
+    x = [1,2,3,4]
+    y = [1,3,5,7]
+    plot(x,y)
+  #automatically:
+    x = linspace(-1,1)    #you can also use colon to create uniformly spaced vector (e.g. -1:0.1:1)
+    y = x.^2 + (2.*x) + 2
+    plot(x,y,'m:s')
+#Bar plot: bar(vector_x, vector_y, style)
+#Histogram: hist(vector_x, vector_y)
+#Color map: imagesc(M)
+  #settings for color map:
+    colorbar        #display value of color in a bar
+    help colormap   #colormap color palette
+
+#Graph annotation function: xlabel, ylabel, title, legend
+  x = -1:0.1:1
+  y = x.^2
+  plot(x,y,'m:s')
+  xlabel('time [s]')
+  ylabel('amplitude')
+  title('my plot')
+  legend('y(t)')
+#Change axis scale of graph
+  axis([x_min, x_max, y_min, y_max])
+
+#Drawing multiple plot in one graph
+  'hold on' retains plots in the current axes so that new plots added to the axes do not delete existing plots
+    x = vector_x
+    y = vector_y
+    plot(x,y)
+    hold on
+    x = vector_x
+    y = vector_y
+    plot(x,y)     #this will be plotted in the same graph
+  'hold off' sets the hold state to off so that new plots added to the axes clear existing plots and reset all axes properties
+
+#Display multiple plot using figure function:
+  figure(1);plot(x,y1);
+  figure(2);plot(x,y2);
+#Display multiple graph in one plot:
+  subplot(rows,cols,selected)           #divides graph into rows x cols grid, and access the selected grid
+  subplot(1,2,1)
+
+#Clear figure: clf
+#Clear and close plot: close
+
+#Print plot into an image
+  print -dpng 'plot_name.png'

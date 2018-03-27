@@ -1,6 +1,7 @@
 % Single-line comment
 %{ Multi-line comment %}
 
+use 'clc' to clear console screen
 use 'help function_name' to see function signatures
 use 'who' to see all variables in workspace
   'whos' is a more detailed version of 'who'

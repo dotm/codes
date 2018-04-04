@@ -1,475 +1,496 @@
-#Escape sequences basic
-	\\ and \' and \" is escape character
-	\a			bell (BEL)
-	\b			backspace (BS)
-	\f			formfeed (FF)
-	\n			linefeed (LF)
-	\N{name}	Character named name in the Unicode database (Unicode only)
-	\r 			Carriage Return (CR)
-	\t 			Horizontal Tab (TAB)
-	\s			space
-  #Escape character must be in '' (a string)
-#Line break(\)
-	codes \
-	more codes
+In Python, whitespace is important
+nesting is marked by indentation
+don't mix tab indentation and spaces indentation
 
-#Print statement
-	print identifier
-	
-#Variable assignment statement
-    varIdentifier = value
+# Comment
 
-#Comments
-#single line comment			"""multi line comment"""
-	#you can print the text inside """text"""; but not after #text
+#Variable assignment
+  #local: variable_name = expression
+  #nonlocal:                          #works like closure
+    nonlocal variable_name            #you don't have to declare nonlocal if you only want to read variable_name
+    variable_name = expression        #this will assign variable_name in the closest enclosing scope (excluding global)
+  #global:
+    global variable_name
+    variable_name = expression
+#Del statement
+  'del' can be used to delete (local, nonlocal, or global) variable:
+    del variable_name
+#Multiple assignment
+  a, b = 0, 1
+  a, b = b, a
+#The _ variable
+  in interactive mode, the last printed expression is assigned to the variable _
 
-#Python's keywords
-and 		def 		.exec 		if 			not 		return
-assert		del 		.finally 	import 		or 			try
-break		elif 		for 		in 			pass 		while
-class 		else 		from 		is 			print 		yield
-.continue 	except		global 		.lambda		raise
-  #assert
-	assert condition 			#is semantically similar as below if code block
-	if not condition:			#if condition is false raise an AssertionError
-		raise AssertionError()
+#String output: print('string')
+  print(variable_name, variable_name, 'string') #this will automatically add space for each comma
+  print(string, end=',')  #replace the default newline ending of print with comma
+  print(string, end='')   #remove the default newline ending of print
+#Raw string output: print(r"escape sequence like \n will be printed as is")
+#Multi-line string output:
+  print ('string\n'
+        'string')
+print("""\
+the \ on the first line is to not print the \n of that line
+string
+string
+""")
+
+#Pass statement
+  'pass' is a placeholder for expression or code block used in scaffolding
+
+#Data types
+  Number: int float decimal fraction complex
+  Sequence: string list tuple range
+  Iterator
+  Generator
+#Type reflection:
+  type(object) is type      #check if object is an instance of type
+  issubclass(object, type)  #check if object is a subclass of type
+  isinstance(object, type)  #check if object is an instance of type or any subclass of type
+
+#-------------------------------------------------------------------------------------
+#Exception Handling
+  There are (at least) two distinguishable kinds of errors: syntax errors and exceptions
+  Errors detected during execution are called exceptions
+  Programs may name their own exceptions by creating a new exception class
+    Exceptions should typically be derived from the Exception class, either directly or indirectly
+    Exception classes are usually kept simple,
+      often only offering a number of attributes
+      that allow information about the error
+      to be extracted by handlers for the exception.
+  
+#try-catch-else statement
+  try:
+    statements
+  except ValueError:                            #conditional catch
+    statements
+    raise                                       #re-raise the ValueError exception
+  except (RuntimeError, TypeError, NameError):  #multiple condition
+    statements
+    statements
+  except ArithmeticError as e:
+    exception_argument = e.args                 #getting arguments of an exception
+  except:                                       #wildcard that catch all other exceptions
+    pass                                        #do nothing
+  else:
+    statements                                  #executed when no exceptions occurred in the try block
+  finally:
+    statements                                  #always executed no matter what happens
+
+#Raising exception
+  The sole argument to raise must be either
+    an exception instance or
+    an exception class (a class that derives from Exception).
+  If an exception class is passed,
+    it will be implicitly instantiated by calling its constructor with no arguments:
+      raise ValueError  # shorthand for 'raise ValueError()'
+#-------------------------------------------------------------------------------------
+#Operators
+
+#Arithmetic operators: + - * / // ** %
+#Comparators:
+    == != <= >= < >
+    is 'is not'
+    in 'not in'
   #is vs ==
-	a is b #evaluates whether a and b have the same memory address
-	a == b #evaluates whether a and b have the same value
-  #try, except, and raise
-	try:								#try the code block below
-		pass
-	except ExceptionName:				#if exception called ExceptionName occurs do the code block below
-		raise ExceptionName('strings')	#raise ExceptionName error ->	ExceptionName: strings
-  #break: exit the current loop
-
-#Built-in Functions
-abs()			divmod()		input()			open()			staticmethod()
-all()			enumerate()		int()			ord()			str()
-any()			eval()			isinstance()	pow()			sum()
-basestring()	execfile()		issubclass()	print()			super()
-bin()			file()			iter()			property()		tuple()
-bool()			filter()		len()			range()			type()
-bytearray()		float()			list()			raw_input()		unichr()
-callable()		format()		locals()		reduce()		unicode()
-chr()			frozenset()		long()			reload()		vars()
-classmethod()	getattr()		map()			repr()			xrange()
-cmp()			globals()		max()			reversed()		zip()
-compile()		hasattr()		memoryview()	round()			__import__()
-complex()		hash()			min()			set()	
-delattr()		help()			next()			setattr()	
-dict()			hex()			object()		slice()	
-dir()			id()			oct()			sorted()
-#Non-essential built-in function
-apply(), buffer(), coerce(), and intern()
-
-#Pass: is a placeholder for expression or code block, used in scaffolding
-#Enumerate
-	for i in range(len(L)):		#same as below
-		item = L[i]
-		pass
-	for i, item in L:			#item is a placeholder
-		pass
-#Type conversion
-	int(3.2); bool(1); float("12"); str(32); list(12345)
-		#Type coercion: 3/2. -> 1.5
-#Radix/Number base conversion
-	#from decimal to binary, octal, or hexadecimal
-		bin() -> 0b; oct() -> 0; hex() -> 0x
-	#to decimal
-		int("number", base)		#never forget the ""
-#Length of object
-	len("Charlie")
-#Mathematics operations
-	abs(), divmod(), min(), max(), sum()
-#Check data type: type(data)
-	#Data/value types: float,integer, and booleans
-#Range function
-	range(stop)					#e.g. range(6) 		# => [0,1,2,3,4,5]		#default start from 0, end with >
-	range(start, stop)			#e.g. range(1,6) 	# => [1,2,3,4,5]		#default step is 1
-	range(start, stop, step)	#e.g. range(1,6,3)	# => [1,4]
-	
-#--------------------------------------------------------------------------------
-#Keyboard input
-raw_input type's is string
-	varIdentifier = raw_input("prompt statement")
-	name = raw_input ("What...is your name? ")
-
-#Command line input using argv
-argv type's is string
-	from sys import argv						#in python
-	python file_name.py argument1 argument2		#in command line
-  #Unpacking argv in python
-	script_name, variable1, variable2=argv		#number of var must be equal to arguments
-	
-#--------------------------------------------------------------------------------
-#Datetime module
-    from datetime import datetime
-    now = datetime.now()
-    print '%s/%s/%s %s:%s:%s' % (now.month, now.day, now.year,now.hour, now.minute, now.second)
-
+    a is b #evaluates whether a and b have the same memory address
+    a == b #evaluates whether a and b have the same value
+#Boolean operators: and or not
+  #Boolean data type: True False
+#Chaining operators
+  1 < 2 < 3
+  True and not False
+  
 #--------------------------------------------------------------------------------
 #String
-In Python, string are immutable compound data type consisting of letters
-	greeting = "Hello, world!"
-	greeting[0] = 'J' 			#TypeError since string are immutable
+  'single line string "with inner quotes" '
+  "single line string 'with inner quotes' "
+  'single line string \'with inner quotes\' '
+  "single line string \"with inner quotes\" "
+  '''multi line string'''
+  """multi line string"""
 
-#Three ways to create strings: 'Alpha'; "Bravo"; str(3)
+#concatenate: string + string
+#repeat: string * int
+#access by index: string[index]
+  string[-1]    #access last character
+#slicing: string[start_index, end_index]
+  string[:2]    #slice from start of string
+  string[2:]    #slice to end of string
+  string[-2:]   #slice from second last to end of string
+#length: len(string)
 
-#Combining strings and variables (Concatenation)
-    print 'This is a '+self.color+' '+self.model+' with '+str(self.mpg)+' MPG.'
-    print 'Do','re',3,'fa',		#This will print a line of code (the comma will automatically create a space)
-
-#String methods
-"Delta".upper()
-"Echo".lower()
-Methods that use dot notation only work with strings. On the other hand, len() and str() can work on other data types.
-
-#String Formatting Operator
-g = "Golf"; h = "Hotel"
-print "%s, %s" % (g, h)
-
-#String Slicing
-See List Slicing
-
-#--------------------------------------------------------------------------------
-#Arithmetic operators: + - * / ** % //(floor division a.k.a div)
-	#mod can be used to:
-		#check if x is divisible by y
-			#x%y==0
-		#extract the right-most digit(s) from a number
-			#x%10 or x%100 etc
-	#floor division can be used to:
-		#extract the left-most digit(s) from a number
-			#x//10
-	#floor division
-		9.0//2.0 -> 4.0
-	#Operations on strings: + *
-		#Concatenation: joining string operands by linking them end-to-end.
-	#Order of operations: PEMDAS
-
-#Boolean expressions
-	#evaluates to true or false
-#Comparators/Comparison operators: == != <> <= >= < >
-#Assignment operator: e.g. a += b		#the + can be replaced by other arithmetic operator
-#Boolean operators/Logical operators
-	#hierarchy of boolean operators: not, and, or
-#Generate random integer
-	random.randint(low,high)		#low >= x <= high
-	
-#--------------------------------------------------------------------------------
-#Function
-def funcID(parameter1,parameter2):
-    code block of statements, mind the indentation
-  #Optional parameter:	funcID(parameter=None)		#None can be replaced by any data type
-  #Assigning global variable inside function
-	la=0
-	def y(x):
-	  global la		#la is global
-	  la=x			#reassign la
-  #Function composition: function inside other function
-  #Function call		funcID(argument1, argument2)
-  #Variable and parameter defined inside function are local
-  #Recursion: The process of calling the function that is currently executing.
-	def factorial(n):
-		if n == 0:
-			return 1
-		else:
-			recurse = factorial(n-1)
-			result = n * recurse
-			return result
-  #infinite recursion: A function that calls itself recursively without ever reaching the base case. Eventually, it causes a runtime error.
-  #base case: A branch of the conditional statement in a recursive function that does not result in a recursive call.
-
-#Return statement: allows you to terminate the execution of a function before you reach the end. Must be inside function
-	codes
-	return value 		#if value is omitted, it will return None
-	dead codes			#code that appears after a return statement, or any other place the flow of execution can never reach
-		#it is a good idea to ensure that every possible path through the program hits a return statement for debugging purpose
-
-#Modules
-"""	from math import sqrt					then sqrt(x)
-	import math 							then use math.sqrt()	is called dot notation
-	import math as make						then use m.sqrt()
-	from math import *						then sqrt(x)			* means all
-	from math import sin, cos				#multiple import
-	from math import pow as p, sqrt as s	#multiple import with as
-	"""
-
-#--------------------------------------------------------------------------------
-#Conditional statements
-"""Header
-		Body"""
-if x > 0:						after if state conditions
-	print "x is positive"		then state the block in the body
-  #Alternative execution: using else to make branch(es)
-  #Chained conditional: using elif(s) to make branches			elif chains will stop once one elif condition is fulfilled
-  #Nested conditional: if/else inside if/else
-
-#--------------------------------------------------------------------------------
-#While loop
-	while condition:
-		do this while condition is true
-	#You can use True as condition to create a while loop without condition; don't forget to use break to avoid infinite loop
-	#Using while loop to check user input to see if it is valid.
-		choice = raw_input('Enjoying the course? (y/n)')
-		while choice!='n' and choice!='y' :  
-			choice = raw_input("Sorry, I didn't catch that. Enter again: ")
-#While/else
-	while condition:
-		do this while condition is true
-	else:												#the else's indentation must be similar to while's
-		do this whenever condition is false
-
-#For loop
-for i in range():
-	"""do this"""
-	#You can use for in loop to iterate the member of an list(array) or dictionary(object)
-		for key in dict_name:			#key is an iterator placeholder
-			print key, dict_name[key]	#the key will print the key, the dict_name[key] will print the value
-	#Using enumerate to give index to a list when iterating
-		for index, item in enumerate(list_name):
-			print index+1, item
-	#Using the built-in zip function to iterate over two lists at once
-		#zip will create pairs of elements when passed two or more lists, and will stop at the end of the shorter list.
-		for a, b in zip(list_a, list_b):
-			do this
-	#Print out each individual character in a string
-		for i in word:
-			print i,		#the comma makes statement keeps printing on the same line.
-#For/else
-	#Same syntax as while/else
-	#else statement is executed after the for one time, but only if the for ends normally — that is, not with a break. 
+printf
+split (into array of substring)
+strip
+reverse
+uppercase
+lowercase
+capitalize
+interpolation
 
 #--------------------------------------------------------------------------------
 #List
-Mutable: can be changed after they are created
-  list_name = [item_1, item_2]		#the item can be ANY data type, including dictionary
-  empty_list = []
-	#Access by index: 
-		list_name[0] 	#access first index
-		list_name[-2] 	#negative index: count backward from the end of list (last == -1)
-	#Reassigning
-		list_name[0]='la'
-		list_name[0]='lala'
-	#Appending & List Length
-		list.append('data')			
-		len(list_name)
-	#Concatenating lists
-		x=[1,2]
-		y=[3,4]
-		x+y=[1,2,3,4]
-	#Inserting new item
-		list_name.insert(index number, data) 		#INDEX not data
-		#index number can be integer or var assigned to an int; move everything after new data one step back
-	#List slicing						#You can do this with string
-	list_name[start:end:stride]    # zero-index, start (inclusive), end (exclusive), stride is step 
-		new_list = list_name[:2]   # The first and second items (index zero and one)
-		new_list = list_name[2:4]  # Third and fourth items (index two and three)
-		new_list = list_name[4:]   # The last two items (index four and five)
-		new_list = list_name[x::2] # Start from x (x is optional) to the last, stride is 2
-		new_list = list_name[::-1] # Reverse a list
-	#Remove elements from lists
-		list_name.remove(data)		#will remove the ACTUAL ITEM if it finds it
-		list_name.pop(index) 		#will remove the item BY INDEX from the list and return it to you
-		del(list_name[index]) 		#is like .pop (remove item at the given index), but it won't return it
-	#Search index in a list
-		list_name.index(value)
-	#Sorting a list
-		list_name.sort()	#sorts the list in-place, mutating the list indices.
-		sorted() 			#returns a new sorted list, leaving the original list unaffected. 
-	#Unpacking list
-		a,b,c..n=list_name	#n==len(list_name)
+  mutable, zero index, variable-length, can be heterogeneous but usually is homogeneous
+#length: len(list)
+#concatenate: list + list
+#repeat: list * int
+#extend: list.extend(iterable)
+#insert element: list.insert(index, element)
+#remove
+  by element: list.remove(element)
+  by index: del list[index]
+  by slice: del list[start:end]
+  all items: del list[:]
+  all items: list.clear()
+#search index of element: list.index(element[, start[, end]])
+#access by index: list[index]
+  list[-1]    #access last character
+#pop by index: list.pop(index)
+#edit by index: list[index] = value
+#edit by slice: list[start_index, end_index] = [value]
+#slicing: list[start_index, end_index]
+  list[:2]    #slice from start of list
+  list[2:]    #slice to end of list
+  list[-2:]   #slice from second last to end of list
+#shallow copy:
+  list[:]     #using slicing
+  list.copy()
+#check if an element is in list: element in list
+#count element occurrence: list.count(element)
+#sort list: list.sort(key=None, reverse=False)
+#reverse list: list.reverse()
 
-	#Making x*y matrix
-		matrix=[]
-		for i in range (x):
-			board.append(['data']*y)
-		#x is the number of row, y is number of column
-		#Display the matrix with line break
-			def funtionName(matrixList):
-				for i in matrixList:			#This will print the list inside the matrixList
-					print i						#to print all the list in one list use double for loop
-	#Join list into a string
-		'Separator'.join(list_name)
-	#Split string into a list
-		str.split('text')
-		'text'.split('delimiter')
-	#Specifying an element in a 2-dimensional list
-		list_name[x][y]			#ZERO INDEX, x is an element in the outer list(row) and y is an element in the inner list(column) 
-
-	
-#Dictionary
-dict = {'key1' : 1, 'key2' : [2,'lala'], 'key3' : []}		#you can use int as key; [] is list; don't forget the '' , and :
-	#Accessing value by key
-		dict['key#']
-		dict.get('key#', None)			#None is optional and can be replaced by any string ('Not found'); it means if key doesn't exist, return None
-	#Mutation
-		dict_name[new_key] = new_value
-	#Removing item/key-value pair
-		del dict_name[key_name]
-	#Associating new value to an old key by assigning a value to the key
-		dict_name[key] = new_value
-	#Looping through dictionary
-		#See for loop below
-		for key in dict_name: 
-			print dict_name[key]  # prints every value 
-		for key, value in dict_name.items():			#key and value are placeholder, items is necessary (you can also use iteritems)because
-			print key, value							#iterating over a dictionary iterates through the keys, not the key/value pairs.
-	#Iterating dictionary with dot notation
-		dict_name.items() 	#returns an array of tuples with each tuple consisting of a key/value pair from the dictionary
-		dict_name.keys() 	#returns an array of the dictionary's keys
-		dict_name.values() 	#returns an array of the dictionary's values
-	
+#Stack (using ordinary list)
+  #add to last: list.append(element)
+  #get last: list.pop()
+#Queue (using collections.deque)
+    from collections import deque
+    queue = deque([element, element, element])
+  #add to last: queue.append(element)
+  #get first: queue.popleft()
+  
+#List Comprehensions
+  [(x, y) for x in [1,2,3] for y in [3,1,4] if x != y]
+  
 #--------------------------------------------------------------------------------
-#List comprehension
-new_list = ['insert this data to new_list' for x in range() if conditions]
-new_list = [x for x in range(1,6)]
-	new_list=range(1,6)					#a shorthand for the above; use this if you just want to generate number list without conditions
-new_list = [x*2 for x in range(integer) if condition]		#adding operators and conditions
-new_list = ['C' for x in range(6)]		#add 'C' to new_list 6 times
+#Range: range(start, end, step)
+  this returns a range object
+#Get list representation of range object
+  list(range(-2,5,3))   ->  [-2, 1, 4]
 
-#Class 
-	#Creating class with initialization method
-	class NewClass(object):					#the (object) means that the class will inherit from 
-		def __init__(NewClass parameters)	#the first parameter will refer to the object being created, self is used by convention
-			self.parameter2=parameter2		#the __init__ is always there by default even if you don't see or type it
-			self.parameter3=parameter3
-			etc.
-		attributeName=value
-		def methodName(parameters):			#ALWAYS put self as method's first parameter
-			pass
-#Class scope: You can substitute variables(attribute) with function(method)
-	#Global variables: available everywhere
-	#Member variables: available to members of a certain class			#like attributeName above
-	#Instance variables: available to particular instances of a class	#e.g. self.attribute=attribute	#change the self with the class name
-#Creating (instantiating) an object as an instance of class:
-	newObject=NewClass(parameter2, parameter3, etc)				#the first parameter(self) is not inputted to the object argument
-	#You can call the self.something with the object name		#e.g. newObject.something	don't forget the (parameters) if something is method
-#Modifying / Override property
-	def lala(self):							#using a method is optional but useful when you plan to reuse it multiple times
-		self.attributeName=newValue			#the object property will be reassigned without changing the class property
-	
-#Inheritance: the process by which one class takes on the attributes and methods of another, is used to express an is-a relationship
-class DerivedClass(BaseClass):
-    '''code goes here'''
-	#You can override an attribute by reassigning it in the DerivedClass (inheritance follow order of specification)
-	#You can directly access the attributes or methods of a superclass with Python's built-in super call.
-		class Derived(Base):
-		   def m(self):								#the m in this line and the line below can (should) have different name to avoid confusion
-			   return super(Derived, self).m()		#m() is a method from the base class
-	#When you redefine the __init__ parameters of the DerivedClass, you need to include the original parameters (unless you want to omit it intentionally)
-	#Inheriting the __init__ function
-	  #with super call
-		class Child(Parent):
-			def __init__(self):
-				super(Child, self).__init__()
-	  this will inherit the direct ancestor __init__ of the class Child
-	  will ONLY work if the child of object inherit from object: class ClassName (object)
-	  #direct call
-		class Child(Parent):
-			def __init__(self):
-				ClassName.__init__()
-	  this will inherit the __init__ of the class ClassName
-
-#Overriding the built-in __repr__() method (representation)
-	by providing a return value in this method,
-	we can tell Python how to represent an object of our class,
-	for instance, when using a print statement.
-	
-	def __repr__(self):
-        return "(%d, %d, %d)" % (self.x, self.y, self.z)
-    	
-#Class example ---------------------------------------------------------------------------
-class Employee(object):
-    """Models real-life employees!"""
-    def __init__(self, employee_name, contract_time):
-        self.employee_name = employee_name
-        self.contract_time = contract_time
-		
-    def calculate_wage(self, hours):
-        self.hours = hours
-        return hours * 20.00
-
-# Add your code below!
-class PartTimeEmployee(Employee):
-    def __init__(self, employee_name, temporary_id):
-        self.employee_name = employee_name									#include the original parameters unless you intentionally omit it
-		self.temporary_id = temporary_id
-
-    def calculate_wage(self, hours):										#overriding the method
-        self.hours = hours
-        return hours * 12.00
-        
-    def full_time_wage (self, hours):
-        return super(PartTimeEmployee,self).calculate_wage(hours)			#the super built-in call
-        
-milton= PartTimeEmployee('Milton')
-print milton.full_time_wage (10)
->>>200.0
 #--------------------------------------------------------------------------------
-#Lambda Syntax
-new_list=filter(lambda x: condition, my_list)	#if x agree with conditions, let it in to the new_list
-my_list = range(16)
-new_list=filter(lambda x: x % 3 == 0, my_list)
-	#Lambdas are useful when you need a quick function to do some work for you.
-	#If a function will be used over and over, use def and give that function a name.
-	
-	#Writing binary numbers
-		#Starting the number with 0b(zero b). The numbers then can be operated on like any other number!
-			0b1001+0b1101
-		#bin() function. takes an integer as input and returns the binary representation of that integer in a STRING
-	
+#Tuple
+  immutable, zero index, fixed-length, can be homogeneous but usually is heterogeneous
+#defining tuple (tuple packing)
+  empty tuple                     : variable_name = ()
+  singleton tuple                 : variable_name = element,
+  tuple with more than one element: variable_name = element, element, element
+#sequence unpacking with tuple
+  a, b, c = (element, element, element)
+  
 #--------------------------------------------------------------------------------
-#Bitwise operations 
-	#Left bit shift operators(<<)  
-		0b000001 << 2 == 0b000100 (1 << 2 = 4)
-	#Right bit shift (>>)
-		0b0010100 >> 3 == 0b000010 (20 >> 3 = 2)
-			mathematically equivalent to floor dividing and multiplying by 2 (respectively) for every time you shift
-	#Logic bitwise operators: AND &		OR |		XOR ^		NOT ~
-		Logical operators deal with statements. Bitwise operators deal with binary representations of data.
+#Set
 
+#Defining set
+  empty set     : set()
+  from string   : set(string)   #will contains all unique character of the string
+  non-empty set :
+    set(element, element)
+    {element, element}
+#Set operators
+  and                 : set & set
+  or                  : set | set
+  difference          : set - set
+  symmetric difference: set ^ set
+  
+#Set Comprehensions
+  {x for x in 'abracadabra' if x not in 'abc'}
+
+#--------------------------------------------------------------------------------
+#Dictionaries
+
+#Defining dictionary
+  {key: value, key: value}
+  dict([(key, value), (key, value)])
+  dict(key=value, key=value)
+#get all keys: list(d.keys())
+#get all sorted keys: list(sorted(d.keys()))
+#delete a key: del key
+#check key membership: key in dict
+
+#--------------------------------------------------------------------------------
+Conditional
+
+#If statement
+  if condition:
+    statement
+  elif condition:
+    statement
+  else:
+    statement
+
+#--------------------------------------------------------------------------------
+Loop
+  Loop statements may have an else clause which is executed when 
+    the loop terminates through exhaustion of the list (with for)
+    or when the condition becomes false (with while),
+    but not executed when the loop is terminated by a break statement.
+  The continue statement, continues with the next iteration of the loop
+  The break statement, breaks out of a loop
+  
+#While loop
+  while condition:
+    statements
+  else:
+    statement
+
+#For loop
+  for i in range(5):
+    print(i)
+  else:
+    statement
+#Iterate over list by element
+  for element in list:
+    print(element)
+#Iterate over list by index
+  for i in range(len(list)):
+    print(i, list[i])
+#Iterate over list by index and element
+  for index, value in enumerate(list):
+    print(index, value)
+#Iterate over list copy
+  for element in list[:]:
+    print(element)
+#Iterate over dictionary
+  for key, value in dictionary.items():
+    print(key, value)
+#Iterate over 2 sequences
+  for a, b in zip(sequence, sequence):
+    loop_body
+#Iterate over a sequence in reverse
+  for i in reversed(range(5)):
+    print(i)
+#Iterate over a sequence in sorted order
+  for i in sorted(sequence):
+    print(i)
+
+#--------------------------------------------------------------------------------
+#Function
+  defining function in python create a function object
+    function is first class object in python
+
+#Defining function
+  def function_name(parameter, parameter):
+    function_body
+    return value    #if you don't return any value, the default return value is 'None'
+#Default parameter
+  def function_name(parameter = default_value):
+    function_body
+    
+#Calling function
+  #using ordinary positional argument: function_name(argument, argument)
+  #using keyword argument: function_name(argument, parameter_name = argument)
+    if you use any positional argument, keyword argument must be after all positional argument
+  #with sequence unpacking:
+    function_name(*list)
+    function_name(*tuple)
+    function_name(**dictionary)
+    
+#Variadic function
+  #definition:
+    def function_name(normal_parameter, normal_parameter, *list_parameter, **dictionary_parameter):
+      function_body
+  #call:
+    function_name(
+      argument, argument,
+      list_parameter_value, list_parameter_value,
+      dictionary_parameter_key = dictionary_parameter_value,
+      dictionary_parameter_key = dictionary_parameter_value
+      )
+
+#Lambda Expressions (Anonymous function)
+  lambda parameter, parameter: expression
+  lambda x, y: x + y
+  
+#Documentation Strings (docstring)
+  def function_name(parameter, parameter):
+    """
+    The first line should always be a short, concise summary of the object’s purpose (begin with a capital letter and end with a period).
+    
+    If there are more lines in the documentation string, the second line should be blank,
+    visually separating the summary from the rest of the description. 
+    """
+    function_body
+#Get function docstring
+  print(function_name.__doc__)
+  
+#Function Annotations
+  def function_name(parameter: type, parameter: type = default_value) -> return_type:
+    function_body
+    
 #--------------------------------------------------------------------------------
 #File I/O
-	#Opening a text file
-		my_file=open('file_name.txt','r+')			#you can use other varID other than my_file
-		#You can open files in 4 modes:
-			write-only mode ("w")
-			read-only mode ("r")
-			read and write mode ("r+")
-			append mode ("a", which adds any new data you write to the file to the end of the file)
-	#Close file
-		my_file.close()
-		#ALWAYS remember to close file after opening it. Why? 
-			During the I/O process, data is buffered: held in a temporary location before being written to the file.
-			Python doesn't flush the buffer (write data to the file) until it's sure you're done writing. 
-			One way to do this is to close the file. If you write to a file without closing, the data won't make it to the target file.
-	#Writing a file
-		my_list = [i**2 for i in range(1,11)]
-		my_file = open("output.txt", "r+")
-		for i in my_list:
-			my_file.write(str(i)+'\n')				#You can only write strings, hence the str()
-		my_file.close()
-	#Reading a file
-		my_file=open('output.txt','r')
-		print my_file.read()
-		my_file.close()
-		#Reading line by line
-			print my_file.readline()				#instead of just read all of them
-	#You can nest 'w' write file statement inside 'r' read-only
-		read_file = open("text.txt", "r")
-		write_file = open("text.txt", "w")
-		write_file.write("Not closing files is VERY BAD.")
-		write_file.close()
-		print read_file.read()
-		read_file.close()
-	#Using with/as to automatically close the file
-		with open("file_name", "mode") as my_file:
-			'''Read or write to the file'''
-			e.g. my_file.write('strings')
-	#Check if file is closed
-		my_file.closed	-> return a boolean value
-		#Using if statement
-			if my_file.closed==False:			#You can change the condition to != True
-				my_file.close()
+  #open function:
+      f = open('workfile', 'w')
+      read_data = f.read()
+      f.close()
+    open() returns a file object, and is most commonly used with two arguments: open(filename, mode).
+  #with statement
+      with open('workfile') as f:
+        read_data = f.read()
+    using with statement, you don't have to manually close the file
+
+#--------------------------------------------------------------------------------
+#Module
+  module is used to store constant and function
+  a module file can be imported from another python file or executed from the command line
+  A module can contain executable statements as well as function definitions.
+    These statements are intended to initialize the module.
+    They are executed only the first time the module name is encountered in an import statement.
+    They are also run if the file is executed as a script.
+  When you run a Python module in command line: python module_name.py <arguments>
+    the __name__ is set to "__main__"
+    which means you can make the file usable as a script as well as an importable module by adding this:
+      if __name__ == "__main__":
+        import sys
+        commandLineArgument = sys.argv[1]
+
+#Qualified import: import module_name
+#Selective import: from module_name import function_name, constant, other_module
+#Import as (alias):
+  import module_name as alias
+  from module_name import function_name as alias
+
+#dir function
+  dir() is used to find out which names a module defines (function, variable, other imported module)
+    dir(module_name)  #list the names defined in module_name
+    dir(builtins)     #list the names of built-in functions and variables
+    dir()             #list the names you have defined currently
+    
+#Packages
+  The __init__.py files are required to make Python treat the directories as containing packages
+     __init__.py can just be an empty file,
+       but it can also execute initialization code for the package
+       or set the __all__ variable
+#Example package
+  sound/
+    __init__.py       #Initialize the sound package
+    effects/
+      __init__.py
+      echo.py
+      surround.py
+      ...
+    filters/
+      __init__.py
+      equalizer.py
+      ...
+#Import from package
+  import sound.effects.echo
+    sound.effects.echo.echofilter() #calling the function
+  from sound.effects import echo
+    echo.echofilter()               #calling the function
+  from sound.effects.echo import echofilter
+    echofilter()                    #calling the function
+#Intra-package References
+  !surround.py
+  from . import echo
+  from .. import filters
+  from ..filters import equalizer
+  
+#Manage Packages Dependecies using Virtual Environment (venv) and pip
+  https://docs.python.org/3.6/tutorial/venv.html
+  
+#--------------------------------------------------------------------------------
+#Class
+  When you define a class, a class object is created
+    the class object name is the name given in the class definition
+  Class objects support two kinds of operations: attribute references and instantiation
+  instance_method definition must always have 'self' as its first parameter
+    the 'self' will be supplied when the method is called using dot operators:
+      ClassName.instance_method(object, arguments) := object.instance_method(arguments)
+#Self keyword
+  the self is a stand-in for the object that will be instantiated from the class
+#Multiple inheritance name resolution
+  For most purposes, in the simplest cases,
+    you can think of the search for attributes inherited from a parent class as
+    depth-first, left-to-right, not searching twice in the same class where there is an overlap in the hierarchy (diamond inheritance)
+  the method resolution order changes dynamically to support cooperative calls to super().
+    This approach is known as call-next-method
+  
+#Creating class
+  class ClassName:
+    """docstring"""
+    
+    class_variable = 1234
+    
+    __private_class_variable = 'lala'
+    
+    def class_method():
+      return 'hello world'
+    
+    def __init__(self, parameter):                #initialization (init method)
+      self.instance_variable = parameter
+      self._private_instance_variable = 'lolo'
+    
+    def _private_instance_method(self):
+      print('private_instance_method')            #notice the 'self' doesn't have to be used
+    
+    def instance_method(self, parameter):
+      self._private_instance_method()            #call private_instance_method
+      print(self._private_instance_variable)     #access private_instance_variable
+      print(self.__private_class_variable)        #access private_class_variable
+      print(self.class_variable)                  #access class_variable
+      print(self.instance_variable + parameter)   #access instance_variable
+  
+#Instantiating class
+  object = ClassName(arguments)
+  
+#Get class attribute: ClassName.class_variable
+#Get object attribute: object.instance_variable
+#Call class method: ClassName.class_method(arguments)
+#Call object method: object.instance_method(arguments)
+
+#Inheritance
+  #Inheriting class
+    class DerivedClassName(BaseClassName):
+      statements
+    class DerivedClassName(module_name.BaseClassName):
+      statements
+  #Attribute and method overriding
+  #Access superclass attribute and method
+    BaseClassName.method(self, arguments)
+    BaseClassName.class_variable            #to be able to access instance_variable, call the __init__ of BaseClassName from the __init__ of DerivedClassName
+#Multiple Inheritance
+  class DerivedClassName(Base1, Base2, Base3):
+    statements
+    
+#Reflection (list all attributes or methods): dir(variable_name)
+
+#Iterator
+  iterator is used with for in loop
+  to add iterator behavior to your classes
+    define an __iter__() method which returns an object with a __next__() method
+    If the class defines __next__(), then __iter__() can just return self
+#Example iterator and usage
+  class Reverse:
+    """Iterator for looping over a sequence backwards."""
+    def __init__(self, data):
+        self.data = data
+        self.index = len(data)
+    def __iter__(self):
+        return self
+    def __next__(self):
+        if self.index == 0:
+            raise StopIteration
+        self.index = self.index - 1
+        return self.data[self.index]
+  rev = Reverse('spam')
+  iter(rev)
+  for char in rev:
+    print(char)
+#Manual iteration with iter and next
+  iterator = iter(iterable)
+  next(iterator)
+  
+#Generator

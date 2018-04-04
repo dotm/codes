@@ -9,8 +9,10 @@ Input/Output
   String input
   String output
     Multi-line string output
-  Serialization
-  Deserialization
+    printf
+  Serialization and Deserialization
+    JSON
+    XML
   File I/O
   Command line arguments input
 Hold execution (sleep, halt) (wait for a certain time delay before resuming program execution)
@@ -25,10 +27,13 @@ Data types
 Type reflection (find data types of a variable)
 Type conversion
 Operators
-  Arithmetic operators
-  Boolean/Logical operators
-  Comparison operators
-  Bitwise operators
+  Arithmetic operators: + - * / % ^
+  Boolean/Logical operators: and or not
+    short circuit operator
+  Comparison operators: < <= > >= == !=
+	  Shallow equality: equality of references
+	  Deep equality: equality of values
+  Bitwise operators: and or not xor left-shift right-shift
   Advanced mathematic
     random number generator
     max
@@ -37,17 +42,17 @@ Operators
     floor
     ceiling
     round
-Range
 HTTP REST function
 Exception Handling
   try-catch-finally
-    conditional catch
+    conditional catch (catch a certain type of exception only)
     nested try-catch-finally
-Error
+  Raising exception
+  User-defined exception
 
 #--------------------------------------------------------------------------------
 String
-  printf
+  access by index
   substring (slicing)
   length
   split (into array of substring)
@@ -57,7 +62,9 @@ String
   lowercase
   capitalize
   concatenate
+  repeat
   interpolation
+  include (check if a string includes a substring)
 Regex
   find (if exists)
     find global
@@ -98,45 +105,54 @@ Break out of loop
 Continue to next iteration
 
 #--------------------------------------------------------------------------------
+Procedure
+
+#--------------------------------------------------------------------------------
 Array
-(zero index, homogenous heterogenous, fixed-length variable-length)
-  Create (declaration and definition)
-  Length
-  Access element by index
-  Access element by value
-  Insert (assign), edit (reassign) element by index
-  Add and get value (get := access, return, then remove that value)
+(zero index, homogeneous heterogeneous, fixed-length variable-length)
+  create (declaration and definition)
+  length
+  access element by index
+  access element by value
+  insert (assign), edit (reassign) element by index
+  add and get value (get := access, return, then remove that value)
     pop (get last)
     push (add to last)
     shift (get first)
     unshift (add to first)
-    Stack operations: push, pop
-    Queue operations: push, shift
-  Delete element
+    stack operations: push, pop
+    queue operations: push, shift
+  delete element
     by index
       single element
       multiple elements
     by value
       with condition
-  Sort
-  Iteration over array 
+  sort
+  iteration over array 
     for each (by index and value)
     map
     filter
-  Concatenate
-  Slicing (like substring but for array)
-  Max
-  Min
-  Sum
-  First
-  Last
-  Reverse
-  Get unique elements
-  Join into string (with separator)
+  concatenate
+  slicing (like substring but for array)
+  copy
+    shallow copy
+    deep copy
+  max
+  min
+  sum
+  first
+  last
+  reverse
+  get unique elements
+  join into string (with separator)
+  check if an element is in array
   
 Multidimensional array
 
 Extending array with User Defined Function
+
+Range array
 
 #--------------------------------------------------------------------------------
 Associative array [key: value] (value can't be function here, but can be method in object)
@@ -157,10 +173,27 @@ Associative array [key: value] (value can't be function here, but can be method 
   
 Extending associative array with User Defined Function
 
+#--------------------------------------------------------------------------------
+Set (as in mathematical set)
+
+#--------------------------------------------------------------------------------
+Module (used to store constant and function)
+
+Creating module
+Export module
+
+Import module (from another file)
+  Import
+  Import as (alias)
+  Selective import (don't import all)
+  Qualified import (import but refer to the imported entity using fully qualified name)
+  
+Package (directory of modules that can contains subpackages)
+
 #################################################################################
 Functional
 
-Function
+Function (first-class object?)
   Declaration
   Definition
   Call
@@ -174,7 +207,6 @@ Higher order function
   Nested function
   Callback (a function passed to another function as an argument)
   Currying (a function that return another function after filling it with some arguments)
-    e.g. add = function(a) { return function(b) { return a + b; }; };
 Function composition
 Common iteration function
   sort
@@ -193,23 +225,52 @@ Type signature
 User-defined types
   Defining new type
 
+#--------------------------------------------------------------------------------
+Module (see Module above)
+  FP Module
+  
 #################################################################################
 Class-Based Object Oriented Programming
 
 #--------------------------------------------------------------------------------
 Class
-  Creating class (with parameter or object specifier for init method)
-    Initialization (init method) (used to set some of the class attributes)
-      using object specifier ({a: 1, b: 2, ...}) instead of requesting multiple parameter (a, b, ...)
-    Attribute (object's variable) declaration and definition: 
-      global (public), local (private), class, instance (object) attribute
-    Method (object's function) declaration and definition: 
-      class, instance (object), public, private method
-  Inheritance
-    Attribute and method overriding
-    Access superclass attribute and method
-  Interface
-  Reflection (list all attributes or methods)
+  Attribute := variable attached to a class or object
+  Method := function attached to a class or object
+
+Creating class (with parameter or object specifier for init method)
+  Initialization (init method)
+    using object specifier ({a: 1, b: 2, ...}) instead of requesting multiple parameter (a, b, ...)
+  Attribute declaration and definition: 
+    global (public) and local (private) attribute
+    class and instance (object) attribute
+  Method declaration and definition: 
+    global (public) and local (private) method
+    class and instance (object) method
+  Access class attribute from method
+  Access instance attribute from method
+  Call private (class or instance) method from public method
+  Access private (class or instance) variable from public method
+
+Object
+(pass by value, pass by reference)
+  Create object (Instantiating class)
+
+get class attribute
+get object attribute
+set class attribute
+set object attribute
+call class method
+call object method
+accessor method
+  getter setter
+
+Inheritance
+  Attribute and method overriding
+  Access superclass attribute and method
+
+Interface
+
+Reflection (list all attributes or methods)
   
 Abstract class
 Nested class
@@ -218,37 +279,11 @@ Class relationship
   Association
   Aggregation
   Composition
-#--------------------------------------------------------------------------------  
-Object
-(pass by value, pass by reference)
-  Create object (class instantiation)
-  Call class method
-  Call object method
-  Read object attribute
-    Direct read
-    Using accessor method (preferred)
-  Write attribute
-    Direct write
-    Using accessor method (preferred)
   
 #--------------------------------------------------------------------------------
-Module (used to store constant and function)
-  Creating module
-    Variable declaration and definition: global, local variable
-    Constant declaration and definition: global, local constant
-    Function declaration and definition: public, private method
-  Instantiating module (import module from the same file)
-  Accessing module's constant and function
-  Module as mixins for class
-    Mixins for class
-    Mixins for object
+Module (see Module above)
+  OOP Module
 
-Import module (from another file)
-  Import
-  Import as (alias)
-  Selective import (don't import all)
-  Qualified import (import but refer to the imported entity using fully qualified name)
-  
 #################################################################################
 Event-Driven (Asynchronous) Programming
 

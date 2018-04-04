@@ -1,0 +1,460 @@
+#Print statement
+	print identifier
+	
+#Variable assignment statement
+    varIdentifier = value
+
+#Comments
+#single line comment			"""multi line comment"""
+	#you can print the text inside """text"""; but not after #text
+
+#Python's keywords
+  and 		    def 		  .exec 		if 			  not 		  return
+  assert	    del 		  .finally 	import 		or 			  try
+  break		    elif 		  for 		  in 			  pass 		  while
+  class 	    else 		  from 		  is 			  print 		yield
+  .continue 	except		global 		.lambda		raise
+#assert
+  assert condition 			#is semantically similar as below if code block
+  if not condition:			#if condition is false raise an AssertionError
+    raise AssertionError()
+#is vs ==
+  a is b #evaluates whether a and b have the same memory address
+  a == b #evaluates whether a and b have the same value
+#try, except, and raise
+  try:								#try the code block below
+    pass
+  except ExceptionName:				#if exception called ExceptionName occurs do the code block below
+    raise ExceptionName('strings')	#raise ExceptionName error ->	ExceptionName: strings
+#break: exit the current loop
+
+#Built-in Functions
+abs()			divmod()		input()			open()			staticmethod()
+all()			enumerate()		int()			ord()			str()
+any()			eval()			isinstance()	pow()			sum()
+basestring()	execfile()		issubclass()	print()			super()
+bin()			file()			iter()			property()		tuple()
+bool()			filter()		len()			range()			type()
+bytearray()		float()			list()			raw_input()		unichr()
+callable()		format()		locals()		reduce()		unicode()
+chr()			frozenset()		long()			reload()		vars()
+classmethod()	getattr()		map()			repr()			xrange()
+cmp()			globals()		max()			reversed()		zip()
+compile()		hasattr()		memoryview()	round()			__import__()
+complex()		hash()			min()			set()	
+delattr()		help()			next()			setattr()	
+dict()			hex()			object()		slice()	
+dir()			id()			oct()			sorted()
+#Non-essential built-in function
+apply(), buffer(), coerce(), and intern()
+
+#Pass: is a placeholder for expression or code block, used in scaffolding
+#Enumerate
+	for i in range(len(L)):		#same as below
+		item = L[i]
+		pass
+	for i, item in L:			#item is a placeholder
+		pass
+#Type conversion
+	int(3.2); bool(1); float("12"); str(32); list(12345)
+		#Type coercion: 3/2. -> 1.5
+#Radix/Number base conversion
+	#from decimal to binary, octal, or hexadecimal
+		bin() -> 0b; oct() -> 0; hex() -> 0x
+	#to decimal
+		int("number", base)		#never forget the ""
+#Length of object
+	len("Charlie")
+#Mathematics operations
+	abs(), divmod(), min(), max(), sum()
+#Check data type: type(data)
+	#Data/value types: float,integer, and booleans
+#Range function
+	range(stop)					#e.g. range(6) 		# => [0,1,2,3,4,5]		#default start from 0, end with >
+	range(start, stop)			#e.g. range(1,6) 	# => [1,2,3,4,5]		#default step is 1
+	range(start, stop, step)	#e.g. range(1,6,3)	# => [1,4]
+	
+#--------------------------------------------------------------------------------
+#Keyboard input
+raw_input type's is string
+	varIdentifier = raw_input("prompt statement")
+	name = raw_input ("What...is your name? ")
+
+#Command line input using argv
+argv type's is string
+	from sys import argv						#in python
+	python file_name.py argument1 argument2		#in command line
+  #Unpacking argv in python
+	script_name, variable1, variable2=argv		#number of var must be equal to arguments
+	
+#--------------------------------------------------------------------------------
+#Datetime module
+    from datetime import datetime
+    now = datetime.now()
+    print '%s/%s/%s %s:%s:%s' % (now.month, now.day, now.year,now.hour, now.minute, now.second)
+
+#--------------------------------------------------------------------------------
+#String
+In Python, string are immutable compound data type consisting of letters
+	greeting = "Hello, world!"
+	greeting[0] = 'J' 			#TypeError since string are immutable
+
+#Three ways to create strings: 'Alpha'; "Bravo"; str(3)
+
+#Combining strings and variables (Concatenation)
+    print 'This is a '+self.color+' '+self.model+' with '+str(self.mpg)+' MPG.'
+    print 'Do','re',3,'fa',		#This will print a line of code (the comma will automatically create a space)
+
+#String methods
+"Delta".upper()
+"Echo".lower()
+Methods that use dot notation only work with strings. On the other hand, len() and str() can work on other data types.
+
+#String Formatting Operator
+g = "Golf"; h = "Hotel"
+print "%s, %s" % (g, h)
+
+#String Slicing
+See List Slicing
+
+#--------------------------------------------------------------------------------
+#Arithmetic operators: + - * / ** % //(floor division a.k.a div)
+	#mod can be used to:
+		#check if x is divisible by y
+			#x%y==0
+		#extract the right-most digit(s) from a number
+			#x%10 or x%100 etc
+	#floor division can be used to:
+		#extract the left-most digit(s) from a number
+			#x//10
+	#floor division
+		9.0//2.0 -> 4.0
+	#Operations on strings: + *
+		#Concatenation: joining string operands by linking them end-to-end.
+	#Order of operations: PEMDAS
+
+#Boolean expressions
+	#evaluates to true or false
+#Comparators/Comparison operators: == != <> <= >= < >
+#Assignment operator: e.g. a += b		#the + can be replaced by other arithmetic operator
+#Boolean operators/Logical operators
+	#hierarchy of boolean operators: not, and, or
+#Generate random integer
+	random.randint(low,high)		#low >= x <= high
+	
+#--------------------------------------------------------------------------------
+#Function
+def funcID(parameter1,parameter2):
+    code block of statements, mind the indentation
+  #Optional parameter:	funcID(parameter=None)		#None can be replaced by any data type
+  #Assigning global variable inside function
+	la=0
+	def y(x):
+	  global la		#la is global
+	  la=x			#reassign la
+  #Function composition: function inside other function
+  #Function call		funcID(argument1, argument2)
+  #Variable and parameter defined inside function are local
+  #Recursion: The process of calling the function that is currently executing.
+	def factorial(n):
+		if n == 0:
+			return 1
+		else:
+			recurse = factorial(n-1)
+			result = n * recurse
+			return result
+  #infinite recursion: A function that calls itself recursively without ever reaching the base case. Eventually, it causes a runtime error.
+  #base case: A branch of the conditional statement in a recursive function that does not result in a recursive call.
+
+#Return statement: allows you to terminate the execution of a function before you reach the end. Must be inside function
+	codes
+	return value 		#if value is omitted, it will return None
+	dead codes			#code that appears after a return statement, or any other place the flow of execution can never reach
+		#it is a good idea to ensure that every possible path through the program hits a return statement for debugging purpose
+
+#Modules
+"""	from math import sqrt					then sqrt(x)
+	import math 							then use math.sqrt()	is called dot notation
+	import math as make						then use m.sqrt()
+	from math import *						then sqrt(x)			* means all
+	from math import sin, cos				#multiple import
+	from math import pow as p, sqrt as s	#multiple import with as
+	"""
+
+#--------------------------------------------------------------------------------
+#Conditional statements
+"""Header
+		Body"""
+if x > 0:						after if state conditions
+	print "x is positive"		then state the block in the body
+  #Alternative execution: using else to make branch(es)
+  #Chained conditional: using elif(s) to make branches			elif chains will stop once one elif condition is fulfilled
+  #Nested conditional: if/else inside if/else
+
+#--------------------------------------------------------------------------------
+#While loop
+	while condition:
+		do this while condition is true
+	#You can use True as condition to create a while loop without condition; don't forget to use break to avoid infinite loop
+	#Using while loop to check user input to see if it is valid.
+		choice = raw_input('Enjoying the course? (y/n)')
+		while choice!='n' and choice!='y' :  
+			choice = raw_input("Sorry, I didn't catch that. Enter again: ")
+#While/else
+	while condition:
+		do this while condition is true
+	else:												#the else's indentation must be similar to while's
+		do this whenever condition is false
+
+#For loop
+for i in range():
+	"""do this"""
+	#You can use for in loop to iterate the member of an list(array) or dictionary(object)
+		for key in dict_name:			#key is an iterator placeholder
+			print key, dict_name[key]	#the key will print the key, the dict_name[key] will print the value
+	#Using enumerate to give index to a list when iterating
+		for index, item in enumerate(list_name):
+			print index+1, item
+	#Using the built-in zip function to iterate over two lists at once
+		#zip will create pairs of elements when passed two or more lists, and will stop at the end of the shorter list.
+		for a, b in zip(list_a, list_b):
+			do this
+	#Print out each individual character in a string
+		for i in word:
+			print i,		#the comma makes statement keeps printing on the same line.
+#For/else
+	#Same syntax as while/else
+	#else statement is executed after the for one time, but only if the for ends normally — that is, not with a break. 
+
+#--------------------------------------------------------------------------------
+#List
+Mutable: can be changed after they are created
+  list_name = [item_1, item_2]		#the item can be ANY data type, including dictionary
+  empty_list = []
+	#Access by index: 
+		list_name[0] 	#access first index
+		list_name[-2] 	#negative index: count backward from the end of list (last == -1)
+	#Reassigning
+		list_name[0]='la'
+		list_name[0]='lala'
+	#Appending & List Length
+		list.append('data')			
+		len(list_name)
+	#Concatenating lists
+		x=[1,2]
+		y=[3,4]
+		x+y=[1,2,3,4]
+	#Inserting new item
+		list_name.insert(index number, data) 		#INDEX not data
+		#index number can be integer or var assigned to an int; move everything after new data one step back
+	#List slicing						#You can do this with string
+	list_name[start:end:stride]    # zero-index, start (inclusive), end (exclusive), stride is step 
+		new_list = list_name[:2]   # The first and second items (index zero and one)
+		new_list = list_name[2:4]  # Third and fourth items (index two and three)
+		new_list = list_name[4:]   # The last two items (index four and five)
+		new_list = list_name[x::2] # Start from x (x is optional) to the last, stride is 2
+		new_list = list_name[::-1] # Reverse a list
+	#Remove elements from lists
+		list_name.remove(data)		#will remove the ACTUAL ITEM if it finds it
+		list_name.pop(index) 		#will remove the item BY INDEX from the list and return it to you
+		del(list_name[index]) 		#is like .pop (remove item at the given index), but it won't return it
+	#Search index in a list
+		list_name.index(value)
+	#Sorting a list
+		list_name.sort()	#sorts the list in-place, mutating the list indices.
+		sorted() 			#returns a new sorted list, leaving the original list unaffected. 
+	#Unpacking list
+		a,b,c..n=list_name	#n==len(list_name)
+
+	#Making x*y matrix
+		matrix=[]
+		for i in range (x):
+			board.append(['data']*y)
+		#x is the number of row, y is number of column
+		#Display the matrix with line break
+			def funtionName(matrixList):
+				for i in matrixList:			#This will print the list inside the matrixList
+					print i						#to print all the list in one list use double for loop
+	#Join list into a string
+		'Separator'.join(list_name)
+	#Split string into a list
+		str.split('text')
+		'text'.split('delimiter')
+	#Specifying an element in a 2-dimensional list
+		list_name[x][y]			#ZERO INDEX, x is an element in the outer list(row) and y is an element in the inner list(column) 
+
+	
+#Dictionary
+dict = {'key1' : 1, 'key2' : [2,'lala'], 'key3' : []}		#you can use int as key; [] is list; don't forget the '' , and :
+	#Accessing value by key
+		dict['key#']
+		dict.get('key#', None)			#None is optional and can be replaced by any string ('Not found'); it means if key doesn't exist, return None
+	#Mutation
+		dict_name[new_key] = new_value
+	#Removing item/key-value pair
+		del dict_name[key_name]
+	#Associating new value to an old key by assigning a value to the key
+		dict_name[key] = new_value
+	#Looping through dictionary
+		#See for loop below
+		for key in dict_name: 
+			print dict_name[key]  # prints every value 
+		for key, value in dict_name.items():			#key and value are placeholder, items is necessary (you can also use iteritems)because
+			print key, value							#iterating over a dictionary iterates through the keys, not the key/value pairs.
+	#Iterating dictionary with dot notation
+		dict_name.items() 	#returns an array of tuples with each tuple consisting of a key/value pair from the dictionary
+		dict_name.keys() 	#returns an array of the dictionary's keys
+		dict_name.values() 	#returns an array of the dictionary's values
+	
+#--------------------------------------------------------------------------------
+#List comprehension
+new_list = ['insert this data to new_list' for x in range() if conditions]
+new_list = [x for x in range(1,6)]
+	new_list=range(1,6)					#a shorthand for the above; use this if you just want to generate number list without conditions
+new_list = [x*2 for x in range(integer) if condition]		#adding operators and conditions
+new_list = ['C' for x in range(6)]		#add 'C' to new_list 6 times
+
+#Class 
+	#Creating class with initialization method
+	class NewClass(object):					#the (object) means that the class will inherit from 
+		def __init__(NewClass parameters)	#the first parameter will refer to the object being created, self is used by convention
+			self.parameter2=parameter2		#the __init__ is always there by default even if you don't see or type it
+			self.parameter3=parameter3
+			etc.
+		attributeName=value
+		def methodName(parameters):			#ALWAYS put self as method's first parameter
+			pass
+#Class scope: You can substitute variables(attribute) with function(method)
+	#Global variables: available everywhere
+	#Member variables: available to members of a certain class			#like attributeName above
+	#Instance variables: available to particular instances of a class	#e.g. self.attribute=attribute	#change the self with the class name
+#Creating (instantiating) an object as an instance of class:
+	newObject=NewClass(parameter2, parameter3, etc)				#the first parameter(self) is not inputted to the object argument
+	#You can call the self.something with the object name		#e.g. newObject.something	don't forget the (parameters) if something is method
+#Modifying / Override property
+	def lala(self):							#using a method is optional but useful when you plan to reuse it multiple times
+		self.attributeName=newValue			#the object property will be reassigned without changing the class property
+	
+#Inheritance: the process by which one class takes on the attributes and methods of another, is used to express an is-a relationship
+class DerivedClass(BaseClass):
+    '''code goes here'''
+	#You can override an attribute by reassigning it in the DerivedClass (inheritance follow order of specification)
+	#You can directly access the attributes or methods of a superclass with Python's built-in super call.
+		class Derived(Base):
+		   def m(self):								#the m in this line and the line below can (should) have different name to avoid confusion
+			   return super(Derived, self).m()		#m() is a method from the base class
+	#When you redefine the __init__ parameters of the DerivedClass, you need to include the original parameters (unless you want to omit it intentionally)
+	#Inheriting the __init__ function
+	  #with super call
+		class Child(Parent):
+			def __init__(self):
+				super(Child, self).__init__()
+	  this will inherit the direct ancestor __init__ of the class Child
+	  will ONLY work if the child of object inherit from object: class ClassName (object)
+	  #direct call
+		class Child(Parent):
+			def __init__(self):
+				ClassName.__init__()
+	  this will inherit the __init__ of the class ClassName
+
+#Overriding the built-in __repr__() method (representation)
+	by providing a return value in this method,
+	we can tell Python how to represent an object of our class,
+	for instance, when using a print statement.
+	
+	def __repr__(self):
+        return "(%d, %d, %d)" % (self.x, self.y, self.z)
+    	
+#Class example ---------------------------------------------------------------------------
+class Employee(object):
+    """Models real-life employees!"""
+    def __init__(self, employee_name, contract_time):
+        self.employee_name = employee_name
+        self.contract_time = contract_time
+		
+    def calculate_wage(self, hours):
+        self.hours = hours
+        return hours * 20.00
+
+# Add your code below!
+class PartTimeEmployee(Employee):
+    def __init__(self, employee_name, temporary_id):
+        self.employee_name = employee_name									#include the original parameters unless you intentionally omit it
+		self.temporary_id = temporary_id
+
+    def calculate_wage(self, hours):										#overriding the method
+        self.hours = hours
+        return hours * 12.00
+        
+    def full_time_wage (self, hours):
+        return super(PartTimeEmployee,self).calculate_wage(hours)			#the super built-in call
+        
+milton= PartTimeEmployee('Milton')
+print milton.full_time_wage (10)
+>>>200.0
+#--------------------------------------------------------------------------------
+#Lambda Syntax
+new_list=filter(lambda x: condition, my_list)	#if x agree with conditions, let it in to the new_list
+my_list = range(16)
+new_list=filter(lambda x: x % 3 == 0, my_list)
+	#Lambdas are useful when you need a quick function to do some work for you.
+	#If a function will be used over and over, use def and give that function a name.
+	
+	#Writing binary numbers
+		#Starting the number with 0b(zero b). The numbers then can be operated on like any other number!
+			0b1001+0b1101
+		#bin() function. takes an integer as input and returns the binary representation of that integer in a STRING
+	
+#--------------------------------------------------------------------------------
+#Bitwise operations 
+	#Left bit shift operators(<<)  
+		0b000001 << 2 == 0b000100 (1 << 2 = 4)
+	#Right bit shift (>>)
+		0b0010100 >> 3 == 0b000010 (20 >> 3 = 2)
+			mathematically equivalent to floor dividing and multiplying by 2 (respectively) for every time you shift
+	#Logic bitwise operators: AND &		OR |		XOR ^		NOT ~
+		Logical operators deal with statements. Bitwise operators deal with binary representations of data.
+
+#--------------------------------------------------------------------------------
+#File I/O
+	#Opening a text file
+		my_file=open('file_name.txt','r+')			#you can use other varID other than my_file
+		#You can open files in 4 modes:
+			write-only mode ("w")
+			read-only mode ("r")
+			read and write mode ("r+")
+			append mode ("a", which adds any new data you write to the file to the end of the file)
+	#Close file
+		my_file.close()
+		#ALWAYS remember to close file after opening it. Why? 
+			During the I/O process, data is buffered: held in a temporary location before being written to the file.
+			Python doesn't flush the buffer (write data to the file) until it's sure you're done writing. 
+			One way to do this is to close the file. If you write to a file without closing, the data won't make it to the target file.
+	#Writing a file
+		my_list = [i**2 for i in range(1,11)]
+		my_file = open("output.txt", "r+")
+		for i in my_list:
+			my_file.write(str(i)+'\n')				#You can only write strings, hence the str()
+		my_file.close()
+	#Reading a file
+		my_file=open('output.txt','r')
+		print my_file.read()
+		my_file.close()
+		#Reading line by line
+			print my_file.readline()				#instead of just read all of them
+	#You can nest 'w' write file statement inside 'r' read-only
+		read_file = open("text.txt", "r")
+		write_file = open("text.txt", "w")
+		write_file.write("Not closing files is VERY BAD.")
+		write_file.close()
+		print read_file.read()
+		read_file.close()
+	#Using with/as to automatically close the file
+		with open("file_name", "mode") as my_file:
+			'''Read or write to the file'''
+			e.g. my_file.write('strings')
+	#Check if file is closed
+		my_file.closed	-> return a boolean value
+		#Using if statement
+			if my_file.closed==False:			#You can change the condition to != True
+				my_file.close()

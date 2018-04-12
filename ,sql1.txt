@@ -1,284 +1,141 @@
-RDBMS: relational database management system
+#################################################################################
+Common Commands
+  Start DB:
+  Stop DB:
+  Open CLI interface:
+  Common CLI Commands
 
-relation := table
-attribute := column
-tuple := row
-type := domain (of attribute)
-key: attribute whose value is unique in each tuple
-  or set of attributes whose combined values are unique
-  usually annotated with an underline
+Supported Data Type
+  Numeric: (e.g. smallint, integer, bigint)
+  Character: (e.g. char, varchar, text)
+  Boolean: boolean
+  Serial (Auto-increment)
+  etc.
 
-querying: asking question to database
-query return relations as output from a set of relation as input, and is closed and compositional
-  closed: you get back the same type of object that you query, that's known as closure of the language
-  compositional: the ability to run a query over the result of our previous query
+Operators
+  Arithmetic
+  Boolean/Logical
+  Comparators (Comparison operator)
+  Bitwise
 
-schema: structural description of relations in database
-  includes name and attributes of the relation and the types of those attributes
-instance: the actual contents of the table at a given point in time
+User
+  Create
+  
+Privilege
+  GRANT
+  REVOKE
+#################################################################################
 
-NULL := unknown or undefined
-  NULL value can be in any domain
+DATABASE
+  List All (with CLI)
+  Check current (with CLI)
+  Connect to (with CLI)
+  CREATE
+  DROP
+  
+CONSTRAINT
+  PRIMARY KEY
+  FOREIGN KEY
+  NOT NULL
+  UNIQUE
+  CHECK
+  etc.
+  
+TABLE
+  List All (with CLI)
+  CREATE
+  ALTER
+    Drop Column
+    Change Data Type
+    Add Constraint
+    Drop Constraint
+  TRUNCATE
+  DROP
+  
+SCHEMA
+  CREATE
+  DROP
 
-database application may be programmed via framework e.g. Django, Rails
-DBMS may run in conjunction with middle-ware e.g. application server, web server
-data-intensive applications may not use DBMS at all e.g. Excel spreadsheet
+TRIGGER
+  List All
+  CREATE
+  DROP
+  
+INDEX
+  CREATE
+  DROP
 
-data model e.g. set of records (in relational data model), hierarchical structure (XML), set of nodes and edges (graph data model)
-data definition language (DDL): normally used to set up the schema
-data manipulation language (DML): used to start querying and modifying the data once the schema has been set up and data has been loaded
+VIEW
+  CREATE
+  DROP
+  
+TRANSACTION
+  BEGIN
+  END
+  ROLLBACK
 
-Key people in DBMS
-  DBMS implementer: build the database system
-  database designer: establish database schema
-  database application developer: build the application and program that run on the database, interfacing user and data
-  database administrator: load the database's data and keep the database running smoothly
+LOCK
 
-Creating and using a relational database
-  design schema
-  create schema using DDL
-  bulk load initial data
-  query and modify database continuously
+#################################################################################
+Query
 
-SQL is a declarative language
+INSERT
+DELETE
+UPDATE
 
-query tuning: ways to optimize query manually
-  steps:
-    identify what queries you want to tune
-    understand how a particular SQL engine is executing a query
-    manual optimization to improve that execution plan
+SELECT (String output)
+  DISTINCT
+  
+Sub-Query
 
-#--------------------------------------------------------------------------------
-#DDL
-CREATE table
-DROP table
+Useful Functions
+  SUBSTRING(string, position, length)
+    LEFT
+    RIGHT
+  CHAR_LENGTH(string)
 
-#DML
+#################################################################################
+Clause
 
-#querying
-#Select statement
-    SELECT     attribute1, attribute2        #what to return
-    FROM    Relation1, Relation2            #multiple relation is called a join statement
-    WHERE    conditions                      #use connective (and, or) to create compound proposition
-    ORDER BY  attribute1 DESC, attribute2   #attribute2 to sort each attribute1 group. desc for descending; the default is ascending
-    ;                                        #end of statement
-  use * to select all attributes
-  to get rid of duplicates use: SELECT DISTINCT attributes
-  if you use multiple relation, make sure to check the key match in Where:
-    WHERE Relation1.name = Relation2.name
-  when you use multiple relation and try to select an attribute that exists in more than one relation,
-    use dot notation in Select to avoid ambiguous value: Relation1.name
-  you can do arithmetic in the select statement
-    SELECT attribute1 / (attribute2 + 1) AS new_attribute    #use as to make the new attribute title new_attribute
+WHERE
+  AND Conjunctive Operator
+  OR Conjunctive Operator
+  LIKE Clause
+    Wildcards: % _
+  IS NOT NULL
+  IN
+  BETWEEN AND
+  
+LIMIT
+  OFFSET Clause
 
-#Where clause
-  #Comparison operator: = >= <= > < <> LIKE
-    WHERE attribute LIKE '%string%'
-  #Advanced mathematical functions as operator:
-    ABS(x)          returns absolute value of x
-    SIGN(x)          returns sign of input x as -1, 0, or 1 (negative, zero, positive)
-    MOD(x,y)        returns the integer remainder of x divided by y (same as x%y)
-    FLOOR(x)        returns the largest integer value that is less than or equal to x
-    CEILING(x) or CEIL(x)  returns the smallest integer value that is greater than or equal to x
-    POWER(x,y)        returns x raised to the power of y
-    ROUND(x)        returns x rounded to the nearest integer
-    ROUND(x,d)        returns the value of x rounded to the number of decimal places specified by the value d
-    SQRT(x)          returns square-root of x
-  #Condition    e.g. name <> value
-  #Logical operator: AND OR NOT  (precedence: (parentheses) > NOT > AND > OR)
-    WHERE NOT condition AND condition
-  #Quantifier: ALL ANY
-    quantifier isn't a necessary feature in DBMS since you can use exists and not exists
-  #Check if exists
-    WHERE EXISTS (sub-query)  #or NOT EXISTS
-    check whether a sub-query is empty or not
+ORDER BY
+  ASC, DESC
+  Multiple ORDER BY
+  
+WITH
 
-#Sub-queries
-Sub-queries are nested, select statements within the condition
-  WHERE condition IN (SELECT attribute FROM Relation WHERE condition)
-    AND condition NOT IN (sub-query)    #condition NOT IN := NOT condition IN
-    OR NOT condition IN (sub-query)
+AS
 
-If we use a sub query in the from, what we're really doing is running and that's the select statement that's going to
-generate one of the tables that we use in the rest of the query.
-If we use a sub query in the select, then what we're doing is writing a select expression, a sub select expression,
-that produces the value that comes out of the query.
+UNION
+  UNION ALL
 
-from (sub-query) G
-
-We can refer to values in the outer SELECT within the inner SELECT. We can name the tables so that we can tell the difference between the inner and outer versions.
-  SELECT continent, name, population FROM world x
-    WHERE population >= ALL
-    (SELECT population FROM world y
-      WHERE y.continent=x.continent
-        AND population>0)
-
-#modifying
-insert
-delete
-update
-
-#--------------------------------------------------------------------------------
-NEVER forget the ;
-Strings must be in single quotes
-
-CREATE TABLE table_name (id INTEGER PRIMARY KEY, attribute TYPE, multi-word_attribute TYPE);
-CREATE TABLE "tablename"
-("column1" "data type"
-         [constraint],
- "column2" "data type"
-         [constraint],
- "column3" "data type"
-        [constraint]);    #[] = optional
-
-TYPE: TEXT, NUMERIC, INTEGER, REAL, NONE, etc. (use Google)
-
-INSERT INTO table_name VALUES (id, value, value);
-INSERT INTO table_name (id, attribute) VALUES (id, value);      #with this you don't have to input all value
-
-CREATE TABLE table_name (id INTEGER PRIMARY KEY AUTOINCREMENT, attribute TYPE);
-  INSERT INTO table_name (attribute) VALUES (value);        #with this you don't have to input id
-
-#SELECT
-SELECT [ALL | DISTINCT] column1[,column2]         #ALL is the default if DISTINCT is not specified
-FROM table1[,table2] [WHERE "conditions"]
-[GROUP BY "column-list"] [HAVING "conditions"]       #If you use multiple columns, separate the columns with commas
-[ORDER BY "column-list" [ASC | DESC] ] ;        #ASC is the default
-
-#Aggregating and Aliasing
-SELECT MAX(attribute) FROM table_name;
-SELECT SUM(attribute) FROM table_name AS total_attribute;    #aliasing the column
-SELECT MIN(attribute) FROM table_name table;          #aliasing the table
-  #Common aggregate functions:
-    AVERAGE(attribute)  #arithmetic mean
-    COUNT(attribute)    #NULL values of attribute will not be counted
-      COUNT(*)
-    MAXIMUM(attribute)
-    MINIMUM(attribute)
-    NANMEAN(attribute)  #mean ignoring NaN values (or undefined values or 'nil's)
-    MEDIAN(attribute)
-    MODE(attribute)
-    SUM(attribute)
-    ROUND(attribute)
-
-#IN
-WHERE attribute1 = value1 OR attribute1 = value2;
-  := WHERE attribute1 IN (value1, value2);      #WHERE attribute is IN the set of this value set
-you can also use NOT IN
-
-SELECT * FROM table_name WHERE attribute1 IN (SELECT attribute1 FROM table_name1);
-  select all attributes from table_name if the table_name.attribute1 also exists in table_name1.attribute1
-SELECT title FROM songs WHERE artist IN (SELECT name FROM artists WHERE name = "Queen");
-
-Using IN in SELECT will return boolean values (1 and 0). You can use this value to ORDER BY.
-SELECT winner, subject, subject IN ('Physics','Chemistry')      #the third column will return boolean
-  FROM nobel;
-SELECT winner, subject
-  FROM nobel
- WHERE yr=1984
- ORDER BY subject IN ('Physics','Chemistry'), subject, winner;    #winner of Physics and Chemistry will be listed last
-
-#BETWEEN
-WHERE attribute BETWEEN value1 AND value2;    # BETWEEN is inclusive [value1, value2]
-  WHERE age BETWEEN 30 AND 40;
-you can also use NOT BETWEEN
-
-#Restricting group result
-  HAVING : WHERE for GROUP
-  SELECT    attribute1, attribute2
-  FROM      Relation1, Relation2
-  GROUP BY  attribute1
-  HAVING    conditions
-
-#CASE
-SELECT       attribute1, attribute2,      #the CASE will be the third attribute so the comma must be there
-  CASE
-      WHEN condition THEN value
-      WHEN condition THEN value1
-      ELSE value2
-    END AS "attribute3"
-FROM      Relation1, Relation2
-
-SELECT COUNT(*),
-CASE
-  WHEN number_grade > 90 THEN 'A'
-  WHEN number_grade > 80 THEN 'B'
-  WHEN number_grade > 70 THEN 'C'
-  ELSE 'F'
-END AS letter_grade
-FROM student_grades
-GROUP BY letter_grade;
-
-#Joining table
-  #Cross join
-    SELECT * FROM Relation1, Relation2;
-    cross join: for each row in Relation1, it creates the rows from Relation2 (Relation1 X Relation2)
-  #Implicit inner join
-    SELECT * FROM Relation1, Relation2 WHERE Relation1.id = Relation2.foreign_id;
-    inner join: match the primary key of Relation1 to foreign key of Relation2 to avoid duplicates
-    using this is not best practice; explicit is better than implicit
-  #Explicit inner join using JOIN keyword
-    SELECT * FROM Relation1 JOIN Relation2 ON Relation1.id = Relation2.foreign_id;
-    you can still use WHERE etc with this query
-  #Outer join
-    SELECT * FROM left_table
-    LEFT OUTER JOIN right_table            #show all row from left_table even if the value of it in right_table is NULL
-    ON left_table.id = right_table.foreign_id;
-    some languages support RIGHT OUTER and FULL OUTER
-  #Self join
-    SELECT students.first_name, students.last_name, buddies.email as buddy_email
-    FROM students
-    JOIN students buddies          #buddies is alias to differentiate it from students; AS is optional
-    ON students.buddy_id = buddies.id;
-  #Multiple join
-    SELECT a.title, b.title FROM project_pairs    #project_pairs has 3 rows: id, project1_id, project2_id
-    JOIN student_projects a
-    ON project_pairs.project1_id = a.id
-    JOIN student_projects b
-    ON project_pairs.project2_id = b.id;
-
-#UPDATE
-  UPDATE table_name SET attribute = value, attribute1 = value1 WHERE id = 1;
-  you can use attribute or set of attributes other than id in the WHERE clause
-  but it's always safer to use id
-
-#DELETE
-  DELETE FROM table_name WHERE id = 1;
-  DELETE FROM table_name WHERE attribute = value AND attribute1 = value1;    #you can use other logical operator
-
-#ALTER
-  you can't modify CREATE when altering database schema unless you want all the data stored to be deleted
-  ALTER TABLE table_name ADD attribute TYPE;
-
-#Setting default value of attribute
-  ALTER TABLE table_name ADD attribute TYPE default value;
-
-#Deleting table
-  DROP TABLE table_name
-
-#WITH
-  WITH a AS (SELECT MAX(population) AS maximum FROM city)
-     , b AS (SELECT MIN(population) AS minimum FROM city)
-  SELECT maximum - minimum
-  FROM a,b;
-
-#--------------------------------------------------------------------------------
-/* multi-line comment */
--- single-line comment
-
-Normalization
-
-wildcards: % _
-CONCAT(id,' is ', value)
-COALESCE takes any number of arguments and returns the first value that is not null.
-  COALESCE(x,y,z,'None')    #if x,y,z is NULL, None will be returned; the default value is NULL
-  SELECT teacher.name, dept.name FROM teacher LEFT OUTER JOIN dept ON (teacher.dept > dept.id)  #Why use > ?
-
-#What to learn next
-WHERE vs HAVING
 JOIN
-features: indexes and query planning, constraints, triggers, views, foreign keys
-different versions of SQL: MySQL, PostGreSQL, Oracle, MS SQL, and DB2
-theories, principles, and design: relational design theory (relational model), relational algebra, relational calculus and unified modelling language.
+  INNER JOIN
+  LEFT OUTER JOIN
+  RIGHT OUTER JOIN
+  FULL OUTER JOIN
+  CROSS JOIN
 
-ORDER BY a, b DESC = ORDER BY a ASC, b DESC
+#################################################################################
+#Aggregation
+  
+GROUP BY
+  HAVING
+
+Useful Functions
+  COUNT
+  MIN
+  MAX
+  AVG
+  SUM

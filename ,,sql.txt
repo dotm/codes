@@ -1,141 +1,56 @@
-#################################################################################
-Common Commands
-  Start DB:
-  Stop DB:
-  Open CLI interface:
-  Common CLI Commands
+Database: A container (usually a file or set of files) to store organized data
+Table: A structured list of data of a specific type
+Schema: Information about database and table layout and properties
+Column: A single field in a table
+Row: A record in a table
+Primary Key: A column (or set of columns) whose values uniquely identify every row in a table
+Keyword: A reserved word that is part of the SQL language
 
-Supported Data Type
-  Numeric: (e.g. smallint, integer, bigint)
-  Character: (e.g. char, varchar, text)
-  Boolean: boolean
-  Serial (Auto-increment)
-  etc.
+Statement must end with semicolon;
 
-Operators
-  Arithmetic
-  Boolean/Logical
-  Comparators (Comparison operator)
-  Bitwise
+#Operators
+  #Arithmetic operators: + - * / % ^
+  #Boolean/Logical operators: AND OR NOT
+    Boolean values
+  #Comparison operators: < <= > >= = != <> !< !> BETWEEN (IS NULL)
+  #Bitwise
 
-User
-  Create
-  
-Privilege
-  GRANT
-  REVOKE
-#################################################################################
-
-DATABASE
-  List All (with CLI)
-  Check current (with CLI)
-  Connect to (with CLI)
-  CREATE
-  DROP
-  
-CONSTRAINT
-  PRIMARY KEY
-  FOREIGN KEY
-  NOT NULL
-  UNIQUE
-  CHECK
-  etc.
-  
-TABLE
-  List All (with CLI)
-  CREATE
-  ALTER
-    Drop Column
-    Change Data Type
-    Add Constraint
-    Drop Constraint
-  TRUNCATE
-  DROP
-  
-SCHEMA
-  CREATE
-  DROP
-
-TRIGGER
-  List All
-  CREATE
-  DROP
-  
-INDEX
-  CREATE
-  DROP
-
-VIEW
-  CREATE
-  DROP
-  
-TRANSACTION
-  BEGIN
-  END
-  ROLLBACK
-
-LOCK
-
-#################################################################################
-Query
-
-INSERT
-DELETE
-UPDATE
-
-SELECT (String output)
-  DISTINCT
-  
-Sub-Query
-
-Useful Functions
-  SUBSTRING(string, position, length)
-    LEFT
-    RIGHT
-  CHAR_LENGTH(string)
-
-#################################################################################
-Clause
-
-WHERE
-  AND Conjunctive Operator
-  OR Conjunctive Operator
-  LIKE Clause
-    Wildcards: % _
-  IS NOT NULL
-  IN
-  BETWEEN AND
-  
-LIMIT
-  OFFSET Clause
-
-ORDER BY
-  ASC, DESC
-  Multiple ORDER BY
-  
-WITH
-
-AS
-
-UNION
-  UNION ALL
-
-JOIN
-  INNER JOIN
-  LEFT OUTER JOIN
-  RIGHT OUTER JOIN
-  FULL OUTER JOIN
-  CROSS JOIN
-
-#################################################################################
-#Aggregation
-  
-GROUP BY
-  HAVING
-
-Useful Functions
-  COUNT
-  MIN
-  MAX
-  AVG
-  SUM
+#--------------------------------------------------------------------------------
+#Retrieving
+  #Individual Columns
+    SELECT column FROM Table;
+  #Multiple Columns
+    SELECT column, column FROM Table;
+  #All Columns
+    SELECT * FROM Table;
+#Sorting
+  #by Individual Columns
+    SELECT column FROM Table ORDER BY column;       #Ascending
+    SELECT column FROM Table ORDER BY column DESC;  #Descending
+  #by Multiple Columns
+    SELECT column FROM Table ORDER BY column DESC, column;
+  #by Column Position
+    SELECT prod_id, prod_price, prod_name FROM Products ORDER BY 2, 3;
+#Filtering
+  #against a Single Value
+    SELECT column FROM Table WHERE column < 10;
+  #for Nonmatches
+    SELECT column FROM Table WHERE column <> 'string value';
+  #for a Range of Values
+    SELECT column FROM Table WHERE column BETWEEN 5 AND 10;   #5 is included and 10 is included
+  #for No Value
+    SELECT column FROM Table WHERE column IS NULL;
+#Compound Filtering
+    condition example: column = value
+  #the NOT Operator
+    SELECT column FROM Table WHERE NOT condition;
+  #the AND Operator
+    SELECT column FROM Table WHERE condition AND condition;
+  #the OR Operator
+    SELECT column FROM Table WHERE condition OR condition;
+  #Multiple Operator (use parentheses)
+    SELECT column FROM Table WHERE (condition OR condition) AND condition;
+  #the IN Operator (substitute for multiple OR operators)
+    SELECT column FROM Table WHERE column IN(value, value);
+  #the NOT IN Operator
+    SELECT column FROM Table WHERE column NOT IN(value, value);

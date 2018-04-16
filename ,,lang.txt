@@ -10,15 +10,50 @@ Input/Output
   String output
     Multi-line string output
     printf
-  Serialization and Deserialization
+  Serialization and Deserialization (Parsing)
     JSON
     XML
   File I/O
   Command line arguments input
-Hold execution (sleep, halt) (wait for a certain time delay before resuming program execution)
 Date and Time
-  current
   create
+    date object
+    current date
+  display
+    date to string with format
+    date to locale
+    time from now
+    time from date
+    time to now
+    time to date
+  from date time get/set
+    millisecond
+    second
+    minute
+    hour
+    day name (e.g. Monday)
+    date of month (e.g. 31)
+    date of year (e.g. 360)
+    week of year
+    month
+    year
+  from date time
+    get start of (year, month, week, day, hour, minute, second)
+    get end of (year, month, week, day, hour, minute, second)
+    get difference from another date
+    get number of days in certain month
+  to date time
+    add
+    subtract
+  check if date
+    is today
+    is between 2 dates
+    is same with another date
+    is after another date
+    is same with or after another date
+    is before another date
+    is same with or before another date
+Hold execution (sleep, halt) (wait for a certain time delay before resuming program execution)
 
 #Etc.
 Reserved keyword
@@ -34,11 +69,17 @@ Operators
 	  Shallow equality: equality of references
 	  Deep equality: equality of values
   Bitwise operators: and or not xor left-shift right-shift
-  Advanced mathematic
+  Basic mathematics operations
     random number generator
     max
     min
     abs
+    cos
+    sin
+    tan
+    pi
+    exp
+    sqrt
     floor
     ceiling
     round
@@ -53,10 +94,10 @@ Exception Handling
 #--------------------------------------------------------------------------------
 String
   access by index
-  substring (slicing)
-  length
-  split (into array of substring)
-  strip
+  get index of character
+    first occurrence
+    last occurrence
+  get string length
   reverse
   uppercase
   lowercase
@@ -64,7 +105,19 @@ String
   concatenate
   repeat
   interpolation
+  strip (trailing space, leading space, both)
+  pad (with trailing space, leading space, both)
+  substring (slicing into two array based on position)
+  split (into array of substring based on delimiter)
   include (check if a string includes a substring)
+  replace substring
+  check if string
+    starts with substring
+    ends with substring
+    is alphanumeric
+    is alphabet
+    is digit
+    is whitespace
 Regex
   find (if exists)
     find global

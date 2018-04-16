@@ -5,11 +5,18 @@ Column: A single field in a table
 Row: A record in a table
 Primary Key: A column (or set of columns) whose values uniquely identify every row in a table
 Keyword: A reserved word that is part of the SQL language
+Wildcards: Special characters used to match parts of a value
+Search pattern: A search condition made up of literal text, wildcard characters, or any combination of the two
+Calculated fields: a column created on-the-fly within a SQL SELECT statement
+  by transforming data from one or multiple fields using operators or data manipulation functions.
 
 Statement must end with semicolon;
 
+-- single line comment
+/* multi line comment */
+
 #Operators
-  #Arithmetic operators: + - * / % ^
+  #Arithmetic operators: + - * /
   #Boolean/Logical operators: AND OR NOT
     Boolean values
   #Comparison operators: < <= > >= = != <> !< !> BETWEEN (IS NULL)
@@ -23,6 +30,7 @@ Statement must end with semicolon;
     SELECT column, column FROM Table;
   #All Columns
     SELECT * FROM Table;
+    
 #Sorting
   #by Individual Columns
     SELECT column FROM Table ORDER BY column;       #Ascending
@@ -31,6 +39,7 @@ Statement must end with semicolon;
     SELECT column FROM Table ORDER BY column DESC, column;
   #by Column Position
     SELECT prod_id, prod_price, prod_name FROM Products ORDER BY 2, 3;
+    
 #Filtering
   #against a Single Value
     SELECT column FROM Table WHERE column < 10;
@@ -54,3 +63,47 @@ Statement must end with semicolon;
     SELECT column FROM Table WHERE column IN(value, value);
   #the NOT IN Operator
     SELECT column FROM Table WHERE column NOT IN(value, value);
+#Wildcard Filtering
+    SELECT column FROM Table WHERE column LIKE 'search pattern here';
+  #The zero or more character wildcard
+      SELECT prod_id, prod_name FROM Products WHERE prod_name LIKE '%Fish%';
+    % or * represents zero, one, or more characters at the specified location in the search pattern.
+  #The exactly one character wildcard
+      SELECT prod_name FROM Products WHERE prod_name LIKE '__ inch teddy bear';
+    _ or ? always matches one character no more and no less.
+  #The Brackets ([]) Wildcard
+      SELECT cust_contact FROM Customers WHERE cust_contact LIKE '[JM]%';
+      SELECT cust_contact FROM Customers WHERE cust_contact LIKE '[^JM]%';
+    brackets ([]) is used to specify a set of characters,
+      any one of which must match a character
+      in the specified position (the location of the wildcard).
+    This wildcard can be negated by prefixing the characters with ^ (the carat character).
+
+#Calculated Fields
+  SELECT function(column) FROM Table;
+  SELECT column operator column FROM Table;
+
+#Using Alias
+  SELECT column AS alias FROM Table;
+  SELECT calculated field AS alias FROM Table;
+  
+#--------------------------------------------------------------------------------
+#Data Manipulation Functions
+
+#Text Manipulation Functions
+    (see ,,lang.txt for updated version)
+  #SOUNDEX()
+      SELECT cust_contact FROM Customers
+      WHERE SOUNDEX(cust_contact) = SOUNDEX('Michael Green');   -- this will also return similarly sounded names like 'Michelle Green'
+    takes into account similar sounding characters and syllables,
+    enabling strings to be compared by how they sound rather than how they have been typed.
+    
+#Date and Time Manipulation Functions
+  (see ,,lang.txt for updated version)
+
+#Numeric Manipulation Functions
+  (see arithmetic operators above)
+  (see ,,lang.txt on basic mathematics operators for updated version)
+  
+#System Functions
+

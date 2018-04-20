@@ -22,6 +22,17 @@ Statement must end with semicolon;
   #Comparison operators: < <= > >= = != <> !< !> BETWEEN (IS NULL)
   #Bitwise
 
+#SELECT Clause Ordering
+  -------------------------------------------------------------------------------------------
+  Clause     | Description                            | Required
+  -----------|----------------------------------------|--------------------------------------
+  SELECT     | Columns or expressions to be returned  | Yes
+  FROM       | Table to retrieve data from            | Only if selecting data from a table
+  WHERE      | Row-level filtering                    | No
+  GROUP BY   | Group specification                    | Only if calculating aggregates by group
+  HAVING     | Group-level filtering                  | No
+  ORDER BY   | Output sort order                      | No
+
 #--------------------------------------------------------------------------------
 #Retrieving
   #Individual Columns
@@ -37,8 +48,6 @@ Statement must end with semicolon;
     SELECT column FROM Table ORDER BY column DESC;  #Descending
   #by Multiple Columns
     SELECT column FROM Table ORDER BY column DESC, column;
-  #by Column Position
-    SELECT prod_id, prod_price, prod_name FROM Products ORDER BY 2, 3;
     
 #Filtering
   #against a Single Value
@@ -78,12 +87,18 @@ Statement must end with semicolon;
       any one of which must match a character
       in the specified position (the location of the wildcard).
     This wildcard can be negated by prefixing the characters with ^ (the carat character).
+#Get unique elements only
+  SELECT DISTINCT column FROM Table;
+  SELECT aggregation(DISTINCT column) FROM Table;  
+#Get top and top percentile elements
+  SELECT TOP 3 * FROM Table ORDER BY column;
+  SELECT TOP 50 PERCENT * FROM Table ORDER BY column;
 
 #Calculated Fields
   SELECT function(column) FROM Table;
   SELECT column operator column FROM Table;
 
-#Using Alias
+#Aliasing column
   SELECT column AS alias FROM Table;
   SELECT calculated field AS alias FROM Table;
   
@@ -107,3 +122,29 @@ Statement must end with semicolon;
   
 #System Functions
 
+#--------------------------------------------------------------------------------
+#Aggregate Functions
+    SELECT aggregation(column) FROM Table;
+    SELECT aggregation(DISTINCT column) FROM Table;
+  #AVG()
+    SELECT AVG(column) AS average FROM Table;
+  #COUNT()
+    SELECT COUNT(*) AS total_row FROM Table;    -- this will count NULL values too
+    SELECT COUNT(column) AS total FROM Table;   -- this will ignore NULL values
+  #MAX()
+    SELECT MAX(column) AS maximum FROM Table;
+  #MIN()
+    SELECT MIN(column) AS minimum FROM Table;
+  #SUM()
+    SELECT SUM(column) AS summation FROM Table;
+    SELECT SUM(calculated field) AS summation FROM Table;
+      SELECT SUM(column * column) AS summation FROM Table;
+
+#Grouping Data
+  SELECT aggregation(*) AS total_columns FROM Table GROUP BY column;
+    SELECT vend_id, COUNT(*) AS num_prods FROM Products GROUP BY vend_id;
+  SELECT column FROM Table GROUP BY column;
+    -- this is equal to: SELECT DISTINCT column FROM Table
+#Filtering Groups
+  SELECT aggregation(*) AS total_columns FROM Table GROUP BY column HAVING condition;
+	  SELECT vend_id, COUNT(*) AS num_prods FROM Products WHERE prod_price >= 4 GROUP BY vend_id HAVING COUNT(*) >= 2;

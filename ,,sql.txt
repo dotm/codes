@@ -9,7 +9,11 @@ Wildcards: Special characters used to match parts of a value
 Search pattern: A search condition made up of literal text, wildcard characters, or any combination of the two
 Calculated fields: a column created on-the-fly within a SQL SELECT statement
   by transforming data from one or multiple fields using operators or data manipulation functions.
+Aggregate functions: Functions that operate on a set of rows to calculate and return a single value.
+Query: Any SQL statement. However, the term is usually used to refer to SELECT statements.
+Subqueries: queries that are embedded into other queries.
 
+#--------------------------------------------------------------------------------
 Statement must end with semicolon;
 
 -- single line comment
@@ -101,6 +105,8 @@ Statement must end with semicolon;
 #Aliasing column
   SELECT column AS alias FROM Table;
   SELECT calculated field AS alias FROM Table;
+#Aliasing Table
+  SELECT Table_Alias.column FROM Table AS Table_Alias;
   
 #--------------------------------------------------------------------------------
 #Data Manipulation Functions
@@ -148,3 +154,74 @@ Statement must end with semicolon;
 #Filtering Groups
   SELECT aggregation(*) AS total_columns FROM Table GROUP BY column HAVING condition;
 	  SELECT vend_id, COUNT(*) AS num_prods FROM Products WHERE prod_price >= 4 GROUP BY vend_id HAVING COUNT(*) >= 2;
+
+#--------------------------------------------------------------------------------
+#Subquery
+  #Filtering by Subquery
+    SELECT cust_name FROM Customers WHERE cust_id IN(
+      SELECT cust_id FROM Orders WHERE order_num '0001');
+  #Using Subqueries As Calculated Fields
+    SELECT
+      cust_name,
+      cust_state,
+      (SELECT COUNT(*) FROM Orders WHERE Orders.cust_id = Customers.cust_id) AS orders
+    FROM Customers;
+
+#--------------------------------------------------------------------------------
+#Join
+
+#Inner Joins
+  SELECT column, Table1.column, Table2.column
+	FROM Table1 INNER JOIN Table2
+	ON Table1.column = Table2.column;
+
+#Self Joins
+  SELECT Table1.column, Table2.column
+  FROM Table AS Table1, Table AS Table2   --same table
+  WHERE Table1.column = Table2.column
+  AND Table2.column = value;
+
+#Outer Joins
+  #Left Outer Join
+    SELECT column, Table1.column, Table2.column
+    FROM Table1 LEFT OUTER JOIN Table2
+    ON Table1.column = Table2.column;
+  #Right Outer Join
+    SELECT column, Table1.column, Table2.column
+    FROM Table1 RIGHT OUTER JOIN Table2
+    ON Table1.column = Table2.column;
+  #Full Outer Join
+    SELECT column, Table1.column, Table2.column
+    FROM Table1 FULL OUTER JOIN Table2
+    ON Table1.column = Table2.column;
+
+#Cross Joins
+  SELECT Table1.column, Table2.column FROM Table1, Table2;
+
+#Joining Multiple Tables
+	SELECT prod_name, vend_name, prod_price, quantity
+	FROM OrderItems, Products, Vendors
+	WHERE Products.vend_id = Vendors.vend_id          --inner join
+	AND OrderItems.prod_id = Products.prod_id         --inner join
+	AND order_num = 20007;
+    
+#Using Joins with Aggregate Functions
+  SELECT Customers.cust_id, COUNT(Orders.order_num) AS num_ord
+	FROM Customers LEFT OUTER JOIN Orders
+	ON Customers.cust_id = Orders.cust_id
+	GROUP BY Customers.cust_id;
+
+#--------------------------------------------------------------------------------
+#Combined Query
+  SELECT column FROM Table WHERE condition
+  UNION
+  SELECT column FROM Table WHERE condition;
+#Combined Query (include duplicate row in result)
+  SELECT column FROM Table WHERE condition
+  UNION ALL
+  SELECT column FROM Table WHERE condition;
+#Sorting Combined Query Results
+  SELECT column FROM Table WHERE condition
+  UNION
+  SELECT column FROM Table WHERE condition
+  ORDER BY column DESC, column;             --put the ORDER BY at the last query

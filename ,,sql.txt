@@ -4,6 +4,7 @@ Schema: Information about database and table layout and properties
 Column: A single field in a table
 Row: A record in a table
 Primary Key: A column (or set of columns) whose values uniquely identify every row in a table
+Foreign key: A column in a table whose values must be listed in a primary key in another table
 Keyword: A reserved word that is part of the SQL language
 Wildcards: Special characters used to match parts of a value
 Search pattern: A search condition made up of literal text, wildcard characters, or any combination of the two
@@ -12,6 +13,14 @@ Calculated fields: a column created on-the-fly within a SQL SELECT statement
 Aggregate functions: Functions that operate on a set of rows to calculate and return a single value.
 Query: Any SQL statement. However, the term is usually used to refer to SELECT statements.
 Subqueries: queries that are embedded into other queries.
+Transaction: A block of SQL statements
+Rollback: The process of undoing specified SQL statements
+Commit: Writing unsaved SQL statements to the database tables
+Savepoint: A temporary placeholder in a transaction set to which you can issue a rollback (as opposed to rolling back an entire transaction)
+Constraints: Rules that govern how database data is inserted or manipulated.
+User-Defined Datatypes: simple datatypes with check constraints (or other constraints) defined.
+User authorization: the process by which a user is validated to ensure he is who he says he is.
+User authentication: the process by which a user is validated to ensure that he is allowed to perform the operation he is trying to perform.
 
 #--------------------------------------------------------------------------------
 Statement must end with semicolon;
@@ -25,6 +34,41 @@ Statement must end with semicolon;
     Boolean values
   #Comparison operators: < <= > >= = != <> !< !> BETWEEN (IS NULL)
   #Bitwise
+#Display output using SELECT
+  SELECT value;
+  SELECT 1+1;
+  SELECT 1+1 AS Operation;
+
+#Builtin Datatypes
+  #String
+    #Fixed-length string:
+      CHAR
+      NCHAR
+    #Variable-length string:
+      TEXT/LONG/MEMO/VARCHAR
+      NVARCHAR
+  #Numeric:
+    BIT
+    DECIMAL/NUMERIC
+    FLOAT/NUMBER
+    INT/INTEGER
+    REAL
+    SMALLINT
+    TINYINT
+    MONEY/CURRENCY
+  #Date and Time
+    DATE
+    DATETIME/TIMESTAMP
+    SMALLDATETIME
+    TIME
+  #Binary
+    #Fixed-length binary data:
+      BINARY
+      RAW
+    #Variable-length binary data:
+      LONG RAW
+      VARBINARY
+#User-Defined Datatypes
 
 #SELECT Clause Ordering
   -------------------------------------------------------------------------------------------
@@ -45,14 +89,14 @@ Statement must end with semicolon;
     SELECT column, column FROM Table;
   #All Columns
     SELECT * FROM Table;
-    
+
 #Sorting
   #by Individual Columns
     SELECT column FROM Table ORDER BY column;       #Ascending
     SELECT column FROM Table ORDER BY column DESC;  #Descending
   #by Multiple Columns
     SELECT column FROM Table ORDER BY column DESC, column;
-    
+
 #Filtering
   #against a Single Value
     SELECT column FROM Table WHERE column < 10;
@@ -93,7 +137,7 @@ Statement must end with semicolon;
     This wildcard can be negated by prefixing the characters with ^ (the carat character).
 #Get unique elements only
   SELECT DISTINCT column FROM Table;
-  SELECT aggregation(DISTINCT column) FROM Table;  
+  SELECT aggregation(DISTINCT column) FROM Table;
 #Get top and top percentile elements
   SELECT TOP 3 * FROM Table ORDER BY column;
   SELECT TOP 50 PERCENT * FROM Table ORDER BY column;
@@ -107,7 +151,7 @@ Statement must end with semicolon;
   SELECT calculated field AS alias FROM Table;
 #Aliasing Table
   SELECT Table_Alias.column FROM Table AS Table_Alias;
-  
+
 #--------------------------------------------------------------------------------
 #Data Manipulation Functions
 
@@ -118,14 +162,14 @@ Statement must end with semicolon;
       WHERE SOUNDEX(cust_contact) = SOUNDEX('Michael Green');   -- this will also return similarly sounded names like 'Michelle Green'
     takes into account similar sounding characters and syllables,
     enabling strings to be compared by how they sound rather than how they have been typed.
-    
+
 #Date and Time Manipulation Functions
   (see ,,lang.txt for updated version)
 
 #Numeric Manipulation Functions
   (see arithmetic operators above)
   (see ,,lang.txt on basic mathematics operators for updated version)
-  
+
 #System Functions
 
 #--------------------------------------------------------------------------------
@@ -204,7 +248,7 @@ Statement must end with semicolon;
 	WHERE Products.vend_id = Vendors.vend_id          --inner join
 	AND OrderItems.prod_id = Products.prod_id         --inner join
 	AND order_num = 20007;
-    
+
 #Using Joins with Aggregate Functions
   SELECT Customers.cust_id, COUNT(Orders.order_num) AS num_ord
 	FROM Customers LEFT OUTER JOIN Orders
@@ -225,3 +269,112 @@ Statement must end with semicolon;
   UNION
   SELECT column FROM Table WHERE condition
   ORDER BY column DESC, column;             --put the ORDER BY at the last query
+
+#--------------------------------------------------------------------------------
+#Inserting Complete Rows
+  INSERT INTO Table(id, column, column, ...) VALUES(id, value, value, ...);
+#Inserting Partial Rows
+  INSERT INTO Table(id, column, column, ...) VALUES(id, value, NULL, ...);
+  INSERT INTO Table(id, column, ...) VALUES(id, value, ...);
+#Importing Rows to Existing Table
+  INSERT INTO Table1(id, column, column, ...)
+	SELECT id, column, column, ... FROM Table2;
+#Exporting Rows to New Table
+  -- different DBMS have different syntax
+  SELECT * INTO CustCopy FROM Customers;
+
+#Update specific row(s)
+  UPDATE Table
+  SET column = value, column = value, ...
+  WHERE condition;
+#Update all rows
+  UPDATE Table
+  SET column = value, column = value, ... ;
+
+#Deleting Value of a Column
+  UPDATE Table
+  SET column = NULL
+  WHERE condition;
+
+#Delete specific row(s)
+  DELETE FROM Table
+  WHERE condition;
+#Delete all rows (but don't delete Table)
+  DELETE FROM Table;
+
+#--------------------------------------------------------------------------------
+#Creating Tables
+#Updating Tables
+#Deleting Tables
+  DROP TABLE Table;
+#Renaming Tables
+
+#Creating Index
+  CREATE INDEX col_index ON Table (column);
+
+#Creating Table Trigger
+  Table Trigger is for DML commands (INSERT/UPDATE/DELETE).
+#Creating Database Trigger
+  Database Trigger is for DDL commands (CREATE/ALTER/DROP)
+
+#Constraint
+  #Primary Keys
+    #in table definition
+      CREATE TABLE Table (
+        table_id CHAR(10) NOT NULL PRIMARY KEY
+        ...
+      );
+    #using ALTER
+      ALTER TABLE Table ADD CONSTRAINT PRIMARY KEY (table_id);
+  #Foreign Keys
+    #in table definition
+      CREATE TABLE Table1 (
+        ...
+        other_table_id CHAR(10) NOT NULL REFERENCES Table2(table_id)
+        ...
+      );
+    #using ALTER
+      ALTER TABLE Table1 ADD CONSTRAINT
+      FOREIGN KEY (other_table_id) REFERENCES Table2 (table_id);
+  #Unique Constraints
+    ensure that all data in a column (or set of columns) is unique
+  #Check Constraints
+    #in table definition
+      CREATE TABLE OrderItems (
+        ...
+        quantity INTEGER NOT NULL CHECK (quantity > 0)
+        ...
+      );
+    #using ALTER
+      ADD CONSTRAINT CHECK (gender LIKE '[MF]')
+
+#--------------------------------------------------------------------------------
+#Creating Views
+  CREATE VIEW viewname AS
+	SELECT statement;
+#Using Views
+  SELECT * FROM viewname;
+#Deleting Views
+  DROP VIEW viewname;
+
+#--------------------------------------------------------------------------------
+#Creating Stored Procedures
+#Executing Stored Procedures
+
+#--------------------------------------------------------------------------------
+#Start/Begin Transaction
+#Creating Savepoint
+#Commit Transaction
+#Rollback Transaction
+#Rollback to Savepoint
+
+#--------------------------------------------------------------------------------
+#Creating Cursor
+#Opening Cursor
+#Retrieving/Traversing Data from Cursor
+#Closing Cursor
+#Deallocating Cursor
+
+#--------------------------------------------------------------------------------
+#GRANT statement
+#REVOKE statement

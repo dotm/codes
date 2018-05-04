@@ -1,0 +1,36 @@
+#Let keyword: let variableName
+  let is block-scoped variable declaration
+#Const keyword: const constantName
+  block-scoped constant declaration
+
+#Arrow Function
+    arrow function expression does not have its own this, arguments, super, or new.target
+    these function expressions are best suited for non-method functions
+  #arrow function doesn't have its own lexical scope
+    x = 12
+    (() => this.x)()  #this will return 12
+  #with no parameter
+    () => 1
+  #with single parameter
+    x => x + 1
+  #with multiple parameter
+    (x, y) => x + y
+  #return object
+    () => ({k: 1})
+  #multi-line body
+    x => {
+      x++
+      return x        #return must be specified with multi-line body
+    }
+  #IIFE (Immediately Invoked Function Expression)
+    (() => 1)()
+
+#Enhanced Object Literals
+  var obj = {
+    __proto__: theProtoObj,                   // prototype
+    handler,                                  // shorthand for ‘handler: handler’
+    toString(){                               // method
+     return "d " + super.toString();          // super calls
+    },
+    [ 'prop_' + (() => 42)() ]: 42            // computed (dynamic) property names
+  }

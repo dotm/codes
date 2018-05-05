@@ -69,25 +69,3 @@ Given a branch foo and a remote upstream:
 git branch -u upstream/foo
 Or, if local branch foo is not the current branch:
 git branch -u upstream/foo foo
-
-#----------------------------------------------------------------------------------------
-#Pug auto render to html with same filename in the same directory
-
-run lala.js below from node and you'll get lala.html from lala.pug
-!lala.pug
-!lala.js
-  const pug = require('pug')
-    , path = require('path')
-    , fs = require('fs')
-    , scriptName = path.basename(module.filename, path.extname(module.filename))
-    , file = `${__dirname}\\${scriptName}.pug`
-    , str = require('fs').readFileSync(file, 'utf8')
-    , compiledFunction = pug.compile(str, { filename: file, pretty: true });
-
-  // Render a set of data with the "locals" data object
-  let result = compiledFunction({});
-  // Write to html
-  let newHTML = scriptName + ".html"
-  fs.writeFileSync(newHTML, result)
-  // Report success
-  console.log(`${newHTML} successfully rendered from ${file}. Click Alt+F4 to exit cmd. `)

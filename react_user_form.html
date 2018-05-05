@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>React Page</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+
+    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="text/babel">
+      function generateRandomId (h = 16, s = s => Math.floor(s).toString(h)) {
+        return s(Date.now() / 1000) + ' '.repeat(h).replace(/./g, () => s(Math.random() * h))
+      }
+
+      function UserListItem (props){
+        let {user} = props
+        return (
+          <ul>
+            <li>First Name: {user.first_name}</li>
+            <li>Last Name: {user.last_name}</li>
+            <li>Email: {user.email}</li>
+          </ul>
+        )
+      }
+      function UserList (props){
+        let {users} = props
+        let listItems = users.map(user => <UserListItem user={user} key={user.id}/>)
+        return(
+          <div>
+            <h3>User List</h3>
+            {listItems}
+          </div>
+        )
+      }
+
+      function TextFormGroup (props){
+        let {name, title, type, value, handleInputChange, } = props
+        return (
+          <div className="form-group">
+            <label className="sr-only" htmlFor={name}>{title}</label>
+            <input
+              type={type || "text"}
+              className={`${name} form-control`}
+              name={name}
+              placeholder={title}
+              value={value}
+              onChange={handleInputChange}
+              />
+          </div>
+        )
+      }
+      function UserFormGroups (props){
+        let user = props.user || {}
+        return (
+          <div>
+            <TextFormGroup
+              name='first_name'
+              title='First Name'
+              value={user.first_name}
+              handleInputChange={props.handleInputChange}
+            />
+            <TextFormGroup
+              name='last_name'
+              title='Last Name'
+              value={user.last_name}
+              handleInputChange={props.handleInputChange}
+            />
+            <TextFormGroup
+              name='email'
+              title='Email'
+              type='email'
+              value={user.email}
+              handleInputChange={props.handleInputChange}
+            />
+          </div>
+        )
+      }
+      function AddUserForm (props){
+        return (
+          <form onSubmit={event => props.handleSubmit(event)}>
+            <h3>Add User Form</h3>
+            <UserFormGroups />
+            <button type="submit" className="btn btn-default">Save</button>
+          </form>
+        )
+      }
+      class EditUserForm extends React.Component{
+        constructor(props){
+          super(props)
+          this.state = this.get_initialState()
+
+          this.select_editedUser = this.select_editedUser.bind(this)
+          this.handleInputChange = this.handleInputChange.bind(this)
+        }
+        
+        get_initialState(){
+          let initial_state = {
+            id: undefined,
+            first_name: '',
+            last_name: '',
+            email: '',
+          }
+          return initial_state
+        }
+
+        select_editedUser(event){
+          let user_id = event.target.value
+          
+          let editedUser = this.props.users.find(user => user.id === user_id)
+          
+          this.setState({
+            id: user_id,
+            ...editedUser,
+          })
+        }
+
+        handleInputChange(event) {
+          const target = event.target;
+          const value = target.type === 'checkbox' ? target.checked : target.value;
+          const name = target.name;
+
+          this.setState({
+            [name]: value
+          });
+        }
+        
+        resetForm(){
+          this.setState(this.get_initialState())
+        }
+
+        render(){
+          let {users, handleSubmit} = this.props
+          let options = users.map(user => <option value={user.id} key={user.id}>{user.email}</option>)
+          return (
+            <form onSubmit={event => {
+              handleSubmit(event, this.state)
+              this.resetForm()
+            }}>
+              <h3>Edit User Form</h3>
+              <div className="form-group">
+                <label className="sr-only" htmlFor="select_user">Select User</label>
+                <select
+                  value={this.state.id}
+                  onChange={event => this.select_editedUser(event)}
+                  className="select_user form-control"
+                >
+                  <option value=''>Please select user first..</option>
+                  {options}
+                </select>
+              </div>
+              {
+                (this.state.id === undefined)
+                  ? null
+                  : <UserFormGroups
+                      user={this.state}
+                      handleInputChange={this.handleInputChange}
+                    />
+              }
+              <button type="submit" className="btn btn-default">Save</button>
+            </form>
+          )
+        }
+      }
+      class App extends React.Component{
+        constructor(props) {
+          super(props);
+          let users = [
+            {
+              "id": "5aedbd8692b696a8f35e890d",
+              "first_name": "Miller",
+              "last_name": "Amyes",
+              "email": "mamyes0@posterous.com",
+              "gender": "Male"
+            }, {
+              "id": "5aedbd90352ea61f53ed330b",
+              "first_name": "Leonora",
+              "last_name": "Jenne",
+              "email": "ljenne1@google.co.jp",
+              "gender": "Female"
+            }
+          ]
+          this.state = {users};
+          this.addUser = this.addUser.bind(this)
+          this.editUser = this.editUser.bind(this)
+        }
+        
+        addUser(event){
+          event.preventDefault()
+          let form = event.target
+          const getFormValue = (className => form.getElementsByClassName(className)[0].value)
+          
+          this.setState((prevState, props) => {
+            let new_id = generateRandomId()
+            let new_user = {
+              id: new_id,
+              first_name: getFormValue('first_name'),
+              last_name: getFormValue('last_name'),
+              email: getFormValue('email'),
+            }
+            let users = prevState.users
+            users.push(new_user)
+            
+            form.reset()
+            return {users}
+          });
+        }
+        
+        editUser(event, new_user_data){
+          event.preventDefault()
+          let form = event.target
+          
+          this.setState((prevState, props) => {
+            let user_id = new_user_data.id
+            let users = prevState.users
+            let new_users = users.map(user => {
+              let selected_user = user.id === user_id
+              if(selected_user){
+                return new_user_data
+              }else{
+                return user
+              }
+            })
+            
+            form.reset()
+            return {users:new_users}
+          });
+        }
+        
+        render(){
+          return (
+            <div className="container">
+              <div className="row">
+                <div className="col-md-3">
+                  <AddUserForm handleSubmit={this.addUser}/>
+                </div>
+                <div className="col-md-3">
+                  <EditUserForm users={this.state.users} handleSubmit={this.editUser}/>
+                </div>
+                <div className="col-md-3">
+                  <UserList users={this.state.users}/>
+                </div>
+              </div>
+            </div>
+          )
+        }
+      }
+
+
+      var mount = document.querySelector('#app');
+      ReactDOM.render(<App />, mount);
+
+    </script>
+  </body>
+</html>

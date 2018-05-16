@@ -57,7 +57,7 @@
       function UserFormGroups (props){
         let user = props.user || {}
         return (
-          <div>
+          <React.Fragment>
             <TextFormGroup
               name='first_name'
               title='First Name'
@@ -77,7 +77,7 @@
               value={user.email}
               handleInputChange={props.handleInputChange}
             />
-          </div>
+          </React.Fragment>
         )
       }
       function AddUserForm (props){

@@ -8,6 +8,7 @@
 import Test.HUnit
 {-
   To run test:
+    install ghci and HUnit
     go to directory containing this file (from bash or other cli)
     type this in cli (without the '$ '):
       $ ghci
@@ -71,86 +72,103 @@ type Zipper a = (Tree a, Breadcrumbs a)
 
 x -: f = f x
 
-convertTree_toZipper :: Tree a -> Zipper a
-convertTree_toZipper tree = (tree, [])
+convertTree_toZipper :: Tree a -> Either String (Zipper a)
+convertTree_toZipper tree = Right (tree, [])
 
-goLeft :: Zipper a -> Zipper a
-goLeft (Node v leftTree rightTree, breadcrumbs) = (leftTree, LeftCrumb v rightTree:breadcrumbs)
+goLeft :: Zipper a -> Either String (Zipper a)
+goLeft (Empty_Node,_) = Left "Congrats! You fell off the tree! (Function: goLeft)"
+goLeft (Node v leftTree rightTree, breadcrumbs) = Right (leftTree, LeftCrumb v rightTree:breadcrumbs)
 
-goFarLeft :: Zipper a -> Zipper a
-goFarLeft zipper@(Node v Empty_Node _, _) = zipper
-goFarLeft zipper@(Node v _ _, _) = goFarLeft (goLeft zipper)
+goFarLeft :: Zipper a -> Either String (Zipper a)
+goFarLeft (Empty_Node,_) = Left "There is no tree... (Function: goFarLeft)"
+goFarLeft zipper@(Node v Empty_Node _, _) = Right zipper
+goFarLeft zipper@(Node v _ _, _) = (goLeft zipper) >>= goFarLeft
 
-goRight :: Zipper a -> Zipper a
-goRight (Node v leftTree rightTree, breadcrumbs) = (rightTree, RightCrumb v leftTree:breadcrumbs)
+goRight :: Zipper a -> Either String (Zipper a)
+goRight (Empty_Node,_) = Left "Congrats! You fell off the tree! (Function: goRight)"
+goRight (Node v leftTree rightTree, breadcrumbs) = Right (rightTree, RightCrumb v leftTree:breadcrumbs)
 
-goFarRight :: Zipper a -> Zipper a
-goFarRight zipper@(Node v _ Empty_Node, _) = zipper
-goFarRight zipper@(Node v _ _, _) = goFarRight (goRight zipper)
+goFarRight :: Zipper a -> Either String (Zipper a)
+goFarRight (Empty_Node,_) = Left "There is no tree... (Function: goFarRight)"
+goFarRight zipper@(Node v _ Empty_Node, _) = Right zipper
+goFarRight zipper@(Node v _ _, _) = (goRight zipper) >>= goFarRight
 
-goUp :: Zipper a -> Zipper a
-goUp (leftTree, LeftCrumb v rightTree:breadcrumbs) = (Node v leftTree rightTree, breadcrumbs)
-goUp (rightTree, RightCrumb v leftTree:breadcrumbs) = (Node v leftTree rightTree, breadcrumbs)
+goUp :: Zipper a -> Either String (Zipper a)
+goUp (_,[]) = Left "TFW you are at the top and can go up no more... (Function: goUp)"
+goUp (leftTree, LeftCrumb v rightTree:breadcrumbs) = Right (Node v leftTree rightTree, breadcrumbs)
+goUp (rightTree, RightCrumb v leftTree:breadcrumbs) = Right (Node v leftTree rightTree, breadcrumbs)
 
-goTop :: Zipper a -> Zipper a
-goTop (tree, []) = (tree, [])
-goTop zipper = goTop (goUp zipper)
+goTop :: Zipper a -> Either String (Zipper a)
+goTop (tree, []) = Right (tree, [])
+goTop zipper = (goUp zipper) >>= goTop
 
-convertZipper_toTree :: Zipper a -> Tree a
+convertZipper_toTree :: Zipper a -> Either String (Tree a)
 convertZipper_toTree zipper =
   let zipperTop = goTop zipper
-      (tree, _) = zipperTop
-  in tree
+  in
+    case zipperTop of
+      Right (tree, _) -> Right tree
+      Left _ -> Left "There is no tree... (Function: convertZipper_toTree)"
 
-getFocusValue_ofZipper :: Zipper a -> a
-getFocusValue_ofZipper (Node v leftTree rightTree, breadcrumbs) = v
+getFocusValue_ofZipper :: Zipper a -> Either String a
+getFocusValue_ofZipper (Empty_Node, breadcrumbs) = Left "You're focusing on an empty node"
+getFocusValue_ofZipper (Node v leftTree rightTree, breadcrumbs) = Right v
 
-searchKey_inZipper :: (Ord a) => a -> Zipper a -> Zipper a
+searchKey_inZipper :: (Ord a) => a -> Zipper a -> Either String (Zipper a)
+searchKey_inZipper key (Empty_Node,_) = Left "No key like that is in this tree... (Function: searchKey_inZipper)"
 searchKey_inZipper key zipper
-  | (key == v) = zipper
-  | (key < v) = searchKey_inZipper key (goLeft zipper)
-  | (key > v) = searchKey_inZipper key (goRight zipper)
-  where v = getFocusValue_ofZipper zipper
+  | (key == v) = Right zipper
+  | (key < v) = Right zipper >>= goLeft >>= (searchKey_inZipper key)
+  | (key > v) = Right zipper >>= goRight >>= (searchKey_inZipper key)
+  where Right v = getFocusValue_ofZipper zipper
 
--- unit test the functions below
-goUp_untilCurrentNode_isRightChild_or_isRootNode :: Zipper a -> Zipper a
-goUp_untilCurrentNode_isRightChild_or_isRootNode isRootNode@(tree, []) = isRootNode
-goUp_untilCurrentNode_isRightChild_or_isRootNode isRightChild@(tree, RightCrumb _ _:_) = isRightChild
-goUp_untilCurrentNode_isRightChild_or_isRootNode isLeftChild@(tree, LeftCrumb _ _:_)
-  = isLeftChild -: goUp -: goUp_untilCurrentNode_isRightChild_or_isRootNode
+--core functionality of BST below is already tested
+goUp_untilCurrentNode_isRightChild :: Zipper a -> Either String (Zipper a)
+goUp_untilCurrentNode_isRightChild isRootNode@(tree, []) = Left "Node not found"
+goUp_untilCurrentNode_isRightChild isRightChild@(tree, RightCrumb _ _:_) = Right isRightChild
+goUp_untilCurrentNode_isRightChild isLeftChild@(tree, LeftCrumb _ _:_) = (Right isLeftChild) >>= goUp >>= goUp_untilCurrentNode_isRightChild
 
-getPredecessor :: Zipper a -> Zipper a
-getPredecessor tree_withNoLeftChild@(Node _ Empty_Node _, _) = tree_withNoLeftChild -: goUp_untilCurrentNode_isRightChild_or_isRootNode -: goUp
-getPredecessor tree_withLeftChild@(_, _) = tree_withLeftChild -: goLeft -: goFarRight
+getPredecessor :: (Show a) => Zipper a -> Either String (Zipper a)
+getPredecessor tree_withNoLeftChild@(Node focusValue Empty_Node _, _) = 
+  let result = (Right tree_withNoLeftChild) >>= goUp_untilCurrentNode_isRightChild >>= goUp
+  in
+    case result of
+      Right zipper -> Right zipper
+      Left _ -> Left ("No predecessor found for " ++ (show focusValue) ++ ". (Function: getPredecessor)")
+getPredecessor tree_withLeftChild@(_, _) = (Right tree_withLeftChild) >>= goLeft >>= goFarRight
 
-goUp_untilCurrentNode_isLeftChild_or_isRootNode :: Zipper a -> Zipper a
-goUp_untilCurrentNode_isLeftChild_or_isRootNode isRootNode@(tree, []) = isRootNode
-goUp_untilCurrentNode_isLeftChild_or_isRootNode isLeftChild@(tree, LeftCrumb _ _:_) = isLeftChild
-goUp_untilCurrentNode_isLeftChild_or_isRootNode isRightChild@(tree, RightCrumb _ _:_)
-  = isRightChild -: goUp -: goUp_untilCurrentNode_isLeftChild_or_isRootNode
+goUp_untilCurrentNode_isLeftChild :: Zipper a -> Either String (Zipper a)
+goUp_untilCurrentNode_isLeftChild isRootNode@(tree, []) = Left "Node not found"
+goUp_untilCurrentNode_isLeftChild isLeftChild@(tree, LeftCrumb _ _:_) = Right isLeftChild
+goUp_untilCurrentNode_isLeftChild isRightChild@(tree, RightCrumb _ _:_) = (Right isRightChild) >>= goUp >>= goUp_untilCurrentNode_isLeftChild
 
-getSuccessor :: Zipper a -> Zipper a
-getSuccessor tree_withNoRightChild@(Node _ _ Empty_Node, _) = tree_withNoRightChild -: goUp_untilCurrentNode_isLeftChild_or_isRootNode -: goUp
-getSuccessor tree_withRightChild@(_, _) = tree_withRightChild -: goRight -: goFarLeft
+getSuccessor :: (Show a) => Zipper a -> Either String (Zipper a)
+getSuccessor tree_withNoRightChild@(Node focusValue _ Empty_Node, _) =
+  let result = (Right tree_withNoRightChild) >>= goUp_untilCurrentNode_isLeftChild >>= goUp
+  in
+    case result of
+      Right zipper -> Right zipper
+      Left _ -> Left ("No successor found for " ++ (show focusValue) ++ ". (Function: getSuccessor)")
+getSuccessor tree_withRightChild@(_, _) = (Right tree_withRightChild) >>= goRight >>= goFarLeft
 
-deleteFocusValue_ofZipper :: Zipper a -> Zipper a
-deleteFocusValue_ofZipper tree_withNoChild@(Node _ Empty_Node Empty_Node, breadcrumbs) = (Empty_Node, breadcrumbs)
-deleteFocusValue_ofZipper tree_withNoRightChild@(Node _ leftTree Empty_Node, breadcrumbs) = (leftTree, breadcrumbs)
-deleteFocusValue_ofZipper tree_withNoLeftChild@(Node _ Empty_Node rightTree, breadcrumbs) = (rightTree, breadcrumbs)
+deleteFocusValue_ofZipper :: (Show a) => Zipper a -> Either String (Zipper a)
+deleteFocusValue_ofZipper tree_withNoChild@(Node _ Empty_Node Empty_Node, breadcrumbs) = Right (Empty_Node, breadcrumbs)
+deleteFocusValue_ofZipper tree_withNoRightChild@(Node _ leftTree Empty_Node, breadcrumbs) = Right (leftTree, breadcrumbs)
+deleteFocusValue_ofZipper tree_withNoLeftChild@(Node _ Empty_Node rightTree, breadcrumbs) = Right (rightTree, breadcrumbs)
 deleteFocusValue_ofZipper zipper@(Node v leftTree rightTree, breadcrumbs) =
-  (Node successorValue leftTree newRightTree, breadcrumbs)
+  Right (Node successorValue leftTree newRightTree, breadcrumbs)
   where
     zipper_asRoot = (Node v leftTree rightTree, [])
-    successorZipper@(Node successorValue _ _, _) = getSuccessor zipper_asRoot
-    (Node _ _ newRightTree, _) = (deleteFocusValue_ofZipper successorZipper) -: goTop
+    Right successorZipper@(Node successorValue _ _, _) = getSuccessor zipper_asRoot
+    Right (Node _ _ newRightTree, _) = (Right successorZipper) >>= deleteFocusValue_ofZipper >>= goTop
 
-deleteKey_fromTree :: (Ord a) => a -> Tree a -> Tree a
+deleteKey_fromTree :: (Ord a, Show a) => a -> Tree a -> Either String (Tree a)
 deleteKey_fromTree key old_tree = new_tree
   where
-    zipper = old_tree -: convertTree_toZipper
-    zipper_focusedInKey = zipper -: (searchKey_inZipper key)
-    zipper_afterKeyDeletion = zipper_focusedInKey -: deleteFocusValue_ofZipper
-    new_tree = convertZipper_toTree zipper_afterKeyDeletion
+    zipper = (Right old_tree) >>= convertTree_toZipper
+    zipper_focusedInKey = zipper >>= (searchKey_inZipper key)
+    zipper_afterKeyDeletion = zipper_focusedInKey >>= deleteFocusValue_ofZipper
+    new_tree = zipper_afterKeyDeletion >>= convertZipper_toTree
 
 -- untested OPTIONAL functionality
 applyFunction_inOrder :: (a -> b) -> Tree a -> Tree b
@@ -321,8 +339,109 @@ traverseTree_inOrder_tests = [
   TestLabel "Traversing a tree with many branches and leaves" traverseTree_inOrder_test3_2
   ]
 
+-- Unit Test for getPredecessor function
+zipper_usedToTest_getPredecessor = 
+  (Right
+    (Node 6 
+      (Node 3 
+        (Node 0
+          Empty_Node
+          (Node 1
+            Empty_Node
+            (Node 2 Empty_Node Empty_Node)))
+        (Node 5
+          (Node 4 Empty_Node Empty_Node)
+          Empty_Node))
+      (Node 9
+        (Node 7
+          Empty_Node
+          (Node 8 Empty_Node Empty_Node))
+        Empty_Node)
+    ,[])
+  )
+
+getPredecessor_test1_1 = TestCase (assertEqual
+  "should go up to the nearest node that is a right child of its parent, and then return said parent of that node"
+  (Right 6)
+  (zipper_usedToTest_getPredecessor >>= (searchKey_inZipper 7) >>= getPredecessor >>= getFocusValue_ofZipper)
+  )
+getPredecessor_test1_2 = TestCase (assertEqual
+  "should just return the parent of that node (because the current tree under focus is already a right child)"
+  (Right 7)
+  (zipper_usedToTest_getPredecessor >>= (searchKey_inZipper 8) >>= getPredecessor >>= getFocusValue_ofZipper)
+  )
+getPredecessor_test1_3 = TestCase (assertEqual
+  "should return the left child"
+  (Right 4)
+  (zipper_usedToTest_getPredecessor >>= (searchKey_inZipper 5) >>= getPredecessor >>= getFocusValue_ofZipper)
+  )
+getPredecessor_test1_4 = TestCase (assertEqual
+  "should return the right-most child of its left child"
+  (Right 2)
+  (zipper_usedToTest_getPredecessor >>= (searchKey_inZipper 3) >>= getPredecessor >>= getFocusValue_ofZipper)
+  )
+  
+getPredecessor_tests = [
+  TestLabel "get predecessor of the current tree in the zipper focus, if the tree has no left child and is a left child" getPredecessor_test1_1,
+  TestLabel "get predecessor of the current tree in the zipper focus, if the tree has no left child and is a right child" getPredecessor_test1_2,
+  
+  TestLabel "get predecessor of the current tree in the zipper focus, if the tree has a left child which in turn has no right child" getPredecessor_test1_3,
+  TestLabel "get predecessor of the current tree in the zipper focus, if the tree has a left child which in turn has a right child" getPredecessor_test1_4
+  ]
+  
+-- Unit Test for getSuccessor function
+zipper_usedToTest_getSuccessor = 
+  (Right
+    (Node 3
+      (Node 0
+        Empty_Node 
+        (Node 2
+          (Node 1 Empty_Node Empty_Node)
+          Empty_Node))
+      (Node 6 
+        (Node 4
+          Empty_Node
+          (Node 5 Empty_Node Empty_Node))
+        (Node 9
+          (Node 8
+            (Node 7 Empty_Node Empty_Node)
+            Empty_Node)
+          Empty_Node))
+    ,[])
+  )
+
+getSuccessor_test1_1 = TestCase (assertEqual
+  "should go up to the nearest node that is a left child of its parent, and then return said parent of that node"
+  (Right 6)
+  (zipper_usedToTest_getSuccessor >>= (searchKey_inZipper 5) >>= getSuccessor >>= getFocusValue_ofZipper)
+  )
+getSuccessor_test1_2 = TestCase (assertEqual
+  "should just return the parent of that node (because the current tree under focus is already a left child)"
+  (Right 2)
+  (zipper_usedToTest_getSuccessor >>= (searchKey_inZipper 1) >>= getSuccessor >>= getFocusValue_ofZipper)
+  )
+getSuccessor_test1_3 = TestCase (assertEqual
+  "should return the right child"
+  (Right 5)
+  (zipper_usedToTest_getSuccessor >>= (searchKey_inZipper 4) >>= getSuccessor >>= getFocusValue_ofZipper)
+  )
+getSuccessor_test1_4 = TestCase (assertEqual
+  "should return the left-most child of its right child"
+  (Right 7)
+  (zipper_usedToTest_getSuccessor >>= (searchKey_inZipper 6) >>= getSuccessor >>= getFocusValue_ofZipper)
+  )
+
+getSuccessor_tests = [
+  TestLabel "get successor of the current tree in the zipper focus, if the tree has no right child and is a right child" getSuccessor_test1_1,
+  TestLabel "get successor of the current tree in the zipper focus, if the tree has no right child and is a left child" getSuccessor_test1_2,
+  
+  TestLabel "get successor of the current tree in the zipper focus, if the tree has a right child which in turn has no left child" getSuccessor_test1_3,
+  TestLabel "get successor of the current tree in the zipper focus, if the tree has a right child which in turn has a left child" getSuccessor_test1_4
+  ]
+  
 -- Unit Test for deleteKey_fromTree function
-tree_toBeDeleted = 
+tree_toBeDeleted =
+  Right
   (Node 50
     (Node 40 Empty_Node Empty_Node)
     (Node 70
@@ -334,59 +453,64 @@ tree_toBeDeleted =
         (Empty_Node))))
 deleteKey_fromTree_test1_1 = TestCase (assertEqual
   "should replace the key with empty node"
-  (Node 50
-    (Node 40 Empty_Node Empty_Node)
-    (Node 70
-      (Node 60 Empty_Node Empty_Node)
-      (Node 80
-        (Node 75 Empty_Node Empty_Node)
-        (Empty_Node)
-      )))
-  (deleteKey_fromTree 65 tree_toBeDeleted)
+  (Right
+    (Node 50
+      (Node 40 Empty_Node Empty_Node)
+      (Node 70
+        (Node 60 Empty_Node Empty_Node)
+        (Node 80
+          (Node 75 Empty_Node Empty_Node)
+          (Empty_Node)
+        ))))
+  (tree_toBeDeleted >>= (deleteKey_fromTree 65))
   )
 deleteKey_fromTree_test1_2 = TestCase (assertEqual
   "should transplant the key's left children into the key's position"
-  (Node 50
-    (Node 40 Empty_Node Empty_Node)
-    (Node 70
-      (Node 60
-        (Empty_Node)
-        (Node 65 Empty_Node Empty_Node))
-      (Node 75 Empty_Node Empty_Node)))
-  (deleteKey_fromTree 80 tree_toBeDeleted)
+  (Right
+    (Node 50
+      (Node 40 Empty_Node Empty_Node)
+      (Node 70
+        (Node 60
+          (Empty_Node)
+          (Node 65 Empty_Node Empty_Node))
+        (Node 75 Empty_Node Empty_Node))))
+  (tree_toBeDeleted >>= (deleteKey_fromTree 80))
   )
 deleteKey_fromTree_test1_3 = TestCase (assertEqual
   "should transplant the key's right children into the key's position"
-  (Node 50
-    (Node 40 Empty_Node Empty_Node)
-    (Node 70
-      (Node 65 Empty_Node Empty_Node)
-      (Node 80
-        (Node 75 Empty_Node Empty_Node)
-        (Empty_Node))))
-  (deleteKey_fromTree 60 tree_toBeDeleted)
+  (Right
+    (Node 50
+      (Node 40 Empty_Node Empty_Node)
+      (Node 70
+        (Node 65 Empty_Node Empty_Node)
+        (Node 80
+          (Node 75 Empty_Node Empty_Node)
+          (Empty_Node)))))
+  (tree_toBeDeleted >>= (deleteKey_fromTree 60))
   )
 deleteKey_fromTree_test1_4 = TestCase (assertEqual
   "should transplant the key's successor into the key's position and keep the properties of BST intact"
-  (Node 50
-    (Node 40 Empty_Node Empty_Node)
-    (Node 75
-      (Node 60
-        (Empty_Node)
-        (Node 65 Empty_Node Empty_Node))
-      (Node 80 Empty_Node Empty_Node)))
-  (deleteKey_fromTree 70 tree_toBeDeleted)
+  (Right
+    (Node 50
+      (Node 40 Empty_Node Empty_Node)
+      (Node 75
+        (Node 60
+          (Empty_Node)
+          (Node 65 Empty_Node Empty_Node))
+        (Node 80 Empty_Node Empty_Node))))
+  (tree_toBeDeleted >>= (deleteKey_fromTree 70))
   )
 deleteKey_fromTree_test1_5 = TestCase (assertEqual
   "should transplant the key's successor into the key's position and keep the properties of BST intact"
-  (Node 60
-    (Node 40 Empty_Node Empty_Node)
-    (Node 70
-      (Node 65 Empty_Node Empty_Node)
-      (Node 80
-        (Node 75 Empty_Node Empty_Node)
-        (Empty_Node))))
-  (deleteKey_fromTree 50 tree_toBeDeleted)
+  (Right
+    (Node 60
+      (Node 40 Empty_Node Empty_Node)
+      (Node 70
+        (Node 65 Empty_Node Empty_Node)
+        (Node 80
+          (Node 75 Empty_Node Empty_Node)
+          (Empty_Node)))))
+  (tree_toBeDeleted >>= (deleteKey_fromTree 50))
   )
 
 deleteKey_fromTree_tests = [
@@ -403,5 +527,7 @@ tests = TestList (concat [
   insert_tree_tests,
   convertList_toTree_tests,
   traverseTree_inOrder_tests,
+  getPredecessor_tests,
+  getSuccessor_tests,
   deleteKey_fromTree_tests
   ])

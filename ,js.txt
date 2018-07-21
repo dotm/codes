@@ -1,30 +1,16 @@
-var variableName='value';   #function-level scope
-  var a = b = 1;
-  var a = 1,
-      b = 2;
-let variableName='value';   #block-level scope
-const variableName='value'; #block-level scope constant variable
-
 // single line comment
 /* multi line comment */
-can also be used as inline comment:
-  var variableName /* declare */ = 'value' //initialize a.k.a assign
+  can also be used as inline comment: var variableName /* declare */ = 'value'
 
-#Variable scope
-  variables have either a local scope or a global scope
-  all variables declared without a var statement are global variable
-  #Local variables (Function-level scope)
-    JavaScript does not have block-level scope (variables scoped to surrounding curly brackets)
-    JavaScript has function-level scope
-    Variables declared within a function
-      are local variables and will have priority inside that function over global variables
-    are only accessible within that function or by functions inside that function
-  #Global variables
-    all variables declared outside a function are in the global scope
-    in the browser, the global context or scope is the 'window' object
-    avoid polluting the global scope with variable declarations, use function whenever possible
-  #Non-local variables
-    variables that are neither in the local nor the global scope
+#function-level scope:
+  var variableName='value'
+#block-level scope:
+  let variableName='value'
+#block-level scope constant:
+  const variableName='value'
+#global scope (e.g. browser's "window"):
+  variableName='value'
+
 #Hoisting
   all variable and function declarations are hoisted (lifted and declared) to the top of its context (the containing scope)
   only declarations are hoisted (initialization/assignments are not hoisted)
@@ -32,22 +18,12 @@ can also be used as inline comment:
   var myName;  ​    function myName(){};  console.log(typeof myName);  -> function
   var myName='la';  ​function myName(){};  console.log(typeof myName);  -> string
 
-#Reserved words
-  abstract boolean break byte case catch char class const continue debugger
-  default delete do double else enum export extends false final finally float
-  for function goto if implements import in instanceof int interface long
-  native new null package private protected public return short static super
-  switch synchronized this throw throws transient true try typeof var
-  volatile void while with
-
 #User string input
-  confirm("Yes or no?");    prompt("Input your data:");
+  confirm("Yes or no?");
+  prompt("Input your data:");
 #String output
-  console.log(2*5);    alert("Lala");
-#HTML output
-  document.writeln("<h1>Hi</h1>")
-  document.writeln("<style>body{background-color: blue}</style>")
-  document.writeln("<script>document.body.onclick = function(){alert('lala')}</script>")
+  console.log(2*5);
+  alert("Lala");
 
 #Data types: number(NaN, infinity), string, boolean, array, object, function, null, undefined, symbol, etc.
   #Falsy value: false, undefined, null, NaN, 0, ''
@@ -60,11 +36,11 @@ can also be used as inline comment:
 #Comparataors: > < <= >= === !==
 
 #Manipulating strings
-strings.function()
-  .length()
-  .substring(0, 1)
-  .toUpperCase
-  .toLowerCase
+  strings
+    .length()
+    .substring(0, 1)
+    .toUpperCase
+    .toLowerCase
 
 #Regex literal
   / regex | regex | ... /gim
@@ -73,17 +49,15 @@ strings.function()
 
 #-----------------------------------------------------------------------------------------------------------------
 #Function ()
-  In JS, functions are first-class objects:
-    they are of the type Object, can be manipulated like any other object (string, number, etc.)
-  the arguments and codes inside function is actually stored as string
-  In addition to the declared parameters, every function receives 2 additional parameters:
-    this and arguments
+  functions are first-class objects
+  In addition to the declared parameters,
+    every function receives 2 additional parameters: this and arguments
   #Function declaration:                      function functionName(parameters) { statements; }
   #Function expression
     anonymous function expression:            var identifier = function(parameters) { statements; }
     named function expression:                var identifier = function functionName(parameters) { statements; }
     immediately invoked function expression: (function greet() { alert("hello!"); })();
-      #another valid way to use IIFE         (function greet() { alert("hello!"); }());
+      another valid way to use IIFE:         (function greet() { alert("hello!"); }());
 #Function hoisting
   function declarations and function variables are moved to the top of their scope by JavaScript interpreter
   do function expressions get hoisted too?
@@ -91,14 +65,11 @@ strings.function()
 #Function cascade
     get(object).method().method().method()
   Some methods do not have a return value.
-    e.g., methods that set or change the state of an object .
-  If we have those methods return this instead of undefined, we can enable cascades.
+    e.g., methods that set or change the state of an object
+  If we have those methods return 'this' instead of undefined, we can enable cascades.
 
 #Arrow function
-  function(parameter1, parameter2){return parameter1 + parameter2}
-    :=  (parameter1, parameter2) => parameter1 + parameter2
-  (function(parameter){return parameter + 1})(5)  ->  6
-    :=  ((parameter) => parameter + 1)(5)  ->  6
+  see ES6 file
 
 #Inner functions
   inner functions (nested functions): functions defined inside of another function (the outer function)
@@ -106,7 +77,6 @@ strings.function()
   inner functions have implicit access to the outer function’s scope
     can use outer function's variables, arguments, etc.
 #Closure
-  see Evernote for definition
   a closure is created when an inner function is made accessible from outside of the function that created it
     typically occurs when an outer function returns a (reference to an) inner function
     the inner function then maintains a reference to the environment in which it was created
@@ -115,31 +85,17 @@ strings.function()
     first-class function == object with only one method
     closure == object with only one method and some states
     object == bundle of closures
-#Callback function (higher-order function)
-  callback function: a function passed to another function as an argument
-  even though it's called a callback, it is actually passing information forward
-  if we don’t pass callback with the trailing pair of executing parenthesis ()
-    the callback will not be executed immediately by the containing function
-  the function definition acts like any other variable do when they're passed as an argument
-  callback functions are closures
-    this is because the callback is executed at some point inside the outer function
+#Callback function: a function passed to another function as an argument
 #Manipulate function context
     functionName.bind(newContext)
+    functionName.call(newContext, argument1, argument2)
+    functionName.apply(newContext,[argument1, argument2, ...])
   use the methods below to manipulate the this variable of a function
   set new context to null if you don't want to change the context
   set new context to where the function is defined using 'this' as newContext
-  .bind(newContext)
-  .call(newContext, argument1, argument2)
-  .apply(newContext,[argument1, argument2, ...])
-  .apply() vs .call()
-  pass the function parameters to apply () as an array
-  list the parameters individually to the call () method
-  you can use apply to borrow methods (from constructor or custom object) and create variadic function
 #Currying
   var add = function(a) {
-    return function(b) {
-      return a + b;
-    };
+    return function(b) {return a + b;};
   };
   add2 = add(2)
   add2(3) -> 5
@@ -164,14 +120,11 @@ strings.function()
   var propertyName = ( dim === 'width' ) ? 'clientWidth' : 'clientHeight';
 
 #Switch
-  var user=prompt('Lala?').toLowerCase();
+  var user=prompt('Note?').toLowerCase();
   switch(user){
     case 'do':
     case 're':
-      console.log('fa');
-      break;
-    case 'mi':
-      console.log('sol');
+      console.log('mi');
       break;
     default:            #default is optional
       console.log('do');}
@@ -179,7 +132,7 @@ strings.function()
 #For loop
   for (var i = 0; i < integer; i++){ statements };
   for (var i = 0; i < array.length; i++){ statements };
-  for (var i in lala){ statements };            #lala can be an array or object
+  for (var i in collection){ statements };              #collection can be an array or object
   arr.forEach(callback(element, index, array), thisArg = this)
 
 #While loop
@@ -191,7 +144,7 @@ strings.function()
 #Loop control flow statements
     if (condition) { break; }       #get out of loop
     if (condition) { continue; }    #go to next iteration
-  with label
+  #with label
     loop1:
     for (i = 0; i < 3; i++) {
        loop2:
@@ -206,25 +159,17 @@ strings.function()
 #-----------------------------------------------------------------------------------------------------------------
 #Array []
 Array is a zero-indexed heterogeneous, linear, ordered collection of elements
-  #Array literal
-    var empty = [];
-    var arrayName = [null, true, 'two'];
-      the above is the same as {'0': null, '1': true, '2': 'two'} but without default Array methods and properties
-  #Array constructor
-    var arrayName = new Array();
-  #Array length
-      array.length
-    is a property, NOT function
-    is the largest integer property name in the array plus one, NOT necessarily the number of properties in the array
-    is automatically set dynamically but can be set explicitly:
-      making the length larger will add undefined up to new length
-        it does not allocate more space for the array (since there's no array upper bound in JS)
-      making the length smaller will delete all properties with a subscript greater than or equal to the new length
+  #Creating array
+    #with literal:
+      var empty = [];
+      var arrayName = [null, true, 'two'];
+    #with constructor: var arrayName = new Array();
+  #Array length: array.length
   #Add data value to an array
     array.push(data);     :=    array[array.length] = data
   #Accessing element by index
     var element = array[index];
-    the [] converts its expression toString
+    the [] converts any expression inside it toString
   #Delete array's element
       delete array[index]       #make the array's value at index === undefined
       array.splice(index, n)    #delete n elements from index and decrement the name of all elements to the right
@@ -248,7 +193,7 @@ Objects' attributes: prototype, class, extensible
 Object.prototype.constructor returns a reference to the constructor function that created the instance's prototype
 
 #Object {}
-  Object: mutable keyed collections
+Object: mutable keyed collections
   #Object literal notation
     var objectName = {                  #never forget the comma
       key       : value,                #key a.k.a property
@@ -325,16 +270,8 @@ Object.prototype.constructor returns a reference to the constructor function tha
 
 #Object Specifiers
   instead of requesting numerous parameters: function ClassName(f, l, m, c, s);
-    write the constructor to accept a single object specifier
-      function ClassName( {first: f, last: l, ...} )
-  benefits:
-    arguments can be listed in any order
-    arguments can be left out if the constructor is smart about defaults
-      use jQuery $.extend({}, defaults, custom);
-        to create an empty object, copy the defaults, and overwrite with custom properties
-    code is much easier to read
-    we can pass JSON object to the constructor and it will return a fully constituted object
-
+    write the constructor to accept a single object specifier: function ClassName( {first: f, last: l, ...} )
+  
 #Prototype
   #Prototype property
     every JavaScript function has a prototype property (empty by default)
@@ -439,290 +376,19 @@ Object.prototype.constructor returns a reference to the constructor function tha
 #-----------------------------------------------------------------------------------------------------------------
 #Module and Namespace
 
-#IIFE Module Pattern
-  (function(window, $, undefined){ codes; })(window, jQuery);
-#Namespace Pattern
-  declare a namespace, and assign a function to it:
-  window.myApp = window.myApp || {};
-  window.myApp.someFunction = function(){  codes };
-#Combining IIFE Module Pattern and Namespace Pattern
-    (function(myApp, $, undefined){ codes; }(window.myApp = window.myApp || {}, jQuery));
-  could also be written like this:
-    window.myApp = (function(myApp, $, undefined){
-      codes;
-      return myApp;
-    })(window.myApp || {}, jQuery);
+#Import
+#Import default
 
-#Revealing Module Pattern
-  define everything privately inside of the module
-  expose to public by returning an object
-    var myModule = (function($, undefined){
-      var myVar1 = '', myVar2 = '';
-      var getVars = function(){ return myVar1 + " " + myVar2; };
-      return {
-        getMyVar1: function() { return myVar1; },
-        setMyVar1: function(val) { myVar1 = val; },
-        getVars: getVars
-      }
-    })(jQuery);
-#Module instantiation
-    (function($) {
-      $.jPanelMenu = function(options) {
-          var jpm = {
-            options: $.extend ({'animated': true, 'duration': 500, 'direction': 'left'}, options),
-            openMenu: function(){},
-            closeMenu: function(){},
-            privateMethod: function(){}
-          };
-          return {
-            open: jpm.openMenu,
-            close: jpm.closeMenu,
-            someComplexMethod: function( ) { … }
-          };
-      };
-    })(jQuery);
-  instantiate:
-    var jpm = $.jPanelMenu({duration: 1000});
-    jpm.open();
+#Export
+#Export default
 
 #-----------------------------------------------------------------------------------------------------------------
-JavaScript Object Notation (JSON)
-  is a lightweight data interchange format
-  is based on JavaScript’s object literal notation
-  is language independent
-  is a text format readable by humans and machines
-
-#JSON Syntax
-6 types of JSON values: objects, arrays, strings, numbers, booleans, null
-  #Whitespace
-    may be inserted before or after any value
-    may be omitted to reduce transmission or storage costs.
-  #JSON object
-      {"name":value, "name":value}
-    an unordered container of name/value pairs.
-    a name can be any string. a value can be any JSON value
-  #JSON array
-      [value, value]
-    an ordered sequence of values.
-    a value can be any JSON value
-  #JSON string
-      "string"
-    \ is used for escapement
-    escapable characters: " / \ b f n r t uxxxx
-    JSON allows / to be escaped so that JSON can be embedded in HTML <script> tags
-  #JSON numbers
-    are like JavaScript numbers
-    leading zero is not allowed on integers
-      because some languages use that to indicate the octal: e.g. 023
-    a number can be an integer, real, or scientific
-
-#JavaScript JSON methods
-  serialize: convert an object to a string to (transfer your objects via HTTP, etc.)
-    var strings = JSON.stringify (objectName);
-  deserialize
-    var objectName = JSON.parse (strings);
+#JSON methods
+  #serialize to JSON string: var string = JSON.stringify (objectName);
+  #deserialize JSON: var objectName = JSON.parse (string);
 
 #-----------------------------------------------------------------------------------------------------------------
 #Asynchronous JavaScript
-the functions below in the real world will make an AjAX request and return the results
-for now let’s just use timeouts
 
 #Callbacks
-  in the callback pattern we call a function (finder) that will do the asynchronous operation
-  one of the parameters we pass is a function that will be called when the operation is done
-    finder([1, 2], function (results) { codes; });
-  #Setup
-    function finder(records, cb) {
-        setTimeout(function () {
-            records.push(3, 4);
-            cb(records);
-        }, 1000);
-    }
-    function processor(records, cb) {
-        setTimeout(function () {
-            records.push(5, 6);
-            cb(records);
-        }, 1000);
-    }
-  #Usage
-    finder([1, 2], function (records) {
-        processor(records, function(records) {
-          console.log(records);
-        });
-    }); ->  [1,2,3,4,5,6]
-  nested callbacks can be written more clearly by passing a reference to another function.
-    function onProcessorDone(records){ console.log(records); }
-    function onFinderDone(records) { processor(records, onProcessorDone); }
-    finder([1, 2], onFinderDone); ->  [1,2,3,4,5,6]
-  #Pros: very well know pattern, familiar, easy to understand,easy to implement in your own libraries or functions.
-  #Cons:
-    nested callbacks (callback hell)is hard to read; fix by splitting the functions
-    you can only pass one callback for a given event, this can be a big limitation in many cases
-
-#Listeners
-  we call a function (.on) on an object (finder) that adds a listener
-  in that function we pass the name of the event we want to listen to and a callback function
-  common names for this function: on, bind, listen, addEventListener, observe
-    finder.on('done', function (event, records) { codes; });
-  #Setup
-   1.create a couple of objects that will do the work of finding and processing the records.
-    var finder = {
-        run: function (records) {
-            var self = this;
-            setTimeout(function () {
-                records.push(3, 4);
-                self.trigger('done', [records]);
-            }, 1000);
-        }
-    }
-    var processor = {
-        run: function (records) {
-            var self = this;
-            setTimeout(function () {
-                records.push(5, 6);
-                self.trigger('done', [records]);
-            }, 1000);
-        }
-    }
-   note: they are calling a method trigger when the work is done
-    add this method to these objects using a mix-in
-    common names for this method: trigger, fire, publish
-   2.create a mix-in object that has the listener behaviour
-    var eventable = {
-        on: function(event, cb) { $(this).on(event, cb); },
-        trigger: function (event, args) { $(this).trigger(event, args); }
-    }
-   3.apply the behaviour to our finder and processor objects:
-    $.extend(finder, eventable);
-    $.extend(processor, eventable);
-   now our objects can take listeners and trigger events
-  #Usage
-    finder.on('done', function (event, records) { processor.run(records); });
-    processor.on('done', function (event, records) { console.log(records); });
-    finder.run([1,2]); ->  [1,2,3,4,5,6]
-  #Pros:
-    well understood pattern,
-    you are not limited to one listener per object, you can add as many listeners as you want:
-        finder
-          .on('done', function (event, records) { do something })
-          .on('done', function (event, records) { do something else });
-  #Cons: more difficult to setup, you'll probably want to use a library e.g. jQuery, bean.js.
-
-#Flow Control Library
-  Code using Async.js looks like this:
-    async.series([
-        function(){ ... },
-        function(){ ... }
-    ]);
-  #Setup
-    function finder(records, cb) {
-        setTimeout(function () {
-            records.push(3, 4);
-            cb(null, records);
-        }, 1000);
-    }
-    function processor(records, cb) {
-        setTimeout(function () {
-            records.push(5, 6);
-            cb(null, records);
-        }, 1000);
-    }
-   #The Node Continuation Passing Style
-    Note the style used in the callbacks inside the functions above
-    The first argument in the callback is null if no error occurs; or the error if one occurs.
-    This is a common pattern in Node.js libraries and Async.js uses this pattern.
-    By using this style the flow between Async.js and the callbacks becomes super simple.
-  #Usage
-    async.waterfall([
-        function(cb){
-            finder([1, 2], cb);
-        },
-        processor,
-        function(records, cb) {
-            alert(records);
-        }
-    ]);
-    Async.js takes care of calling each function in order after the previous one has finished
-    Note how we can just pass the ‘processor’ function,
-      this is because we are using the Node continuation style.
-  #Setup 2
-    when doing front-end development
-    it is unlikely to have a library that follows the callback(null, results) signature
-    so a more realistic example will look like this:
-    function finder(records, cb) {
-        setTimeout(function () {
-            records.push(3, 4);
-            cb(records);
-        }, 500);
-    }
-    function processor(records, cb) {
-        setTimeout(function () {
-            records.push(5, 6);
-            cb(records);
-        }, 500);
-    }
-    // using the finder and the processor
-    async.waterfall([
-        function(cb){
-            finder([1, 2], function(records) {
-                cb(null, records)
-            });
-        },
-        function(records, cb){
-            processor(records, function(records) {
-                cb(null, records);
-            });
-        },
-        function(records, cb) {
-            alert(records);
-        }
-    ]);
-  Pros:
-    usually code using a control flow library is easier to understand
-      because it follows a natural order (from top to bottom); this is not true with callbacks and listeners.
-  Cons:
-    if the signatures of the functions don’t match as in Setup 2
-      then you can argue that the flow control library offers little in terms of readability.
-
 #Promises
-  syntax vary widely depending on the promises library you use
-    finder([1,2])
-    .then(function(records) {
-      .. do something
-    });
-  #Setup
-   each function creates a deferred object and returns a promise
-   then it resolves the deferred when the results arrive.
-    function finder(records){
-        var deferred = when.defer();
-        setTimeout(function () {
-            records.push(3, 4);
-            deferred.resolve(records);
-        }, 500);
-        return deferred.promise;
-    }
-    function processor(records) {
-         var deferred = when.defer();
-        setTimeout(function () {
-            records.push(5, 6);
-            deferred.resolve(records);
-        }, 500);
-        return deferred.promise;
-    }
-  #Usage
-    finder([1,2])
-        .then(processor)
-        .then(function(records) {
-                alert(records);
-        });
-   Note how in the first callback we can simply pass the ‘processor’ function.
-   This is because this function returns a promise itself.
-  #Pros:
-    Really powerful: aggregate them into bigger promises, pass them around as regular objects, add handlers for failed promises
-    The biggest advantage: add listeners even when already resolved
-        if event already resolved, then listener will trigger immediately
-          meaning that you don’t have to worry if the event has already happened when you add the listener
-  #Cons:
-    the least understood of all these tools
-    difficult to track when you have lots of aggregated promises with added listeners along the way.
-

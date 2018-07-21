@@ -1,0 +1,95 @@
+   TDD        vs       BDD
+Assertion     ->   Expectation
+Test method   ->   Code example   := Spec
+Test case     ->   Example group  := Test suite
+
+#The hierarchy
+  Test suites
+    Specs
+      Expectations
+
+#Spec:
+  it "docstring here"
+  test "docstring here"
+#Pending spec:
+  it pending
+  skip test
+
+#Test suite:
+  describe "docstring here"
+  context "docstring here"
+#Pending test suite
+#Nested test suite
+#Shared test suite
+  shared test suite is mixing in one test suite in another test suite
+
+#Test one spec only
+#Test one suite only
+
+#-------------------------------------------------------------------------------------
+#Assertion: assert x match y
+  matchers:
+    assert equal
+    assert true
+#Expectation: expect x to match y
+  matchers:
+    to be true
+    to be false
+    to be equal
+    to be less than
+    to be greater than
+    to be less than or equal to
+    to be greater than or equal to
+    to raise error
+    to match regex
+    to be an instance of type/class
+    
+#-------------------------------------------------------------------------------------
+#Setup and Teardown
+  #Before each hook
+  #Before all hook
+  #After each hook
+  #After all hook
+
+#-------------------------------------------------------------------------------------
+#Things that can be faked:
+  object, method or function, module, database, external API, network calls
+
+#Test Function := Test Method
+    A test function can be a stub or a mock
+    A stub:
+      is a "minimal" simulated object or function
+      implements just enough behavior to allow the object under test to execute the test
+    A mock:
+      is like a stub but the test will also verify that the object under test calls the mock as expected
+      part of the test is verifying (using expectations) that the mock was used correctly
+      can also be a stub (implements minimal behavior) or not (just verify usage using expectations)
+  #Function Stub
+    #Creating function stub
+    #Stub return values
+    #Chaining function stub (beware train-wreck: Object.function_a().function_b())
+  #Mock Function
+    #Creating mock function
+    #Mock return values
+    #Chaining mock function (beware train-wreck: Object.function_a().function_b())
+    #Mock Expectation: expect mock function to be x
+      to be called
+      to be called x times
+      to be called with these arguments
+      to be called the n-th time with these arguments
+        to be called the first time with these arguments
+        to be called the last time with these arguments
+  
+#Test Object
+  #Test Double := Object Double
+      A object double could be a stub or a mock, depending on the methods inside it.
+    #Creating object double
+  #Partial Double
+      An object that is partially the original object and partially a test double
+      A partial double could be a stub or a mock, depending on the methods inside it.
+      Use partial double only when
+        Single Responsibility Principle is already violated and you can't do anything about it.
+    #Creating partial double (from existing, real object) 
+    
+#-------------------------------------------------------------------------------------
+#Asynchronous Test

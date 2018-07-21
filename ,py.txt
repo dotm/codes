@@ -437,8 +437,8 @@ Loop
       print('private_instance_method')            #notice the 'self' doesn't have to be used
     
     def instance_method(self, parameter):
-      self._private_instance_method()            #call private_instance_method
-      print(self._private_instance_variable)     #access private_instance_variable
+      self._private_instance_method()             #call private_instance_method
+      print(self._private_instance_variable)      #access private_instance_variable
       print(self.__private_class_variable)        #access private_class_variable
       print(self.class_variable)                  #access class_variable
       print(self.instance_variable + parameter)   #access instance_variable

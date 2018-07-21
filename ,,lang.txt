@@ -56,13 +56,18 @@ Date and Time
 Hold execution (sleep, halt) (wait for a certain time delay before resuming program execution)
 
 #Etc.
-Reserved keyword
-  Boolean value
 Data types
+  Boolean value
+  Number
+  String
+  null value
 Type reflection (find data types of a variable)
 Type conversion
+Type alias
 Operators
   Arithmetic operators: + - * / % ^
+    Compound assignment operators
+    Increment and decrement operators
   Boolean/Logical operators: and or not
     short circuit operator
   Comparison operators: < <= > >= == !=
@@ -83,16 +88,19 @@ Operators
     floor
     ceiling
     round
+Access Control
+  Access Levels
 HTTP REST function
-Exception Handling
+Exception Handling / Error Handling
   try-catch-finally
     conditional catch (catch a certain type of exception only)
     nested try-catch-finally
-  Raising exception
-  User-defined exception
+  Raising exception / Throwing error
+  User-defined exception / error
 
 #--------------------------------------------------------------------------------
 String
+(mutable immutable, is an array of character)
   access by index
   get index of character
     first occurrence
@@ -112,6 +120,7 @@ String
   include (check if a string includes a substring)
   replace substring
   check if string
+    is empty
     starts with substring
     ends with substring
     is alphanumeric
@@ -142,7 +151,8 @@ Conditional
 
 If statement
 Ternary operator statement
-Case statement (switch statement)
+  condition ? expression : expression
+Switch statement
 
 #--------------------------------------------------------------------------------
 Loop
@@ -153,20 +163,26 @@ Do while loop
 
 Iterate over data structures (array, object)
 
-Break out of loop
-  Break with goto (label)
-Continue to next iteration
+Control Transfer Statements
+  break out of loop
+    break with goto (label)
+  continue to next iteration
+    continue with goto (label)
 
 #--------------------------------------------------------------------------------
 Procedure
 
 #--------------------------------------------------------------------------------
 Array
+is ordered collections of values
+is pass-by-value
+is pass-by-reference (available functionalities: copy, identity operator/reference equality)
 (zero index, homogeneous heterogeneous, fixed-length variable-length)
   create (declaration and definition)
   length
   access element by index
   access element by value
+  change element value at index
   insert (assign), edit (reassign) element by index
   add and get value (get := access, return, then remove that value)
     pop (get last)
@@ -182,13 +198,15 @@ Array
     by value
       with condition
   sort
+    ascending
+    descending
   iteration over array 
     for each (by index and value)
     map
     filter
   concatenate
   slicing (like substring but for array)
-  copy
+  copy (if pass-by-reference)
     shallow copy
     deep copy
   max
@@ -198,6 +216,7 @@ Array
   last
   reverse
   get unique elements
+  emptying
   join into string (with separator)
   check if an element is in array
   
@@ -208,18 +227,27 @@ Extending array with User Defined Function
 Range array
 
 #--------------------------------------------------------------------------------
-Associative array [key: value] (value can't be function here, but can be method in object)
-  Create (declaration and definition)
-  Access value by key
+Associative array
+is unordered collections of key-value associations
+is pass-by-reference (available functionalities: copy, identity operator/reference equality)
+  create (declaration and definition)
+  access value by key
     static access (dot notation)
     dynamic access (with string evaluation)
-  Add, edit key-value pair
-  Delete key-value pair
+  add key-value pair
+  edit key-value pair
+  delete key-value pair
     by key
     by value
       with condition
-  Sort
-  Iteration over associative array
+  sort
+  copy (if pass-by-reference)
+    shallow copy
+    deep copy
+  get list of
+    keys
+    values
+  iteration over associative array
     for each (by key and value)
     map
     filter
@@ -227,8 +255,44 @@ Associative array [key: value] (value can't be function here, but can be method 
 Extending associative array with User Defined Function
 
 #--------------------------------------------------------------------------------
-Set (as in mathematical set)
-
+Tuple
+  create
+  unpacking
+  
+#--------------------------------------------------------------------------------
+Set
+is unordered collections of unique values
+is pass-by-value
+is pass-by-reference (available functionalities: copy, identity operator/reference equality)
+  create
+  length
+  sort
+  insert element
+  delete element
+  contains
+  
+  union
+    in A or B
+  intersection
+    in A and B
+  difference
+    in A not in B
+  symmetric difference
+    in A xor B (exclude elements that is in both A and B)
+  
+  check if a set
+    is subset to another set
+    is strict subset to another set
+      (if both sets are equal, return false)
+    is superset to another set
+    is disjoint to another set
+#--------------------------------------------------------------------------------
+Enumeration
+is pass-by-value
+is pass-by-reference (available functionalities: copy, identity operator/reference equality)
+  definition
+  usage
+  
 #--------------------------------------------------------------------------------
 Module (used to store constant and function)
 
@@ -246,7 +310,8 @@ Package (directory of modules that can contains subpackages)
 #################################################################################
 Functional
 
-Function (first-class object?)
+Function
+(first-class object, can be overloaded)
   Declaration
   Definition
   Call
@@ -289,6 +354,7 @@ Class-Based Object Oriented Programming
 Class
   Attribute := variable attached to a class or object
   Method := function attached to a class or object
+  use (this self) keyword to refer to object instance
 
 Creating class (with parameter or object specifier for init method)
   Initialization (init method)
@@ -305,7 +371,8 @@ Creating class (with parameter or object specifier for init method)
   Access private (class or instance) variable from public method
 
 Object
-(pass by value, pass by reference)
+is pass-by-value
+is pass-by-reference (available functionalities: copy, identity operator/reference equality)
   Create object (Instantiating class)
 
 get class attribute
@@ -318,8 +385,10 @@ accessor method
   getter setter
 
 Inheritance
-  Attribute and method overriding
   Access superclass attribute and method
+  Attribute and method overriding
+  Preventing override of attribute and method
+  final class (can't be subclassed)
 
 Interface
 

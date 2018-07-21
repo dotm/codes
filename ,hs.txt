@@ -983,7 +983,7 @@ let can NOT be used when using compiler
   #with do notation
 
 #-------------------------------------------------------------------------------------
-#Guards
+#Guards (additional condition to pattern matching)
   guards are a way of testing whether some property of a value (or several of them) are True or False
     and then running the function body associated with the guard if it evaluates to True
   guards are a lot more readable than if expression when you have several conditions
@@ -1023,7 +1023,7 @@ let can NOT be used when using compiler
         (skinny, normal, fat) = (18.5, 25.0, 30.0)
 
 #-------------------------------------------------------------------------------------
-#Where bindings
+#Where bindings (value binding)
   where bindings are a syntactic construct
     that let you bind to variables at the end of a function
     and the whole function can see them, including all the guards.
@@ -1054,7 +1054,7 @@ let can NOT be used when using compiler
       each with its own where clause.
 
 #-------------------------------------------------------------------------------------
-#Let binding
+#Let binding (value binding)
   Let bindings let you bind to variables anywhere
     but are very local, so they don't span across guards.
   Let bindings are expressions (like if expression)

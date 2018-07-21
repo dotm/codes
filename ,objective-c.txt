@@ -1,0 +1,78 @@
+// single line comment
+/* multi line comment */
+
+#Variable definition:
+  type variable_name = value;
+  type variable_name;
+  type variable_name, variable_name;
+#Variable declaration:
+    you can declare variable or function first, then define it later
+    declaration is required
+      when you define a variable or function in one source file and you use it in another file
+      declare the variable or function at the top of the file calling the function
+  extern type variable_name;
+  extern type variable_name, variable_name;
+  
+#Constant declaration:
+  using #define Preprocessor: #define identifier value
+  using const keyword: const type variable = value;
+
+#--------------------------------------------------------------------------------
+#Arithmetic operators: + - * / %
+#Comparison operators: < <= > >= == !=
+#Logical operators: && || !
+#Bitwise operators: ~ & | ^ << >>
+
+#Other operators
+  get size of variable:             sizeof(variable_name)
+  get actual address of variable:   &variable_name
+  get pointer to a variable:        *variable_name
+  
+#--------------------------------------------------------------------------------
+#Data types
+  #Integers: char, unsigned char, signed char, int, unsigned int, short, unsigned short, long, unsigned long
+  #Float: float, double, long double
+  #void
+  
+#--------------------------------------------------------------------------------
+Conditional
+
+#If statement
+  if (condition){
+    statements;
+  } else if (condition){
+    statements;
+  } else {
+    statements;
+  }
+
+#Ternary operator statement
+  condition ? expression : expression;
+
+#Switch statement
+  switch(expression){
+    case expression:
+      statements;
+      break;
+    case expression:
+      statements;
+      break;
+    default:
+      statements;
+  }
+  
+#--------------------------------------------------------------------------------
+Loop
+
+#For in loop using range
+  for(init; condition; increment){ statements; }
+  for(var i=0; i<10; i++){ statements; }
+#While loop
+  while (condition){ statements; }
+#Do while loop
+  do { statements; } while (condition);
+
+#Control Transfer Statements for Loop: break, continue
+
+#--------------------------------------------------------------------------------
+#Function

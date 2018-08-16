@@ -1411,7 +1411,7 @@ protocol InheritingProtocol: ProtocolName, ProtocolName { definitions }
 
 #--------------------------------------------------------------------------------
 #Resolving Strong Reference Cycles Between Class Instances
-  Swift's ARC (Automatic Reference Counting) will not deallocat an object if there's still at least one strong reference to it
+  Swift's ARC (Automatic Reference Counting) will not deallocate an object if there's still at least one strong reference to it
   weak and unowned references enable one instance in a reference cycle to refer to the other instance
     without keeping a strong hold on it (preventing the creation of a strong reference cycle)
 #example
@@ -1454,7 +1454,7 @@ protocol InheritingProtocol: ProtocolName, ProtocolName { definitions }
   you can use weak or unowned reference inside capture list to resolve reference cycles
     see cases above to know when to use weak reference and when to use unowned reference
 #example
-  class {
+  class ClassName {
     lazy var closure: () -> () = { let instance = self; let result = self.method() }
     //Swift demands you to use self inside closure so you don't forget that it can create reference cycle
     //lazy properties can access self because they’re created after initialization

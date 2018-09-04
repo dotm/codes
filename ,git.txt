@@ -1,101 +1,118 @@
 #Configuring Git
-    system-wide: git config --system <key> <value>
-    user specific: git config --global <key> <value>
-    per repository: git config <key> <value>
+  system-wide: git config --system <key> <value>
+  user specific: git config --global <key> <value>
+  per repository: git config <key> <value>
 #Must know config commands
-    git config --global user.name "dotm"
-    git config --global user.email "desde.el.mar96@gmail.com"
-    git config --system core.editor vim
-    git config --list
+  git config --global user.name "dotm"
+  git config --global user.email "desde.el.mar96@gmail.com"
+  git config --system core.editor vim
+  git config --list
 #Create a shortcut for a Git command
-    git config --global alias.<alias-name> <git-command>
+  git config --global alias.<alias-name> <git-command>
+  git config --global alias.st status
+    usage: git st
+  git config --global alias.unstage 'reset HEAD --'
+    usage: git unstage filename
+  git config --global alias.last 'log -1 HEAD'
+    usage: git last
 #Open global configuration file in a text editor for manual editing
-    git config --global --edits
+  git config --global --edits
 
 #Git help overview
-    git help <verb>
-    git <verb> --help
-    git <verb> -h
-    man git-<verb>
+  git help <verb>
+  git <verb> --help
+  git <verb> -h
+  man git-<verb>
 
 #-----------------------------------------------------------------------------------
-#Initialize git: git init
-#Clone repo: git clone <url> <optional dirname>
-#Check current state of repository: git status
-#Adding files to staging area
-    #Add a file: git add <filename>
-    #Add files with wild card: git add '*.txt'
-    #Add all: git add -A
-        git add -A := git add .; git add -u
-    #Add new and modified: git add .
-    #Stages modified and deleted: git add -u
-#Remove file from staging area: git reset <filename>
+git init
+git clone <url> <optional dirname>
+git status
+git log
 
-#Committing repository: git commit -m "commit message"
-    git commit -am "your message" := git add . ; git commit -m "your message"
-
-#Viewing the changes log: git log [--summary]
-
-#Add remote repository: git remote add origin <url>
-    your main remote branch is named origin by convention
-#Push repository to remote server: git push -u origin master
-    the name of our remote is origin and the default local branch name is master
-    the -u tells Git to remember the parameters, so that next time we can simply run git push and Git will know what to do.
-#Pulling remotely: git pull origin master
+#Check difference
+  #of un-staged files: git diff
+  #of staged files: git diff --staged
+  #with UI tool: git difftool
 #See difference from last commit: git diff HEAD
-    HEAD: a pointer that holds your position within all your different commits.
-    By default HEAD points to your most recent commit
+  HEAD: a pointer that holds your position within all your different commits.
+  By default HEAD points to your most recent commit
 
-#
-Another great use for diff is looking at changes within files that have already been staged. 
-Remember, staged files are files we have told git that are ready to be committed.
-    git diff --staged
-Commit Etiquette:
-You want to try to keep related changes together in separate commits. Using 'git diff' gives you a good overview of changes you have made and lets you add files or directories one at a time and commit them separately.
+#Staging changes
+    git add <filename>
+    git add '*.txt'
+  #Add all: git add -A
+    git add -A := git add .; git add -u
+  #Add new and modified: git add .
+  #Stages modified and deleted: git add -u
+#Unstaging file: git reset HEAD <filename>
 
-    diff --git a/octofamily/octodog.txt b/octofamily/octodog.txt
-    new file mode 100644
-    index 0000000..cfbc74a
-    --- /dev/null
-    +++ b/octofamily/octodog.txt
-    @@ -0,0 +1 @@
-    +[mwoof
+#Discard changes (after last commit)
+  git checkout -- <filename>
 
-#
-Files can be changed back to how they were at the last commit by using the command: 
-    git checkout -- <target>
-    git checkout -- octocat.txt                #get rid of all the changes since the last commit for octocat.txt
+#Committing repo:
+  git commit
+  git commit -m "commit message"
+#Stage and commit:
+  git commit -am "commit message"
+#Amend last commit: git commit --amend
 
-The '--'
-So you may be wondering, why do I have to use this '--' thing? git checkout seems to work fine without it. It's simply promising the command line that there are no more options after the '--'. This way if you happen to have a branch named octocat.txt, it will still revert the file, instead of switching to the branch of the same name.
+#Rename or move file: git mv oldname newname
+#Remove file
+  git rm fileName
+  git rm '*.txt'
+#Remove directory: git rm -r dirname
+#Untrack file but don't remove: git rm --cached filename
+
+#-----------------------------------------------------------------------------------
+#List remote repo
+  #shortname only: git remote
+  #with full url: git remote -v
+#Add remote repo
+    git remote add origin <url>
+    git remote add <shortname> <url>
+  the short name will be used in all git command to refer to the url 
+#Push repository to remote server: git push -u origin master
+  the name of our remote is origin and the default local branch name is master
+  the -u tells Git to remember the parameters, so next time we can simply run 'git push'
+#Fetch remote: git fetch <shortname>
+#Pull remote: git pull -u origin master
+  Pull := Fetch + Merge
+#Rename remote repo: git remote rename <old shortname> <new shortname>
+#Remove remote repo: git remote remove <shortname>
 
 #Creating branch: git branch branch_name
 #Switching branch: git checkout branch_name
-    git checkout -b new_branch    := git branch new_branch; git checkout new_branch
+  git checkout -b new_branch  := git branch new_branch; git checkout new_branch
 
-#Rename file: git mv oldName newName
-#Remove file
-    git rm fileName
-    git rm '*.txt'
-    not only remove the actual files from disk, but will also stage the removal of the files for us
-#Remove directory: git rm -r dirname
-
-    The '-a' option
-    If you happen to delete a file without using 'git rm' you'll find that you still have to 'git rm' the deleted files from the working tree.
-    You can save this step by using the '-a' option on 'git commit', which auto removes deleted files with the commit.
-    git commit -am "Delete stuff"
-
-#Merging branches
-you need to switch back to the master branch so you can copy (or merge) your changes from a branch back into the master branch
-    git merge branch_name
+#Merge to master
+  git checkout master
+  git merge branch_name
 
 #Delete branch: git branch -d branch_name
-#Force delete branch (for branch that hasn't been merged): git branch -D branch_name
+#Force delete un-merged branch: git branch -D branch_name
 
-#Resolve conflict
-Although we could just merge branch directly into master, 
-    it's actually conventional to do the opposite -- merge master into branch
-    and, once all conflicts are resolved, merge knock-knock back into master (which won't have any conflicts anymore).
-This is best practice because you don't really want to be fixing a bunch of merge conflicts on your master branch 
-    if you're working with other developers or with a big code base.
-Anything you merge into master should already be up-to-date and clean.
+#Resolving conflict best practice
+- merge master into branch
+- resolve all conflicts
+- merge back into master (with no conflict)
+
+#-----------------------------------------------------------------------------------
+!.gitignore
+
+# ignore all .a files
+*.a
+# but do track lib.a, even though you're ignoring .a files above
+!lib.a
+
+# only ignore the TODO file in the current directory, not subdir/TODO
+/TODO
+
+# ignore all files in the build/ directory
+build/
+
+# ignore doc/notes.txt, but not doc/server/arch.txt
+doc/*.txt
+
+# ignore all .pdf files in the doc/ directory and any of its subdirectories
+doc/**/*.pdf

@@ -41,10 +41,7 @@ git log
 #Staging changes
     git add <filename>
     git add '*.txt'
-  #Add all: git add -A
-    git add -A := git add .; git add -u
-  #Add new and modified: git add .
-  #Stages modified and deleted: git add -u
+  #Add all: git add .
 #Unstaging file: git reset HEAD <filename>
 
 #Discard changes (after last commit)
@@ -56,6 +53,7 @@ git log
 #Stage and commit:
   git commit -am "commit message"
 #Amend last commit: git commit --amend
+#Undo last commit: git reset HEAD^
 
 #Rename or move file: git mv oldname newname
 #Remove file

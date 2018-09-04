@@ -102,7 +102,7 @@ observed2 = nil     //Publisher not deallocated!?
 print("\n--------------------------------------------------------------------------------------------------")
 
 //--------------------------------------------------------------------------------------------------------------
-//Manual observer (BAD IDEA)
+//Manual observer
 protocol CounterObserverProtocol {
     func countChanged(oldValue: Int, newValue: Int)
 }

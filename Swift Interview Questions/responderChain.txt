@@ -1,0 +1,13 @@
+All members of responder chain (except UIGestureRecognizer) inherits from UIResponder
+
+Touch Event
+-> Gesture Recognizer
+-> UIView
+-> ...
+-> UIView (root view)
+-> UIViewController
+-> ...
+-> UIViewController (root view controller)
+-> UIWindow
+-> UIApplication
+-> UIApplicationDelegate

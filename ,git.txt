@@ -1,117 +1,101 @@
-#See the directory where you installed Git 
-	which git 
-	where.exe git		#in Windows
-
 #Configuring Git
-	3 different config file location:
-		system-wide: /etc/gitconfig file
-			read and write to this file by passing the --system option to git config
-		user specific: ~/.gitconfig or ~/.config/git/config file: 
-			read and write to this file by passing the --global option to git config
-		per repository: .git/config of repository you’re currently using
-
-#Your identity
-	git config --global user.name "dotm"
-	git config --global user.email "desde.el.mar96@gmail.com"
-#Your editor
-	git config --system core.editor vim
-#Checking your setting
-	git config --list
+    system-wide: git config --system <key> <value>
+    user specific: git config --global <key> <value>
+    per repository: git config <key> <value>
+#Must know config commands
+    git config --global user.name "dotm"
+    git config --global user.email "desde.el.mar96@gmail.com"
+    git config --system core.editor vim
+    git config --list
 #Create a shortcut for a Git command
-	git config --global alias.<alias-name> <git-command>
+    git config --global alias.<alias-name> <git-command>
 #Open global configuration file in a text editor for manual editing
-	git config --global --edits
-	
-#SSH
-  #check for existing SSH key
-    ls -al ~/.ssh
-  #generate new key
-    Windows: ssh-keygen -t rsa -b 4096 -C "desde.el.mar96@gmail.com"
-    
+    git config --global --edits
+
 #Git help overview
-		git help <verb>
-		git <verb> --help
-		man git-<verb>
-		
+    git help <verb>
+    git <verb> --help
+    git <verb> -h
+    man git-<verb>
+
 #-----------------------------------------------------------------------------------
 #Initialize git: git init
+#Clone repo: git clone <url> <optional dirname>
 #Check current state of repository: git status
-#Adding file to staging area: git add filename
-  #Add all: git add -A .
-    git add -A := git add .; git add -u
-    git add -A stages All
-    git add . stages new and modified, without deleted
-    git add -u stages modified and deleted, without new  
-  #Using wild-card to add multiple files of the same type
-    git add '*.txt'			#the quote is important
-#Remove file from staging area: git reset <filename> 
-	
-#Committing repository: git commit -m "short descriptive commit message"
-  git commit -am "your message" := git add . ; git commit -m "your message"
-  if you have added any new files since the last commit, use git add -A first, else just git commit -a
-	
+#Adding files to staging area
+    #Add a file: git add <filename>
+    #Add files with wild card: git add '*.txt'
+    #Add all: git add -A
+        git add -A := git add .; git add -u
+    #Add new and modified: git add .
+    #Stages modified and deleted: git add -u
+#Remove file from staging area: git reset <filename>
+
+#Committing repository: git commit -m "commit message"
+    git commit -am "your message" := git add . ; git commit -m "your message"
+
 #Viewing the changes log: git log [--summary]
-	
+
 #Add remote repository: git remote add origin <url>
-  it's typical to name your main remote branch origin
+    your main remote branch is named origin by convention
 #Push repository to remote server: git push -u origin master
-  the name of our remote is origin and the default local branch name is master
-  the -u tells Git to remember the parameters, so that next time we can simply run git push and Git will know what to do. 
+    the name of our remote is origin and the default local branch name is master
+    the -u tells Git to remember the parameters, so that next time we can simply run git push and Git will know what to do.
 #Pulling remotely: git pull origin master
 #See difference from last commit: git diff HEAD
-  HEAD: a pointer that holds your position within all your different commits. 
-  By default HEAD points to your most recent commit
+    HEAD: a pointer that holds your position within all your different commits.
+    By default HEAD points to your most recent commit
 
 #
 Another great use for diff is looking at changes within files that have already been staged. 
 Remember, staged files are files we have told git that are ready to be committed.
-	git diff --staged
+    git diff --staged
 Commit Etiquette:
 You want to try to keep related changes together in separate commits. Using 'git diff' gives you a good overview of changes you have made and lets you add files or directories one at a time and commit them separately.
-	
-	diff --git a/octofamily/octodog.txt b/octofamily/octodog.txt
-	new file mode 100644
-	index 0000000..cfbc74a
-	--- /dev/null
-	+++ b/octofamily/octodog.txt
-	@@ -0,0 +1 @@
-	+[mwoof
-	
+
+    diff --git a/octofamily/octodog.txt b/octofamily/octodog.txt
+    new file mode 100644
+    index 0000000..cfbc74a
+    --- /dev/null
+    +++ b/octofamily/octodog.txt
+    @@ -0,0 +1 @@
+    +[mwoof
+
 #
 Files can be changed back to how they were at the last commit by using the command: 
-	git checkout -- <target>
-	git checkout -- octocat.txt				#get rid of all the changes since the last commit for octocat.txt
+    git checkout -- <target>
+    git checkout -- octocat.txt                #get rid of all the changes since the last commit for octocat.txt
 
 The '--'
 So you may be wondering, why do I have to use this '--' thing? git checkout seems to work fine without it. It's simply promising the command line that there are no more options after the '--'. This way if you happen to have a branch named octocat.txt, it will still revert the file, instead of switching to the branch of the same name.
 
 #Creating branch: git branch branch_name
 #Switching branch: git checkout branch_name
-  git checkout -b new_branch  := git branch new_branch; git checkout new_branch
+    git checkout -b new_branch    := git branch new_branch; git checkout new_branch
 
 #Rename file: git mv oldName newName
 #Remove file
-	git rm fileName
-	git rm '*.txt'
-  not only remove the actual files from disk, but will also stage the removal of the files for us
+    git rm fileName
+    git rm '*.txt'
+    not only remove the actual files from disk, but will also stage the removal of the files for us
 #Remove directory: git rm -r dirname
-  
-	The '-a' option
-	If you happen to delete a file without using 'git rm' you'll find that you still have to 'git rm' the deleted files from the working tree. 
-	You can save this step by using the '-a' option on 'git commit', which auto removes deleted files with the commit.
-	git commit -am "Delete stuff"
+
+    The '-a' option
+    If you happen to delete a file without using 'git rm' you'll find that you still have to 'git rm' the deleted files from the working tree.
+    You can save this step by using the '-a' option on 'git commit', which auto removes deleted files with the commit.
+    git commit -am "Delete stuff"
 
 #Merging branches
 you need to switch back to the master branch so you can copy (or merge) your changes from a branch back into the master branch
-	git merge branch_name
+    git merge branch_name
 
 #Delete branch: git branch -d branch_name
 #Force delete branch (for branch that hasn't been merged): git branch -D branch_name
 
 #Resolve conflict
 Although we could just merge branch directly into master, 
-	it's actually conventional to do the opposite -- merge master into branch 
-	and, once all conflicts are resolved, merge knock-knock back into master (which won't have any conflicts anymore). 
+    it's actually conventional to do the opposite -- merge master into branch
+    and, once all conflicts are resolved, merge knock-knock back into master (which won't have any conflicts anymore).
 This is best practice because you don't really want to be fixing a bunch of merge conflicts on your master branch 
-	if you're working with other developers or with a big code base. 
+    if you're working with other developers or with a big code base.
 Anything you merge into master should already be up-to-date and clean.

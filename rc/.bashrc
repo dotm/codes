@@ -130,7 +130,7 @@ export PATH="$HOME/.npm-global/bin:$PATH"
 # shortcut to open PowerShell in current directory
 alias p="/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe"
 # shortcut to important folders
-alias code="cd /mnt/c/Users/y6326/Dropbox/Codes"
+alias codes="cd /mnt/c/Users/y6326/Dropbox/Codes"
 alias work="cd /mnt/c/Workspace"
 alias site="cd /mnt/c/Users/y6326/Desktop/Site"
 
@@ -154,6 +154,12 @@ alias backuprc="
 # compile c and run the output file
 function c(){
   cc $1 -o testes.out && ./testes.out
+}
+# use Xcode to open a file or directory
+function xcode(){
+  #the first argument $1 is the file or directory name
+  open -a Xcode $1
+  #example usage: xcode file.txt
 }
 
 # open explorer in this directory

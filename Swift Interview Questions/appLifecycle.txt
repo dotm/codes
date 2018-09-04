@@ -1,0 +1,57 @@
+Although the app delegate is the primary place where you handle life cycle events, it is not the only place. For most events, UIKit also generates notifications that any object can observe (see UIApplication class docs).
+
+# App States
+Not running
+Inactive
+Active
+Background
+Suspended
+
+# Manage State Transitions
+Launch time:
+application(_:willFinishLaunchingWithOptions:)
+application(_:didFinishLaunchingWithOptions:)
+
+Transitioning to the foreground:
+applicationDidBecomeActive(_:)
+
+Transitioning to the background:
+applicationDidEnterBackground(_:)
+
+Transitioning to the inactive state:
+applicationWillResignActive(_:) (Called when leaving the foreground state.)
+applicationWillEnterForeground(_:) (Called when transitioning out of the background state.)
+
+Termination:
+applicationWillTerminate(_:)
+(Called only when the app is running. This method is not called if the app is suspended.)
+
+# Manage Behavioral Events
+Memory warnings
+    applicationDidReceiveMemoryWarning(_:)
+  Reduce the amount of memory your app uses.
+
+Time changes
+    applicationSignificantTimeChange(_:)
+  Update time-sensitive features of your app.
+
+Protected data becomes available/unavailable
+    applicationProtectedDataWillBecomeUnavailable(_:)
+    applicationProtectedDataDidBecomeAvailable(_:)
+  Manage files when the user locks or unlocks the device.
+
+State restoration
+  Restore your app’s UI to its previous state,
+  giving the appearance that your app never stopped running.
+
+Handoff tasks
+  Continue tasks started on another device.
+
+Open URLs
+  Receive and open URLs sent to your app.
+
+Inter-app communication
+  Receive data from a paired watchOS app.
+
+File downloads
+  Receive files that your app downloaded using a URLSession object.

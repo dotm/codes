@@ -1,5 +1,3 @@
-import UIKit
-
 //--------------------------------------------------------------------------------------------------------------
 //With Foundation's Notification
 extension Notification.Name {
@@ -158,8 +156,6 @@ var observer: CounterObserver? = CounterObserver(observing: observed!)
 
 observed?.increment()
 
-//observer?.unsubscribe()
-//we might not be able to unsubscribe
-//e.g. if the observer is out of our control, like UIViewController managed by UIApplication
+observer?.unsubscribe()
 observer = nil  //if we don't unsubscribe, setting observer to nil will not deallocate the memory (memory leak)
 observed = nil  //if we can't deallocate observer, we can't deallocate observed/publisher (memory leak)

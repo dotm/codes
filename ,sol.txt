@@ -1,0 +1,804 @@
+#Layout of a Solidity Source File
+    Source files can contain an arbitrary number of:
+        pragma directives
+        include directives
+        contract definitions
+
+!example-contract.sol ---------------------------------------------------------------------------
+// Version pragma follows npm semver (semantic versioning) naming system
+pragma solidity ^0.4.0;
+
+// Import with alias
+import "filename" as symbolName;  // is the same as: import * as symbolName from "filename";
+// Selective import
+import {symbol1 as alias, symbol2} from "filename";
+// Specifying File Path
+import "./path/to/filename" as symbolName;
+
+/** @title Shape calculator. */
+contract shapeCalculator {
+    /** @dev Calculates a rectangle's surface and perimeter.
+      * @param w Width of the rectangle.
+      * @param h Height of the rectangle.
+      * @return s The calculated surface.
+      * @return p The calculated perimeter.
+      */
+    function rectangle(uint w, uint h) returns (uint s, uint p) {
+        s = w * h;
+        p = 2 * (w + h);
+    }
+}
+
+// Other contract definitions...
+
+-------------------------------------------------------------------------------------------------
+#Path prefix remappings
+        solc github.com/ethereum/dapp-bin/=/usr/local/dapp-bin/ source.sol
+    Here, any import directives inside source file
+        containing github.com/ethereum/dapp-bin/ in filename
+        will be remapped to /usr/local/dapp-bin/
+    
+#------------------------------------------------------------------------------------------------
+// Single line comment
+/* Multi line comment */
+
+/// Single line natspec (natural specification) comment
+/**
+    Multi line natspec comment
+    natspec comments follows doxygen style tags
+*/
+
+#------------------------------------------------------------------------------------------------
+#Types
+
+#Data types
+    bool: true false
+    Number: int uint
+        You can use any number type with multiple of 8 as suffix: int8 uint16 int32 ... uint256
+            lower bound is 8, upper bound is 256
+            int := int256
+            uint := uint256
+        Valid number literal: 1 -1 0.1 1_000 1e4 1e-2 3e1_000
+    Address: address, address payable
+    Fixed-size byte arrays: byte bytes1 bytes2 bytes32
+        You can use any number type up to 32 as suffix
+        byte is an alias for bytes1
+    reference types: data location, array, struct
+        Array/Dynamically-sized byte array: bytes string
+            Valid string literal: "string" 'string'
+            ASCII bytes per character: 1
+            UTF8 bytes per character: 1-4
+
+#Type reflection (find data types of a variable)
+#Type conversion
+    new_type(variable)
+    uint(integer_variable)
+#Type alias
+
+#Assignments and Reference Types
+    Assigning to a state variable always creates an independent copy. 
+    Assigning to a local variable creates an independent copy only for elementary types
+        i.e. static types that fit into 32 bytes.
+    If structs or arrays (including bytes and string) are assigned from a state variable to a local variable,
+        the local variable holds a reference to the original state variable.
+    A second assignment to the local variable does not modify the state but only changes the reference.
+    Assignments to members (or elements) of the local variable do change the state.
+ #Data Location and Reference Types
+        uint[] storage y = array_variable
+    If you use a reference type, you have to explicitly provide the data area where the type is stored:
+        memory (whose lifetime is limited to a function call)
+        storage (the location where the state variables are stored)
+        calldata (special data location that contains the function arguments, only available for external function call parameters)
+    Calldata
+        is only valid for parameters of external contract functions and is required for this type of parameter
+        is a non-modifiable, non-persistent area where function arguments are stored, and behaves mostly like memory
+    Data locations are relevant for persistency of data and also for the semantics of assignments:
+        assignments between storage and memory (or from calldata) always create an independent copy.
+        assignments from memory to memory only create references
+        assignments from storage to a local storage variables also only assign a reference
+            In contrast, all other assignments to storage always copy
+            Examples for this case are assignments to state variables or to members of local variables of storage struct type,
+                even if the local variable itself is just a reference.
+
+
+#Destructuring Assignments and Returning Multiple Values with Tuple
+    contract ContractName {
+        uint[] data;
+
+        function f() public pure returns (uint, bool, uint) {
+            return (7, true, 2);
+        }
+
+        function g() public {
+            // Destructuring Assignments
+            (uint x, , uint y) = f();       // not all elements have to be specified (but the number must match)
+            (data.length, , ) = f();        // you can assign to declared variables too
+
+            (x, y) = (y, x);                // Swap values using tuple -- does not work for non-value storage types.
+        }
+    }
+
+#------------------------------------------------------------------------------------------------
+#Operators
+    #Arithmetic operators: + - * / % **
+        Compound assignment operators: += -= *= /= %= |= &= ^=
+        Increment and decrement operators: i++ i-- ++i --i
+    #Boolean short circuit operators: && || !
+    #Comparison operators: < <= > >= == !=
+    #Bitwise operators: & | ~ ^ << >>
+#Mathematical and Cryptographic Functions
+    addmod(uint x, uint y, uint k) returns (uint)
+        compute (x + y) % k
+            where the addition is performed with arbitrary precision and does not wrap around at 2**256.
+            Assert that k != 0 starting from version 0.5.0.
+    mulmod(uint x, uint y, uint k) returns (uint)
+        compute (x * y) % k
+            where the multiplication is performed with arbitrary precision and does not wrap around at 2**256.
+            Assert that k != 0 starting from version 0.5.0.
+    keccak256(bytes memory) returns (bytes32)
+        compute the Keccak-256 hash of the input
+    sha256(bytes memory) returns (bytes32)
+        compute the SHA-256 hash of the input
+    ripemd160(bytes memory) returns (bytes20)
+        compute RIPEMD-160 hash of the input
+    ecrecover(bytes32 hash, uint8 v, bytes32 r, bytes32 s) returns (address)
+        recover the address associated with the public key from elliptic curve signature
+            return zero on error
+
+#delete operator
+    delete a assigns the initial value for the type to a
+        for integers it is equivalent to a = 0
+        for arrays it assigns a dynamic array of length zero or a static array of the same length with all elements reset
+        for structs, it assigns a struct with all members reset.
+    In other words, the value of a after 'delete a' is the same as if 'a' would be declared without assignment
+        when 'a' is reference variable: It will only reset 'a' itself, not the value it referred to previously.
+    delete has no effect on mappings (as the keys of mappings may be arbitrary and are generally unknown).
+    So if you delete a struct, it will reset all members that are not mappings
+        and also recurse into the members unless they are mappings.
+    However, individual keys and what they map to can be deleted:
+        If a is a mapping, then delete a[x] will delete the value stored at x.
+
+#new operator
+    A contract can create other contracts using the new keyword.
+        contract ContractName {
+            OtherContract variable_name = new OtherContract()
+            OtherContract variable_name = new OtherContract(arguments)
+            
+            //you can send Ether while creating an instance of D using the .value() option
+            //but it is not possible to limit the amount of gas
+            OtherContract variable_name = (new OtherContract).value(amount)(arg)
+        }
+    The full code of the contract being created
+        has to be known when the creating contract is compiled
+        so recursive creation-dependencies are not possible.
+    If the creation fails (due to out-of-stack, not enough balance or other problems), an exception is thrown.
+
+
+#------------------------------------------------------------------------------------------------
+#Ether Units
+    assert(1 wei == 1);
+    assert(1 szabo == 1e12);
+    assert(1 finney == 1e15);
+    assert(1 ether == 1e18);
+
+#Time Units
+    1 == 1 seconds
+    1 minutes == 60 seconds
+    1 hours == 60 minutes
+    1 days == 24 hours
+    1 weeks == 7 days
+
+#------------------------------------------------------------------------------------------------
+#Global Variables and Functions
+
+#Block Properties
+    blockhash(uint blockNumber) returns (bytes32)
+        hash of the given block - only works for 256 most recent (excluding current) blocks
+    block.coinbase
+        current block miner’s address of type address payable
+    block.difficulty
+        current block difficulty
+    block.gaslimit
+        current block gaslimit
+    block.number
+        current block number
+    block.timestamp
+        current block timestamp as seconds since unix epoch
+    now
+        current block timestamp (alias for block.timestamp)
+#Transaction Properties
+    gasleft() returns (uint256)
+        remaining gas
+    msg.data
+        complete calldata of type: bytes calldata
+    msg.sender
+        sender of the message (current call)
+    msg.sig
+        first four bytes (bytes4) of the calldata (i.e. function identifier)
+    msg.value
+        number of wei sent with the message
+    tx.gasprice
+        gas price of the transaction
+    tx.origin
+        sender of the transaction (full call chain)
+
+#Contract Related
+    this
+        the current contract, explicitly convertible to address
+    selfdestruct(address payable recipient):
+        destroy the current contract, sending its funds to the given address
+
+#ABI Encoding and Decoding Functions
+    abi.decode(bytes memory encodedData, (...)) returns (...)
+        ABI-decodes the given data, while the types are given in parentheses as second argument.
+        e.g. (uint a, uint[2] memory b, bytes memory c) = abi.decode(data, (uint, uint[2], bytes))
+    abi.encode(...) returns (bytes memory)
+        ABI-encodes the given arguments
+    abi.encodePacked(...) returns (bytes memory)
+        Performs packed encoding of the given arguments
+    abi.encodeWithSelector(bytes4 selector, ...) returns (bytes memory)
+        ABI-encodes the given arguments starting from the second and prepends the given four-byte selector
+    abi.encodeWithSignature(string memory signature, ...) returns (bytes memory)
+        Equivalent to abi.encodeWithSelector(bytes4(keccak256(bytes(signature))), ...)`
+
+#------------------------------------------------------------------------------------------------
+#Error Handling
+    To handle errors Solidity uses state-reverting exceptions
+        that will undo all changes made to the state in the current call (and all its sub-calls)
+        and also flag an error to the caller.
+    When exceptions happen in a sub-call, they “bubble up” (are rethrown) automatically.
+        Exceptions to this rule are send and the low-level functions call, delegatecall and staticcall
+            which return false as their first return value in case of an exception instead of “bubbling up”.
+    Catching exceptions is not yet possible.
+#revert
+    revert function is used to flag an error without condition
+        and revert the current call (reverse all state change from the current call)
+#assert and require
+    The convenience functions assert and require is used
+        to check for conditions and throw an exception if the condition is not met.
+    assert exceptions consume all gas available to the call, require exceptions will not consume any gas
+    require use revert internally to reverse all state change
+    assert should only be used to test for internal errors, and to check invariants
+    require should be used
+        to ensure valid conditions, such as inputs, or contract state variables are met
+        or to validate return values from calls to external contracts.
+    analysis tools can evaluate your contract
+        to identify the conditions and function calls which will reach a failing assert
+
+#Error Handling
+    assert(bool condition)
+        causes an invalid opcode and thus state change reversion if the condition is not met (used for internal errors)
+    require(bool condition)
+        reverts if the condition is not met (used for errors in inputs or external components)
+    require(bool condition, string memory message)
+        require with an error message.
+    revert():
+        abort execution and revert state changes
+    revert(string memory reason):
+        revert with an explanatory string
+
+#------------------------------------------------------------------------------------------------
+#Enums
+    Enums are one way to create a user-defined type in Solidity.
+    They are explicitly convertible to and from all integer types but implicit conversion is not allowed.
+    Explicit conversion from integer checks at runtime that the value lies inside the range of the enum and causes a failing assert otherwise.
+    Enums needs at least one member.
+    The data representation is the same as for enums in C: options are represented by subsequent uint starting from 0.
+#Example
+    contract ContractName {
+        enum Direction { North, South, East, West }
+        Direction variable_name;
+    }
+    
+#------------------------------------------------------------------------------------------------
+#Array
+    It is possible to mark arrays public and have Solidity create a getter.
+        The numeric index will become a required parameter for the getter.
+    Array literals are arrays that are written as an expression and not assigned to a variable yet: function_name([uint(1), 2, 3]);
+        The type of an array literal is a memory array of fixed size whose base type is the common type of the given elements
+        The type of [1, 2, 3] is uint8[3] memory, because the type of each of these constants is uint8.
+            Hence, it is necessary to convert the first element in the example above to uint.
+#Type declaration
+    #Static size: TypeName[10]
+    #Dynamic size: TypeName[]
+    #Multidimensional: TypeName[innerSize][outerSize]
+        uint[][5] // an array of 5 dynamic arrays of uint: [[1,2],[10],[],[1000,2000],[10000,0,1]]
+#Allocating Memory Arrays
+    You can use the new keyword to create arrays with a runtime-dependent length in memory
+        uint[] memory a = new uint[](7);
+    Unlike storage arrays, it's not possible to resize memory arrays
+        You either have to calculate the required size in advance
+        or create a new memory array and copy every element.
+#Access
+    x[2][1] // access the second uint in the third dynamic array
+#Length: array_variable.length
+    For dynamically-sized arrays (only available for storage), this member can be assigned to resize the array
+        Accessing elements outside its length does not automatically resize the array and instead causes a failing assertion
+        Increasing the length adds new zero-initialised elements to the array
+        Reducing the length performs an implicit 'delete' on each of the removed elements
+#Push: array_variable.push(element)
+    Dynamic storage arrays and bytes (not string) have a member function called push
+        that you can use to append an element at the end of the array
+    The function returns the new length.
+    When used without argument, the element will be zero-initialised.
+#Pop: array_variable.pop()
+    Dynamic storage arrays and bytes (not string) have a member function called pop
+        that you can use to remove an element from the end of the array.
+    This implicitly calls 'delete' on the removed element.
+
+#Bytes and String
+    variables of type bytes and string are special arrays
+        use bytes for arbitrary-length raw byte data and string for arbitrary-length string (UTF-8) data
+    bytes is similar to byte[], but it is packed tightly in calldata and memory
+        bytes should always be preferred over byte[] because it is cheaper
+        If you can limit the length to a certain number of bytes, always use one of bytes1 to bytes32 because they are much cheaper.
+    string is equal to bytes but does not allow length or index access
+
+#------------------------------------------------------------------------------------------------
+#Struct
+    #definition:
+        struct Campaign {
+            address payable beneficiary;
+            uint fundingGoal;
+            uint numFunders;
+            uint amount;
+            mapping (uint => Funder) funders;
+        }
+    #initialization:
+        Campaign(beneficiary_address, 1000, 0, 0)   //mapping types are always omitted, because they cannot be enumerated.
+    #accessing:
+        campaignSucceeded = campaign_instance.amount >= campaign_instance.fundingGoal
+
+#------------------------------------------------------------------------------------------------
+#Visibility
+    2 kinds of function calls:
+        internal ones that do not create an actual EVM call
+        external ones that create an actual EVM call (a.k.a “message call”)
+    4 types of visibilities for functions and state variables:
+        external:
+            External functions are part of the contract interface (can be called from other contracts and via transactions)
+            An external function can only be called internally (inside its contract) via message (with 'this' keyword)
+                e.g. this.function_name()
+        public:
+            Public functions are part of the contract interface and can be either called internally or via messages.
+        internal:
+            Internal functions and state variables can only be accessed internally
+                (from within the current contract or contracts deriving from it)
+                without using 'this'
+        private:
+            Private functions and state variables
+                are only visible for the contract they are defined in
+                and not in derived contracts.
+    Everything that is inside a contract is visible to all observers external to the blockchain.
+        Making something private only prevents other contracts from accessing and modifying the information,
+        but it will still be visible to the whole world outside of the blockchain.
+    Functions have to be specified as being external, public, internal or private.
+    For state variables, external is not possible.
+#Getter
+    For public state variables, an automatic getter function with external visibility is generated.
+        public variable: uint public variable_name = 42;
+        getter furnction: ContractName.variable_name()
+#Getter of array
+    If you have a public state variable of array type,
+        then you can only retrieve single elements of the array via the generated getter function.
+    This mechanism exists to avoid high gas costs when returning an entire array.
+    You can use arguments to specify which individual element to return: array_variable(0)
+    If you want to return an entire array in one call, then you need to write a function:
+        contract ContractName {
+            // public state variable
+            uint[] public myArray;
+
+            // Getter function generated by the compiler
+            /*
+            function myArray(uint i) returns (uint) {
+                return myArray[i];
+            }
+            */
+
+            // function that returns entire array
+            function getArray() returns (uint[] memory) {
+                return myArray;
+            }
+        }
+
+#------------------------------------------------------------------------------------------------
+#Control Structures
+Solidity have the same semantic as C or JavaScript for: if, else, while, do, for, break, continue, return
+There's no type conversion from non-boolean to boolean types as there is in C and JavaScript
+    if (1) { ... } is not valid Solidity
+
+#------------------------------------------------------------------------------------------------
+#Mapping
+    mapping(keyType => valueType) visibility variable_name
+        keyType can be any elementary type: any built-in value types plus bytes and string
+            user-defined or complex types (contract types, enums, mappings, structs and any array type apart from bytes and string) are not allowed
+        valueType can be any type, including mappings
+    
+    mappings is like hash tables that are virtually initialised such that
+        every possible key exists and is mapped to a value whose byte-representation is all zeros (a type’s default value)
+    mappings is not like hash tables, because they
+        do not have a length or a concept of a key or value being set
+        cannot be used as parameters or return parameters of contract functions that are publicly visible
+    
+    You can mark variables of mapping type as public and Solidity creates a getter for you
+        keyType becomes a parameter for the getter
+        If valueType is a value type or a struct, the getter returns valueType.
+        If valueType is an array or a mapping, the getter has one parameter for each keyType, recursively.
+    For example:
+        mapping(address => uint) public balances;
+        contract_instance.balances(address(address_literal));   //returns uint
+
+    Mappings are not iterable, but it is possible to implement a data structure on top of them.
+    
+#------------------------------------------------------------------------------------------------
+#Function
+
+#Function types
+        function (<parameter types>) {internal|external} [pure|view|payable] [returns (<return types>)]
+    View Functions do not modify the state
+        Getter methods are automatically marked view.
+    Pure Functions do not read from or modify the state
+    Payable allows a function to receive ether
+#Fallback Function
+    A contract can have one unnamed function (called fallback function).
+        This function cannot have arguments, cannot return anything and has to have external visibility.
+    Fallback function is executed on a call to the contract
+        if none of the other functions match the given function identifier or if no data was supplied at all
+    Fallback function is executed whenever the contract receives plain Ether (without data)
+        to receive Ether the fallback function must be marked payable
+    A contract without a payable fallback function can still receive Ether
+        as a recipient of a coinbase transaction (aka miner block reward) or as a destination of a selfdestruct
+    In the worst case, the fallback function can only rely on 2300 gas being available (e.g. when send or transfer is used),
+        leaving little room to perform other operations except basic logging
+    The following operations will consume more gas than the 2300 gas stipend:
+        Writing to storage
+        Creating a contract
+        Calling an external function which consumes a large amount of gas
+        Sending Ether
+
+#Function Overloading
+    A contract can have multiple functions of the same name but with different parameter types
+
+#Input Parameters and Output Parameters
+    contract Simple {
+        function arithmetic(uint _a, uint _b)       //the input parameters
+            public
+            pure
+            returns (uint o_sum, uint o_product)    //the output parameters
+        {
+            o_sum = _a + _b;
+            o_product = _a * _b;
+            
+            /*
+                You can also return multiple values like this: return (v0, v1, ..., vn)
+                so in this example: return (_a + _b, _a * _b)
+            */
+        }
+    }
+
+#Internal Function Calls
+    Functions of the current contract can be called directly (“internally”) and also recursively
+        contract C {
+            function g(uint a) public pure returns (uint ret) { return a + f(); }
+            function f() internal pure returns (uint ret) { return g(7) + f(); }
+        }
+    These function calls are translated into simple jumps inside the EVM.
+        This means the current memory is not cleared and so passing memory references to internally-called functions is very efficient.
+    Only functions of the same contract can be called internally.
+    Avoid excessive recursion
+        every internal function call uses up at least one stack slot
+        and there are at most 1024 slots available
+#External Function Calls
+    These expressions are also valid function calls:
+        this.function_name(argument);
+        contract_instance.function_name(argument);
+    These functions will be called “externally”, via a message call and not directly via jumps.
+    Function calls on 'this' cannot be used in the constructor, as the actual contract has not been created yet.
+    For an external call, all function arguments have to be copied to memory.
+    When calling functions of other contracts, the amount of Wei sent with the call and the gas can be specified with options .value() and .gas()
+        contract InfoFeed {
+            function info() public payable returns (uint ret) { return 42; }
+            //payable modifier must be used or the .value() option would not be available
+        }
+        contract Consumer {
+            InfoFeed feed;
+            function setFeed(InfoFeed addr) public { feed = addr; }
+            function callFeed() public {
+                feed.info.value(10).gas(800)();
+                //feed.info.value(10).gas(800) only locally sets the value and amount of gas sent with the function call
+                //the parentheses at the end perform the actual call
+            }
+        }
+    Write your functions in a way that, for example,
+        calls to external functions happen after any changes to state variables in your contract
+        so your contract is not vulnerable to a reentrancy exploit.
+
+#Named Calls and Anonymous Function Parameters
+    Function call arguments can be given by name, in any order, if they are enclosed in { }
+        function set(uint key, uint value) public { /* function body */ }
+        set({value: 2, key: 3});    //the order is arbitrary
+#Omitted Function Parameter Names
+    The names of unused parameters (especially return parameters) can be omitted.
+        function func(uint k, uint) public pure returns(uint) {
+            return k;
+        }
+    Those parameters will still be present on the stack, but they are inaccessible.
+
+#Function Modifiers
+    Modifiers can be used to easily change the behaviour of functions. 
+    Modifiers are inheritable properties of contracts and may be overridden by derived contracts.
+    Multiple modifiers are applied to a function by specifying them in a whitespace-separated list
+        and are evaluated in the order presented.
+#Example Modifiers
+    contract ContractName {
+        modifier onlyOwnerCanExecuteThis {
+            require(
+                msg.sender == owner,
+                "Only owner can call this function."
+            );
+            _;  //function body will be executed here in the _;
+        }
+        modifier costs(uint price) {    //modifier can accept parameters
+            if (msg.value >= price) {
+                _;
+            }
+        }
+        function register() public payable costs(price) {
+            registeredAddresses[msg.sender] = true;
+        }
+        function changePrice(uint _price) public onlyOwner {
+            price = _price;
+        }
+        function changePrice_andReturnIt(uint _price) public onlyOwner returns (uint) {
+            price = _price;
+            return price
+        }
+
+        //extra details
+        constructor(uint initialPrice) public {
+            price = initialPrice;
+            owner = msg.sender;
+        }
+        mapping (address => bool) registeredAddresses;
+        uint price;
+        address payable owner;
+    }
+
+#------------------------------------------------------------------------------------------------
+#Events
+    Events allow the convenient usage of the EVM logging facilities,
+        which in turn can be used to “call” JavaScript callbacks in the user interface of a dapp,
+        which listen for these events.
+    When they are called, they cause the arguments to be stored in the transaction’s log - a special data structure in the blockchain
+    Up to three parameters can receive the attribute indexed
+        which will cause the respective arguments to be stored in a special data structure called “topics”,
+        which allows them to be searched for (e.g. when filtering a sequence of blocks for certain events)
+    Events can always be filtered by the address of the contract that emitted the event.
+    The hash of the signature of the event (event name and parameter types)
+        is one of the event's topics (the first topic in fact)
+        except if you declared the event with anonymous specifier.
+        This means that it is not possible to filter for specific anonymous events by name.
+    Topic can hold a single word (32 bytes)
+        If arrays (including string and bytes) are used as indexed arguments, the Keccak-256 hash of it is stored as topic instead.
+        All non-indexed arguments will be ABI-encoded into the data part of the log.
+#Event definition
+    event Deposit(
+        address indexed _from,
+        bytes32 indexed _id,
+        uint _value
+    );
+    event AnonymousEvent(uint indexed _id) anonymous;
+#Event emission
+    emit Deposit(msg.sender, _id, msg.value);
+#Watching event
+    see web3js docs for details
+
+#Low-Level Interface to Logs
+    It's possible to access the logging mechanism via the functions log0, log1, log2, log3 and log4
+        logx which takes x + 1 parameter of type bytes32,
+        where the first argument will be used for the data part of the log and the others as topics
+    log3(
+        bytes32(msg.value),
+        //hex below is keccak256("Deposit(address,bytes32,uint256)")
+        bytes32(0x50cb9fe53daa9737b786ab3646f04d0150dc50ef4e75f59509d83667ad5adb20),
+        bytes32(uint256(msg.sender)),
+        bytes32(_id)
+    );
+
+#------------------------------------------------------------------------------------------------
+#Address
+    Address holds a 20 byte value (size of an Ethereum address), have members, and serve as a base for all contracts
+    address payable is an address you can send Ether to, while a plain address cannot be sent Ether.
+    Hexadecimal literals that pass the address checksum test (0xdCad3a6d3569DF655070DEd06cb7A1b2Ccd1D3AF) are of address payable type.
+    Hexadecimal literals that are between 39 and 41 digits long and do not pass the checksum test
+        produce a warning and are treated as regular rational number literals.
+
+#Members of Addresses
+    address.balance
+        returns balance of the address in Wei
+    address_payable.transfer(uint256 amount)
+        send given amount of Wei to Address, forwards 2300 gas stipend, not adjustable, reverts on failure
+    address_payable.send(uint256 amount) returns (bool)
+        send given amount of Wei to Address, forwards 2300 gas stipend, not adjustable, returns false on failure
+    address.call(bytes memory) returns (bool, bytes memory)
+        issue low-level CALL with the given payload, returns success condition and return data, forwards all available gas, adjustable
+    address.delegatecall(bytes memory) returns (bool, bytes memory)
+        issue low-level DELEGATECALL with the given payload, returns success condition and return data, forwards all available gas, adjustable
+    address.staticcall(bytes memory) returns (bool, bytes memory):
+        issue low-level STATICCALL with the given payload, returns success condition and return data, forwards all available gas, adjustable
+
+#Access address members from contract instance
+    address(this).balance   // 'this' is the contract instance
+
+#------------------------------------------------------------------------------------------------
+#Contracts
+    Contracts in Solidity are similar to classes in object-oriented languages
+    If a contract wants to create another contract,
+        the source code (and the binary) of the created contract has to be known to the creator.
+        This means that cyclic creation dependencies are impossible.
+    Every contract defines its own type
+    You can implicitly convert contracts to contracts they inherit from
+    Contracts can be explicitly converted to and from all other contract types and the address type
+    Explicit conversion to and from the address payable type is only possible if the contract type has a payable fallback function
+        The conversion is still performed using address(x) and not using address payable(x)
+
+#Constructor
+    constructor is optional
+    only one constructor is allowed per contract, which means overloading is not supported
+    when a contract is created, its constructor is executed once
+        after state variables are initialised to their specified value if you initialise them inline, or zero if you do not.
+    Constructor functions can be either public or internal
+        internal constructor causes the contract to be marked as abstract
+    If there is no constructor, the contract will assume the default constructor,
+        which is equivalent to: constructor() public {}
+
+#Constant State Variables
+    Not all types for constants are implemented at this time.
+    Constant does not occupy storage slot.
+    The only supported types are value types and strings.
+        contract C {
+            uint constant x = 32**22 + 8;
+            string constant text = "abc";
+            bytes32 constant myHash = keccak256("abc");
+        }
+
+#------------------------------------------------------------------------------------------------
+#Inheritance
+        contract ChildContract is ParentContract {}
+    Solidity supports multiple inheritance by copying code including polymorphism.
+    All function calls are virtual (the most derived function is called),
+        except when the contract name is explicitly given.
+    When a contract inherits from other contracts,
+        only a single contract is created on the blockchain,
+        the code from all the base contracts is copied into the created contract.
+    These will cause error when inheritance is used:
+        a function and a modifier of the same name
+        an event and a modifier of the same name
+        a function and an event of the same name
+    As an exception, a state variable getter can override a public function.
+
+#Multiple Inheritance and Linearization
+        contract ChildContract is GrandParentContract, ParentContract {}
+    Solidity, like Python, uses “C3 Linearization” to force a specific order in the directed acyclic graph (DAG) of base classes.
+    The order in which the base classes are given in the 'is' directive is important:
+        You have to list the direct base contracts in the order from most base-like/abstract to most derived/concrete
+            Note that this order is the reverse of the one used in Python.
+
+#Arguments for Base Constructors
+    The constructors of all the base contracts will be called following the linearization rules
+    If the base constructors have arguments, derived contracts must specify all of them.
+        This can be done in two ways (choose one of them):
+            contract Base {
+                uint x;
+                constructor(uint _x) public { x = _x; }
+            }
+            contract Derived1 is Base(7) {
+                // directly specify in the inheritance list
+                constructor() public {}
+            }
+            contract Derived2 is Base {
+                // specify through a "modifier" of the derived constructor
+                constructor(uint _y) Base(_y * _y) public {}
+            }
+
+#------------------------------------------------------------------------------------------------
+#Abstract Contracts
+        contract AbstractContract {
+            function function_name() public returns (bytes32);
+        }
+    Contracts are marked as abstract when at least one of their functions lacks an implementation
+    abstract contracts can't be compiled, but can be used as base contracts
+    If a contract inherits from an abstract contract
+        and does not implement all non-implemented functions by overriding,
+        it will itself be abstract
+
+#------------------------------------------------------------------------------------------------
+#Interfaces
+        interface Token {
+            enum TokenType { Fungible, NonFungible }
+            struct Coin { string obverse; string reverse; }
+            function transfer(address recipient, uint amount) external;
+        }
+    Interfaces are basically limited to what the Contract ABI can represent. They:
+        cannot have any functions implemented
+        cannot inherit other contracts or interfaces
+        cannot have function other than external function
+        cannot declare a constructor
+        cannot declare state variables
+    the conversion between the ABI and an interface should be possible without any information loss
+    Contracts can inherit interfaces as they would inherit other contracts.
+    Types defined inside interfaces and other contract-like structures
+        can be accessed from other contracts: Token.TokenType or Token.Coin.
+
+#------------------------------------------------------------------------------------------------
+#Libraries
+    Libraries are deployed only once at a specific address and their code is reused using the DELEGATECALL feature of the EVM
+        This means that if library functions are called,
+        their code is executed in the context of the calling contract,
+            i.e. 'this' points to the calling contract,
+            and especially the storage from the calling contract can be accessed
+    As a library is an isolated piece of source code,
+        it can only access state variables of the calling contract if they are explicitly supplied
+        (it would have no way to name them, otherwise).
+    Library functions can only be called directly (without DELEGATECALL)
+        if they do not modify the state (i.e. if they are view or pure functions),
+        because libraries are assumed to be stateless.
+    It is not possible to destroy a library.
+    Calls to library functions look just like calls to functions of explicit base contracts: LibraryName.function_name()
+    Restrictions for libraries in comparison to contracts:
+        No state variables
+        Cannot inherit nor be inherited
+        Cannot receive Ether
+    You can use library to extend elementary types (see Solidity docs)
+#The 'Using For' Directive
+    The directive 'using A for B;' can be used to attach library functions (from the library A) to any type (B)
+        These functions will receive the object they are called on as their first parameter.
+    The effect of using A for *; is that the functions from the library A are attached to any type.
+    The using A for B; directive is active only within the current contract,
+        including within all of its functions, and has no effect outside of the contract in which it is used.
+    The directive may only be used inside a contract, not inside any of its functions.
+
+#Example library
+    library Set {
+        struct Data { mapping(uint => bool) flags; }
+        function insert(Data storage self, uint value) public returns (bool){
+            if (self.flags[value]) return false; // already there
+            self.flags[value] = true;
+            return true;
+        }
+
+        function remove(Data storage self, uint value) public returns (bool){
+            if (!self.flags[value]) return false; // not there
+            self.flags[value] = false;
+            return true;
+        }
+
+        function contains(Data storage self, uint value) public view returns (bool){
+            return self.flags[value];
+        }
+    }
+#Using the library
+    contract ContractName {
+        Set.Data knownValues;
+
+        function register(uint value) public {
+            require(Set.insert(knownValues, value));
+        }
+    }
+#Using the library with 'using for' directive
+    contract ContractName {
+        using Set for Set.Data; // this is the crucial change
+        Set.Data knownValues;
+
+        function register(uint value) public {
+            // Here, all variables of type Set.Data have
+            // corresponding member functions.
+            // The following function call is identical to
+            // `Set.insert(knownValues, value)`
+            require(knownValues.insert(value));
+        }
+    }
+
+#------------------------------------------------------------------------------------------------
+#Solidity Assembly
+???

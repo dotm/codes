@@ -61,6 +61,7 @@ Data types
   Number
   String
   null value
+  reference types
 Type reflection (find data types of a variable)
 Type conversion
 Type alias
@@ -71,8 +72,8 @@ Operators
   Boolean/Logical operators: and or not
     short circuit operator
   Comparison operators: < <= > >= == !=
-	  Shallow equality: equality of references
-	  Deep equality: equality of values
+    Shallow equality: equality of references
+    Deep equality: equality of values
   Bitwise operators: and or not xor left-shift right-shift
   Basic mathematics operations
     random number generator

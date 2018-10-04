@@ -13,8 +13,8 @@
     usage: git st
   git config --global alias.unstage 'reset HEAD --'
     usage: git unstage filename
-  git config --global alias.last 'log -1 HEAD'
-    usage: git last
+  git config --global alias.uncommit 'reset HEAD^'
+    usage: git uncommit
 #Open global configuration file in a text editor for manual editing
   git config --global --edits
 
@@ -66,34 +66,155 @@ git log
 #List remote repo
   #shortname only: git remote
   #with full url: git remote -v
+  #tracking branches: git remote -vv
 #Add remote repo
     git remote add origin <url>
     git remote add <shortname> <url>
   the short name will be used in all git command to refer to the url 
-#Push repository to remote server: git push -u origin master
-  the name of our remote is origin and the default local branch name is master
-  the -u tells Git to remember the parameters, so next time we can simply run 'git push'
+
 #Fetch remote: git fetch <shortname>
+#Merge remote to current branch:
+  git merge origin/master
+  git merge <shortname>/<branch name>
+#Merge and checkout remote branch:
+  #with one remote: git checkout <branch name>
+  #with many remotes: git checkout -b <local branch name> <shortname>/<remote branch name>
 #Pull remote: git pull -u origin master
   Pull := Fetch + Merge
-#Rename remote repo: git remote rename <old shortname> <new shortname>
-#Remove remote repo: git remote remove <shortname>
+#Push repository to remote server: git push -u origin master
+  the name of our remote is origin and the default local branch name is master
+  the -u sets the current branch to make it a tracking branch
+    A tracking branch have direct relationship to an upstream branch
+    (e.g. master have a direct relationship to origin/master)
+#Rename remote repo in local: git remote rename <old shortname> <new shortname>
+#Remove remote repo from local: git remote remove <shortname>
+#Remove branch from remote repo:
+  git push origin --delete branch-name
+  git push <shortname> --delete <branch name>
 
+#-----------------------------------------------------------------------------------
 #Creating branch: git branch branch_name
 #Switching branch: git checkout branch_name
   git checkout -b new_branch  := git branch new_branch; git checkout new_branch
 
+#Merge from master
+  git checkout branch_name
+  git merge master
+#Rebase branch to master
+  git checkout branch_name
+  git rebase master
 #Merge to master
   git checkout master
   git merge branch_name
+
+#List all branches: git branch
+#List all branches with last commit: git branch -v
+#See branches with all commits merged
+  #to current branch: git branch --merged
+  #to certain branch: git branch --merged <branch name>
+#See un-merged branches (branches with unmerged commits)
+  #of current branch: git branch --no-merged
+  #of certain branch: git branch --no-merged <branch name>
 
 #Delete branch: git branch -d branch_name
 #Force delete un-merged branch: git branch -D branch_name
 
 #Resolving conflict best practice
 - merge master into branch
-- resolve all conflicts
-- merge back into master (with no conflict)
+- if no conflict, then a new merge commit will be added automatically
+    this merge commit will have two parents
+      one from the last master commit, another from the last commit of the other branch
+- if any conflict occurs, resolve all conflicts
+  - git will show which file(s) that conflict
+  - choose the correct version (the one from master or from the other branch)
+      or just overwrite them with the correct version
+  - stage the changes
+  - commit them into the merge commit (with clear merge commit message)
+- checkout master
+- merge branch back into master (with no conflict)
+#Using rebase
+  Rebase is used to maintain linear commit history
+  WARNING: Do not rebase commits that exist outside your repository.
+    if someone makes this mistake, use this to recover: git pull --rebase
+#Complex rebase: git rebase --onto master server client
+  Take the client branch,
+  figure out the patches since it diverged from the server branch,
+  and replay these patches in the client branch
+  as if it was based directly off the master branch instead.
+
+#-----------------------------------------------------------------------------------
+#List tag
+  git tag
+  git tag -l "v1.8*"
+#Show tag detail: git show v1.0
+
+Lightweight tag: just a pointer to a specific commit
+Annotated tag: full object containing tagger name + email + date, tagging message, etc.
+
+#Create lightweight tag:
+  #at current commit:
+    git tag <tag name>
+    git tag v1.0
+  #from previous commit (by commit hash):
+    git tag <tag name> <commit hash>
+    git tag v1.0 ab28080
+#Create annotated tag:
+  git tag -a <tag name> -m "tag message"
+  git tag -a <tag name> -m "tag message" -- <commit hash>
+  git tag -a v1.0 -m "tag message"
+  git tag -a v1.0 -m "tag message" -- ab28080
+
+#Push tag: git push origin <tag name>
+#Push all unpushed tags: git push origin --tags
+
+#Checking out Tags: git checkout <tag name>
+this puts your repository in “detached HEAD” state ??? (I don't understand this)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#-----------------------------------------------------------------------------------
+#Commit message best practice
+
+git commit -m '
+The commit title (with a blank line just below it)
+
+All the lines below are for the description of the commit
+The description for the commit must be separated from the title
+by a blank line (so git client like GitHub can parse the commit neatly)
+
+No line should be more than 72 characters (for readability),
+which is why the above and this sentence are separated into two line.
+Title is preferably 50 characters or less
+
+For title and descriptions of commit message,
+use imperative mood: make, implement, do, fix, change, remove
+NOT present or past tense: made, implements, fixed, etc.
+
+- You can make bullet or numbered list manually in the description
+- When you have a long line in a bullet list, continue on the next line,
+  but don't forget to manually align it with space
+
+If you start the -m with single quote, close it with single quote
+If you start the -m with double quote, close it with double quote
+'
 
 #-----------------------------------------------------------------------------------
 !.gitignore
@@ -114,3 +235,190 @@ doc/*.txt
 
 # ignore all .pdf files in the doc/ directory and any of its subdirectories
 doc/**/*.pdf
+
+#-----------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------
+#How git store data
+Commit: a pointer to a project snapshot
+Branch: a pointer to a commit
+HEAD: a pointer to the currently active (checked out) commit
+Rebase: move the base (most recent common ancestor) of the branch
+  to a later commit of another branch
+////////////////////////////////////////////////////////////////////////////////////
+#Commit
+
+  Every commit is a pointer to the root of the project snapshot at the committed time
+  The root of the project contains blobs (files and folders) in a hierarchy
+  Every commit usually have pointers to its parent commits (the commits before it)
+    Initial commit have no parent
+    Ordinary commit have one parent
+    Merging commit have two or more parents
+
+#Illustration
+
+  Initial Commit <--------- Commit 34ac1
+       |                          |
+       v                          v
+  hello_world_project       hello_world_project
+       |                          |
+       v                          v
+  [files and folders]       [modified files and folders]
+
+#Merging Commit Illustration (each commit points to a project snapshot
+
+  Initial commit <--- commit in the master branch <---- merge commit with two parents
+       ^                                                  |
+       └----- commit in another branch <------------------┘
+
+////////////////////////////////////////////////////////////////////////////////////
+#Branching
+
+  Creating a branch is just creating a new pointer to the commit tree
+
+#Illustration
+                  master
+                     |
+                     v
+  ... <-------- Commit 23a87
+
+#Branching
+
+                  master
+                     |
+                     v
+  ... <-------- Commit 23a87
+                     ^
+                     |
+                new_branch
+
+////////////////////////////////////////////////////////////////////////////////////
+#The HEAD
+
+  Any new commit will be added to the commit on the branch
+    that is currently being pointed by the head
+  To change the HEAD to point to a different branch
+    use git checkout new_branch
+
+#Illustration
+
+                  master <--- HEAD
+                     |
+                     v
+  ... <-------- Commit 23a87
+                     ^
+                     |
+                new_branch
+
+#Add commit to master
+
+                                     master <--- HEAD
+                                       |
+                                       v
+  ... <-------- Commit 23a87 <- Commit in master
+                     ^
+                     |
+                new_branch
+
+#Checkout new branch
+
+                                     master
+                                       |
+                                       v
+  ... <-------- Commit 23a87 <- Commit in master
+                     ^
+                     |
+                new_branch <--- HEAD
+
+#Add commit in new branch
+
+                                     master
+                                       |
+                                       v
+  ... <-------- Commit 23a87 <- Commit in master
+                     ^
+                     |
+                     └----- Commit in new branch
+                                       ^
+                                       |
+                                  new_branch <--- HEAD
+
+#-----------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------
+#Merging
+
+#Fast-forward merge
+
+                                     master
+                                       |
+                                       v
+  ... <-------- Commit 23a87 <- Commit in master <- Commit in new branch
+                                                            ^
+                                                            |
+                                                       new_branch <--- HEAD
+
+#Fast-forward merge master: git checkout master; git merge new_branch
+
+                                                         master
+                                                            |
+                                                            v
+  ... <-------- Commit 23a87 <- Commit in master <- Commit in new branch
+                                                            ^
+                                                            |
+                                                       new_branch <--- HEAD
+
+
+////////////////////////////////////////////////////////////////////////////////////
+#Three-way merge
+
+  Common ancestor commit <- commit in master branch <- merge commit with 2 parents commit
+              ^                                                  |
+              └----- commit in another branch <------------------┘
+
+#-----------------------------------------------------------------------------------#-----------------------------------------------------------------------------------
+#Rebase
+
+#Changes in master and in new branch
+                                     master
+                                       |
+                                       v
+  ... <-------- Commit 23a87 <- Commit in master
+                     ^
+                     |
+                     └----- Commit in new branch
+                                       ^
+                                       |
+                                  new_branch <--- HEAD
+
+#Rebase branch to latest master commit
+                                     master
+                                       |
+                                       v
+  ... <-------- Commit 23a87 <- Commit in master
+                                       ^
+                                       |
+                                       └----- Commit in new branch
+                                                         ^
+                                                         |
+                                                    new_branch <--- HEAD
+
+
+#Can also be visualized in a linear fashion
+
+                                     master
+                                       |
+                                       v
+  ... <-------- Commit 23a87 <- Commit in master <- Commit in new branch
+                                                            ^
+                                                            |
+                                                       new_branch <--- HEAD
+
+#Fast-forward merge master: git checkout master; git merge new_branch
+
+                                                         master
+                                                            |
+                                                            v
+  ... <-------- Commit 23a87 <- Commit in master <- Commit in new branch
+                                                            ^
+                                                            |
+                                                       new_branch <--- HEAD
+

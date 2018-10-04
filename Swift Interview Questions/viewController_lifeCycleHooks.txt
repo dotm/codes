@@ -1,9 +1,14 @@
 view controller life cycle hooks:
 
-viewDidLoad, viewWillLoad
-viewDidAppear, viewWillAppear
-viewDidDisappear, viewWillDisappear
-viewDidLayoutSubviews, viewWillLayoutSubviews
+loadView is called before viewDidLoad
+
+viewDidLoad
+viewWillAppear
+viewWillLayoutSubviews
+viewDidLayoutSubviews
+viewDidAppear
+viewWillDisappear
+viewDidDisappear
 
 viewDidLoad is called exactly once, when the view controller is first loaded into memory.
 This is where you instantiate any instance variables and build any views that live for the entire lifecycle of this view controller. 
@@ -14,4 +19,6 @@ This is where you want to perform any layout actions or do any drawing in the UI
 Anything you do here should be repeatable.
 It's best not to retain things here, or else you'll get memory leaks if you don't release them when the view disappears.
 
-loadView is called before viewDidLoad
+viewDidLayoutSubviews is called when the view appears and whenever the bounds change for a view controller's view (by screen rotation, splitting screen, etc.).
+After the view adjusts the positions of its subviews, viewDidLayoutSubviews will be called.
+This method being called does not indicate that the individual layouts of the view's subviews have been adjusted. Each subview is responsible for adjusting its own layout.

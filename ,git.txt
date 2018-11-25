@@ -44,9 +44,9 @@ git log
   #Add all: git add .
 #Unstaging file: git reset HEAD <filename>
 
-#Discard changes (after last commit)
+#Discard changes (from last commit)
   git checkout -- <filename>
-
+#Discard all changes  (from last commit)  git checkout .
 #Committing repo:
   git commit
   git commit -m "commit message"
@@ -181,15 +181,6 @@ this puts your repository in “detached HEAD” state ??? (I don't understand t
 
 
 
-
-
-
-
-
-
-
-
-
 #-----------------------------------------------------------------------------------
 #Commit message best practice
 
@@ -235,190 +226,3 @@ doc/*.txt
 
 # ignore all .pdf files in the doc/ directory and any of its subdirectories
 doc/**/*.pdf
-
-#-----------------------------------------------------------------------------------
-#-----------------------------------------------------------------------------------
-#How git store data
-Commit: a pointer to a project snapshot
-Branch: a pointer to a commit
-HEAD: a pointer to the currently active (checked out) commit
-Rebase: move the base (most recent common ancestor) of the branch
-  to a later commit of another branch
-////////////////////////////////////////////////////////////////////////////////////
-#Commit
-
-  Every commit is a pointer to the root of the project snapshot at the committed time
-  The root of the project contains blobs (files and folders) in a hierarchy
-  Every commit usually have pointers to its parent commits (the commits before it)
-    Initial commit have no parent
-    Ordinary commit have one parent
-    Merging commit have two or more parents
-
-#Illustration
-
-  Initial Commit <--------- Commit 34ac1
-       |                          |
-       v                          v
-  hello_world_project       hello_world_project
-       |                          |
-       v                          v
-  [files and folders]       [modified files and folders]
-
-#Merging Commit Illustration (each commit points to a project snapshot
-
-  Initial commit <--- commit in the master branch <---- merge commit with two parents
-       ^                                                  |
-       └----- commit in another branch <------------------┘
-
-////////////////////////////////////////////////////////////////////////////////////
-#Branching
-
-  Creating a branch is just creating a new pointer to the commit tree
-
-#Illustration
-                  master
-                     |
-                     v
-  ... <-------- Commit 23a87
-
-#Branching
-
-                  master
-                     |
-                     v
-  ... <-------- Commit 23a87
-                     ^
-                     |
-                new_branch
-
-////////////////////////////////////////////////////////////////////////////////////
-#The HEAD
-
-  Any new commit will be added to the commit on the branch
-    that is currently being pointed by the head
-  To change the HEAD to point to a different branch
-    use git checkout new_branch
-
-#Illustration
-
-                  master <--- HEAD
-                     |
-                     v
-  ... <-------- Commit 23a87
-                     ^
-                     |
-                new_branch
-
-#Add commit to master
-
-                                     master <--- HEAD
-                                       |
-                                       v
-  ... <-------- Commit 23a87 <- Commit in master
-                     ^
-                     |
-                new_branch
-
-#Checkout new branch
-
-                                     master
-                                       |
-                                       v
-  ... <-------- Commit 23a87 <- Commit in master
-                     ^
-                     |
-                new_branch <--- HEAD
-
-#Add commit in new branch
-
-                                     master
-                                       |
-                                       v
-  ... <-------- Commit 23a87 <- Commit in master
-                     ^
-                     |
-                     └----- Commit in new branch
-                                       ^
-                                       |
-                                  new_branch <--- HEAD
-
-#-----------------------------------------------------------------------------------
-#-----------------------------------------------------------------------------------
-#Merging
-
-#Fast-forward merge
-
-                                     master
-                                       |
-                                       v
-  ... <-------- Commit 23a87 <- Commit in master <- Commit in new branch
-                                                            ^
-                                                            |
-                                                       new_branch <--- HEAD
-
-#Fast-forward merge master: git checkout master; git merge new_branch
-
-                                                         master
-                                                            |
-                                                            v
-  ... <-------- Commit 23a87 <- Commit in master <- Commit in new branch
-                                                            ^
-                                                            |
-                                                       new_branch <--- HEAD
-
-
-////////////////////////////////////////////////////////////////////////////////////
-#Three-way merge
-
-  Common ancestor commit <- commit in master branch <- merge commit with 2 parents commit
-              ^                                                  |
-              └----- commit in another branch <------------------┘
-
-#-----------------------------------------------------------------------------------#-----------------------------------------------------------------------------------
-#Rebase
-
-#Changes in master and in new branch
-                                     master
-                                       |
-                                       v
-  ... <-------- Commit 23a87 <- Commit in master
-                     ^
-                     |
-                     └----- Commit in new branch
-                                       ^
-                                       |
-                                  new_branch <--- HEAD
-
-#Rebase branch to latest master commit
-                                     master
-                                       |
-                                       v
-  ... <-------- Commit 23a87 <- Commit in master
-                                       ^
-                                       |
-                                       └----- Commit in new branch
-                                                         ^
-                                                         |
-                                                    new_branch <--- HEAD
-
-
-#Can also be visualized in a linear fashion
-
-                                     master
-                                       |
-                                       v
-  ... <-------- Commit 23a87 <- Commit in master <- Commit in new branch
-                                                            ^
-                                                            |
-                                                       new_branch <--- HEAD
-
-#Fast-forward merge master: git checkout master; git merge new_branch
-
-                                                         master
-                                                            |
-                                                            v
-  ... <-------- Commit 23a87 <- Commit in master <- Commit in new branch
-                                                            ^
-                                                            |
-                                                       new_branch <--- HEAD
-

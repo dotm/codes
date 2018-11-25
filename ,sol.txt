@@ -55,6 +55,7 @@ contract shapeCalculator {
     bool: true false
     Number: int uint
         You can use any number type with multiple of 8 as suffix: int8 uint16 int32 ... uint256
+            The number represents bit
             lower bound is 8, upper bound is 256
             int := int256
             uint := uint256

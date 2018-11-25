@@ -1,30 +1,18 @@
-!hello.c
-#include <stdio.h>
-int main(int argc, char *argv[]) {
-    printf("Hello world.\n");
-    return 0;
-}
-
-!for_loop.c
-#include "stdio.h"
-int main(void) {
-    int i;
-    for(i=0; i<10; i++){
-    	printf("%d\n",i);
+#Compiling C program
+  create the program in a c file: hello. c
+    !hello.c
+    #include <stdio.h>
+    int main(int argc, char *argv[]) {
+      printf("Hello world.\n");
+      return 0;
     }
-    return 0;
-}
+  compile the c file: cc hello.c
+  if there's no compilation mistake,
+    the compilation will proceed silently
+    and make an executable file called a.out
+  run a.out in the command line: a.out
 
-create the program in a c file. e.g. hello. c
-compile the c file with the command cc hello.c
-if there's no compilation mistake,
-  the compilation will proceed silently
-  and make an executable file called a.out
-run a.out by typing the command a.out in the command line
-
-how to compile and load a C program that resides on multiple source files
-  vary from one system to the next.
-
+#------------------------------------------------------------------------------------------
 A C program basically consists of the following parts:
   Preprocessor Commands
   Functions
@@ -38,11 +26,6 @@ Types of token: (reserved) keyword, identifier, constant, string literal, symbol
 
 #Semicolon
   individual statements are terminated by semicolons;
-  An expression becomes a statement when it is followed by a semicolon
-  Braces {} are used to group declarations and statements together
-    into a compound statement, or block
-    they are syntactically equivalent to a single statement.
-  There is no semicolon after the right brace that ends a block.
 
 #Command-line Arguments
   When main is called, it is called with two arguments.
@@ -61,12 +44,10 @@ Types of token: (reserved) keyword, identifier, constant, string literal, symbol
 #File inclusion
     #include "filename"
     #include <filename>
-  File inclusion makes it easy to handle collections of #defines and declarations, among other things.
   the #include filename line is replaced by the contents of the file filename.
   If the filename is quoted, searching for the file typically begins where the source program was found;
-    if it is not found there, or if the name is enclosed in < and >,
+    if it is not found there, or if the name is enclosed in <>,
       searching follows an implementation-defined rule to find the file.
-  An included file may itself contain #include lines.
   
 #Macro Substitution
     #define name replacement-text
@@ -148,16 +129,12 @@ double pop(void) {...}
 /* multi-line comment */
 
 #Operators: + - * / %
-  integer division truncate the fractional part of the result: 5/9 === 0; 5.0/9.0 === 0.555
+  integer division round result down: 5/9 === 0; 5.0/9.0 === 0.555
   modulo operator can't be applied to float or double
-  machine-dependent technicality:
-    direction of integer division truncation
-    the sign result of modulo operator with negative operands
-    the action taken on overflow and underflow
 #Increment and decrement: i++, ++i, i--, --i
 #Comparison operators: < <= > >= == !=
 #Logical Operators: && || !
-  Logical && and || use short-circuit evaluation
+  && and || use short-circuit evaluation
 #Bitwise Operators: & | ~ ^ << >>
 #Assignment Operators: += -= *= /= %= <<= >>= &= |= ^=
     expression1 op= expression2
@@ -179,20 +156,15 @@ double pop(void) {...}
   A type name can be the name of a basic type like int or double,
     or a derived type like a structure or a pointer.
   
-C doesn't specify the order in which the operands of an operator are evaluated.
-  The exceptions are &&, ||, ?:, and ','
-
 #main function
-The "main" function is special
-  your program begins executing at the beginning of main
+  your program begins executing at the beginning of main function
   every program must have a main somewhere.
   main will usually call other functions to help perform its job
-    some function from the ones you wrote and others from libraries that are provided for you
   a return value of zero implies normal termination
     non-zero values signal unusual or erroneous termination conditions
 
 #Variables
-  use lower case for variable names, and all upper case for symbolic constants
+  use lower case for variable names, all upper case for symbolic constants
 #Variable definition vs. declaration
   Declaration: the nature of the variable is stated but no storage is allocated
   Definition: the nature of the variable is stated and the variable is created or assigned storage
@@ -293,15 +265,12 @@ The "main" function is special
 #Basic data types
   char    a single byte, holding one character.
   int     an integer, typically reflecting the natural size of integers on the host machine.
-  float   single-precision floating point.
-  double  double-precision floating point.
+  float   single-precision floating point
+  double  double-precision floating point
   short   short integer
   long    long integer
-
-  16 bit int is in range of [-32768, 32767]
-  float is typically 32-bit, with at least 6 significant digits and magnitude generally between about 10^(-38) and 10^(38)
   
-  char can be used for storing small non-character integers.
+  char can be used for storing 1 byte integers
   negative char results from using signed char to represent negative number.
     there's no printable character with negative value
 
@@ -433,7 +402,7 @@ the scope of:
       then an extern declaration is mandatory.
       
 #------------------------------------------------------------------------------------------
-#Control Flow
+#Conditional
 
 #If-else statements
   if (condition) {
@@ -446,7 +415,6 @@ the scope of:
 #Ternary operator
     condition ? expression1 : expression2
   ternary operator is an expression
-  you can parenthesize condition to improve readability
 
 #Switch statement
     switch (expression) {
@@ -466,26 +434,28 @@ the scope of:
     }
   Each case is labeled by one or more integer-valued constants or constant expressions.
 
+#------------------------------------------------------------------------------------------
+#Loops
+
 #While loop
-    while(condition){
-      statements;
-    }
-  while condition is true, execute statements
+  while(condition){
+    statements;
+  }
 #Do-while loop
   do(condition){
     statements;
   }
 
 #For loop
-    //for(initialization; condition; increment or decrement){statements;}
-    int i;
-    for(i=0; i<10; i++){
-    	printf("%d\n",i);
-    }
-    for(;;){statements;}   // infinity loop
+  //for(initialization; condition; increment or decrement){statements;}
+  int i;
+  for(i=0; i<10; i++){
+    printf("%d\n",i);
+  }
+  for(;;){statements;}   // infinity loop
 
 #Break
-    for(;;){statements; break;}
+    break;
   break statement provides an early exit from for, while, do, and switch statement
 #Continue
     continue;

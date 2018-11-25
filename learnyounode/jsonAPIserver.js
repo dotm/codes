@@ -19,19 +19,19 @@ function requestHandler(req,res){
   const time = new Date(parsedURL.query.iso);
   let result;
 
-	if (/^\/api\/parsetime/.test(req.url)) {
+  if (/^\/api\/parsetime/.test(req.url)) {
     result = parsetime(time)
   } else if (/^\/api\/unixtime/.test(req.url)) {
     result = unixtime(time)
   }
 
-	if (result) {
-		res.writeHead(200, {'Content-Type':'application/json'})
-		res.end(JSON.stringify(result))
-	}else{
-		res.writeHead(404)
-		res.end()
-	}
+  if (result) {
+    res.writeHead(200, {'Content-Type':'application/json'})
+    res.end(JSON.stringify(result))
+  }else{
+    res.writeHead(404)
+    res.end()
+  }
 }
 
 let server = http.createServer(requestHandler);

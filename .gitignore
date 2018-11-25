@@ -1,2 +1,3 @@
 new*.txt
 *.*~
+.DS_Store

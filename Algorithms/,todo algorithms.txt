@@ -1,6 +1,5 @@
-order statistics 
-hash table
 red black tree
+augmenting data structures 
 rod cutting
 bfs
 dfs

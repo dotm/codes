@@ -12,7 +12,7 @@
     and make an executable file called a.out
   run a.out in the command line: a.out
 
-#------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------
 A C program basically consists of the following parts:
   Preprocessor Commands
   Functions
@@ -38,7 +38,7 @@ Types of token: (reserved) keyword, identifier, constant, string literal, symbol
       If argc is 1, there are no command-line arguments after the program name.
     argv[argc] is a null pointer.
 
-#------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------
 #Preprocessor Commands
 
 #File inclusion
@@ -106,7 +106,7 @@ Types of token: (reserved) keyword, identifier, constant, string literal, symbol
   The #ifdef and #ifndef lines are specialized forms that test whether a name is defined.
     #if !defined(HDR) := #ifndef HDR
 
-#------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------
 #Header file
 
 !stack.h
@@ -124,7 +124,7 @@ main(){...}
 void push(double) {...}
 double pop(void) {...}
 
-#------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------
 // single-line comment
 /* multi-line comment */
 
@@ -401,7 +401,7 @@ the scope of:
       or if it is defined in a different source file from the one where it is being used,
       then an extern declaration is mandatory.
       
-#------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------
 #Conditional
 
 #If-else statements
@@ -434,7 +434,7 @@ the scope of:
     }
   Each case is labeled by one or more integer-valued constants or constant expressions.
 
-#------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------
 #Loops
 
 #While loop
@@ -472,7 +472,7 @@ the scope of:
     The most common is to abandon processing in some deeply nested structure,
       e.g. breaking out of nested loops at once.
 
-#------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------
 #Function
   Functions are always external because C doesn't allow functions to be defined inside other functions.
   #Function prototype / function declaration
@@ -505,7 +505,7 @@ the scope of:
     but it is possible to define pointers to functions,
     which can be assigned, placed in arrays, passed to functions, returned by functions, etc.
   
-#------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------
 #Array and Pointer
 
 #Declaring Arrays
@@ -680,7 +680,7 @@ i.e.:
   The important advantage of the pointer array is that
     the rows of pointer array may be of different lengths.
     
-#------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------
 #Structure
   structure: a collection of one or more variables, possibly of different types,
     grouped together under a single name for convenient handling.
@@ -726,7 +726,7 @@ i.e.:
     }
   the inner braces ({value,...}) are not necessary when
     the initializers are simple variables or character strings, and when all are present.
-#------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------
 case '-' :
   op2 = pop();
   push (pop () - op2);

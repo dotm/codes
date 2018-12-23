@@ -1,0 +1,17 @@
+//19.1 Write a function to swap a number in place without temporary variables.
+#include <stdio.h>
+
+int swap (int* a, int* b){
+  *a ^= *b;
+  *b ^= *a;
+  *a ^= *b;
+}
+
+int main(void) {
+  int a = 11;
+  int b = 22;
+  printf("%d, %d\n", a, b);
+  swap(&a, &b);
+  printf("%d, %d\n", a, b);
+  return 0;
+}

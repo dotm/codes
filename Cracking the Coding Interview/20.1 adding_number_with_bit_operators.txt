@@ -1,0 +1,53 @@
+//20.1 Write a function that adds two numbers. You should not use + or any arithmetic operators.
+#include <stdio.h>
+
+int add (int a, int b){
+  if(b==0){return a;}
+
+  int sum = a ^ b;
+  int carry = (a & b) << 1;
+  return add(sum,carry);
+}
+int main(void) {
+  int a = 55;
+  int b = 77;
+  printf("%d\n", add(a,b));
+  return 0;
+}
+
+
+/*
+//FOR LEARNING PURPOSES
+void printBinary(int n){
+  int c, k;
+  for (c = 31; c >= 0; c--)
+  {
+    k = n >> c;
+ 
+    if (k & 1)
+      printf("1");
+    else
+      printf("0");
+  }
+  printf("\n");
+}
+
+int add (int a, int b){
+  if(b==0){return a;}
+
+  int sum = a ^ b;
+  int carry = (a & b) << 1;
+
+  printf("a    : ");
+  printBinary(a);
+  printf("b    : ");
+  printBinary(b);
+  printf("sum  : ");
+  printBinary(sum);
+  printf("carry: ");
+  printBinary(carry);
+  printf("\n");
+
+  return add(sum,carry);
+}
+*/

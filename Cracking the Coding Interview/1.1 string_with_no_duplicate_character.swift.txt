@@ -1,0 +1,27 @@
+// 1.1 Implement an algorithm to determine if a string has all unique characters.
+// What if you can not use additional data structures?
+
+func allUniqueCharacter(str: String) -> Bool {
+    if str.isEmpty {return true}
+    
+    var unique = true
+    
+    outer_loop:
+    for(index1, char1) in str.enumerated() {
+        for(index2, char2) in str.enumerated(){
+            if index1 != index2 && char1 == char2 {
+                unique = false
+                break outer_loop
+            }
+        }
+    }
+    
+    return unique
+}
+
+allUniqueCharacter(str: "")
+allUniqueCharacter(str: "a")
+allUniqueCharacter(str: "aa")
+allUniqueCharacter(str: "ab")
+allUniqueCharacter(str: "Aa")
+allUniqueCharacter(str: "aaaaaa")

@@ -1,0 +1,36 @@
+// 1.4 Write a method to decide if two strings are anagrams or not
+
+func isAnagram(str1: String, str2: String) -> Bool {
+    //must this function be case insensitive?
+    if str1.count != str2.count {return false}
+    
+    var dict1: [Character: Int] = [:]
+    str1.forEach { (char) in
+        if dict1[char] == nil {
+           dict1[char] = 1
+        }else{
+           dict1[char] = dict1[char]! + 1
+        }
+    }
+    
+    var dict2: [Character: Int] = [:]
+    str2.forEach { (char) in
+        if dict2[char] == nil {
+            dict2[char] = 1
+        }else{
+            dict2[char] = dict2[char]! + 1
+        }
+    }
+    
+    var anagram = true
+    for (char,count) in dict1 {
+        if dict2[char] != count {
+            anagram = false
+            break
+        }
+    }
+    return anagram
+}
+
+isAnagram(str1: "test", str2: "aaaa")
+isAnagram(str1: "test", str2: "ttes")

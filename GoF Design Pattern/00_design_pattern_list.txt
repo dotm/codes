@@ -1,0 +1,25 @@
+Abstract Factory
+Adapter
+Bridge
+Builder
+Chain of Responsibility
+Command
+Composite
+Decorator
+Facade
+Factory Method
+Flyweight [u]
+Interpreter [u]
+Iterator [u]
+Mediator [u]
+Memento [u]
+Observer
+Prototype [u]
+Proxy [u]
+Singleton
+State
+Strategy
+Template Method
+Visitor [u]
+
+[u] means unimplemented

@@ -1,0 +1,17 @@
+// 20.2 Shuffle an array given a random number generator which is perfect.
+
+func shuffleArray(arr: inout [Any]){
+    var temp: Any
+    for i in 0..<(arr.count - 1) {  //-1 because the last element doesn't need to be swapped
+        let index = Int.random(in: i..<arr.count)
+        print(index)
+//        swap(&arr[index], &arr[i])
+        temp = arr[index]
+        arr[index] = arr[i]
+        arr[i] = temp
+    }
+    print(arr)
+}
+
+var arr: [Any] = [0,1,2,3]
+shuffleArray(arr: &arr)

@@ -1,0 +1,50 @@
+//The abstraction has its own hierarchy and can evolve on its own
+protocol Calculator_V1 {
+    func multiply(x: Int, y: Int) -> Int
+}
+protocol Calculator_V2: Calculator_V1{
+    func exponentiate(base: Int, exponent: Int) -> Int
+}
+extension Calculator_V2 {
+    func exponentiate(base: Int, exponent: Int) -> Int {
+        var total = 1
+        for _ in 0..<exponent {
+            //the default v2 definition used existing definition from v1 (the multiply definition)
+            //so that a v1 implementation can use the v2 abstraction
+            total = multiply(x: total, y: base)
+        }
+        return total
+    }
+}
+
+
+// The Bridge usually is implemented by storing a reference of an implementation inside the abstraction
+//   and then calling the implementation's methods through the reference (the bridge)
+
+// In this case, the bridge is invisble because tho protocol automatically
+//   call the implementation's methods (no reference needed)
+
+
+//The implementation has its own hierarchy and can evolve on its own
+class ElMano_Calculator_V1: Calculator_V2 {
+    func multiply(x: Int, y: Int) -> Int {
+        return x*y
+    }
+    //the exponentiate is automatically defined from the Calculator_V2 protocol extension
+}
+class ElMano_Calculator_V2: ElMano_Calculator_V1 {
+    func exponentiate(base: Int, exponent: Int) -> Int {
+        return optimized_exponentiate(base: base, exponent: exponent)
+    }
+    private func optimized_exponentiate(base: Int, exponent: Int) -> Int {
+        guard exponent != 0 else {return 1}
+        if exponent % 2 == 0 {
+            return optimized_exponentiate(base: base * base, exponent: exponent/2)
+        }else{
+            return base * optimized_exponentiate(base: base * base, exponent: (exponent-1)/2)
+        }
+    }
+}
+
+ElMano_Calculator_V1().exponentiate(base: 3, exponent: 2)
+ElMano_Calculator_V2().exponentiate(base: 3, exponent: 2)

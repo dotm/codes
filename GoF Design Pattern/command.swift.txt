@@ -1,0 +1,135 @@
+let cashier = PopcornCashier()
+let order1 = PopcornOrder(size: .small, customerName: "Joe")
+let order2 = PopcornOrder(size: .large, customerName: "El")
+cashier.receive(order: order1)
+cashier.receive(order: order2)
+Timer.scheduledTimer(withTimeInterval: 10, repeats: false) { (_) in
+    cashier.undo(order: order2)
+    Timer.scheduledTimer(withTimeInterval: 7, repeats: false) { (_) in
+        cashier.printAllFinishedOrder()
+        cashier.printAllCanceledOrder()
+    }
+    
+}
+
+class PopcornOrder { //Command Object
+    let size: PopcornSize
+    let customerName: String
+    init(size: PopcornSize, customerName: String){
+        self.size = size
+        self.customerName = customerName
+    }
+ 
+    var finish: (()->())?
+}
+
+class PopcornMaker { //Receiver of Command
+    var busyCooking = false
+    
+    func receive(order: PopcornOrder){
+        guard busyCooking == false else {
+            print("I'm busy cooking things.")
+            return
+        }
+        print("popcorn maker start making popcorn of size:", order.size)
+        busyCooking = true
+        Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { (_) in
+            print("popcorn maker finish making popcorn of size:", order.size)
+            self.busyCooking = false
+            order.finish?()
+        }
+    }
+}
+
+class PopcornCashier {
+    private let maker = PopcornMaker()
+    
+    //logging functionality
+    private var finishedOrders: [PopcornOrder] = []
+    
+    //queueing functionality
+    private var queuedOrders: [PopcornOrder] = [] {
+        didSet { cashier_startDuty() }
+    }
+    
+    //undo functionality
+    private var canceledOrders: [PopcornOrder] = []
+    
+    func receive(order: PopcornOrder){
+        order.finish = {()->() in
+            print("give popcorn of size \(order.size) to customer: \(order.customerName).")
+            self.finishedOrders.append(order)
+        }
+        queuedOrders.append(order)
+    }
+    func printAllFinishedOrder(){
+        print("\n\nFinished Orders:")
+        finishedOrders.forEach { (order) in
+            print(order.customerName + ":",order.size.rawValue)
+        }
+    }
+    func printAllCanceledOrder(){
+        print("\n\nCanceled Orders:")
+        canceledOrders.forEach { (order) in
+            print(order.customerName + ":",order.size.rawValue)
+        }
+    }
+    func undo(order: PopcornOrder){
+        var order_inWaiting = false
+        queuedOrders.enumerated().forEach { (index,queuedOrder) in
+            if order.customerName == queuedOrder.customerName {
+                canceledOrders.append(order)
+                queuedOrders.remove(at: index)
+                order_inWaiting = true
+                print("cancel order in waiting")
+            }
+        }
+        guard !order_inWaiting else {return}
+        
+        var order_finished = false
+        finishedOrders.enumerated().forEach { (index,finishedOrder) in
+            if order.customerName == finishedOrder.customerName {
+                canceledOrders.append(order)
+                finishedOrders.remove(at: index)
+                order_finished = true
+                print("refund finished order")
+            }
+        }
+        
+        let order_inProgress = !order_inWaiting && !order_finished
+        if order_inProgress {
+            print("waiting for order to be finished before canceling it")
+            Timer.scheduledTimer(withTimeInterval: 5, repeats: false) { (_) in
+                self.undo(order: order)
+            }
+        }
+    }
+    
+    private var cashier_onDuty_timer: Timer?
+    func cashier_startDuty() {
+        guard cashier_onDuty_timer == nil else {
+            return
+        }
+        
+        cashier_onDuty_timer = Timer.scheduledTimer(withTimeInterval: 4, repeats: true) { (_) in
+            guard self.cashier_onDuty_timer != nil, !self.queuedOrders.isEmpty else {
+                print("no more order")
+                self.cashier_onDuty_timer?.invalidate()
+                self.cashier_onDuty_timer = nil
+                return
+            }
+            guard !self.maker.busyCooking else {
+                print("waiting for popcorn maker to finish cooking")
+                return
+            }
+            
+            let order = self.queuedOrders.removeFirst()
+            print("give popcorn maker a new order")
+            self.maker.receive(order: order)
+        }
+    }
+}
+enum PopcornSize: String {
+    case small
+    case large
+}

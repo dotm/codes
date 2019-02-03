@@ -46,7 +46,8 @@ git log
 
 #Discard changes (from last commit)
   git checkout -- <filename>
-#Discard all changes  (from last commit)  git checkout .
+#Discard all changes  (from last commit)
+  git clean -fd  git checkout .
 #Committing repo:
   git commit
   git commit -m "commit message"
@@ -62,7 +63,14 @@ git log
 #Remove directory: git rm -r dirname
 #Untrack file but don't remove: git rm --cached filename
 
+#Stash all changes
+  git stash -a
+#Apply last stash and delete the stash
+  git stash pop
+
 #-----------------------------------------------------------------------------------
+#Remotes
+
 #List remote repo
   #shortname only: git remote
   #with full url: git remote -v
@@ -93,6 +101,8 @@ git log
   git push <shortname> --delete <branch name>
 
 #-----------------------------------------------------------------------------------
+#Branches
+
 #Creating branch: git branch branch_name
 #Switching branch: git checkout branch_name
   git checkout -b new_branch  := git branch new_branch; git checkout new_branch
@@ -143,6 +153,8 @@ git log
   as if it was based directly off the master branch instead.
 
 #-----------------------------------------------------------------------------------
+#Tags
+
 #List tag
   git tag
   git tag -l "v1.8*"
@@ -180,6 +192,15 @@ this puts your repository in “detached HEAD” state ??? (I don't understand t
 
 
 
+
+#-----------------------------------------------------------------------------------
+#Selecting commit
+HEAD    select commit at HEAD
+HEAD~   select parent of HEAD
+HEAD^   select parent of HEAD
+HEAD~~  select grandparent of HEAD
+HEAD~2  select grandparent of HEAD
+HEAD^2  select second parent of HEAD (e.g. in a merge commit)
 
 #-----------------------------------------------------------------------------------
 #Commit message best practice

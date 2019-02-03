@@ -1,0 +1,7 @@
+Chain of Responsibility passes a request through a chain of handler object.
+The handler object may process the request or not.
+The handler object may forward the request to the next handle object or not.
+
+Express middleware is Chain of Responsibility where the middleware handles HTTP requests
+In the DOM, event handlers are the handler objects for the event propagation (chain of responsibility)
+In iOS, the responder chain is the chain of responsibility and UIResponder is the handler object

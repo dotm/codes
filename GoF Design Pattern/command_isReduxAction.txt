@@ -1,0 +1,1 @@
+Redux actions are command objects used to change the data store state.

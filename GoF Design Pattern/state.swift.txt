@@ -1,0 +1,94 @@
+protocol Human { //Context protocol
+    init(name:String)
+}
+protocol HumanState { //State protocol
+    func move(name: String)
+    func grow(name: String) -> HumanState?
+}
+
+class Person: Human {
+    private let name: String
+    private var state: HumanState?
+    
+    //behaviors that will be altered according to state
+    func move(){
+        state?.move(name: name)
+    }
+    func grow(){
+        self.state = state?.grow(name: name)
+    }
+    
+    //extra methods
+    func journeyThroughLive(){
+        while state != nil {
+            move()
+            grow()
+        }
+    }
+    func printName(){
+        print(name)
+    }
+    
+    required init(name: String){
+        self.name = name
+        self.state = Baby()
+    }
+}
+
+class Baby: HumanState {
+    func move(name: String) {
+        print("\(name) has just been borned and can't move yet.")
+    }
+    func grow(name: String) -> HumanState? {
+        print("\(name) grows and becomes a toddler.")
+        return Toddler()
+    }
+}
+class Toddler: HumanState {
+    func move(name: String) {
+        print("\(name) toddles around clumsily.")
+    }
+    func grow(name: String) -> HumanState? {
+        print("\(name) grows and becomes a teenager.")
+        return Teen()
+    }
+}
+class Teen: HumanState {
+    func move(name: String) {
+        print("\(name) runs around energetically.")
+    }
+    func grow(name: String) -> HumanState? {
+        print("\(name) grows and becomes an adult.")
+        return Adult()
+    }
+}
+class Adult: HumanState {
+    func move(name: String) {
+        print("\(name) walks maturely.")
+    }
+    func grow(name: String) -> HumanState? {
+        print("\(name) grows and becomes an elder.")
+        return Senior()
+    }
+}
+class Senior: HumanState {
+    func move(name: String) {
+        print("\(name) walks slowly with a cane.")
+    }
+    func grow(name: String) -> HumanState? {
+        print("\(name) is dead.")
+        return Deceased()
+    }
+}
+class Deceased: HumanState {
+    func move(name: String) {
+        print("Dead human can't move.")
+    }
+    func grow(name: String) -> HumanState? {
+        return nil
+    }
+}
+
+let me = Person(name: "Yoshua")
+me.printName()
+me.journeyThroughLive()

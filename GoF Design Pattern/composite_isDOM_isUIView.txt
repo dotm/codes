@@ -1,0 +1,5 @@
+In the web, DOM element is composite.
+In ios dev, UIView is composite.
+
+A composite can be a single node without children or a node with multiple children where the children also have the same type of the composite parent.
+When a method is called on the composite that have children, it will pass the method call to the children.

@@ -1,5 +1,5 @@
 #Compiling C program
-  create the program in a c file: hello. c
+  create the program in a c file:
     !hello.c
     #include <stdio.h>
     int main(int argc, char *argv[]) {
@@ -263,16 +263,12 @@ double pop(void) {...}
     Excess register declarations are harmless, however, since the word register is ignored for excess or disallowed declarations.
       And it is not possible to take the address of a register variable, regardless of whether the variable is actually placed in a register.
 #Basic data types
-  char    a single byte, holding one character.
-  int     an integer, typically reflecting the natural size of integers on the host machine.
+  char    a single byte, holding one character or 1 byte integers
+  int     an integer, typically reflecting the natural size of integers on the host machine
   float   single-precision floating point
   double  double-precision floating point
   short   short integer
   long    long integer
-  
-  char can be used for storing 1 byte integers
-  negative char results from using signed char to represent negative number.
-    there's no printable character with negative value
 
 #Qualifiers
   #short and long
@@ -294,12 +290,8 @@ double pop(void) {...}
 
   #signed or unsigned
     may be applied to char or any integer
-    unsiqned numbers are always positive or zero, and obey the laws of arithmetic modulo 2^n,
-      where n is the number of bits in the type.
-      e.g., if chars are 8 bits,
-        unsigned char variables have values between 0 and 255,
-        siqned chars have values between -128 and 127 (in a two's complement machine).
-    Whether plain chars are signed or unsigned is machine-dependent, but printable characters are always positive.
+    unsiqned numbers are positive or zero
+    Whether plain chars are signed or unsigned is machine-dependent
 
   #const
     const can be applied to the declaration of any variable
@@ -346,17 +338,14 @@ double pop(void) {...}
   hexadecimal : 0x1f, 0X1F
   Octal and hexadecimal constants may be suffixed by L, U, or even both.
 #Enumeration Constant
-  enumeration is a list of constant integer values
   The first name in an enum has value 0, the next 1, etc, unless explicit values are specified.
     enum boolean { NO, YES };
     enum escapes { BACKSPACE = '\b', TAB = '\t', NEWLINE = '\n' };
   If not all values are specified, unspecified values continue the progression from the last specified value
     enum months { JAN = 1, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC };
-  Names in different enumerations must be distinct.
-  Values need not be distinct even in the same enumeration.
+  In enumeration, name must be distinct but values don't have to.
 
 #Type conversion
-  See implementation for complete rules
   When an operator has operands of different types,
     they are converted to a common type according to a small number of rules.
   In general, the only automatic conversions are those that convert
@@ -412,9 +401,8 @@ the scope of:
   }else{
     statements;
   }
-#Ternary operator
-    condition ? expression1 : expression2
-  ternary operator is an expression
+#Ternary operator expression
+  condition ? expression1 : expression2
 
 #Switch statement
     switch (expression) {
@@ -465,12 +453,6 @@ the scope of:
     labelName:
       statements
     goto labelName;
-  A label can be attached to any statement in the same function as the goto.
-  The scope of a label is the entire function.
-  Formally, the goto is never necessary, and in practice it is almost always easy to write code without it.
-    Nevertheless, there are a few situations where gotos may find a place.
-    The most common is to abandon processing in some deeply nested structure,
-      e.g. breaking out of nested loops at once.
 
 #---------------------------------------------------------------------------------------
 #Function

@@ -1,0 +1,24 @@
+let outputBuilder = ToneOutputBuilder(bank: bank)
+outputBuilder.applyLowShelfFilter(cutoffFrequency: getNoteFrequency(note: (noteName: .A, octaveNumber: 2)), gain: 20)
+outputBuilder.applyLowPassFilter(cutoffFrequency: getNoteFrequency(note: (noteName: .A, octaveNumber: 6)), resonance: -20)
+let output = outputBuilder.getOutput()
+
+class ToneOutputBuilder {
+    private var output: AKNode
+    init(bank: AKOscillatorBank) {
+        output = bank
+    }
+    func getOutput() -> AKNode {
+        return output
+    }
+    
+    func applyLowShelfFilter(cutoffFrequency: Double, gain: Double){
+        output = AKLowShelfFilter(output, cutoffFrequency: cutoffFrequency, gain: gain)
+    }
+    func applyLowPassFilter(cutoffFrequency: Double, resonance: Double){
+        output = AKLowPassFilter(output, cutoffFrequency: cutoffFrequency, resonance: resonance)
+    }
+    func applyHighPassFilter(cutoffFrequency: Double, resonance: Double){
+        output = AKHighPassFilter(output, cutoffFrequency: cutoffFrequency, resonance: resonance)
+    }
+}

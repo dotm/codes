@@ -1,0 +1,73 @@
+let myStartup_emailGateway = EmailGateway()
+myStartup_emailGateway.receive(email: .frequentlyAskedQuestion)
+myStartup_emailGateway.receive(email: .other)
+
+class EmailGateway {
+    private var chainOfResponder: [EmailHandler] = [] //Chain of Responsibility
+    init() {
+        chainOfResponder.append(AIResponder())
+        chainOfResponder.append(CustomerSupport())
+        chainOfResponder.append(Developer())
+        chainOfResponder.append(CEO())
+    }
+    
+    func receive(email: EmailType){
+        print("Your email is being processed")
+        
+        var email_hasBeenHandled = false
+        for responder in chainOfResponder {
+            email_hasBeenHandled = responder.handle(email: email)
+            
+            if email_hasBeenHandled {break}
+            print("Passing the email to the next responder")
+        }
+        print("\n")
+    }
+}
+
+enum EmailType {
+    case frequentlyAskedQuestion
+    case uncommonQuestion
+    case bugReport
+    case other
+}
+typealias EndQuery = Bool
+protocol EmailHandler {
+    func handle(email: EmailType) -> EndQuery
+}
+class AIResponder: EmailHandler {
+    func handle(email: EmailType) -> Bool {
+        if email == .frequentlyAskedQuestion {
+            print("Hi, I'm a robot. I'll respond to your queries")
+            return true
+        }else{
+            return false
+        }
+    }
+}
+class CustomerSupport: EmailHandler {
+    func handle(email: EmailType) -> Bool {
+        if email == .uncommonQuestion {
+            print("Hello there! I'm a representative of the company. I'll be pleased to answer your questions.")
+            return true
+        }else{
+            return false
+        }
+    }
+}
+class Developer: EmailHandler {
+    func handle(email: EmailType) -> EndQuery {
+        if email == .bugReport {
+            print("We've received your bug report and will begin investigation on it.")
+            return true
+        }else{
+            return false
+        }
+    }
+}
+class CEO: EmailHandler {
+    func handle(email: EmailType) -> EndQuery {
+        print("Hello there. I'm the CEO of this company. I'll respond to your query immediately.")
+        return true
+    }
+}

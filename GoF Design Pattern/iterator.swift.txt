@@ -1,0 +1,87 @@
+let stack = Stack<Int>()
+stack.push(1)
+stack.push(2)
+stack.push(3)
+let iterator = stack.createIterator()
+iterator.goNext()
+iterator.getElement_atCursor()
+iterator.iterate()
+iterator.remove_atIndex()
+iterator.iterate()
+
+protocol MyIterator {
+    associatedtype Element
+    func goToFirst()
+    func goToLast()
+    func goNext()
+    func goPrevious()
+    func getElement_atCursor() -> Element?
+    func iteration_isDone() -> Bool
+    func iterate()
+    func remove_atIndex() -> Element?
+}
+class StackIterator<Element>: MyIterator {
+    var index: Int
+    var stack: Stack<Element>
+    init(stack: Stack<Element>) {
+        self.stack = stack
+        let topOfStack_pointer = stack.array.count - 1
+        index = topOfStack_pointer
+    }
+    
+    func goToFirst() {
+        let topOfStack_pointer = stack.array.count - 1
+        index = topOfStack_pointer
+    }
+    func goToLast() {
+        index = 0   //bottom of stack
+    }
+    func goNext() {
+        index -= 1
+    }
+    func goPrevious() {
+        index += 1
+    }
+    
+    func getElement_atCursor() -> Element? {
+        let topOfStack_pointer = stack.array.count - 1
+        guard index >= 0, index <= topOfStack_pointer else {return nil}
+        return stack.array[index]
+    }
+    func iteration_isDone() -> Bool {
+        return getElement_atCursor() == nil
+    }
+    func iterate() {
+        let oldIndex = index
+        goToFirst()
+        while !iteration_isDone() {
+            print(getElement_atCursor()!)
+            goNext()
+        }
+        index = oldIndex
+    }
+    
+    func remove_atIndex() -> Element? {
+        return stack.array.remove(at: index)
+    }
+}
+
+class Stack<Element> {
+    fileprivate var array: [Element] = []
+    
+    func createIterator() -> StackIterator<Element> {
+        return StackIterator<Element>(stack: self)
+    }
+    
+    func push(_ element: Element) {
+        array.append(element)
+    }
+    
+    func pop() -> Element? {
+        return array.popLast()
+    }
+    
+    func peek() -> Element? {
+        return array.last
+    }
+}

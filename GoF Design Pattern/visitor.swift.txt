@@ -1,0 +1,86 @@
+//Here we use the Composite pattern to illustrate the Visitor pattern
+//The composite is the Traverser for the Visitor
+protocol Component {
+    func getDescriptions()
+    var description: String {get}
+    
+    //If we want to add a function, we need to add it to the Component protocol
+    //  then we add it to all classes conforming to the Component protocol
+    //If we want 5 functions and there are 4 classes conforming to Component
+    //  then we need to implement 5*4 methods
+    
+    //With visitor, we need to only implement one function on each classes
+    func accept(visitor: Visitor)
+    //The other functions will be implemented in Concrete Visitors (not the protocol)
+    //  i.e. there'll be 5 Concrete Visitors for each function
+}
+//The Visitor protocol will add one function for each classes conforming to Component
+protocol Visitor {
+    func visit(composite: Composite)
+    func visit(leaf: Leaf)
+}
+class ConcreteVisitor: Visitor {
+    func visit(leaf: Leaf) {
+        print("This is a leaf with the description:",leaf.description)
+    }
+    func visit(composite: Composite) {
+        print("This is a composite with the description:",composite.description)
+    }
+}
+//Usage: component.accept(visitor: ConcreteVisitor())
+
+class Composite: Component {
+    func accept(visitor: Visitor) {
+        visitor.visit(composite: self)
+        for component in children {
+            component.accept(visitor: visitor)
+        }
+    }
+    
+    var children: [Component] = []
+    let description: String
+    func getDescriptions(){
+        print(self.description)
+        for component in children {
+            component.getDescriptions()
+        }
+    }
+    
+    //other methods and properties...
+    func addChild(_ child: Component){
+        children.append(child)
+    }
+    
+    init(description: String){
+        self.description = description
+    }
+}
+
+class Leaf: Component {
+    func accept(visitor: Visitor) {
+        visitor.visit(leaf: self)
+    }
+    
+    let description: String
+    func getDescriptions(){
+        print(self.description)
+    }
+    
+    //other methods and properties...
+    
+    init(description: String){
+        self.description = description
+    }
+}
+
+let leaf_1 = Leaf(description: "Leaf 1 3rd gen")
+let leaf_2 = Leaf(description: "Leaf 2 3rd gen")
+let composite_1 = Composite(description: "Composite 2nd gen")
+composite_1.addChild(leaf_1)
+composite_1.addChild(leaf_2)
+let leaf_3 = Leaf(description: "Leaf 2nd gen")
+let composite_2 = Composite(description: "Composite 1st gen")
+composite_2.addChild(leaf_3)
+composite_2.addChild(composite_1)
+
+composite_2.accept(visitor: ConcreteVisitor())

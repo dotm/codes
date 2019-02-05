@@ -1,0 +1,36 @@
+class Flyweight {
+    private let aDamnLarge_intrinsicState: [Int]    //intrinsic state is immutable
+    init(blob: [Int]) {
+        aDamnLarge_intrinsicState = blob
+    }
+    
+    func getBlob() -> [Int] {
+        return aDamnLarge_intrinsicState
+    }
+}
+class FlyweightClient {
+    var transformation: ([Int])->[Int]  //extrinsic state that can be different for each flyweight client object
+    init(flyweight: Flyweight, transformation: @escaping ([Int])->[Int]) {
+        self.transformation = transformation
+        self.flyweight = flyweight
+    }
+    
+    let flyweight: Flyweight
+    func getTransformedBLOB() -> [Int] {
+        return transformation(flyweight.getBlob())
+    }
+}
+
+let blob1 = Flyweight(blob: [24,72,342])
+let client1 = FlyweightClient(flyweight: blob1) { (blob) -> [Int] in
+    return blob.map({ (value) -> Int in
+        return value * 2
+    })
+}
+let client2 = FlyweightClient(flyweight: blob1) { (blob) -> [Int] in
+    return blob.map({ (value) -> Int in
+        return value - 100
+    })
+}
+client1.getTransformedBLOB()
+client2.getTransformedBLOB()

@@ -1,0 +1,55 @@
+class RealSecretNumber {
+    private var num = 0
+    func printNumber() -> Int{
+        Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { (_) in
+            print(self.num)
+        }
+        return num
+    }
+    func set(num: Int) {
+        self.num = num
+    }
+}
+class ProxyForSecretNumber {
+    private var secretNumberObject: RealSecretNumber
+    init(secretNumber: RealSecretNumber) {
+        self.secretNumberObject = secretNumber
+    }
+    
+    //proxy can cache information about the real object
+    private var cachedNumber: Int?
+    private var lastGet = Date()
+    private var lastSet = Date()
+    func printNumber() -> Int{
+        let cache_stillValid = lastSet < lastGet
+        lastGet = Date()
+        guard let cached = cachedNumber, cache_stillValid else {
+            //fetch information from real object if no cache exist yet
+            cachedNumber = secretNumberObject.printNumber()
+            return cachedNumber ?? 0
+        }
+        print("retrieving cache value")
+        print(cached)
+        return cached
+    }
+    //proxy can guard access to real object
+    func set(num: Int, authorized: Bool) {
+        guard authorized else {print("unauthorized"); return}
+        secretNumberObject.set(num: num)
+        lastSet = Date()
+    }
+    //proxy can encode request in a format the read object can read
+    //  so that the real object can handle it (e.g. encode to JSON before sending)
+    func set(num: String, authorized: Bool){
+        guard let integer = Int(num) else {return}
+        self.set(num: integer, authorized: authorized)
+    }
+}
+
+let real = RealSecretNumber()
+let proxy = ProxyForSecretNumber(secretNumber: real)
+proxy.printNumber()
+Timer.scheduledTimer(withTimeInterval: 10, repeats: false) { (_) in
+    proxy.set(num: "1", authorized: true)
+    proxy.printNumber()
+}

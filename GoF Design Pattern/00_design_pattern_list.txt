@@ -8,18 +8,19 @@ Composite
 Decorator
 Facade
 Factory Method
-Flyweight [u]
+Flyweight
 Interpreter [u]
-Iterator [u]
-Mediator [u]
-Memento [u]
+Iterator
+Mediator
+Memento
 Observer
-Prototype [u]
-Proxy [u]
+Prototype
+Proxy
 Singleton
 State
 Strategy
 Template Method
-Visitor [u]
+Visitor
 
 [u] means unimplemented
+Memento with json

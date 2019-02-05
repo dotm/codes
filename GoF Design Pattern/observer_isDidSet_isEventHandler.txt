@@ -1,0 +1,2 @@
+Event handlers (in DOM or UIResponder) are observers
+In Swift, the didSet and willSet are observers of variables (when a variable's value change, the observers will be executed)

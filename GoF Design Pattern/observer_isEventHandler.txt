@@ -1,1 +1,0 @@
-Event handlers (in DOM or UIResponder) are observers

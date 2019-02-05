@@ -1,0 +1,83 @@
+LunchMakerRobot().serveSugarFreeLunch()
+
+class LunchMakerRobot { //the Mediator
+    let foodMaker = FoodMakerRobot()
+    let drinkMaker = DrinkMakerRobot()
+    let foodHeater = FoodHeaterMachine()
+    let temperatureSensor = TemperatureSensor(temperature: 10)
+    
+    //The control logic is defined here
+    func serveNormalLunch(){
+        foodMaker.requestVegetable()
+        foodMaker.requestSteak()
+        
+        let isCold = temperatureSensor.isCold()
+        if isCold {
+            drinkMaker.requestHotDrink(sugar: true)
+            foodHeater.heatFood()
+        }else{
+            drinkMaker.requestColdDrink(sugar: true)
+        }
+    }
+    func serveVegetarianLunch(){
+        foodMaker.requestVegetable()
+        foodMaker.requestMushroom()
+        
+        let isCold = temperatureSensor.isCold()
+        if isCold {
+            drinkMaker.requestHotDrink(sugar: true)
+            foodHeater.heatFood()
+        }else{
+            drinkMaker.requestColdDrink(sugar: true)
+        }
+    }
+    func serveSugarFreeLunch(){
+        foodMaker.requestVegetable()
+        foodMaker.requestMushroom()
+        
+        let isCold = temperatureSensor.isCold()
+        if isCold {
+            drinkMaker.requestHotDrink(sugar: false)
+            foodHeater.heatFood()
+        }else{
+            drinkMaker.requestColdDrink(sugar: false)
+        }
+    }
+}
+
+//Colleagues of Mediator only know
+//  how to handle request from mediator
+//  and how to tell the mediator about their own state
+class FoodMakerRobot {
+    func requestVegetable(){
+        print("serving vegetable")
+    }
+    func requestMushroom(){
+        print("serving mushroom")
+    }
+    func requestSteak(){
+        print("serving steak")
+    }
+}
+class DrinkMakerRobot {
+    func requestHotDrink(sugar: Bool){
+        print("serving hot drink", sugar ? "with sugar" : "without sugar")
+    }
+    func requestColdDrink(sugar: Bool){
+        print("serving iced drink", sugar ? "with sugar" : "without sugar")
+    }
+}
+class FoodHeaterMachine {
+    func heatFood(){
+        print("make food warmer before serving it")
+    }
+}
+class TemperatureSensor {
+    let temperature: Int
+    init(temperature: Int) {
+        self.temperature = temperature
+    }
+    func isCold() -> Bool {
+        return temperature < 15 //celcius
+    }
+}

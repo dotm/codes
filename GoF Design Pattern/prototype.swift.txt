@@ -1,0 +1,25 @@
+class CharacterAvatar {
+    var height_inCM = 170
+    var weight_inKG = 60
+    var isNPC = false
+    
+    func clone() -> CharacterAvatar {
+        let cloned = CharacterAvatar()
+        cloned.height_inCM = self.height_inCM
+        cloned.weight_inKG = self.weight_inKG
+        cloned.isNPC = self.isNPC
+        return cloned
+    }
+}
+
+//User can generate the character dynamically (e.g. from a map-making software)
+
+//The prototype instance
+let giant = CharacterAvatar()
+giant.height_inCM = 210
+giant.weight_inKG = 110
+giant.isNPC = true
+
+//Copying the prototype to create new characters
+let giant2 = giant.clone()
+let giant3 = giant.clone()

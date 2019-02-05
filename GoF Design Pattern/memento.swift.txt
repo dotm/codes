@@ -1,0 +1,40 @@
+class UserMemento {
+    var username: String?
+    init(username: String?) {
+        self.username = username
+    }
+}
+class User {
+    var username: String?
+    //other user-related methods and properties
+    
+    func createMemento() -> UserMemento {
+        return UserMemento(username: username)
+    }
+    func setState(from memento: UserMemento){
+        username = memento.username
+    }
+}
+
+//from CareTaker object:
+
+//user load app
+var user: User?
+
+//user login
+user = User()
+user?.username = "Joe"
+print(user?.username)
+//CareTaker store user data in local storage
+var localStorage_userMemento = user!.createMemento()
+
+//user close app
+user = nil
+print(user?.username)
+
+//user open app again
+user = User()
+print(user?.username)
+//CareTaker restore user data from local storage
+user?.setState(from: localStorage_userMemento)
+print(user?.username)

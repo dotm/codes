@@ -1,0 +1,458 @@
+package main
+import "fmt"
+func main() {
+	fmt.Println("Hello, 世界")
+}
+
+#--------------------------------------------------------------------------------
+#Print string with new line
+    fmt.Println("hello world")
+#Printf
+	fmt.Printf("%v %v %v %q", integer_value, float_value, boolean_value, string_value)
+    fmt.Printf("the value %v has type %T", value, value)
+
+#--------------------------------------------------------------------------------
+#Variable declaration:
+    var variable_name = value
+    var variable_name variable_type
+    var variable_name variable_type = value
+#Short assignment statement for variable
+        func main() { k := 3 }
+    Inside a function, the := short assignment statement can be used in place of a var declaration with implicit type.
+
+#Constant declaration
+    const constant_name = value
+    const constant_name constant_type
+    const constant_name constant_type = value
+
+#--------------------------------------------------------------------------------
+#Data types
+    #Boolean: bool
+        true false
+    #Integers:
+            int  int8  int16  int32  int64
+            uint uint8 uint16 uint32 uint64
+            uintptr
+            byte        // alias for uint8
+            rune        // alias for int32; represents a Unicode code point
+        int, uint, and uintptr are usually 32 bits wide on 32-bit systems and 64 bits wide on 64-bit systems
+    #Float: float32 float64
+    #Complex number: complex64 complex128
+        Go will default to complex128 for a complex number literal in 64-bit systems
+    #Pointer: *value_type
+    #string
+    #nil
+#Zero values
+    Variables declared without an explicit initial value are given their zero value:
+        Numeric types   : 0
+        Boolean type    : false
+        String type     : ""
+        Pointer         : nil
+        Slice           : nil
+        Map             : nil
+    Struct with omitted fields will have its omitted fields initialized to their respective types' zero values
+
+#Type conversion:
+    type(value)
+	var a float64 = 3.8
+	var b int = int(a)  //b is 3
+
+#--------------------------------------------------------------------------------
+#Pointer
+        pointer holds the memory address of a value
+        Go has no pointer arithmetic
+    #declaration: var p *int
+    #create pointer: p = &integer_variable
+    #dereferencing/indirecting pointer:
+        fmt.Println(*p)     // read i through the pointer p
+        *p = 21             // set i through the pointer p
+    #access struct field through pointer
+        (*p).struct_field
+        p.struct_field      //shorthand
+
+#--------------------------------------------------------------------------------
+#Struct: a collection of fields
+    #declaration:
+        type struct_name struct {
+            struct_field1 field_type
+            struct_field2 field_type
+        }
+    #create:
+        var struct_variable = struct_name{value, value}
+        var struct_variable = struct_name{struct_field1: value, struct_field2: value}
+    #access field: struct_variable.struct_field1
+
+#--------------------------------------------------------------------------------
+#Array
+        (zero index, homogeneous, fixed-length)
+    #create:
+        var array_name [length]value_type = [length] value_type {value, value}
+        var a [10]int   //initialized to zero values
+    #access element by index: array[index]
+    #change element value at index: array[index] = value
+
+#Slices:
+        is like a variable-length array
+        doesn't actually store any data, it just describes a section of an underlying array
+        changing the elements of a slice
+            modifies the corresponding elements of its underlying array
+            and other slices can see the change because slices are just references
+        A nil slice has a length and capacity of 0 and has no underlying array.
+        Slices can contain any type, including other slices.
+    #create
+        #from array:
+            var slice_name []value_type = array_name[upper_index : lower_index]
+            var slice_name []value_type = array_name[1:3]   //will include elements of index 1 and 2 from array_name
+            var slice_name []value_type = array_name[1:]    //will include elements from index 1 until the last element from array_name
+            var slice_name []value_type = array_name[:3]    //will include elements of index 0, 1, and 2 from array_name
+            var slice_name []value_type = array_name[:]     //will include all elements from array_name
+        #slice literal: []bool{true, true, false}
+            this creates the array [3]bool{true, true, false}
+            then builds a slice that references it
+        #using make function to allocate a zeroed array and returns a slice that refers to that array:
+            make([]slice_type, length)              //capacity == length
+            make([]slice_type, length, capacity)
+            b := make([]int, 0, 5)                  // len(b)=0, cap(b)=5
+    #reslicing:
+        slice_name = slice_name[new_upper_index : new_lower_index]
+    #change underlying array:
+        slice_name = array_name[upper_index : lower_index]
+    #get slice length (the number of elements it contains)
+        len(slice_name)
+    #get slice capacity: the number of elements in the underlying array, counting from the first element in the slice
+        cap(slice_name)
+    #append value: slice_name = append(slice_name, value, value, ...)
+
+#Iterate over slice using range
+    for index, value := range slice_name { statements }
+    for index := range slice_name { statements }            //capture index only
+    for _, value := range slice_name { statements }         //capture value only
+    for range slice_name { statements }                     //without capturing index or value
+
+#--------------------------------------------------------------------------------
+#Map: maps keys to values
+        A nil map has no keys, nor can keys be added
+    #create
+        #using make to create empty map:
+            map_name := make(map [key_type] value_type)     //e.g. make(map[string]int)
+        #using map literal:
+            map_name := map[key_type]value_type {
+                key_name: value,
+                key_name: value,
+            }
+    #access element by key: map[key_name]
+    #add value to key: map[key_name] = value
+    #change value by key: map[key_name] = value
+    #delete element by key: delete(map, key_name)
+    #check if an element exist at a key:
+        elem, isExist := map[key_name]             //if no element found at key_name, isExist will be false and elem will be zero-valued
+
+#--------------------------------------------------------------------------------
+Conditional
+
+#If statement
+    if condition {
+        statements
+    } else if condition {
+        statements
+    } else {
+        statements
+    }
+#If statement with init_statement: if init_statement; condition { statements }
+    variables declared in init_statement are available only inside the if statement
+    the else if and else statement can access variables from the if init_statement
+        but they can't have an the init_statement
+
+#Switch statement
+        doesn't fallthrough (break is inserted automatically at the end of each case)
+        can use init_statement after the switch keyword (just like if statement)
+        can be used without init_statement and expression (used as an if statement)
+    switch init_statement; expression {
+        case value:
+            statements
+        case value:
+            statements
+        default:
+            statements
+	}
+#--------------------------------------------------------------------------------
+Loop
+
+#For loop
+    for i := 0; i < 3; i++ { statements }
+    for init_statement; condition_expression; post_statement { statements }
+        the init_statement and post_statement is optional:
+            for ; condition_expression ; { statements }
+            for condition_expression { statements }          //the ; can be omitted if only the condition_expression exist
+        variables declared in init_statement are available only inside the loop
+#Infinite loop: for { break }   //use break to stop the loop
+#While loop: for condition_expression { statements }
+    
+#--------------------------------------------------------------------------------
+#Function
+        first-class object
+    #definition
+        #basic: func function_name() { function_body }
+        #with parameters: func function_name(parameter_name parameter_type, parameter_name parameter_type) { function_body }
+            When consecutive parameters share a type, you can omit the type from all but the last.
+                func add(x, y int, z string) { function_body }
+        #with return value: func function_name() return_type { return value }
+        #with multiple return value: func function_name() (return_type, return_type) { return value, value }
+        #with named return value:
+                func function_name() (return_name return_type) { return value }
+                func split(sum int) (x, y int) {
+                    x = sum / 2
+                    y = sum - x
+                    return          // this will return x and y
+                }
+            the named return values are treated as variables defined at the top of the function
+                use them for documentation purposes
+        #anonymous function: ???
+            func (){ function_body }
+            func (){ function_body }()  //automatically run the function
+    #higher-order function:
+        func function_name
+            (callback func(parameter_type,parameter_type) return_type)  //take a callback function as argument
+            func(parameter_type,parameter_type) return_type             //return a function as closure
+            { function_body }
+    
+#Method
+        Go doesn't have classes. But, you can define methods on types.
+        A method is a function with a special receiver argument.
+        The receiver argument can be of type parameter_type or a pointer to parameter_type
+            Go will resolve the pointer automatically
+    #definition:
+        func (receiver_argument_name type) method_name(parameter_name parameter_type) return_type { function_body }
+        func (v Vertex) Abs() float64 { statements }
+    #call: variable_name.method_name(argument, argument)
+    #add method for types defined in different package (e.g. built-in types):
+        type MyInt int                      //use type alias
+        func (x MyInt) square() int {       //declare the method on the type alias
+            return int(x*x)                 //do type casting to original type if you want to
+        }   
+        a := MyInt(-2)                      //convert the original type into the type alias
+	    a.square()                          //use the method (convert it back to the original type if necessary)
+#Method with pointer receiver
+        type Vertex struct {X, Y float64}
+        func (v *Vertex) Scale(f float64) { //if you don't use the * and declare the receiver as pointer,
+            v.X = v.X * f                   //the two lines here won't work
+            v.Y = v.Y * f                   //it wont modify the original vertex
+        }                                   //hence calling vertex.Scale(2) won't work
+    There are two reasons to use a pointer receiver:
+        so that the method can modify the value that its receiver points to
+        to avoid copying the value on each method call (which can impact efficiency if the value is a large struct)
+    All methods on a given type should have either value or pointer receivers, but not both
+
+#Defer statement
+        func a() int {
+            a := 1
+            defer fmt.Println(a)    //call defer right before return if possible (else just keep it close to it's arguments definitions)
+            return a
+        }
+        func main() {
+            defer fmt.Println("world")
+            fmt.Println("hello")
+        }
+    A defer statement defers the execution of a function until the surrounding function returns.
+    The deferred call's arguments are evaluated immediately,
+        but the function call is not executed until the surrounding function returns.
+    Deferred function calls are pushed onto a stack.
+        When a function returns, its deferred calls are executed in last-in-first-out order.
+
+#--------------------------------------------------------------------------------
+#Interface
+    interface type is a set of method signatures
+        type interface_name interface {
+            method signature
+            method signature
+        }
+        type Absolutable interface { Abs() float64 }
+    A type implements an interface simply by implementing its methods (no implements keyword necessary)
+#Nil underlying value
+    If the concrete value inside the interface itself is nil, the method will be called with a nil receiver.
+        var i interface_name
+        var t *type_name
+        i = t
+        func (t *T) M() { return t == nil }     //this will return true because the underlying value t is nil
+    An interface value that holds a nil concrete value is itself non-nil.
+#Nil interface
+    A nil interface value holds neither value nor concrete type.
+        var i interface_name
+        i == nil                //true
+    calling a method of a nil interface causes runtime error, unlike calling a method with nil underlying value
+        this is because you can handle the nil underlying value inside the function
+        e.g. by using a guard like: if t == nil {do something}
+#Empty interface
+    is interface type with zero method signature
+    may hold values of any type
+    are used by code that handles values of unknown type
+#Type assertions
+    provides access to an interface value's underlying concrete value
+        var i interface{} = "Hello"
+        s := i.(string)                 //s == "Hello"
+        s, ok := i.(string)             //s == "Hello"; ok == true
+        f, ok := i.(float64)            //f == 0; ok == false
+        f = i.(float64)                 //panic
+#Type switches
+    switch value := interface_name.(type) {
+    case int:
+        value += 1      // here value has type int
+    case string:
+        value += " "    // here value has type string
+    default:
+        // no match; here value has the same type as interface_name
+    }
+
+#fmt.Stringer interface: for types that can describe itself as a string
+    type Stringer interface {
+        String() string
+    }
+    type Person struct { Name string; Age int }
+    func (p Person) String() string {
+        return fmt.Sprintf("%v (%v years)", p.Name, p.Age)
+    }
+
+#Error interface - go programs express error state with error values
+    type error interface {
+        Error() string
+    }
+#Conforming to error interface
+    type MyError struct { When time.Time; What string }
+    func (e *MyError) Error() string {
+        return fmt.Sprintf("at %v, %s", e.When, e.What)
+    }
+    func run() error {
+        return &MyError{time.Now(), "unknown error encountered",}
+    }
+#Guarding against error
+    func main() {
+        if err := run(); err != nil { fmt.Println(err) }
+        
+        i, err := strconv.Atoi("42")
+        if err != nil   { fmt.Printf("couldn't convert number: %v\n", err) }
+        else            { fmt.Println(i) }
+    }
+
+#--------------------------------------------------------------------------------
+#Exporting
+    In Go, a name is exported if it begins with a capital letter.
+
+#Import statement
+    import "fmt"
+    import "math"
+#Factored import statement
+    import (
+        "fmt"
+        "math"
+    )
+
+#--------------------------------------------------------------------------------
+#Concurrency
+
+#Goroutine: a lightweight thread managed by the Go runtime
+    go f(x, y, z)
+        starts a new goroutine running f
+        The evaluation of f, x, y, and z happens in the current goroutine
+        the execution of f happens in the new goroutine
+    Goroutines run in the same address space,
+        so access to shared memory must be synchronized
+
+#Channel
+        a typed conduit through which you can send and receive values with the channel operator <-
+        first-in-first-out (queue)
+        By default, sends and receives block until the other side is ready.
+            This allows goroutines to synchronize without explicit locks or condition variables.
+         Only the sender should close a channel, never the receiver.
+         Sending on a closed channel will cause a panic.
+    #create: channel_name := make(chan type_name)
+    #send value to channel: channel_name <- value
+    #receive value from channel: variable_name := <- channel_name
+    #close channel (from sending value): close(channel_name)
+    #check if channel is closed: variable_name, still_open := <-ch
+        still_open will be false if the channel is closed
+#Example usage of channel and goroutine
+    func function_name(ch chan int){ ch <- 1; ch <- 2; close(ch) }
+    func main() {
+        ch := make(chan int)
+        go function_name(ch)
+        
+        fmt.Println(<-ch)       //print 1
+        fmt.Println(<-ch)       //print 2
+        fmt.Println(<-ch)       //print 0 since channel is closed; will raise fatal error if channel is not closed
+    }
+
+#Buffered Channel: channel that can be filled by value from the same goroutine
+    channel_name := make(chan type_name, buffer_length)
+    ch := make(chan int, 100)
+#Example usage of buffered channel
+    ch := make(chan int, 2)
+	ch <- 1; ch <- 2
+    ch <- 3             //overflowing the buffer causes fatal error
+	fmt.Println(<-ch)
+	fmt.Println(<-ch)
+
+#Iterate over a channel (until it is closed)
+    for value := range channel_name { fmt.Println(value) }
+
+#Select statement
+    lets a goroutine wait on multiple communication operations
+    select blocks until one of its cases can run, then it executes that case
+        It chooses one at random if multiple are ready
+    The default case in a select is run if no other case is ready.
+        Use a default case to try a send or receive without blocking:
+#Example
+    func function_name(first_channel, second_channel chan int){
+        select {
+            case variable_name := <- first_channel: fmt.Printf("first_channel: %v\n", variable_name)
+            case <- second_channel:                 fmt.Println("received signal from second_channel")
+        }
+    }
+    func main(){
+        a := make(chan int); b := make(chan int);
+        go function_name(a,b)
+        a <- 1
+    }
+#Example with default case
+    func main() {
+        boom := time.After(3 * time.Second)
+        for {
+            select {
+            case <-boom:
+                fmt.Println("BOOM!")
+                return
+            default:
+                fmt.Println("tick")
+                time.Sleep(1 * time.Second)
+            }
+        }
+    }
+
+#sync.Mutex
+    channels are great for communication among goroutines
+    What if we just want to make sure
+        only one goroutine can access a variable at a time to avoid conflicts?
+        this concept is called mutual exclusion
+        the conventional name for the data structure that provides it is mutex
+#Example usage
+    type SafeCounter struct { // is safe to use concurrently
+        v int; mux sync.Mutex;
+    }
+    func (c *SafeCounter) Increment() {
+        fmt.Println("Function called")
+        c.mux.Lock();               fmt.Println("Lock so only one goroutine at a time can access c.v");
+        time.Sleep(time.Second);
+        c.v++;                      fmt.Printf("Counter changed to %v\n", c.v);
+        c.mux.Unlock();             fmt.Println("Release lock");
+    }
+    func (c *SafeCounter) Value() int {
+        c.mux.Lock()
+        // Lock so only one goroutine at a time can access the map c.v.
+        defer c.mux.Unlock()
+        return c.v                  //returns the current value of the counter
+    }
+    func main() {
+        c := SafeCounter{v: 0}
+        for i := 0; i < 3; i++ { go c.Increment() }
+        time.Sleep(time.Second * 5)
+        fmt.Println(c.Value())
+    }

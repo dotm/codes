@@ -7,7 +7,7 @@
   git config --global user.email "desde.el.mar96@gmail.com"
   git config --system core.editor vim
   git config --list
-#Create a shortcut for a Git command
+#Create alias
   git config --global alias.<alias-name> <git-command>
   git config --global alias.st status
     usage: git st
@@ -15,7 +15,7 @@
     usage: git unstage filename
   git config --global alias.uncommit 'reset HEAD^'
     usage: git uncommit
-#Open global configuration file in a text editor for manual editing
+#Edit global configuration file manually
   git config --global --edits
 
 #Git help overview
@@ -23,6 +23,19 @@
   git <verb> --help
   git <verb> -h
   man git-<verb>
+
+#-----------------------------------------------------------------------------------
+#The 3 Areas of Git
+  HEAD
+    a pointer that holds your position within all your different commits
+    by default HEAD points to your most recent commit
+  index
+    is the staging area containing proposed next commit snapshot
+    is located in .git/index
+  Working Directory
+    the directory that's currently visible in your file explorer
+    contains changes not yet staged or committed
+    can be treated as a sandbox
 
 #-----------------------------------------------------------------------------------
 git init
@@ -35,8 +48,6 @@ git log
   #of staged files: git diff --staged
   #with UI tool: git difftool
 #See difference from last commit: git diff HEAD
-  HEAD: a pointer that holds your position within all your different commits.
-  By default HEAD points to your most recent commit
 
 #Staging changes
     git add <filename>
@@ -47,13 +58,14 @@ git log
 #Discard changes (from last commit)
   git checkout -- <filename>
 #Discard all changes  (from last commit)
-  git clean -fd  git checkout .
+  git clean -fd
+  git checkout .
+
 #Committing repo:
   git commit
   git commit -m "commit message"
 #Stage and commit:
   git commit -am "commit message"
-#Amend last commit: git commit --amend
 #Undo last commit: git reset HEAD^
 
 #Rename or move file: git mv oldname newname
@@ -186,21 +198,299 @@ this puts your repository in “detached HEAD” state ??? (I don't understand t
 
 
 
-
-
-
-
-
+Advanced git below!!!!!
 
 
 #-----------------------------------------------------------------------------------
-#Selecting commit
-HEAD    select commit at HEAD
-HEAD~   select parent of HEAD
-HEAD^   select parent of HEAD
-HEAD~~  select grandparent of HEAD
-HEAD~2  select grandparent of HEAD
-HEAD^2  select second parent of HEAD (e.g. in a merge commit)
+#Selecting commit without specifying its SHA-1
+  HEAD    select commit at HEAD
+  HEAD~   select parent of HEAD
+  HEAD^   select parent of HEAD
+  HEAD~~  select grandparent of HEAD
+  HEAD~2  select grandparent of HEAD
+  HEAD^2  select second parent of HEAD (e.g. in a merge commit)
+
+#Selecting a range of commit
+  see Commit Ranges on:
+  https://git-scm.com/book/en/v2/Git-Tools-Revision-Selection
+
+#-----------------------------------------------------------------------------------
+#Rewriting History
+  You can freely rewrite your own history
+  But once your commits are pushed and can be accessed by others,
+  you need a coordinated conspiracy to rewrite the public history
+
+#Amend last commit
+  make the changes you forgot (if any), stage those changes
+  run: git commit --amend
+  add new commit message
+
+#Using Interactive Rebase
+    git rebase -i <commit hash or alias>
+  #example output: git rebase -i HEAD~3
+    pick 0000001 oldest commit
+    pick 0000002 second last commit
+    pick 0000003 newest/last commit pointed by the HEAD
+
+    # Rebase 0000000..0000003 onto 0000000
+    # Commands:
+    # List of Interactive Rebase commands
+    # These lines can be re-ordered; they are executed from top to bottom.
+    # If you remove a line here THAT COMMIT WILL BE LOST.
+    # However, if you remove everything, the rebase will be aborted.
+    # Note that empty commits are commented out
+  #what to do:
+    modify one or more of the uncommented lines:
+      edit 0000001 oldest commit
+      pick 0000002 second last commit
+      reword 0000003 newest/last commit pointed by the HEAD
+    save the file and exit the editor (in vim: ZZ)
+    git will run the command from 0000001 to 0000003
+      pick doesn't do anything
+    do the instructions that git prints in stdout when running the command
+#Reorder commit
+  just change the order of the commit line
+    pick 0000002 second last commit
+    pick 0000001 oldest commit
+    pick 0000003 newest/last commit pointed by the HEAD
+#Remove commit
+  just remove the commit line
+    pick 0000001 oldest commit
+    pick 0000003 newest/last commit pointed by the HEAD
+#Squash commit (into previous one)
+  pick 0000001 update README
+  squash 0000002 update README
+#Split commit
+  use the edit command:
+    edit 0000001 update README and index.html
+  when git drops you to the console with 0000001 as HEAD, do these:
+    git reset HEAD^
+    git add README
+    git commit -m 'update README'
+    git add index.html
+    git commit -m 'update index.html'
+    git rebase --continue
+
+#Using git filter-branch
+  - make a testing branch and switch to it
+  - run your filter-branch command
+    - e.g. remove password.txt from every commit: git filter-branch --tree-filter 'rm -f passwords.txt' HEAD
+  - test that you've got what you want (the intended outcome is achieved)
+  - hard-reset your master branch
+
+#-----------------------------------------------------------------------------------
+#Moving through history
+
+#The reset command
+  #Commit Level
+    The reset command overwrites the 3 Areas of Git, stopping when you tell it to:
+      Move the branch HEAD points to
+        stop here if --soft: git reset --soft [commit]
+      Make the index look like HEAD
+        stop here by default: git reset [commit]
+      Make the working directory look like the index
+        only executed if --hard: git reset --hard [commit]
+        can remove changes permanently
+  #File Level: git reset [commit] <paths>
+    make the files on index the same as the files in the [commit]
+    can be viewed as unstaging changes of a file to a previous [commit]
+
+#The checkout command
+  #Commit Level: git checkout <commit>
+    move the HEAD itself to a commit
+    make the index look like HEAD
+    make the working directory look like the index
+      doesn't remove changes permanently
+  #File Level: git checkout <commit> <paths>
+    make the files on index the same as the files in the [commit]
+    make the files on working directory the same as the files in index
+      remove changes permanently
+
+#-----------------------------------------------------------------------------------
+#Advanced Merging
+
+#Aborting a Merge: git merge --abort
+#Ignoring Whitespace
+  git merge -Xignore-all-space <branch>
+  git merge -Xignore-space-change <branch>
+
+#Manual File Re-merging
+  Get the 3 stages of the file
+    stage 1 is the common ancestor
+    stage 2 is your version
+    stage 3 is from the MERGE_HEAD, the version you’re merging in (“theirs”)
+  For example:
+    git show :1:hello.rb > hello.common.rb
+    git show :2:hello.rb > hello.ours.rb
+    git show :3:hello.rb > hello.theirs.rb
+  Fix the hello.theirs.rb
+  Merge the stages
+    git merge-file -p hello.ours.rb hello.common.rb hello.theirs.rb > hello.rb
+  Clean the extra files with: git clean -f
+
+#Using diff3
+    git checkout --conflict=diff3 hello.rb
+  to show not only current change and incoming change
+  but also the original base version
+    <<<<<<< ours
+      puts 'hola world'
+    ||||||| base
+      puts 'hello world'
+    =======
+      puts 'hello mundo'
+    >>>>>>> theirs
+
+#Log commits involved in current merge
+  git log --oneline --left-right HEAD...MERGE_HEAD
+#Log commits that cause merge conflict
+  git log --oneline --left-right --merge
+
+#Combined Diff Format
+  running `git diff` when merge conflict happens will show you the conflicts that are still not resolved
+    ++<<<<<<< ours
+    +  puts 'hola world'
+    ++=======
+    +   puts 'hello mundo'
+    ++>>>>>>> theirs
+  resolving the conflict and running git diff again will show how we resolve the conflict
+    -   puts 'hola world'
+     -  puts 'hello mundo'
+    ++  puts 'hola mundo'
+
+#Undoing Merges
+  #by rewriting history: git reset --hard HEAD~
+  #by reverting changes: git revert -m 1 HEAD
+    The -m 1 flag indicates which parent is the “mainline” and should be kept
+    if you want to redo the merge again (undo the revert),
+      you can't just run `git merge topic` from master
+      you must run: git revert ^M
+        where ^M is commit that revert the merge
+
+#Our or Theirs preference in conflict
+  #using options
+      git merge -Xours <branch>
+      git merge -Xtheirs <branch>
+      git merge-file --ours <paths>
+      git merge-file --theirs <paths>
+    using these merge options you can tell Git to
+      simply choose a specific side and ignore the other side
+      instead of letting you manually resolve the conflict
+  #using strategies
+      git merge -s ours <branch>
+      git merge -s theirs <branch>
+    using these merge strategies, you can do a fake merge
+      e.g. with the ours strategy
+      it will record a new merge commit with both branches as parents,
+      but it will not even look at the branch you’re merging in
+      it'll simply record as the result of the merge the exact code in your current branch.
+
+#Subtree Merging
+  you have two projects
+    one of the projects maps to a subdirectory of the other one
+  when you specify a subtree merge,
+    Git is often smart enough to figure out
+    that one is a subtree of the other and merge appropriately.
+
+#Git rerere (reuse recorded resolution)
+    git config --global rerere.enabled true
+  allows you to ask Git to remember how you’ve resolved a hunk conflict
+    so that the next time it sees the same conflict,
+    Git can resolve it for you automatically.
+  you can also run rerere manually: git rerere
+
+#-----------------------------------------------------------------------------------
+#Debugging with Git
+
+#Using git blame to annotate file
+    git blame filename
+    git blame -L <from-line>,<to-line> filename
+    git blame -L 69,82 filename
+  git blame will show
+    the partial SHA-1 of the commit that last modified that line
+    the author name and the authored date of that commit
+
+#Using bisect to find which commit introduces bug
+  make an automated test for the bug
+  run these commands:
+    git bisect start
+    git bisect bad
+    git bisect good <known-good-commit>
+  or just run the shorthand: git bisect start HEAD <known-good-commit>
+  git bisect bad tells git that the current commit is bad
+  you can even use initial commit as <known-good-commit>
+    because bisect will use the efficient binary search algorithm
+  git will drop you in the middle of current commit and <known-good-commit>
+  test the bug, if the bug persist, run `git bisect bad`, else run `git bisect good`
+  do the previous step until you finish the binary search
+  run: git bisect reset
+#Fully automating git bisect
+  if you have a script that will exit 0 if the project is good or non-0 if the project is bad, you can fully automate git bisect
+  first, you again tell it the scope of the bisect by providing the known bad and good commits.
+    git bisect start HEAD <known-good-commit>
+  then you run the test:
+    git bisect run test-error.sh
+  You can also run something like make or make tests or whatever you have that runs automated tests for you.
+
+#-----------------------------------------------------------------------------------
+#Submodules
+  Submodules allow you to keep a Git repository as a subdirectory of another Git repository.
+  This lets you clone another repository into your project and keep your commits separate.
+
+You can use git alias to make the commands below faster to use
+#Adding Submodules
+  git submodule add https://github.com/chaconinc/DbConnector
+  git commit -am 'added DbConnector module'
+  git push origin master
+#Cloning a Project with Submodules
+  git clone --recurse-submodules https://github.com/chaconinc/MainProject
+#Pulling in Upstream Changes
+  #update all submodules:
+    git submodule update --remote
+  #update one submodule:
+    git submodule update --remote DbConnector
+  #update submodules and keep local changes:
+    git submodule update --remote --merge
+    git submodule update --remote --rebase
+#Pushing Submodule Local Changes
+  git push --recurse-submodules=on-demand
+#Merging Submodule Changes
+  just do merging on the submodule directory (cd DbConnector; do merging as usual)
+  or see Merging Submodule Changes on https://git-scm.com/book/en/v2/Git-Tools-Submodules
+
+#Submodule Foreach
+  There is a foreach submodule command to run some arbitrary command in each submodule:
+    git submodule foreach 'git stash'
+    git submodule foreach 'git checkout -b featureA'
+    git diff; git submodule foreach 'git diff'
+
+#Issues with Submodules
+  If you create a new branch, add a submodule there,
+    and then switch back to a branch without that submodule,
+    you still have the submodule directory as an untracked directory.
+  If you’ve been tracking files in your project
+    and you want to move them out into a submodule,
+    you must be careful or Git will get angry at you.
+
+#-----------------------------------------------------------------------------------
+#Bundling
+  Git is capable of “bundling” its data into a single file
+  you can then transfer it to other via email or cold storage (without remote repeo)
+
+#Create bundle for new repo
+  git bundle create bundle-name.bundle HEAD master
+#Cloning from bundle
+  git clone bundle-name.bundle directory-name
+#Sending new commits through bundle
+  git bundle create commits.bundle master ^9a466c5
+    where 9a466c5 is the merge root
+#Receiving commits from bundle
+  first we verify the bundle is valid with no missing commits:
+    git bundle verify commits.bundle
+  now we can fetch or pull from the bundle:
+    git fetch commits.bundle master:other-master
+  in the above case,
+    we fetch the master branch from the bundle
+    and put it in a branch called other-master in our repo
 
 #-----------------------------------------------------------------------------------
 #Commit message best practice
@@ -247,3 +537,50 @@ doc/*.txt
 
 # ignore all .pdf files in the doc/ directory and any of its subdirectories
 doc/**/*.pdf
+
+#-----------------------------------------------------------------------------------
+!.gitattributes
+Using attributes, you can do things like
+  specify separate merge strategies for individual files or directories in your project,
+  tell Git how to diff non-text files,
+  have Git filter content before you check it into or out of Git
+
+#-----------------------------------------------------------------------------------
+#Git Hooks
+  sample hooks can be found in .git/hooks
+  just remove the ".sample" extension to make them run
+  you can use programming language other than shell script for the hook
+    by specifying the runtime at the top of file
+      e.g. #!/usr/bin/env node
+    and making the file executable
+      chmod u+x <hook>
+  There are two groups of hooks:
+    client-side hooks are triggered by operations such as committing and merging
+    server-side hooks run on network operations such as receiving pushed commits
+  client-side hooks are not copied when you clone a repository
+    if your intent with these scripts is to enforce a policy,
+    you’ll probably want to do that on the server side
+
+#Client-Side Hooks
+  #Committing-Workflow Hooks
+    pre-commit
+    prepare-commit-msg
+    commit-msg
+    post-commit
+  #Email Workflow Hooks
+      are all invoked by the `git am` command
+    applypatch-msg
+    pre-applypatch
+    post-applypatch
+  #Other Client Hooks
+    pre-rebase
+    post-rewrite
+    post-checkout
+    post-merge
+    pre-push
+    pre-auto-gc
+
+#Server-Side Hooks
+  pre-receive
+  update
+  post-receive

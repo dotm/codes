@@ -1,0 +1,142 @@
+//
+//  ViewController.swift
+//  TestARC
+//
+//  Created by Yoshua Elmaryono on 22/02/19.
+//  Copyright © 2019 Yoshua Elmaryono. All rights reserved.
+//
+
+import UIKit
+
+class ViewController: UIViewController {
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        testARC()
+        testWeakReference()
+        testUnownedReference()
+        testCaptureList()
+    }
+}
+
+class ClassName {
+    //deinit is executed right before an object is removed from memory
+    deinit {
+        // this will NOT be executed
+        // if the object is NOT deleted from memory
+        // (if memory leak happens)
+        print("ClassName deinitialized")
+    }
+}
+var reference1: ClassName?
+var reference2: ClassName?
+weak var reference3: ClassName?
+weak var reference4: ClassName?
+weak var reference5: ClassName?
+func testARC(){
+    print("Should deallocate an object if there's still at least one strong reference to it")
+    reference1 = ClassName()
+    reference2 = reference1
+    reference3 = reference1
+    reference4 = reference1
+    reference5 = reference1
+    
+    print("count: ", CFGetRetainCount(reference3))
+    reference1 = nil
+    print("count: ", CFGetRetainCount(reference3))
+    reference2 = nil
+    //there's no longer any strong reference to the object
+    //so the object is deallocated
+    //and trying to run the line below will results in fatal error
+    //print("count: ", CFGetRetainCount(reference3))    //EXC_BAD_INSTRUCTION
+}
+
+
+//----------------------------//
+// Preventing reference cycle //
+//----------------------------//
+
+//------------
+//Using 'weak'
+
+class GameCharacter {
+    var hp: HealthPoint? = HealthPoint()
+    init() {
+        self.hp?.delegate = self
+    }
+    deinit { print("GameCharacter deinitialized") }
+}
+class HealthPoint {
+    weak var delegate: GameCharacter?
+    //we use weak
+    //when the variable (in this case 'delegate') is an optional
+    
+    deinit { print("HealthPoint deinitialized") }
+}
+func testWeakReference(){
+    print()
+    print("Using 'weak' to prevent reference cycle")
+    
+    var mario: GameCharacter? = GameCharacter()
+    
+    mario = nil
+    //without the weak in `weak var delegate: GameCharacter?`,
+    //setting mario variable to nil won't remove the mario object from memory
+}
+
+//---------------
+//Using 'unowned'
+
+class Game {
+    var saveFile: SaveFile?
+    deinit { print("Game deinitialized") }
+}
+class SaveFile {
+    unowned var game: Game
+    //we use unowned
+    //when the variable (in this case 'game') is not an optional
+    
+    init(game: Game){
+        self.game = game
+    }
+    deinit { print("SaveFile deinitialized") }
+}
+func testUnownedReference(){
+    print()
+    print("Using 'unowned' to prevent reference cycle")
+    
+    var mario4D_game: Game? = Game()
+    mario4D_game?.saveFile = SaveFile(game: mario4D_game!)
+    
+    //without the unowned in `unowned var game: Game`,
+    //setting mario4D_game to nil won't remove the mario4D_game object from memory
+    mario4D_game = nil
+}
+
+//---------------
+//Using capture list in closure
+
+class ClassWithClosure {
+    var closure: (()->())?
+    var description = "description: a class with closure"
+    init(){
+        self.closure = {
+            [unowned self] in   //the capture list
+            
+            print(self.description)
+        }
+    }
+    deinit { print("ClassWithClosure deinitialized") }
+}
+func testCaptureList(){
+    print()
+    print("Using capture list to prevent reference cycle")
+    
+    var obj: ClassWithClosure? = ClassWithClosure()
+    obj?.closure?()
+    
+    //without the capture list: `[unowned self]`,
+    //setting obj to nil won't remove the obj object from memory
+    obj = nil
+}
+

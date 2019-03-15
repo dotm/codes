@@ -604,7 +604,7 @@ Loop
   #get list of
     #keys: dict.keys
     #values: dict.values
-  #emptying: dict[:]
+  #emptying: dict = [:]
   #check if dictionary
     #isEmpty: dict.isEmpty
 #--------------------------------------------------------------------------------
@@ -772,7 +772,7 @@ As a general guideline, prefer structures and enumerations because they’re eas
     /* Initializer */
 
     //Initializer have more or less the same syntax and features as function
-    //  except that it's always named init, it doesn't return anything and it is called with ClassName() instead of function_name
+    //  except that it's always named init, it doesn't return anything and it is called with StructureName() instead of function_name
     //default initializer is added automatically by Swift
     //  except if you have defined one or more custom initializer,
     //  so you can use memberwise initializer
@@ -905,7 +905,7 @@ As a general guideline, prefer structures and enumerations because they’re eas
 #Get Structure type property: StructureName.type_property
 #Set Structure type property: StructureName.type_property = value
 #Call instance method: structure.instance_method()
-#Call type method: StructureName.instance_method()
+#Call type method: StructureName.type_method()
 #Get subscript: structure[index, index]
 #Set subscript: structure[index, index] = value
 
@@ -1042,11 +1042,7 @@ As a general guideline, prefer structures and enumerations because they’re eas
 
     //instance method
     func instance_method(){ statements }
-
-    //mutate properties from instance method
-    mutating func instance_method(){ property = value }
-    //assign new instance from instance method
-    mutating func instance_method(){ self = ClassName(arguments) }
+    //instance method on Class are allowed to mutate properties since object is reference type
 
     //type method is owned by the type (e.g. ClassName) and not by the instance
     static func type_method(){
@@ -1133,6 +1129,10 @@ As a general guideline, prefer structures and enumerations because they’re eas
     Provide new initializers and subscripts
     Make an existing type conform to a protocol
     Define and use new nested types
+  Extension can't add
+    regular variable, which is OK because you can hack around it
+      add a fileprivate variable outside of the extension and use computed property to get and set to it
+    observed property, but you won't need it anyway because you have computed property
 
 #Add initializer, subscript, computed property, and method
   //SEE STRUCTURE AND CLASS for detail on initializer, subscript, computed_property, and mutating instance_method
@@ -1227,7 +1227,6 @@ protocol InheritingProtocol: ProtocolName, ProtocolName { definitions }
     If a conforming type provides its own implementation, that implementation will be used instead of the one provided by the extension.
 #example
   extension ProtocolName {
-    var variable_name = value
     func method(){}
   }
 #Adding Constraints to Protocol Extensions
@@ -1343,14 +1342,15 @@ protocol InheritingProtocol: ProtocolName, ProtocolName { definitions }
   func throwing_function (parameter_name: Type) throws -> Return_Type {
     guard condition else { throw error }
 
-    //a defer statement will be execute a set of statements just before code execution leaves the current block of code
+    //statements inside a defer statement will be executed
+    //  just before code execution leaves the current block of code
     //  regardless if the function throws error or exit normally
     defer {
       //do cleanup here
     }
     //multiple defer statements will be executed in reverse order (bottom to top position in source code)
     defer {
-      //this will execute before above defer statements, and after below defer statements
+      //this will execute before defer statements above, and after defer statements below
     }
 
     statements
@@ -1414,9 +1414,6 @@ protocol InheritingProtocol: ProtocolName, ProtocolName { definitions }
   Swift's ARC (Automatic Reference Counting) will not deallocate an object if there's still at least one strong reference to it
   weak and unowned references enable one instance in a reference cycle to refer to the other instance
     without keeping a strong hold on it (preventing the creation of a strong reference cycle)
-#example
-  class Class1 { var ref: Class2? }
-  class Class2 { var ref: Class1? }
 
 #Weak References
   use a weak reference

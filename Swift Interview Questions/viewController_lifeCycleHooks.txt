@@ -11,14 +11,20 @@ viewWillDisappear
 viewDidDisappear
 
 viewDidLoad is called exactly once, when the view controller is first loaded into memory.
-This is where you instantiate any instance variables and build any views that live for the entire lifecycle of this view controller. 
+This is where you instantiate any instance variables
+  and build any views that live for the entire lifecycle of this view controller. 
 The view is usually not yet visible at this point.
 
-viewDidAppear is called when the view is actually visible, and can be called multiple times during the lifecycle of a View Controller
+viewDidAppear is called when the view is actually visible,
+  and can be called multiple times during the lifecycle of a View Controller
 This is where you want to perform any layout actions or do any drawing in the UI.
 Anything you do here should be repeatable.
-It's best not to retain things here, or else you'll get memory leaks if you don't release them when the view disappears.
+It's best not to retain things here
+  you'll get memory leaks if you don't release them when the view disappears.
 
-viewDidLayoutSubviews is called when the view appears and whenever the bounds change for a view controller's view (by screen rotation, splitting screen, etc.).
+viewDidLayoutSubviews is called
+  when the view appears
+  and whenever the bounds change for a view controller's view (by screen rotation, splitting screen, etc.).
 After the view adjusts the positions of its subviews, viewDidLayoutSubviews will be called.
-This method being called does not indicate that the individual layouts of the view's subviews have been adjusted. Each subview is responsible for adjusting its own layout.
+This method being called does not indicate that the individual layouts of the view's subviews have been adjusted.
+  Each subview is responsible for adjusting its own layout.

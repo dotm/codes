@@ -1,4 +1,5 @@
-Although the app delegate is the primary place where you handle life cycle events, it is not the only place. For most events, UIKit also generates notifications that any object can observe (see UIApplication class docs).
+Although the app delegate is the primary place where you handle life cycle events, it is not the only place.
+For most events, UIKit also generates notifications that any object can observe (see UIApplication class docs).
 
 # App States
 Not running

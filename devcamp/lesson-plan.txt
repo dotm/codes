@@ -7,4 +7,6 @@ Introduce resources
         Language Guide
         Language Reference
 
-Introduce swift using summarized Language Guide
+Introduce Swift using summarized Language Guide
+
+Code exercises that align with Wendy's lesson

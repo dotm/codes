@@ -1,0 +1,1472 @@
+// single line comment
+/* multi line comment */
+
+#Constant declaration: let constant_name = value
+  #with type annotation:
+    let constant_name: Type
+    let constant_name, constant_name: Type
+    let constant_name: Type = value
+#Variable declaration: var variable_name = value
+  #with type annotation:
+    var variable_name: Type
+    var variable_name, variable_name: Type
+    var variable_name: Type = value
+#Using closure to declare variable or constant
+    var property: Type = {
+      statements
+      return value
+    }()
+#Computed variable
+    provide a getter and an optional setter to retrieve and set other variable indirectly
+  var computed_variable: Type {
+    get {
+      statements
+      return variable_name
+    }
+    set {
+      variable_name = newValue
+    }
+  }
+  var read_only_computed_variable: Type {
+    statements
+    return variable_name
+  }
+#Variable observer
+    you don't need observed_variable for computed_variable, since you can just add hook in the setter
+  var observed_variable: Type = value {
+    willSet {
+      // you can access the new value using newValue variable
+      // you can access the old (current) value using observed_variable variable
+    }
+    didSet {
+      // you can access the old value using oldValue variable
+      // you can access the new (current) value using observed_variable variable
+    }
+  }
+
+#--------------------------------------------------------------------------------
+#Arithmetic operators: + - * / %
+#Overflow Operators: &+ &- &*
+#Comparison operators: < <= > >= == !=
+#Identity operators: === !==
+  test equality of references between two objects
+#Logical operators: && || !
+#Bitwise operators: ~ & | ^ << >>
+
+#Overloading existing operator
+  struct StructureName {
+    static func operator (left: Type, right: Type) -> Return_Type { statements }    //infix binary operator overloading
+    static prefix func operator (operand: Type) -> Return_Type { statements }       //prefix operator overloading
+    static postfix func operator (operand: Type) -> Return_Type { statements }      //postfix operator overloading
+    static func operator (left: inout Type, right: Type) { statements }             //compound assignment operator overloading
+    static func operator (left: Type, right: Type) -> Bool { statements }           //equivalence operator
+  }
+  struct Vector2D: Equatable {  //Equatable because it define the == operator
+    var x = 0.0, y = 0.0
+
+    static func + (left: Vector2D, right: Vector2D) -> Vector2D {
+      return Vector2D(x: left.x + right.x, y: left.y + right.y)
+    }
+    static prefix func - (vector: Vector2D) -> Vector2D {
+      return Vector2D(x: -vector.x, y: -vector.y)
+    }
+    static func += (left: inout Vector2D, right: Vector2D) {
+      left = left + right
+    }
+    static func == (left: Vector2D, right: Vector2D) -> Bool {
+      return (left.x == right.x) && (left.y == right.y)
+    }
+    //you get the != operator for free if you overload ==
+  }
+#Custom Operators
+  #declaration
+    new operators are declared at a global level using the operator keyword
+      prefix operator +++
+      postfix operator +++
+      infix operator +++
+    you can specify the precedence group of a new custom operator
+      infix operator +++: AdditionPrecedence
+  #definition
+    new custom operator is defined by overloading the newly declared operator
+#example
+  postfix operator **
+  extension Vector2D {
+    static postfix func ** (vector: Vector2D) -> Vector2D {
+      return Vector2D(x: vector.x * vector.x, y: vector.y * vector.y)
+    }
+  }
+
+#--------------------------------------------------------------------------------
+#Data types
+    all of the basic types in Swift are value types, and are implemented as structures behind the scenes
+  #Boolean: Bool
+    true false
+  #Integers: Int8 Int16 Int32 Int64 UInt8 UInt16 UInt32 UInt64
+      in 32-bit platform: Int = Int32
+      in 64-bit platform: Int = Int64
+    #Get bounds of integer: Int64.min Int64.max
+  #Float: Float (32 bit), Double (64 bit)
+    var x = 3.14  // x is Double
+  #Character
+  #String
+  #UnicodeScalarView := [unicodeScalars]
+  #nil
+  #Nonspecific types: Any AnyObject
+#Collection types
+  #Array: Array<Type> [Type]
+  #Set: Set<Type>
+  #Dictionary: Dictionary<Key, Value> [Key: Value]
+#Reference type: object closure
+#Type conversion:
+  TargetType(value)
+  Int8(2.9)       // this will return 2 of type Int8
+#Type alias:
+  typealias Alias = Type
+  typealias CreditCard = UInt64
+#Type checking:
+  var isType: Bool = value is Type
+#Downcasting
+  #with optional as operator:
+    //object is Superclass
+    var x: Subclass? = object as? Subclass
+  #force unwrapping as operator:
+    //object is Superclass
+    var x: Subclass = object as! Subclass
+#As operator
+  #for disambiguation:
+    print(optional_value as Any)
+    var x = 1 as Int?             //the same as -> var x: Int? = 1
+  #for pattern matching:
+    var x: Int = value
+    switch x {
+      case 0 as Int:
+        print("zero as an Int")
+      case let someInt as Int where someInt > 0:
+        print("a positive integer value of \(someInt)")
+      case let someInt as Int:
+        print("an integer value of \(someInt)")
+    }
+
+#--------------------------------------------------------------------------------
+#Access Control
+
+#Access Level Rule
+  No entity can be defined in terms of another entity that has a lower (more restrictive) access level
+
+#Access Levels from lowest (most restrictive) to highest (least restrictive)
+  #Private access
+    restricts the use of an entity
+      to the enclosing declaration,
+      and to extensions of that declaration that are in the same file
+  #File-private access
+    restricts the use of an entity to its own defining source file
+  #Internal access (default access level)
+    enables entities to be used
+      within any source file from their defining module,
+      but not in any source file outside of that module
+    used when defining an app’s or a framework’s internal structure.
+  #Public access
+    enable entities to be used
+      within any source file from their defining module,
+      and also in a source file from another module that imports the defining module
+    used when specifying the public interface to a framework
+  #Open access
+    applies only to classes and class members
+    used when specifying the public interface to a framework
+    class with open access can be subclassed
+      within the module where they’re defined,
+      and any module that imports the module where they’re defined.
+    members (properties, methods) of a class with open access can be overridden by subclasses
+      within the module where they’re defined,
+      and any module that imports the module where they’re defined.
+
+#Access Level Syntax: access_level entity_keyword entity_name
+  private func function_name
+  fileprivate let constant_name
+  internal var variable_name    :=    var variable_name
+  public struct StructureName
+  open class ClassName
+#getter and setter:
+  internal private(set) var variable_name = value   //different access level (getter is internal, setter is private)
+#typealias:
+  access_level typealias Alias = Type
+  public typealias Person = ClassName
+
+#Type Aliases
+  Any type aliases you define are treated as distinct types for the purposes of access control.
+  type alias can have an access level less than or equal to the access level of the type it aliases
+
+#Default Access Level
+  all entities default access level is internal
+  all entities (property, method, subscript, initializer, nested type, etc.) within type have internal as default access level
+    except if the type access level is lower than internal (fileprivate or private)
+      in which case the default access level of its entities is the same as the type's access level
+  default access level for a tuple type is the most restrictive access level of all types used in that tuple
+  default access level for a function type is the most restrictive access level of the function’s parameter types and return type
+  individual cases of an enumeration automatically receive the same access level as the enumeration they belong to
+    any raw values or associated values in an enumeration must have access level at least as high as the enumeration’s access level
+
+#--------------------------------------------------------------------------------
+#Range Operators
+  #Closed Range Operator: a...b
+  #Half-Open Range Operator: a..<b
+  #One-Sided Ranges:
+    a...
+    ...b
+    ..<b
+  #Closed ranged stride method:
+    stride(from: 0, through: 4, by: 2)  // 0, 2, 4
+  #Half open stride method:
+    stride(from: 0, to: 4, by: 2)       // 0, 2
+  #Contain method:
+    let range = ..<5
+    range.contains(7)   // false
+    range.contains(5)   // false
+    range.contains(-1)  // true
+
+#--------------------------------------------------------------------------------
+#String
+  is an array of character
+
+#String output: print(string)
+#Multi-line string:
+  var string = """
+    multi-line string
+    """
+
+#String methods
+  #interpolation: "string \(expression)."
+  #concatenate: string + string
+  #get string length: string.count
+  #check if string
+    #isEmpty: string.isEmpty
+    #starts with substring: string.hasPrefix(substring)
+    #ends with substring: string.hasSuffix(substring)
+
+#Get string index
+  string.startIndex                             // return first character index
+  string.endIndex                               // return position after the last character
+  string.index(before: string.endIndex)         // return last character index
+  string.index(after: string.startIndex)        // return second character index
+  string.index(string.startIndex, offsetBy: 7)  // return eigth character index (startIndex + 7)
+  string.index(string.endIndex, offsetBy: -2)   // return penultimate character index (position after last character - 2)
+
+#Accessing string
+  string[index]
+#Get all indices: string.indices
+  for index in greeting.indices { print(greeting[index]) }
+
+#Insert single character to index: string.insert("a", at: index)
+#Insert string to index: string.insert(contentsOf: string, at: index)
+
+#Get substring using range:
+    startIndex (range operator) endIndex
+    let range = string.index(string.endIndex, offsetBy: -6) ..< string.endIndex
+    let substring = string[range]           // substring is of type Substring and must be turned to String by casting
+  // the String() method return optional and must be followed by nil coalescing or force unwrapping
+    let newString = String(substring) ?? ""
+    let newString = String(substring)!
+
+#Remove single character at index: string.remove(at: index)
+#Remove substring using range: string.removeSubrange(range)
+
+#Unicode Representations of Strings
+  let utf8_representation: String.UTF8View = string.utf8
+  let utf16_representation: String.UTF16View = string.utf16
+  let utf32_representation: UnicodeScalarView = string.unicodeScalars
+
+#--------------------------------------------------------------------------------
+#Optionals
+    optional variable and constant can contain nil
+    force unwrapping a nil value will raise a runtime error
+  #declaration:
+    var optional_variable_name: Type?      // initialized to nil
+    let optional_constant_name: Int? = 1
+  #forced unwrapping: optional_variable_name!
+  #optional binding:
+    #if statement
+      if let constant_name = optional, var variable_name = optional, condition {
+        statements //executed only if all of the optional is not nil
+      } else if let constant_name = function_name() {
+        statements //executed only if function_name return non nil value
+      } else { statements }
+    #while statement
+      while let constant_name = optional, var variable_name = optional, condition {
+        statements
+      }
+
+#Implicitly Unwrapped Optionals
+    can be used just like optional (e.g. used in optional binding)
+    are useful when an optional’s value
+      is confirmed to exist immediately after the optional is first defined
+      and can definitely be assumed to exist at every point thereafter
+    remove the need to check and unwrap the optional’s value every time it’s accessed
+    accessing implicitly unwrapped optional with value nil will trigger a runtime error
+  #declaration: var optional_variable_name: Type! = value
+  #usage: optional_variable_name
+
+#Nil-Coalescing Operator: optional_value ?? default_value
+  the above is the same as:
+    a != nil ? a! : b
+
+#Optional Chaining
+    Optional chaining is a process for querying and calling properties, methods, and subscripts on an optional that might currently be nil.
+      If the optional contains a value, the property, method, or subscript call succeeds.
+      if the optional is nil, the property, method, or subscript call returns nil.
+    Multiple queries can be chained together, and the entire chain fails gracefully if any link in the chain is nil.
+    Every optional values in the chain need to be succeeded by ? (question mark)
+      object.optional_property?.optional_property?[0]
+  #get object property: object.optional_property?.property
+    if object.optional_property?.property != nil { statements }
+    if let variable_name = object.optional_property?.property { variable_name != nil }
+  #set object property: object.optional_property?.property = value
+    var result: Void? = (object.optional_property?.property = value)
+    // result will be () if optional_property is not nil
+  #call method: object.optional_property?.method()
+  #using subscripts: object.optional_property?[index]
+  #chaining method with optional return value: function_name()?.property
+
+#--------------------------------------------------------------------------------
+Conditional
+
+#If statement
+  if condition {
+    statements
+  } else if condition {
+    statements
+  } else {
+    statements
+  }
+#Checking API Availability
+  if #available(iOS 10, macOS 10.12, *) {
+    // Use iOS 10 APIs on iOS, and use macOS 10.12 APIs on macOS
+  } else {
+    // Fall back to earlier iOS and macOS APIs
+  }
+  if #available(platform_name version, platform_name version, *) {
+    statements to execute if the APIs are available
+  } else {
+    fallback statements to execute if the APIs are unavailable
+  }
+
+#Ternary operator statement
+  condition ? expression : expression
+
+#Guard statement
+    use a guard statement to require that a condition must be true in order for the code after the guard statement to be executed
+    the statement inside else must disallow fallthrough by using
+      return statement if the guard statement is inside a function
+      break or continue statement if the guard statement is inside a control flow
+      throw statement
+      a function or method that doesn’t return, such as fatalError(_:file:line:)
+  guard let constant_name = value else { statements }
+
+#Switch statement
+    the cases in switch statement
+      needs to be collectively exhaustive
+      but doesn't need to be mutually exclusive (the first case encountered will be executed)
+  #basic
+    switch value {
+      case condition:
+        // because fallthrough in Swift switch statements must be explicit
+        // no explicit 'break' statement is required (unless the case statement doesn't have a body)
+      case condition, condition:
+        // instead of using fallthrough, you can use a compound case statement that handle multiple cases
+      default:
+        // default statement doesn't need to be provided
+        // if all the case statements above is collectively exhaustive
+    }
+  #with range
+    switch IQ {
+      case 70...130: print("Normal IQ")
+      case 0...70, 130...200 : print("Abnormal IQ")
+      default: print("Off the chart")
+    }
+  #pattern matching with tuples
+    switch point {
+      case (0, 0): print("\(point) is at the origin")
+      case (_, 0), (0, _): print("\(point) is on an axis line")   // compound case statement with pattern matching
+      case (-2...2, -2...2): print("\(point) is inside the box")
+      default: print("\(point) is outside of the box")
+    }
+  #value binding in pattern matching
+    switch point {
+      case (let x, 0): print("on the x-axis with an x value of \(x)")
+      case (0, let y): print("on the y-axis with a y value of \(y)")
+      case let (x, y): print("somewhere else at (\(x), \(y))")
+    }
+  #value binding with additional condition
+    switch point {
+      case let (x, y) where y == (2*x + 1): print("(\(x), \(y)) is on the line y = 2x + 1")
+      case let (x, y): print("(\(x), \(y)) is just some arbitrary point")
+    }
+#Control Transfer Statements for Switch Statements
+  #break out of switch statement: break
+  #explicit fallthrough to next case statement (regardless of the condition): fallthrough
+
+#--------------------------------------------------------------------------------
+Loop
+
+#For in loop using range
+  for i in 1..<10 { print(i) }    // will not include 10
+  for i in 1...10 { print(i) }    // will include 10
+  for _ in 1...10 { statements }  // the index _ will be ignored
+#While loop
+  while condition { statements }
+#Do while loop
+  repeat { statements } while condition
+
+#Iterate over array
+  for value in array { statements }
+  for (index, value) in array.enumerated() { statements }
+#Iterate o)er set
+  for value in set { statements }
+#Iterate over dictionary
+  for (key, value) in dictionary { statements }
+
+#Labeled Statements
+  label_name: while condition { statements }
+
+#Control Transfer Statements for Loop
+  #continue to next iteration: continue
+  #continue with label: continue label_name
+  #break from loop: break
+  #break with label: break label_name
+
+#--------------------------------------------------------------------------------
+#Function
+    first-class object
+    can be overloaded
+  #definition
+    #basic: func function_name(){ statements }
+    #with return value: func function_name() -> Return_Type { return value }
+      Return_Type of function with no return value
+        is Void which can be represented by an empty tuple ()
+    #with multiple return value
+      #using tuple: func function_name() -> (Type, Type, ...) { return (value, value, ...) }
+      #using named tuple: func function_name() -> (name: Type, name: Type, ...) { return (value, value, ...) }
+    #with optional return value
+      func function_name() -> Return_Type? { return value }
+      func function_name() -> (Type, Type, ...)? { return (value, value, ...) }
+    #with parameter: func function_name(parameter_name: Type, parameter_name: Type){ statements }
+    #with argument label:
+        the parameter_name is used inside the function body
+        the argument_label is used when calling the function
+        if you use _ as argument_label, you can omit argument_label when calling the function
+      func function_name(_ parameter_name: Type, argument_label parameter_name: Type){ statements }
+    #with default parameter: func function_name(parameter_name: Type, parameter_name: Type = value){ statements }
+  #call
+    #basic: function_name()
+    #with parameter: function_name(parameter_name: value, parameter_name: value)
+    #with argument_label: function_name(value, argument_label: value)
+    #ignoring return value: let _ = function_name()
+  #variadic function
+    func function_name(xs: Int...) -> () { print(xs) }; function_name(xs: 1,2,3);
+    func function_name(_ xs: Int...) -> () { print(xs) }; function_name(1,2,3);
+  #higher-order function:
+    func function_name(callback: ((Type, Type) -> Type)) -> ((Type) -> Type){ statements }
+  #nested function:
+    func a(){ func b(){statements} }
+  #in-out parameters
+      is a way for a function to have an effect (i.e. changing a variable value) outside of the scope of its body
+    func function_name(parameter_name: inout Type, parameter_name: inout Type){ statements }
+    function_name(&parameter_name, &parameter_name)
+
+#Closure
+    is self-contained blocks of functionality that can be passed around
+    is a reference type
+    can capture and store references to (can close over)
+      any constants and variables from the context in which they are defined
+  #Types of closure
+    Global functions: named closures that do not capture any values.
+    Nested functions: named closures that can capture values from their enclosing function.
+    Closure expressions: unnamed closures that can capture values from their surrounding context.
+  #Closure Expressions
+    #basic (with type annotation):
+      higher_order_function(callback: {(parameter_name: Type, parameter_name: Type) -> Return_Type in statements})
+      names.sorted(by: { (s1: String, s2: String) -> Bool in return s1 > s2 } )
+    #automatic type inference from higher_order_function parameter type:
+      higher_order_function(callback: {parameter_name, parameter_name in statements})
+      names.sorted(by: { s1, s2 in return s1 > s2 } )
+    #implicit returns from single-expression closures:
+      higher_order_function(callback: {parameter_name, parameter_name in expression})
+      names.sorted(by: { s1, s2 in s1 > s2 } )
+    #shorthand argument names
+      higher_order_function(callback: {expression})
+      names.sorted(by: { $0 > $1 } )
+    #using operator methods:
+      higher_order_function(callback: {operator})
+      names.sorted(by: >)
+  #Trailing Closures
+    #pass closure as final argument to higher_order_function:
+      #without trailing closure: higher_order_function(parameter_name: value, callback: closure_expression)
+      #with trailing closure: higher_order_function(parameter_name: value){ closure_expression }
+      #example: higher_order_function(x: 2){x in x * 10}
+    #pass closure as only argument to higher_order_function:
+        the () in "higher_order_function()" can be omitted
+      #without trailing closure: higher_order_function(callback: closure_expression)
+      #with trailing closure: higher_order_function{ closure_expression }
+      #example: higher_order_function{x in x * 10}
+  #Escaping Closures
+      is closure passed as an argument to the function, but is called after the function returns.
+      need to be marked with @escaping
+      refer to 'self' explicitly within the escaping closure when referring to object property (or a compile error will happen)
+    #example
+      var middlewares: [() -> Void] = []
+      func add_middleware(callback: @escaping () -> Void){
+        middlewares.append(callback)
+      }
+      add_middleware { print(1) }
+  #Autoclosures
+      is a closure that is automatically created to wrap an expression passed as an argument to a function
+      lets you omit braces around a function’s parameter by writing a normal expression instead of an explicit closure.
+      lets you delay evaluation, because the code inside isn’t run until you call the closure
+        is useful for code that has side effects or is computationally expensive,
+        because it lets you control when that code is evaluated
+      need to be marked with @autoclosure
+    #example
+      var middlewares: [() -> Void] = []
+      func add_middleware (callback: @autoclosure @escaping () -> Void){
+        middlewares.append(callback)
+      }
+      add_middleware(callback: print(1))
+    #example
+      func print_ifTrue (_ condition: @autoclosure () -> Bool){
+        if condition() { print(1) }
+      }
+      print_ifTrue(1>2)
+    #example
+      var logs: [String] = []
+      let ENV = "development"
+      func manipulate_logs(_ callback: @autoclosure () -> Void){
+        if ENV != "production"{ callback() }
+      }
+      manipulate_logs(logs.append("Hello!"))
+
+#--------------------------------------------------------------------------------
+#Tuples
+  #create:
+    let http404Error = (404, "Not Found")
+  #unpacking:
+    let (statusCode, statusMessage) = http404Error
+    let (statusCode, _) = http404Error
+  #access by index: http404Error.0
+
+#Named tuples
+  #create:
+    let http200Status = (statusCode: 200, description: "OK")
+  #access by name: http404Error.statusCode
+
+#--------------------------------------------------------------------------------
+#Array
+    zero index, homogeneous, variable-length
+    mutable with var declaration, immutable with let (constant) declaration
+    no nil value allowed (removal will be followed by moving elements from the right to fill the value of removed element)
+  #create:
+    var array = [value, value]    // array literal
+    var array = Array<String>()   // creating empty array
+    var array = [String]()        // creating empty array using shorthand form
+    var array = Array(repeating: 0.0, count: 3)   // [0.0, 0.0, 0.0]
+  #length: array.count
+  #sort
+    #ascending: array.sorted()
+    #descending: array.sorted(by:>)
+  #access element by index: array[index]
+  #change element value
+    #at index: array[index] = value
+    #at range: array[range] = [value, value, ...]
+  #insert element at index: array.insert(value, at: index)
+  #remove element at index: array.remove(at: index)
+  #add and get value (get := access, return, then remove that value)
+    #pop (get last): array.removeLast()
+    #push (add to last): array.append(value)
+    #shift (get first): array.remove(at: 0)
+    #unshift (add to first): array.insert(value, at:0)
+  #concatenate: array + array
+  #emptying: array = []
+  #check if array
+    #isEmpty: array.isEmpty
+
+#--------------------------------------------------------------------------------
+#Dictionary
+    homogeneous (keys must be of the same type, value must be of the same type)
+    mutable with var declaration, immutable with let (constant) declaration
+  #create:
+    var dict = [key: value, key: value,]  // dictionary literal
+    var dict = [String: Float]()          // creating empty dictionary
+  #length: dict.count
+  #access value by key: dict[key]         // this will optionally return a value
+  #add key-value pair: dict[key] = value
+  #edit key-value pair:
+    dict[key] = value                                     // value can be nil
+    dict.updateValue = (value, forKey: key)               // this will optionally return the old value
+  #delete key-value pair: dict.removeValue(forKey: key)   // this will optionally return the deleted value
+  #get list of
+    #keys: dict.keys
+    #values: dict.values
+  #emptying: dict = [:]
+  #check if dictionary
+    #isEmpty: dict.isEmpty
+#--------------------------------------------------------------------------------
+#Set
+    homogeneous
+    mutable with var declaration, immutable with let (constant) declaration
+  #create:
+    var set = Set<Type>()               // creating empty set
+    var set: Set = [value, value, ...]  // creating set using array literal
+  #emptying: set = []
+  #length: set.count
+  #sort: set.sorted()
+  #insert element: set.insert(value)
+  #remove element: set.remove(value)
+  #check set membership of element: set.contains(value)
+  #union: set.union(set)
+  #intersection: set.intersection(set)
+  #difference: set.subtracting(set)
+  #symmetric difference: set.symmetricDifference(set)
+
+#--------------------------------------------------------------------------------
+#Enumeration
+    is pass-by-value
+    Each enumeration definition in Swift defines a new type
+    you can use self keyword to refer to current enumeration value
+      e.g. if self == male { statements }
+  #definition:
+    enum Gender {
+      case male
+      case female
+    }
+    enum Gender {
+      case male, female
+    }
+  #usage
+    var gender = Gender.male  // first initialization
+    gender = .female          // changing the value after initialization
+  #pattern matching with switch statement
+    switch gender {
+      case .male: print("male")
+      case .female: print("female")
+      // you must provide a default case if the cases above is not collectively exhaustive
+      default: print("Hmmm")
+    }
+  #make enumeration iterable
+    enum Gender: CaseIterable { case male, female }
+    for gender in Gender.allCases { statements }
+
+#Raw Values
+    enumeration cases can come prepopulated with default values (raw values) which are all of the same type.
+  #create:
+    enum ASCIIControlCharacter: Character {
+      case tab = "\t"
+      case lineFeed = "\n"
+      case carriageReturn = "\r"
+    }
+    enum Gender: String { case male, female }
+  #access raw value of enumeration case: Gender.male.rawValue
+  #initialize enum from raw value:
+    var gender: Gender? = Gender(rawValue: "male")
+    var gender: Gender? = Gender(rawValue: "helicopter") // will return nil
+
+#Implicitly Assigned Raw Values
+  #with string
+    when strings are used for raw values,
+      the implicit value for each case is the text of that case’s name.
+  #example:
+    enum Gender: String { case male, female }
+  #with integer
+    when integers are used for raw values,
+      the implicit value for each case is one more than the previous case.
+      If the first case doesn’t have a value set, its value is 0.
+  #example:
+    enum Planet: Int {
+      case mercury = 1, venus, earth, mars, jupiter, saturn, uranus, neptune
+    }
+
+#Using Enumeration as Tagged Union
+    you can store associated values to enumeration cases to use them as tagged union
+  #create:
+    enum Barcode {
+      case upc(Int, Int, Int, Int)
+      case qrCode(String)
+    }
+  #usage:
+    var productBarcode = Barcode.upc(8, 85909, 51226, 3)
+    productBarcode = .qrCode("ABCDEFGHIJKLMNOP")
+  #pattern matching with switch statement
+    switch productBarcode {
+      case let .upc(numberSystem, manufacturer, product, check):
+        statements
+      case let .qrCode(productCode):
+        statements
+    }
+    switch productBarcode {
+      // you can use a combination of let and var if you use below syntax
+      case .upc(var numberSystem, let manufacturer, var product, let check):
+        statements
+      case .qrCode(let productCode):
+        statements
+    }
+
+#Recursive Enumeration
+    is an enumeration that has another instance of the enumeration
+      as the associated value for one or more of the enumeration cases
+    use indirect keyword to enable indirection
+  #create
+    indirect enum ArithmeticExpression {
+      case number(Int)
+      case addition(ArithmeticExpression, ArithmeticExpression)
+      case multiplication(ArithmeticExpression, ArithmeticExpression)
+    }
+  #usage
+    let five = ArithmeticExpression.number(5)
+    let four = ArithmeticExpression.number(4)
+    let sum = ArithmeticExpression.addition(five, four)
+    let product = ArithmeticExpression.multiplication(sum, ArithmeticExpression.number(2))
+    func evaluate(_ expression: ArithmeticExpression) -> Int {
+      switch expression {
+      case let .number(value): return value
+      case let .addition(left, right):
+        return evaluate(left) + evaluate(right)
+      case let .multiplication(left, right):
+        return evaluate(left) * evaluate(right)
+      }
+    }
+    print(evaluate(product))  // Prints "18"
+
+#Enumeration and Structure
+  Just like structure, enumeration can have:
+    Initializer
+    Instance Property and Instance Method
+    Type Property and Type Method
+    Subscripts
+  enum Gender {
+    case male, female
+    var stored_type_property = value            //SEE STRUCTURE to see how to define instance_property and instance_method in detail
+    static var stored_type_property = value     //SEE STRUCTURE to see how to use type_property and type_method in detail
+    subscript(index: Type) {statements}         //SEE STRUCTURE to see how to use subscripts
+  }
+
+#--------------------------------------------------------------------------------
+Structures and classes in Swift have many things in common. Both can:
+  Define initializers, properties, methods, and subscripts
+  Be extended to expand their functionality beyond a default implementation
+  Conform to protocols to provide standard functionality of a certain kind
+
+Classes have additional capabilities that structures don’t have:
+  Inheritance enables one class to inherit the characteristics of another.
+  Type casting enables you to check and interpret the type of a class instance at runtime.
+  Deinitializers enable an instance of a class to free up any resources it has assigned.
+  Reference counting allows more than one reference to a class instance.
+The additional capabilities that classes support come at the cost of increased complexity.
+As a general guideline, prefer structures and enumerations because they’re easier to reason about,
+  and use classes when they’re appropriate or necessary.
+
+#--------------------------------------------------------------------------------
+#Structure
+  is pass-by-value
+    and so, you can't change structure properties if it is declared as constant
+  you can use self keyword to refer to structure instance
+    but Swift implicitly add self. to variable_name inside struct braces{} if variable_name is not in current scope
+#Creating Structure
+  struct StructureName {
+    /* Initializer */
+
+    //Initializer have more or less the same syntax and features as function
+    //  except that it's always named init, it doesn't return anything and it is called with StructureName() instead of function_name
+    //default initializer is added automatically by Swift
+    //  except if you have defined one or more custom initializer,
+    //  so you can use memberwise initializer
+
+    //custom initializer
+    init(){}                    //you can do nothing if all properties are already set to a default value
+    init(parameter_name: Type, parameter_name: Type){ statements }
+    //just like function, init can use argument_label, throws error, etc.
+
+    //initializer can be overloaded and can delegate to another initializer
+    init(parameters){
+      self.init(arguments)   //delegate to another initializer with different signature
+    }
+
+
+    /* Property */
+
+    //stored properties
+    var property = value
+    let constant_property = value
+    let uninitialized_constant: Type
+    //you must use optional as property type if the property value cannot be set directly or during initialization
+    var optional: Type?
+
+    //using closure to provide default value
+    var property: Type = {
+      statements
+      return value
+    }()
+
+    //lazy stored property: property whose initial value is not initialized until the first time it is used
+    lazy var lazy_property = expensive_calculation()
+
+    //computed properties provide a getter and an optional setter to retrieve and set other properties and values indirectly
+    var computed_property: Type {
+      get {
+        statements
+        return property
+      }
+      set {
+        property = newValue
+      }
+    }
+    var read_only_computed_property: Type {
+      statements
+      return property
+    }
+
+    //observed property
+    var observed_property: Type = value {
+      willSet {
+        // you can access the new value using newValue variable
+        // you can access the old (current) value using observed_property variable
+      }
+      didSet {
+        // you can access the old value using oldValue variable
+        // you can access the new (current) value using observed_property variable
+      }
+    }
+    //you don't need observed_property for computed_property, since you can just add hook in the setter
+
+    //type property is owned by the type (e.g. StructureName) and not by the instance
+    static var stored_type_property = value
+    static var computed_type_property: Type {
+      get {
+        return stored_type_property
+      }
+      set {
+        stored_type_property = newValue
+      }
+    }
+    static var read_only_computed_type_property: Type {
+      return stored_type_property
+    }
+    static var observed_type_property: Type = value {
+      willSet {
+        // you can access the new value using newValue variable
+        // you can access the old (current) value using observed_type_property variable
+      }
+      didSet {
+        // you can access the old value using oldValue variable
+        // you can access the new (current) value using observed_type_property variable
+      }
+    }
+
+
+    /* Method */
+
+    //instance method
+    func instance_method(){ statements }
+
+    //mutate properties from instance method
+    mutating func instance_method(){ property = value }
+    //assign new instance from instance method
+    mutating func instance_method(){ self = StructureName(arguments) } //you can use memberwise initializers here
+
+    //type method is owned by the type (e.g. StructureName) and not by the instance
+    static func type_method(){
+      //self in type_method refers to the type itself, rather than an instance of that type
+      //since self. is added implicitly by Swift,
+      //  you can access type_property and type_method without using explicit self.type_property or self.type_method
+      print(type_property)
+    }
+
+
+    /* Subscripts */
+
+    //subscripts with multiple index
+    subscript(index: Type, index: Type) -> Type {
+      get { statements }
+      set { property = newValue }
+    }
+    //subscripts can be overloaded
+
+    //read only subscripts
+    subscript (index: Type) -> Type {
+      return value
+    }
+  }
+#Instantiating structure: var structure = StructureName(arguments)
+#Instantiating using memberwise initializers: StructureName(property: value, uninitialized_constant: value)
+  All structures have an automatically generated memberwise initializer,
+    which you can use to initialize the member properties of new structure instances.
+  you can't initialize a constant property that is already initialized (e.g. constant_property)
+
+#Get structure instance property: structure.property
+#Set structure instance property: structure.property = value
+#Get structure instance computed_property: structure.computed_property
+#Set structure instance computed_property: structure.computed_property = value
+#Get Structure type property: StructureName.type_property
+#Set Structure type property: StructureName.type_property = value
+#Call instance method: structure.instance_method()
+#Call type method: StructureName.type_method()
+#Get subscript: structure[index, index]
+#Set subscript: structure[index, index] = value
+
+#--------------------------------------------------------------------------------
+#Class
+  object is pass-by-reference
+    and so, you can change object properties even if it is declared as constant
+  you can use self keyword to refer to object instance
+    but Swift implicitly add self. to variable_name inside class braces{} if variable_name is not in current scope
+#Creating class
+  class ClassName {
+    /* Initializer */
+
+    //Initializer have more or less the same syntax and features as function
+    //  except that it's always named init, it doesn't return anything and it is called with ClassName() instead of function_name
+    //default initializer is added automatically by Swift
+    //  except if you have defined one or more custom initializer,
+    //  so you can call ClassName()
+
+    //custom initializer
+    init(){}                    //you can do nothing if all properties are already set to a default value
+    init(parameter_name: Type, parameter_name: Type){ statements }
+    //just like function, init can use argument_label, throws error, etc.
+
+    //you can override the initializer of a superclass with the same signature
+    override init(){}
+
+    //initializer can be overloaded and can delegate to another initializer
+    //a class must have at least on designated initializer
+    //designated initializer must call a designated initializer of its superclass (if it has one)
+    init(parameters){
+      super.init(arguments)   //delegate to another initializer with different signature
+    }
+    //convenience initializer must call a designated initializer of its own class (directly or indirectly)
+    convenience init(parameters) {
+      self.init(arguments)
+    }
+
+    //failable initializer is initializer that can fail
+    init?(){
+      if initialization_failed { return nil } //return nil will triggers an initialization failure
+      statements
+    }
+
+    //required initializers: every subclass of the class must implement this initializer
+    required init(){}
+
+
+    /* Deinitializer */
+    //max one deinit per class
+    //superclass deinit will always be called when subclass is deallocated even if subclass doesn't have any deinit method
+    deinit {
+      statements
+      //you can perform additional cleanup of your own resources here (e.g. closing file, network connection, etc.)
+      //no need to call super.deinit() since it's called automatically
+    }
+
+
+    /* Property */
+
+    //stored properties
+    var property = value
+    let constant_property = value
+    //you must use optional as property type if the property value cannot be set directly or during initialization
+    var optional: Type?
+
+    //using closure to provide default value
+    var property: Type = {
+      statements
+      return value
+    }()
+
+    //lazy stored property: a property whose initial value is not initialized until the first time it is used
+    lazy var lazy_property = expensive_calculation()
+
+    //computed properties provide a getter and an optional setter to retrieve and set other properties and values indirectly
+    var computed_property: Type {
+      get {
+        statements
+        return property
+      }
+      set {
+        property = newValue
+      }
+    }
+    var read_only_computed_property: Type {
+      statements
+      return property
+    }
+
+    //observed property
+    var observed_property: Type = value {
+      willSet {
+        // you can access the new value using newValue variable
+        // you can access the old (current) value using observed_property variable
+      }
+      didSet {
+        // you can access the old value using oldValue variable
+        // you can access the new (current) value using observed_property variable
+      }
+    }
+    //you don't need observed_property for computed_property, since you can just add hook in the setter
+
+    //type property is owned by the type (e.g. ClassName) and not by the instance
+    static var stored_type_property = value
+    static var computed_type_property: Type {
+      get {
+        return stored_type_property
+      }
+      set {
+        stored_type_property = newValue
+      }
+    }
+    static var read_only_computed_type_property: Type {
+      return stored_type_property
+    }
+    static var observed_type_property: Type = value {
+      willSet {
+        // you can access the new value using newValue variable
+        // you can access the old (current) value using observed_type_property variable
+      }
+      didSet {
+        // you can access the old value using oldValue variable
+        // you can access the new (current) value using observed_type_property variable
+      }
+    }
+
+    //using class instead of static keyword makes the property overridable by subclass
+    class var overrideable_type_property = value
+    //you can use the class keyword with computed_type_property, read_only_computed_type_property, and observed_type_property
+
+
+    /* Method */
+
+    //instance method
+    func instance_method(){ statements }
+    //instance method on Class are allowed to mutate properties since object is reference type
+
+    //type method is owned by the type (e.g. ClassName) and not by the instance
+    static func type_method(){
+      //self in type_method refers to the type itself, rather than an instance of that type
+      //since self. is added implicitly by Swift,
+      //  you can access type_property and type_method without using explicit self.type_property or self.type_method
+      print(type_property)
+    }
+    //using class instead of static keyword makes the method overridable by subclass
+    class type_method(){ statements }
+
+
+    /* Subscripts */
+
+    //subscripts with multiple index
+    subscript(index: Type, index: Type) -> Type {
+      get { statements }
+      set { property = newValue }
+    }
+    //subscripts can be overloaded
+
+    //read only subscripts
+    subscript (index: Type) -> Type {
+      return value
+    }
+  }
+#Instantiating class
+  var object = ClassName(arguments)
+#Get object instance property: object.property
+#Set object instance property: object.property = value
+#Get object instance computed_property: object.computed_property
+#Set object instance computed_property: object.computed_property = value
+#Get class type property: ClassName.type_property
+#Set class type property: ClassName.type_property = value
+#Call instance method: object.instance_method()
+#Call type method: ClassName.type_method()
+#Get subscript: structure[index, index]
+#Set subscript: structure[index, index] = value
+
+#Final class (can't be subclassed)
+  final class ClassName { definitions }
+#Inheritance
+  class Subclass: Superclass { definitions }
+#Overriding
+  override property = value
+    //you can use stored_property, computed_property, and observed_property to override a superclass property
+  override func function_name(){}
+  override subscript (index: Type) -> Type {}
+#Access superclass property, method, and subscript
+  super.property
+  super.function_name()
+  super[index]
+#Preventing override
+  final var property = value
+  final let property = value
+  final func function_name(){}
+  final class func function_name(){}
+  final subscript (index: Type) -> Type {}
+
+#--------------------------------------------------------------------------------
+#Nested Types
+  types can be nested
+  types: enum struct class protocol
+#example:
+  struct StructureName {
+    class ClassName {
+      enum Enumeration {
+        statements
+      }
+    }
+  }
+#Referring to Nested Types
+  To use a nested type outside of its definition context, prefix its name with the name of the type it is nested within
+    StructureName.ClassName.Enumeration.case
+  inside the definition context, you don't need to use the prefix
+    e.g. inside the Enumeration, you can access class property by just writing the property name (no need for StructureName.ClassName.property)
+
+#--------------------------------------------------------------------------------
+#Extensions
+  Extensions add new functionality to an existing class, structure, enumeration, or protocol type.
+  you can use extension to extend types even if you don't have access to the original source code
+  Extensions in Swift can:
+    Add computed instance properties, computed type properties, instance methods, and type methods
+    Provide new initializers and subscripts
+    Make an existing type conform to a protocol
+    Define and use new nested types
+  Extension can't add
+    regular variable, which is OK because you can hack around it
+      add a fileprivate variable outside of the extension and use computed property to get and set to it
+    observed property, but you won't need it anyway because you have computed property
+
+#Add initializer, subscript, computed property, and method
+  //SEE STRUCTURE AND CLASS for detail on initializer, subscript, computed_property, and mutating instance_method
+  extension Type {
+    init(arguments){
+      statements
+      self.init(arguments)
+    }
+
+    subscript (index: Type) -> Type { return value }
+
+    var read_only_computed_property: Type { statements }
+
+    func function_name(){}
+    mutating func instance_method(){ property = value }
+  }
+#Define and use new nested types
+  extension Type {
+    enum Enumeration {    //see Nested Types for detail
+      statements
+    }
+  }
+#Make an existing type conform to a protocol
+  extension Type: ProtocolName, ProtocolName {
+    // implementation of protocol requirements
+    // if all requirements are already implemented by default, you can leave this block empty
+  }
+#Conditionally conforming to a protocol
+  extension Type: ProtocolName where condition { definitions }
+  extension Array: TextRepresentable where Element: TextRepresentable { definitions }
+
+#--------------------------------------------------------------------------------
+#Protocol
+  check Extensions to see how to adopt protocol using extension
+  since protocols are type, you can use the 'is' and 'as' operator with protocol
+
+#Adopting protocol
+  enum Enumeration: ProtocolName, ProtocolName { definitions }
+  struct StructureName: ProtocolName, ProtocolName { definitions }
+  class Subclass: Superclass, ProtocolName, ProtocolName { definitions }
+#Creating protocol
+  protocol ProtocolName {
+    var must_be_settable: Type { get set }          //property requirements must always be prefixed with var
+    var does_not_need_to_be_settable: Type { get }  //but can be settable
+
+    func method()                   //method requirements with Void as return type
+    func method() -> Return_Type
+    mutating func method()          //mutating method requirements
+
+    //type property and type method requirements must be prefixed with static (but can be implemented with class keyword in class type)
+    static var type_property: Type { get set }
+    static func method() -> Return_Type
+
+    init(parameter_name: Type, parameter_name: Type)    //initializer requirements
+    init?(parameter_name: Type, parameter_name: Type)   //failable initializer requirements
+    //to conform to initializer requirements, you need to use 'required' keyword in the type implementation to make it required initializer
+    //  class Superclass: ProtocolName { required init(parameters){statements} }
+    //  class Subclass: ProtocolName { required override init(parameters){statements} }
+  }
+
+#Protocol Inheritance
+protocol InheritingProtocol: ProtocolName, ProtocolName { definitions }
+
+#Class-Only Protocols:
+    protocol ProtocolName: AnyObject { definitions }
+  You can limit protocol adoption to class types (and not structures or enumerations)
+    by adding the AnyObject protocol to a protocol’s inheritance list.
+
+#Delegation with protocol
+  Delegation is a design pattern
+    that enables a class or structure to hand off (or delegate)
+    some of its responsibilities to an instance of another type
+  To prevent strong reference cycles, delegates are declared as weak references.
+    To be able to declare delegate as weak reference, ProtocolNameDelegate must be a class only protocol (inherits from AnyObject)
+#example
+  protocol ProtocolName { definitions }
+  protocol ProtocolNameDelegate: AnyObject { definitions }
+  struct StructureName {
+    weak var delegate: ProtocolNameDelegate?
+  }
+
+#Protocol Composition
+  is used to require a type to conform to multiple protocols at the same time
+  a protocol composition can also contain one class type, which you can use to specify a required superclass
+#example
+  func function_name(parameter_name: ProtocolName & ProtocolName){ statements }
+  func function_name(parameter_name: Superclass & ProtocolName){ statements }
+
+#Protocol Extensions
+  Protocols can be extended to provide method, initializer, subscript, and computed property implementations to conforming types.
+  This allows you to define default behavior on protocols themselves, rather than in each type’s individual conformance or in a global function.
+    If a conforming type provides its own implementation, that implementation will be used instead of the one provided by the extension.
+#example
+  extension ProtocolName {
+    func method(){}
+  }
+#Adding Constraints to Protocol Extensions
+  If a conforming type satisfies the requirements for multiple constrained extensions,
+    Swift uses the implementation corresponding to the most specialized constraints.
+#example
+  extension ProtocolName where condition { definitions }
+  extension ProtocolName where Element: Equatable { definitions }
+
+#Optional protocol requirements
+  optional requirements don’t have to be implemented by types that conform to the protocol
+  optional requirements are prefixed by the optional modifier
+  optional requirements are available so that you can write code that interoperates with Objective-C
+  When you use a method or property in an optional requirement, its type automatically becomes an optional.
+    e.g. a method of type (Int) -> String becomes ((Int) -> String)?
+#example
+  @objc protocol ProtocolName {
+    @objc optional func function_name() -> Void
+    @objc optional var variable_name: Type { get set }
+  }
+#usage
+  //object is of type ProtocolName
+  object.function_name?(arguments)
+  object.variable_name?
+
+#--------------------------------------------------------------------------------
+#Generics
+
+#Generic Functions
+  func function_name <TypeParameter, TypeParameter>(parameter_name: TypeParameter, parameter_name: TypeParameter) -> TypeParameter { statements }
+  func swap<T>(_ a: inout T, _ b: inout T) { let tmp = a; a = b; b = tmp }
+
+#Generic Types
+    is custom classes, structures, and enumerations that can work with any type (e.g. Array, Set, Dictionary)
+  struct StructureName<TypeParameter, TypeParameter> { definitions }
+  var structure = StructureName<Type, Type>()
+#example
+  struct Stack<Element> {
+    var items = [Element]()
+    mutating func push(_ item: Element) { items.append(item) }
+    mutating func pop() -> Element { return items.removeLast() }
+  }
+  var stack = Stack<Int>()
+
+#Extending a Generic Type
+  When you extend a generic type,
+    the type parameter list from the original type definition is available within the body of the extension
+    the original type parameter names are used to refer to the type parameters from the original definition
+#example
+  extension Stack {
+    var topItem: Element? { return items.isEmpty ? nil : items[items.count - 1] }
+  }
+
+#Type Constraints
+    specify that a type parameter must inherit from a specific class, or conform to a particular protocol or protocol composition
+  func function_name <TypeParameter: ClassName, TypeParameter: ProtocolName, TypeParameter: ProtocolName & ProtocolName>(){}
+
+#Protocol Associated Types
+    gives a placeholder name to a generic type that is used as part of the protocol requirements
+    you can add type constraints to an associated type in a protocol to require that conforming types satisfy those constraints
+      see Type Constraints for detail
+  protocol ProtocolName {
+    associatedtype TypeName: Constraints
+  }
+#example
+  protocol Container {
+    associatedtype Item
+    mutating func append(_ item: Item)
+    var count: Int { get }
+    subscript(i: Int) -> Item { get }
+  }
+  struct Stack<Element>: Container {
+    // original Stack<Element> implementation
+    var items = [Element]()
+    mutating func push(_ item: Element) { items.append(item) }
+    mutating func pop() -> Element { return items.removeLast() }
+
+    // conformance to the Container protocol
+    mutating func append(_ item: Element) { self.push(item) }
+    var count: Int { return items.count }
+    subscript(i: Int) -> Element { return items[i] }
+  }
+#using a protocol in its associated type’s constraints
+  protocol SuffixableContainer: Container {
+    associatedtype Suffix: SuffixableContainer  //a protocol can be a part of its own requirements
+      where Suffix.Item == Item                 //Suffix Item should be the same type as Container Item
+    func suffix(_ size: Int) -> Suffix
+  }
+
+#Generic Subscripts
+  class {
+    subscript<TypeParameters>(parameters) -> Return_Type where condition { statements }
+  }
+
+#Generic Where Clauses
+  enables you to require that an associated type must conform to a certain protocol,
+    or that certain type parameters and associated types must be the same
+#Condition
+  TypeParameter: ProtocolName           //conform to a protocol
+  where TypeParameter == TypeParameter  //equality of type parameter
+  where TypeParameter == Type           //equality to a builtin type
+  T1 == Int, T1: ProtocolName           //multiple condition
+#example
+  func function_name<TypeParameters>() -> Return_Type where condition { statements }
+  extension Type where condition { definitions }
+  protocol { associatedtype TypeName where Condition }
+
+#--------------------------------------------------------------------------------
+#Error Handling
+
+#Throwing Function
+    is function that may or may not throw error
+  func throwing_function (parameter_name: Type) throws -> Return_Type {
+    guard condition else { throw error }
+
+    //statements inside a defer statement will be executed
+    //  just before code execution leaves the current block of code
+    //  regardless if the function throws error or exit normally
+    defer {
+      //do cleanup here
+    }
+    //multiple defer statements will be executed in reverse order (bottom to top position in source code)
+    defer {
+      //this will execute before defer statements above, and after defer statements below
+    }
+
+    statements
+  }
+#Calling throwing function
+  try throwing_function(arguments)  // if this raise error, it will propagate the error
+
+#Converting Errors to Optional Values
+  let constant_name: Return_Type? = try? throwing_function()
+#Disabling Error Propagation
+    use this if you know a throwing function won’t throw an error at runtime
+  let constant: Return_Type = try! throwing_function()
+#Handling error using do-catch statement
+  do {
+    try expression
+    statements
+  } catch MyError.error {
+    statements
+  } catch MyError.error(let argument, let argument) {   // error with arguments
+    print(argument)
+  } catch MyError.error(let argument) where condition { //example condition: argument == value
+    statements
+  } catch is MyError {
+    print("error related to MyError")
+  } catch {
+    //if a catch clause doesn’t have a pattern, the clause matches any error
+    //  and binds the error to a local constant named error.
+    print(error)
+  }
+
+#User-defined error and throwing error
+  enum MyError: Error {
+    case error(String)
+  }
+  throw MyError.error("error message")
+
+  extension String: Error {}
+  throw "error message"
+
+#--------------------------------------------------------------------------------
+#Assertion
+    is checked only in debug builds
+  #create:
+    assert(condition)
+    assert(condition, "error message")
+  #raising assertion failure manually
+    assertionFailure("error message")
+
+#Precondition
+    is checked in both debug and production builds
+      except if you compile in unchecked mode
+    use fatalError to check precondition even if compiled in unchecked mode
+  #create:
+    precondition(condition)
+    precondition(condition, "error message")
+  #raising precondition failure manually
+    preconditionFailure("error message")
+
+#--------------------------------------------------------------------------------
+#Resolving Strong Reference Cycles Between Class Instances
+  Swift's ARC (Automatic Reference Counting) will not deallocate an object if there's still at least one strong reference to it
+  weak and unowned references enable one instance in a reference cycle to refer to the other instance
+    without keeping a strong hold on it (preventing the creation of a strong reference cycle)
+
+#Weak References
+  use a weak reference
+    when the other instance has a shorter lifetime
+    and where the two properties causing the strong reference cycle can be nil
+  Swift automatically sets a weak reference to nil when the instance that it refers to is deallocated
+  because weak references need to allow their value to be changed to nil at runtime, they are always declared as an optional variable
+#example
+  class Person { var apartment: Apartment? }
+  class Apartment { weak var tenant: Person? }
+
+#Unowned References
+  an unowned reference is expected to always have a value
+    so unowned references are defined using nonoptional types
+  use an unowned reference
+    when the other instance has the same lifetime or a longer lifetime
+      e.g. if one object is an aggregation to another
+    and where one of the property that is causing the strong reference cycle can be nil while another property cannot be nil
+#example
+  class Customer { var card: CreditCard? }
+  class CreditCard { unowned let customer: Customer }
+  //CreditCard object never live longer than Customer object (since every CreditCard need to be owned by a Customer)
+
+#Unowned References and Implicitly Unwrapped Optional Properties
+  when the two properties causing the strong reference cycle cannot be nil
+    combine an unowned property on one class
+    with an implicitly unwrapped optional property on the other class
+  this way, you can avoid creating strong reference cycle and use the optional property in the regular way (since it is implicitly unwrapped)
+#example
+  class Country { var capitalCity: City! }
+  class City { unowned let country: Country }
+
+#Resolving Strong Reference Cycles for Closures
+  closures like classes are reference types
+  you can use weak or unowned reference inside capture list to resolve reference cycles
+    see cases above to know when to use weak reference and when to use unowned reference
+#example
+  class ClassName {
+    lazy var closure: () -> () = { let instance = self; let result = self.method() }
+    //Swift demands you to use self inside closure so you don't forget that it can create reference cycle
+    //lazy properties can access self because they’re created after initialization
+    //self create strong reference to object instance
+    //closure variable create strong reference to closure
+  }
+
+#Defining a capture list inside closure body
+  {[unowned reference, weak reference, weak variable_name = reference](parameters) -> Return_Type in statements}
+  {[unowned reference, weak reference, weak variable_name = reference] in expression}
+#example inside class
+  class ClassName {
+    var delegate: Delegate? = Delegate()
+    lazy var closure: () -> () = {
+      [unowned self, weak delegate = self.delegate!](parameters) -> Return_Type in statements
+    }
+  }
+

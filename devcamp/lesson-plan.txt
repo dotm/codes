@@ -1,0 +1,10 @@
+Introduce resources
+    https://developer.apple.com/
+        https://developer.apple.com/design/human-interface-guidelines/
+        https://developer.apple.com/documentation/
+    https://swift.org/documentation/
+        A Swift Tour
+        Language Guide
+        Language Reference
+
+Introduce swift using summarized Language Guide

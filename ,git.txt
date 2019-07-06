@@ -24,6 +24,38 @@
   git <verb> -h
   man git-<verb>
 
+#Useful aliases
+git config --global alias.st status
+git config --global alias.co checkout
+git config --global alias.cm commit
+
+#-----------------------------------------------------------------------------------
+#Setup SSH
+
+#Checking for existing SSH keys
+  ls -al ~/.ssh
+
+#Create SSH key
+  ssh-keygen -t rsa -b 4096 -C "desde.el.mar96@gmail.com"
+#Adding your SSH key to the ssh-agent
+1. eval "$(ssh-agent -s)"
+2. vim ~/.ssh/config
+3. write to file:
+```
+Host *
+  AddKeysToAgent yes
+  UseKeychain yes
+  IdentityFile ~/.ssh/id_rsa
+```
+4. ssh-add -K ~/.ssh/id_rsa
+5. Add SSH to GitHub
+
+#Change https to SSH in local repo
+open .git/config
+in [remote "origin"] change:
+	url = https://github.com/dotm/codes.git
+  url = git@github.com:dotm/codes.git
+
 #-----------------------------------------------------------------------------------
 #The 3 Areas of Git
   HEAD

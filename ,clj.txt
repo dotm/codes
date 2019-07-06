@@ -1,0 +1,203 @@
+Clojure has only expressions that return a value
+    it doesn't have statements that doesn't return value
+
+; single line comment
+
+#Printing
+        println     // Human-Readable with newline
+        print       // Human-Readable without newline
+        prn         // Machine-Readable with newline
+        pr          // Machine-Readable without newline
+    printing functions return nil and have a side effect of printing
+#Usage
+    (println "What is this:" (+ 1 2))
+#Difference
+    human-readable forms translate special print characters (like newlines and tabs)
+        to their expected form and print strings without quotes
+    machine-readable forms translate to a valid form that the Reader could read
+
+#--------------------------------------------------------------------------------
+#Data types
+    #Integer
+        integers are 64-bit when in range and arbitrary precision otherwise.
+        a trailing N can be used to force arbitrary precision
+        prefix 0 for octal
+        prefix 0x for hexadecimal
+        for Integer arbitrary radix: prefix with base then r
+    #Ratios
+        are provided as their own type combining a numerator and denominator
+    #Floating point
+        floats are read as double-precision 64-bit or arbitrary precision with an M suffix
+        Exponential notation is supported
+    #Special numeric values: Inf -Inf ##NaN
+    #Boolean: true false
+    #nil
+#String literal
+    "single line string"
+    "multi
+    line
+    string"
+#Regex literal (compiled to java.util.regex.Pattern objects)
+    #"[0-9]+"
+#Character literal
+    /e
+    Unicode characters can be represented with \uNNNN or in octal with \oNNN
+
+#Symbols
+    are composed of letters, numbers, and other punctuation
+        e.g. map +
+    are used to refer to something else (function, value, namespace, etc)
+    may optionally have a namespace, separated with a forward slash from the name.
+        e.g. clojure.core/+
+#Keywords
+        :alpha              // keyword
+        :release/alpha      // keyword with namespace
+    Symbols that start with a leading colon are called keywords
+    keywords evaluate to themselves
+    keywords are frequently used as enumerated values or attribute names
+
+#--------------------------------------------------------------------------------
+#REPL
+
+#Get last n result
+    *1 (the last result)
+    *2 (the result two expressions ago)
+    *3 (the result three expressions ago)
+#Example
+    user=> (+ 1 1)      // 2
+    user=> (+ 6 *1)     // 8
+    user=> (+ *1 *2)    // 10
+
+#The clojure.repl namespace
+    provides a number of helpful functions
+#Load the library
+    (require '[clojure.repl :refer :all])
+#Available functions
+    #apropos
+        find functions that match a particular string or regular expression
+        (apropos "+")
+    #demunge
+    #dir
+        list functions in a particular namespace
+        (dir clojure.repl)
+    #dir-fn
+    #doc
+        prints documentation for a var or special form
+        (doc doc)
+    #find-doc
+        find functions which docstring contain a particular string or regular expression
+        (find-doc "trim")
+    #pst
+    #root-cause
+    #set-break-handler!
+    #source
+        inspect source code of a function
+        (source dir)
+    #source-fn
+    #stack-element-str
+    #thread-stopper
+
+#--------------------------------------------------------------------------------
+#Defining var using def
+    user=> (def x 7)
+    #'user/x
+#def
+    associates a symbol in the current namespace with a value
+    this linkage is called a var
+    vars should refer to either a constant value or a function
+#The literal representation of var
+        #'user/x
+    #' followed by the namespaced symbol
+    user is the default namespace
+    this is the return value of def
+
+#--------------------------------------------------------------------------------
+#Defining function using defn
+    (defn function-name [arg1, arg2] (print arg1 arg2))
+    (function-name "test" 1)
+
+#Multi-arity functions
+    functions can be defined to take different numbers of arguments (different "arity")
+    different arities must all be defined in the same defn
+        using defn more than once will replace the previous function
+    each arity is a list ([args*] body*)
+    one arity can invoke another
+#Example
+    (defn greet-user
+        ([] (greet-user "Guest"))
+        ([username] (println "Hello," username "!"))
+    )
+    (greet-user)
+
+#Variadic functions
+    functions can have variable number of arguments
+    the variable arguments must occur at the end of the argument list
+    they will be collected in a sequence for use by the function
+#Example
+    (defn add-and-print [string & nums]
+        (println string)
+        (println nums)
+        (println (reduce + nums))
+    )
+    (add-and-print "test" 1 2 3)
+
+#fn
+    The fn special form creates a "closure"
+        It "closes over" the surrounding lexical scope
+#Creating anonymous function with fn
+    (fn [message] (println message) )
+#Immediately invoked anonymous function
+    ((fn [message] (println message) ) "Hello")
+#The #() horthand
+    This syntax omits the parameter list and names parameters based on their position
+        % is used for a single argument
+            #(+ 6 %)
+        %1, %2, %3, etc are used for multiple arguments
+            #(+ %1 %2)
+        %& is used for any remaining (variadic) arguments
+            #(println %1 %2 %&)
+
+#--------------------------------------------------------------------------------
+#The apply function
+        (apply f '(1 2 3 4))    ;; same as  (f 1 2 3 4)
+        (apply f 1 '(2 3 4))    ;; same as  (f 1 2 3 4)
+        (apply f 1 2 '(3 4))    ;; same as  (f 1 2 3 4)
+        (apply f 1 2 3 '(4))    ;; same as  (f 1 2 3 4)
+    The apply function invokes a function with 0 or more fixed arguments,
+        and draws the rest of the needed arguments from a final sequence.
+
+#--------------------------------------------------------------------------------
+#Locals and Closures
+
+#let
+    creates a lexical scope and binds symbols to values inside the scope
+    can have multiple expressions, but will evaluate to the last expression
+#Example
+    (let [
+        name value
+        name value
+    ] (
+        expression
+    ) (
+        expression
+    ))
+
+#--------------------------------------------------------------------------------
+#Java Interop
+
+#Invoking Java code (Java -> Clojure)
+    #Instantiation
+        new ClassName("arg")    ->  (ClassName. "arg")
+    #Instance method
+        obj.method()            ->  (.method obj)
+    #Instance field
+        obj.field               ->  (.-field object)
+    #Static method
+        ClassName.method(arg)   ->  (ClassName/method arg)
+    #Static field
+        ClassName.field         ->  ClassName/field
+
+#Java methods are not Clojure functions
+    can’t store them or pass them as arguments
+    can wrap them in functions when necessary
+        (fn [obj] (.length obj))    ;; make a function to invoke .length on arg

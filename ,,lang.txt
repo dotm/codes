@@ -76,6 +76,7 @@ Operators
     Deep equality: equality of values
   Bitwise operators: and or not xor left-shift right-shift
   Basic mathematics operations
+    exponent (if not in Arithmetic operators)
     random number generator
     max
     min
@@ -184,7 +185,7 @@ is pass-by-reference (available functionalities: copy, identity operator/referen
   access element by index
   access element by value
   change element value at index
-  insert (assign), edit (reassign) element by index
+    insert (assign), edit (reassign) element by index
   add and get value (get := access, return, then remove that value)
     pop (get last)
     push (add to last)

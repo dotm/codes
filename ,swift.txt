@@ -173,10 +173,10 @@
   #Open access
     applies only to classes and class members
     used when specifying the public interface to a framework
-    can be subclassed
+    class with open access can be subclassed
       within the module where they’re defined,
       and any module that imports the module where they’re defined.
-    can be overridden by subclasses
+    members (properties, methods) of a class with open access can be overridden by subclasses
       within the module where they’re defined,
       and any module that imports the module where they’re defined.
 

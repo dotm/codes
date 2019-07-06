@@ -1,0 +1,257 @@
+#Terminal I/O
+    #include <iostream>
+    int main(){
+        int x;
+        std::cin >> x;      //get user input from stdin
+        std::cout << x;     //print to stdout
+        return 0;
+    }
+
+#Using namespace
+    using namespace std;        //make names from std visible without std::
+    cout << "Hello, World!\n";
+
+#Entities of C++:
+        values
+        objects
+        references
+        structured bindings (since C++17)
+        functions
+        enumerators
+        types
+        class members
+        templates
+        template specializations
+        namespaces
+        parameter packs
+    Preprocessor macros are not C++ entities
+    Entity is tied to name by declaration
+
+#--------------------------------------------------------------------------------
+// single line comment
+/* multi line comment */
+
+#Variable assignment:
+    type_name variable_name {value}
+    type_name variable_name {value,value}
+    type_name variable_name = value
+    type_name variable_name = {value,value}
+prefer to not use = because it convert type implicitly even if you lose some information
+
+User-defined types can be defined to be implicitly initialized
+
+#Implicit type checking using auto type_name
+    auto b = true;     // a bool
+    auto ch = 'x';     // a char
+    auto i = 123;      // an int
+    auto d = 1.2;      // a double
+    auto z = sqrt(y);   // z has the type of whatever sqrt(y) returns
+With auto, we use the = because there is no potentially troublesome type conversion involved.
+
+#Constant
+        const type_name constant_name = value
+    is evaluated at run time
+#Constant expression
+        constexpr double max1 = 1.4*square(constant_name);
+    means to be evaluated at compile time
+    For a function to be usable in a constant expression
+        (in an expression that will be evaluated by the compiler),
+        it must be defined constexpr:
+            constexpr double square(double x) { return x*x; }
+
+#--------------------------------------------------------------------------------
+#Operators
+    #Arithmetic operators: + - * / %
+        #Compound assignment operators: += -= *= /= %= &= and_eq |= or_eq ^= xor_eq <<= >>=
+        #Increment and decrement operators: ++ --
+    #Boolean/Logical operators: and or not && || !
+        #short circuit operator
+    #Comparison operators: < <= > >= == !=
+        #Shallow equality: equality of references
+        #Deep equality: equality of values
+    #Bitwise operators:
+        #and: & bitand
+        #or: | bitor
+        #not: ~ compl
+        #xor: ^ xor
+        #left-shift: <<
+        #right-shift: >>
+
+#Bitwise vs Logical operators
+    bitwise operator yield a result of their operand type for which the operation has been performed on each bit
+    logical operators simply return true or false
+
+#Declarator operators
+    T a[n];   // T[n]: array of n Ts
+    T* p;    // T*: pointer to T
+    T& r;    // T&: reference to T
+    T f(A);   // T(A): function taking an argument of type A returning a result of type T
+#--------------------------------------------------------------------------------
+#Data types
+    #bool: true false
+    #Number: char int float double
+    #String
+    #Wide character: wchar_t
+    #void
+    #Null pointer: nullptr
+#Numbers modifiers: signed unsigned short long
+    unsigned short int
+
+#sizeof
+    sizeof(value)
+    sizeof(type_name)
+    sizeof(char) == 1    //1 byte (8 bit)
+
+#Type alias
+    typedef type_name alias;
+
+#Type casting
+    type_name(value)
+    int(2.8)            //2
+
+#Function type
+    The type of a function consists of the return type and the argument types.
+        return_type function_name(parameter_type, parameter_type)
+    For class member functions the name of the class is also part of the function type.
+        double get(const vector<double>& vec, int index);
+        // type: double(const vector<double>&, int)
+
+#--------------------------------------------------------------------------------
+#Function
+        can be overloaded (same name with different argument types)
+#Declaration
+        return_type function_name(parameter_type, parameter_type)
+        return_type function_name(parameter_type parameter_name, parameter_type parameter_name)
+#Definition
+        return_type function_name(parameter_type parameter_name, parameter_type parameter_name){function_body;}
+#Reference argument
+    this won't copy the value of the parameter (it just pass the reference):
+        return_type function_name(parameter_type& parameter_name)
+    if you also want to make the parameter immutable:
+        return_type function_name(const parameter_type& parameter_name)
+
+#--------------------------------------------------------------------------------
+#Conditional
+
+#If statement
+    if(condition){
+        statements;
+    }else if(condition){
+        statements;
+    }else{
+        statements;
+    }
+
+#Ternary operator statement
+    condition ? expression : expression
+
+#Switch statement
+    switch (expression) {
+        case constant_expression:
+            statements;
+            break;          //use break to not fall through to the next case
+        case constant_expression:
+            return value;   //you don't need to break since you return
+        default:
+            statements;     //default is optional
+    }
+
+#--------------------------------------------------------------------------------
+#Loop
+
+#For loop
+    for (int i=0; i<10; i++) { printf("%d\n",i); }
+#While loop
+    while (condition) { statements }
+#Do while loop
+    do { statements } while (condition);
+
+#Iterate over sequence with range-for statement
+    for (auto element : sequence) { cout << element << '\n'; }
+#Modifying element of sequence using &
+    for (auto& element : sequence) { mutate(element); }
+
+#Control Transfer Statements for Loop
+    #continue to next iteration: continue
+    #break from loop: break
+#Using label and goto
+    label_name:
+    statements
+    goto label_name;
+
+#--------------------------------------------------------------------------------
+#Array
+    #declaration:
+        element_type array_name[array_length]
+        char alphabet[26]
+    #initialization
+        #basic:
+            element_type array_name[array_length] {element, element}
+            element_type array_name[array_length] = {element, element}
+        #inferred length:
+            element_type array_name[] {element, element}
+            element_type array_name[] = {element, element}
+    #access element by index: array_name[index]
+    #change element value at index: array_name[index] = value
+
+#Pointer to an array
+    element_type *pointer_name;
+    pointer_name = array_name       //pointer_name will point to the first element of array_name
+
+#--------------------------------------------------------------------------------
+#Pointer
+    #declaration:
+        pointee_type* pointer_name
+        char* p
+    #address of (referencing) operator &
+        variable_type* pointer_name = variable_name;
+        char* pointer_to_a = &alphabet[0]
+    #contents of (dereferencing) operator *
+        char a = *pointer_to_a
+    #as condition
+        if (pointer_name) cout << "pointer is NOT nullptr";
+        while (pointer_name)
+            //the same as while(pointer_name != nullptr)
+
+#Declaring references
+        type_name& reference_name;
+    In a declaration, the unary suffix & means "reference to"
+    A reference is similar to a pointer, except that:
+        you don’t need to use a prefix * to access the value referred to by the reference
+        a reference cannot be made to refer to a different object after its initialization
+
+#--------------------------------------------------------------------------------
+#Structure
+
+#Creating struct
+    struct StructureName {
+        member_type member_name;
+        pointee_type* pointer_name;
+    }
+#Accessing struct member
+    void f(Vector v, Vector& rv, Vector* pv){
+        int i1 = v.sz;      // access through name
+        int i2 = rv.sz;     // access through reference
+        int i4 = pv->sz;    // access through pointer
+    }
+
+does access through pointer mutate the struct member???
+how to initialize the struct???
+#Initialize struct
+
+#--------------------------------------------------------------------------------
+#Class
+
+#--------------------------------------------------------------------------------
+#Useless
+
+• A type defines a set of possible values and a set of operations (for an object).
+• An object is some memory that holds a value of some type.
+• A value is a set of bits interpreted according to a type.
+• A variable is a named object.”
+
+
+#Bookmark
+“void sort(vector<double>& v);    // sort v”
+
+Excerpt From: Stroustrup, Bjarne. “A Tour of C++ (C++ In-Depth Series).” Apple Books. 

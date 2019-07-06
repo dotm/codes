@@ -303,7 +303,7 @@
     remove the need to check and unwrap the optional’s value every time it’s accessed
     accessing implicitly unwrapped optional with value nil will trigger a runtime error
   #declaration: var optional_variable_name: Type! = value
-  #unwrapping: optional_variable_name
+  #usage: optional_variable_name
 
 #Nil-Coalescing Operator: optional_value ?? default_value
   the above is the same as:

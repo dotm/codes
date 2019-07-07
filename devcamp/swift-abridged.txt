@@ -11,11 +11,6 @@
     var variable_name: Type
     var variable_name, variable_name: Type
     var variable_name: Type = value
-#Using closure to declare variable or constant
-    var property: Type = {
-      statements
-      return value
-    }()
 
 #--------------------------------------------------------------------------------
 #Arithmetic operators: + - * / %
@@ -80,80 +75,6 @@
     stride(from: 0, through: 4, by: 2)  // 0, 2, 4
   #Half open stride method:
     stride(from: 0, to: 4, by: 2)       // 0, 2
-
-#--------------------------------------------------------------------------------
-#String
-  is an array of character
-
-#String output: print(string)
-#Multi-line string:
-  var string = """
-    multi-line string
-    """
-
-#String methods
-  #interpolation: "string \(expression)."
-  #concatenate: string + string
-  #get string length: string.count
-  #check if string
-    #isEmpty: string.isEmpty
-    #starts with substring: string.hasPrefix(substring)
-    #ends with substring: string.hasSuffix(substring)
-
-#Accessing string
-  string[index]
-#Get all indices: string.indices
-  for index in greeting.indices { print(greeting[index]) }
-
-#Insert single character to index: string.insert("a", at: index)
-#Insert string to index: string.insert(contentsOf: string, at: index)
-
-#Get substring using range:
-    startIndex (range operator) endIndex
-    let range = string.index(string.endIndex, offsetBy: -6) ..< string.endIndex
-    let substring = string[range]           // substring is of type Substring and must be turned to String by casting
-  // the String() method return optional and must be followed by nil coalescing or force unwrapping
-    let newString = String(substring) ?? ""
-    let newString = String(substring)!
-
-#Remove single character at index: string.remove(at: index)
-#Remove substring using range: string.removeSubrange(range)
-
-#--------------------------------------------------------------------------------
-#Optionals
-    optional variable and constant can contain nil
-    force unwrapping a nil value will raise a runtime error
-  #declaration:
-    var optional_variable_name: Type?      // initialized to nil
-    let optional_constant_name: Int? = 1
-  #forced unwrapping: optional_variable_name!
-  #optional binding:
-    #if statement
-      if let constant_name = optional, var variable_name = optional, condition {
-        statements //executed only if all of the optional is not nil
-      } else if let constant_name = function_name() {
-        statements //executed only if function_name return non nil value
-      } else { statements }
-    #while statement
-      while let constant_name = optional, var variable_name = optional, condition {
-        statements
-      }
-
-#Implicitly Unwrapped Optionals
-  #declaration: var optional_variable_name: Type! = value
-  #unwrapping: optional_variable_name
-
-#Nil-Coalescing Operator: optional_value ?? default_value
-
-#Optional Chaining
-    object.optional_property?.property
-    object.optional_property?.optional_property?[0]
-    if object.optional_property?.property != nil { statements }
-    if let variable_name = object.optional_property?.property { variable_name != nil }
-    object.optional_property?.method()
-    object.optional_property?[index]
-    function_name()?.property
-    optional_function?()
 
 #--------------------------------------------------------------------------------
 Conditional
@@ -270,10 +191,6 @@ Loop
     is a reference type
     can capture and store references to (can close over)
       any constants and variables from the context in which they are defined
-  #Types of closure
-    Global functions: named closures that do not capture any values.
-    Nested functions: named closures that can capture values from their enclosing function.
-    Closure expressions: unnamed closures that can capture values from their surrounding context.
   #Closure Expressions
       names.sorted(by: { (s1: String, s2: String) -> Bool in return s1 > s2 } )
       names.sorted(by: { s1, s2 in return s1 > s2 } )
@@ -281,12 +198,10 @@ Loop
       names.sorted(by: { $0 > $1 } )
       names.sorted(by: >)
   #Trailing Closures
-    #pass closure as final argument to higher_order_function:
       #without trailing closure: higher_order_function(parameter_name: value, callback: closure_expression)
       #with trailing closure: higher_order_function(parameter_name: value){ closure_expression }
       #example: higher_order_function(x: 2){x in x * 10}
     #pass closure as only argument to higher_order_function:
-        the () in "higher_order_function()" can be omitted
       #without trailing closure: higher_order_function(callback: closure_expression)
       #with trailing closure: higher_order_function{ closure_expression }
       #example: higher_order_function{x in x * 10}
@@ -314,6 +229,42 @@ Loop
   #create:
     let http200Status = (statusCode: 200, description: "OK")
   #access by name: http404Error.statusCode
+
+#--------------------------------------------------------------------------------
+#Optionals
+    optional variable and constant can contain nil
+    force unwrapping a nil value will raise a runtime error
+  #declaration:
+    var optional_variable_name: Type?      // initialized to nil
+    let optional_constant_name: Int? = 1
+  #forced unwrapping: optional_variable_name!
+  #optional binding:
+    #if statement
+      if let constant_name = optional, var variable_name = optional, condition {
+        statements //executed only if all of the optional is not nil
+      } else if let constant_name = function_name() {
+        statements //executed only if function_name return non nil value
+      } else { statements }
+    #while statement
+      while let constant_name = optional, var variable_name = optional, condition {
+        statements
+      }
+
+#Implicitly Unwrapped Optionals
+  #declaration: var optional_variable_name: Type! = value
+  #unwrapping: optional_variable_name
+
+#Nil-Coalescing Operator: optional_value ?? default_value
+
+#Optional Chaining
+    object.optional_property?.property
+    object.optional_property?.optional_property?[0]
+    if object.optional_property?.property != nil { statements }
+    if let variable_name = object.optional_property?.property { variable_name != nil }
+    object.optional_property?.method()
+    object.optional_property?[index]
+    function_name()?.property
+    optional_function?()
 
 #--------------------------------------------------------------------------------
 #Array
@@ -344,6 +295,44 @@ Loop
   #emptying: array = []
   #check if array
     #isEmpty: array.isEmpty
+
+#--------------------------------------------------------------------------------
+#String
+  is an array of character
+
+#String output: print(string)
+#Multi-line string:
+  var string = """
+    multi-line string
+    """
+
+#String methods
+  #interpolation: "string \(expression)."
+  #concatenate: string + string
+  #get string length: string.count
+  #check if string
+    #isEmpty: string.isEmpty
+    #starts with substring: string.hasPrefix(substring)
+    #ends with substring: string.hasSuffix(substring)
+
+#Accessing string
+  string[index]
+#Get all indices: string.indices
+  for index in greeting.indices { print(greeting[index]) }
+
+#Insert single character to index: string.insert("a", at: index)
+#Insert string to index: string.insert(contentsOf: string, at: index)
+
+#Get substring using range:
+    startIndex (range operator) endIndex
+    let range = string.index(string.endIndex, offsetBy: -6) ..< string.endIndex
+    let substring = string[range]           // substring is of type Substring and must be turned to String by casting
+  // the String() method return optional and must be followed by nil coalescing or force unwrapping
+    let newString = String(substring) ?? ""
+    let newString = String(substring)!
+
+#Remove single character at index: string.remove(at: index)
+#Remove substring using range: string.removeSubrange(range)
 
 #--------------------------------------------------------------------------------
 #Dictionary
@@ -459,67 +448,8 @@ Loop
     //you must use optional as property type if the property value cannot be set directly or during initialization
     var optional: Type?
 
-    //using closure to provide default value
-    var property: Type = {
-      statements
-      return value
-    }()
-
-    //lazy stored property: property whose initial value is not initialized until the first time it is used
-    lazy var lazy_property = expensive_calculation()
-
-    //computed properties provide a getter and an optional setter to retrieve and set other properties and values indirectly
-    var computed_property: Type {
-      get {
-        statements
-        return property
-      }
-      set {
-        property = newValue
-      }
-    }
-    var read_only_computed_property: Type {
-      statements
-      return property
-    }
-
-    //observed property
-    var observed_property: Type = value {
-      willSet {
-        // you can access the new value using newValue variable
-        // you can access the old (current) value using observed_property variable
-      }
-      didSet {
-        // you can access the old value using oldValue variable
-        // you can access the new (current) value using observed_property variable
-      }
-    }
-    //you don't need observed_property for computed_property, since you can just add hook in the setter
-
     //type property is owned by the type (e.g. StructureName) and not by the instance
     static var stored_type_property = value
-    static var computed_type_property: Type {
-      get {
-        return stored_type_property
-      }
-      set {
-        stored_type_property = newValue
-      }
-    }
-    static var read_only_computed_type_property: Type {
-      return stored_type_property
-    }
-    static var observed_type_property: Type = value {
-      willSet {
-        // you can access the new value using newValue variable
-        // you can access the old (current) value using observed_type_property variable
-      }
-      didSet {
-        // you can access the old value using oldValue variable
-        // you can access the new (current) value using observed_type_property variable
-      }
-    }
-
 
     /* Method */
 
@@ -534,24 +464,7 @@ Loop
     //type method is owned by the type (e.g. StructureName) and not by the instance
     static func type_method(){
       //self in type_method refers to the type itself, rather than an instance of that type
-      //since self. is added implicitly by Swift,
-      //  you can access type_property and type_method without using explicit self.type_property or self.type_method
       print(type_property)
-    }
-
-
-    /* Subscripts */
-
-    //subscripts with multiple index
-    subscript(index: Type, index: Type) -> Type {
-      get { statements }
-      set { property = newValue }
-    }
-    //subscripts can be overloaded
-
-    //read only subscripts
-    subscript (index: Type) -> Type {
-      return value
     }
   }
 #Instantiating structure: var structure = StructureName(arguments)
@@ -562,14 +475,10 @@ Loop
 
 #Get structure instance property: structure.property
 #Set structure instance property: structure.property = value
-#Get structure instance computed_property: structure.computed_property
-#Set structure instance computed_property: structure.computed_property = value
 #Get Structure type property: StructureName.type_property
 #Set Structure type property: StructureName.type_property = value
 #Call instance method: structure.instance_method()
 #Call type method: StructureName.type_method()
-#Get subscript: structure[index, index]
-#Set subscript: structure[index, index] = value
 
 #--------------------------------------------------------------------------------
 #Class
@@ -580,12 +489,6 @@ Loop
 #Creating class
   class ClassName {
     /* Initializer */
-
-    //Initializer have more or less the same syntax and features as function
-    //  except that it's always named init, it doesn't return anything and it is called with ClassName() instead of function_name
-    //default initializer is added automatically by Swift
-    //  except if you have defined one or more custom initializer,
-    //  so you can call ClassName()
 
     //custom initializer
     init(){}                    //you can do nothing if all properties are already set to a default value
@@ -634,71 +537,11 @@ Loop
     //you must use optional as property type if the property value cannot be set directly or during initialization
     var optional: Type?
 
-    //using closure to provide default value
-    var property: Type = {
-      statements
-      return value
-    }()
-
-    //lazy stored property: a property whose initial value is not initialized until the first time it is used
-    lazy var lazy_property = expensive_calculation()
-
-    //computed properties provide a getter and an optional setter to retrieve and set other properties and values indirectly
-    var computed_property: Type {
-      get {
-        statements
-        return property
-      }
-      set {
-        property = newValue
-      }
-    }
-    var read_only_computed_property: Type {
-      statements
-      return property
-    }
-
-    //observed property
-    var observed_property: Type = value {
-      willSet {
-        // you can access the new value using newValue variable
-        // you can access the old (current) value using observed_property variable
-      }
-      didSet {
-        // you can access the old value using oldValue variable
-        // you can access the new (current) value using observed_property variable
-      }
-    }
-    //you don't need observed_property for computed_property, since you can just add hook in the setter
-
     //type property is owned by the type (e.g. ClassName) and not by the instance
     static var stored_type_property = value
-    static var computed_type_property: Type {
-      get {
-        return stored_type_property
-      }
-      set {
-        stored_type_property = newValue
-      }
-    }
-    static var read_only_computed_type_property: Type {
-      return stored_type_property
-    }
-    static var observed_type_property: Type = value {
-      willSet {
-        // you can access the new value using newValue variable
-        // you can access the old (current) value using observed_type_property variable
-      }
-      didSet {
-        // you can access the old value using oldValue variable
-        // you can access the new (current) value using observed_type_property variable
-      }
-    }
 
     //using class instead of static keyword makes the property overridable by subclass
     class var overrideable_type_property = value
-    //you can use the class keyword with computed_type_property, read_only_computed_type_property, and observed_type_property
-
 
     /* Method */
 
@@ -715,34 +558,15 @@ Loop
     }
     //using class instead of static keyword makes the method overridable by subclass
     class type_method(){ statements }
-
-
-    /* Subscripts */
-
-    //subscripts with multiple index
-    subscript(index: Type, index: Type) -> Type {
-      get { statements }
-      set { property = newValue }
-    }
-    //subscripts can be overloaded
-
-    //read only subscripts
-    subscript (index: Type) -> Type {
-      return value
-    }
   }
 #Instantiating class
   var object = ClassName(arguments)
 #Get object instance property: object.property
 #Set object instance property: object.property = value
-#Get object instance computed_property: object.computed_property
-#Set object instance computed_property: object.computed_property = value
 #Get class type property: ClassName.type_property
 #Set class type property: ClassName.type_property = value
 #Call instance method: object.instance_method()
 #Call type method: ClassName.type_method()
-#Get subscript: structure[index, index]
-#Set subscript: structure[index, index] = value
 
 #Final class (can't be subclassed)
   final class ClassName { definitions }
@@ -750,23 +574,18 @@ Loop
   class Subclass: Superclass { definitions }
 #Overriding
   override property = value
-    //you can use stored_property, computed_property, and observed_property to override a superclass property
   override func function_name(){}
-  override subscript (index: Type) -> Type {}
 #Access superclass property, method, and subscript
   super.property
   super.function_name()
-  super[index]
 #Preventing override
   final var property = value
   final let property = value
   final func function_name(){}
   final class func function_name(){}
-  final subscript (index: Type) -> Type {}
 
 #--------------------------------------------------------------------------------
 #Protocol
-  check Extensions to see how to adopt protocol using extension
   since protocols are type, you can use the 'is' and 'as' operator with protocol
 
 #Adopting protocol

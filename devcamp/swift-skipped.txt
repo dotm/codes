@@ -9,14 +9,18 @@ Skipped because of time but essential:
 
 #--------------------------------------------------------------------------------
 Skipped and not that essential:
-#Set
 #Computed variable
 #Variable observer
+#Using closure to declare variable or constant
+#Set
 #Nested Types (type inside type)
 #Assertion
 #Precondition
 #Unicode Representations of Strings
 #Autoclosures
+Class and structure
+    lazy stored property
+    Subscripts
 
 #--------------------------------------------------------------------------------
 Skipped because too powerful (used for making framework)
@@ -45,5 +49,5 @@ Skipped because Swift is on steroid
     Subscripts
 #Protocol Composition
 #Protocol Extensions
-    for default behavior or value
+    for default behavior or value (Protocol-Oriented Programming)
 #Optional protocol requirements

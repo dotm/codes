@@ -1,4 +1,23 @@
-Introduce resources
+Introduction
+Explain teacher's roles and lessons
+    3 session: Swift, XCode, New Technology
+    in one session:
+        1 teacher to deliver material
+        the rest must spot and help students who get left behind
+Explain objectives
+    to be able to code basic iOS app
+    to prepare for the hackathon
+    to get internship in Tokopedia
+
+Explain briefly my lesson plan below
+Ask students for prior programming experience (so teachers know who is likely to lag behind and who is likely to sprint ahead)
+    structured programming (PHP, JS)
+    typed language (C, C++, Java, Swift)
+    design pattern?? (delegates, advanced students)
+    functional programming?? (optionals, advanced students)
+
+#--------------------------------------------------------------------------------
+Introduce resources [5 mins + 5 mins]
     https://developer.apple.com/
         https://developer.apple.com/design/human-interface-guidelines/
         https://developer.apple.com/documentation/
@@ -7,6 +26,33 @@ Introduce resources
         Language Guide
         Language Reference
 
-Introduce Swift using summarized Language Guide
+#--------------------------------------------------------------------------------
+Ask for attention because time is short
+Break?? (10 mins)
 
-Code exercises that align with Wendy's lesson
+Introduce Swift using summarized Language Guide [1 hour + 30 mins]
+Objectives:
+    bukan untuk hafal
+    to know what's possible
+    to know where to find things when you need to use them
+Materi:
+    comment, variables and constants, operators
+    data types and type operations
+    conditionals and loops
+    functions and closures
+    tuples and optionals
+    arrays and strings
+    dictionary
+    enumeration
+    structure
+    class
+    protocol
+    error handling
+
+#--------------------------------------------------------------------------------
+Break?? (10 mins)
+
+Code exercises that align with Wendy's lesson [1 hour + 30 mins]
+
+#--------------------------------------------------------------------------------
+QnA

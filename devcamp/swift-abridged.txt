@@ -217,20 +217,6 @@ Loop
       add_middleware { print(1) }
 
 #--------------------------------------------------------------------------------
-#Tuples
-  #create:
-    let http404Error = (404, "Not Found")
-  #unpacking:
-    let (statusCode, statusMessage) = http404Error
-    let (statusCode, _) = http404Error
-  #access by index: http404Error.0
-
-#Named tuples
-  #create:
-    let http200Status = (statusCode: 200, description: "OK")
-  #access by name: http404Error.statusCode
-
-#--------------------------------------------------------------------------------
 #Optionals
     optional variable and constant can contain nil
     force unwrapping a nil value will raise a runtime error
@@ -354,63 +340,6 @@ Loop
   #emptying: dict = [:]
   #check if dictionary
     #isEmpty: dict.isEmpty
-
-#--------------------------------------------------------------------------------
-#Enumeration
-    is pass-by-value
-    Each enumeration definition in Swift defines a new type
-    you can use self keyword to refer to current enumeration value
-      e.g. if self == male { statements }
-  #definition:
-    enum Gender {
-      case male
-      case female
-    }
-    enum Gender {
-      case male, female
-    }
-  #usage
-    var gender = Gender.male  // first initialization
-    gender = .female          // changing the value after initialization
-  #pattern matching with switch statement
-    switch gender {
-      case .male: print("male")
-      case .female: print("female")
-      // you must provide a default case if the cases above is not collectively exhaustive
-      default: print("Hmmm")
-    }
-  #make enumeration iterable
-    enum Gender: CaseIterable { case male, female }
-    for gender in Gender.allCases { statements }
-
-#Raw Values
-    enumeration cases can come prepopulated with default values (raw values) which are all of the same type.
-  #create:
-    enum ASCIIControlCharacter: Character {
-      case tab = "\t"
-      case lineFeed = "\n"
-      case carriageReturn = "\r"
-    }
-    enum Gender: String { case male, female }
-  #access raw value of enumeration case: Gender.male.rawValue
-  #initialize enum from raw value:
-    var gender: Gender? = Gender(rawValue: "male")
-    var gender: Gender? = Gender(rawValue: "helicopter") // will return nil
-
-#Implicitly Assigned Raw Values
-  #with string
-    when strings are used for raw values,
-      the implicit value for each case is the text of that case’s name.
-  #example:
-    enum Gender: String { case male, female }
-  #with integer
-    when integers are used for raw values,
-      the implicit value for each case is one more than the previous case.
-      If the first case doesn’t have a value set, its value is 0.
-  #example:
-    enum Planet: Int {
-      case mercury = 1, venus, earth, mars, jupiter, saturn, uranus, neptune
-    }
 
 #--------------------------------------------------------------------------------
 #Structure
@@ -632,50 +561,3 @@ protocol InheritingProtocol: ProtocolName, ProtocolName { definitions }
   struct StructureName {
     weak var delegate: ProtocolNameDelegate?
   }
-
-#--------------------------------------------------------------------------------
-#Error Handling
-
-#Throwing Function
-  func throwing_function (parameter_name: Type) throws -> Return_Type {
-    guard condition else { throw error }
-    defer {
-      //do cleanup here
-    }
-    
-    statements
-  }
-#Calling throwing function
-  try throwing_function(arguments)  // if this raise error, it will propagate the error
-
-#Converting Errors to Optional Values
-  let constant_name: Return_Type? = try? throwing_function()
-#Disabling Error Propagation
-    use this if you know a throwing function won’t throw an error at runtime
-  let constant: Return_Type = try! throwing_function()
-#Handling error using do-catch statement
-  do {
-    try expression
-    statements
-  } catch MyError.error {
-    statements
-  } catch MyError.error(let argument, let argument) {   // error with arguments
-    print(argument)
-  } catch MyError.error(let argument) where condition { //example condition: argument == value
-    statements
-  } catch is MyError {
-    print("error related to MyError")
-  } catch {
-    //if a catch clause doesn’t have a pattern, the clause matches any error
-    //  and binds the error to a local constant named error.
-    print(error)
-  }
-
-#User-defined error and throwing error
-  enum MyError: Error {
-    case error(String)
-  }
-  throw MyError.error("error message")
-
-  extension String: Error {}
-  throw "error message"

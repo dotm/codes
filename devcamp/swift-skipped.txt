@@ -1,4 +1,5 @@
 Skipped because of time but essential:
+#Error Handling
 #Access Control
 #Extensions
 #Automatic Reference Counting
@@ -12,6 +13,7 @@ Skipped and not that essential:
 #Computed variable
 #Variable observer
 #Using closure to declare variable or constant
+#Tuples (and Named Tuples)
 #Set
 #Nested Types (type inside type)
 #Assertion

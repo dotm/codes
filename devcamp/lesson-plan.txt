@@ -10,8 +10,8 @@ Explain objectives
     to get internship in Tokopedia
 
 Explain briefly my lesson plan below
-Ask students for prior programming experience (so teachers know who is likely to lag behind and who is likely to sprint ahead)
-    structured programming (PHP, JS)
+Ask students for prior programming experience (so teachers know those who are likely to lag behind and those who are likely to sprint ahead)
+    structured programming (PHP, JS, almost any programming language)
     typed language (C, C++, Java, Swift)
     design pattern?? (delegates, advanced students)
     functional programming?? (optionals, advanced students)
@@ -30,7 +30,7 @@ Introduce resources [5 mins + 5 mins]
 Ask for attention because time is short
 Break?? (10 mins)
 
-Introduce Swift using summarized Language Guide [1 hour + 30 mins]
+Introduce Swift using summarized Language Guide [1 hour]
 Objectives:
     bukan untuk hafal
     to know what's possible
@@ -40,19 +40,17 @@ Materi:
     data types and type operations
     conditionals and loops
     functions and closures
-    tuples and optionals
+    optionals
     arrays and strings
     dictionary
-    enumeration
     structure
     class
     protocol
-    error handling
 
 #--------------------------------------------------------------------------------
 Break?? (10 mins)
 
-Code exercises that align with Wendy's lesson [1 hour + 30 mins]
+Code exercises that align with Wendy's lesson [1 hour]
 
 #--------------------------------------------------------------------------------
 QnA

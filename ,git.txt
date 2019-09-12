@@ -25,11 +25,14 @@
   man git-<verb>
 
 #Useful aliases
-git config --global alias.st status
+git config --global alias.z push
+git config --global alias.l pull
+git config --global alias.s status
 git config --global alias.co checkout
 git config --global alias.cm commit
 git config --global alias.br branch
-git config --global alias.mr merge
+git config --global alias.bl 'branch -l'
+git config --global alias.m merge
 git config --global alias.rs reset
 git config --global alias.lo 'log --oneline'
 git config --global alias.c 'commit -am'

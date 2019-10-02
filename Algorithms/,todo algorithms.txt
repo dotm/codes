@@ -3,3 +3,8 @@ augmenting data structures
 rod cutting
 bfs
 dfs
+
+parser for DOT notation (using AST?)
+reference: https://en.wikipedia.org/wiki/DOT_(graph_description_language)
+
+bkd tree (used in elasticsearch algorithm) with golang

@@ -58,6 +58,17 @@ func main() {
 	var b int = int(a)  //b is 3
 
 #--------------------------------------------------------------------------------
+#Data Allocation
+
+#Using new
+	new(T) allocates zeroed storage for a new item of type T and returns its address, a value of type *T
+	it returns a pointer to a newly allocated zero value of type T
+	when you define a new data structure, make sure you can use new on it without further initialization
+		i.e. it must be ready to use without setting things like this: customDataStructure.property = zero_value
+#new and composite literal
+	new(structName) is equal to &structName{}
+
+#--------------------------------------------------------------------------------
 #Pointer
         pointer holds the memory address of a value
         Go has no pointer arithmetic
@@ -73,21 +84,29 @@ func main() {
 #--------------------------------------------------------------------------------
 #Struct: a collection of fields
     #declaration:
-        type struct_name struct {
-            struct_field1 field_type
-            struct_field2 field_type
+        type structName struct {
+            fieldName1 field_type
+            fieldName2 field_type
+	    fieldName3 field_type
         }
-    #create:
-        var struct_variable = struct_name{value, value}
-        var struct_variable = struct_name{struct_field1: value, struct_field2: value}
-    #access field: struct_variable.struct_field1
+    #create using composite literal:
+        var structVariable = structName{value, value, value}
+        var structVariable = structName{fieldName1: value, fieldName2: value}   //partial initialization permitted
+	var structVariable = structName{fieldName2: value, fieldName1: value}   //unordered initialization permitted
+	var structVariable = structName{} 					//all struct field set to zero value
+    #access field: structVariable.fieldName1
 
 #--------------------------------------------------------------------------------
 #Array
         (zero index, homogeneous, fixed-length)
-    #create:
-        var array_name [length]value_type = [length] value_type {value, value}
+    #create array with zero values
+        var array_name [length]value_type
         var a [10]int   //initialized to zero values
+    #create using composite literal:
+        var array_name [length]value_type = [length] value_type {value, value}
+        var array_name [length]value_type = [length] value_type {index: value, index: value}
+	var a [10]int = [10]int{11,22}
+	var a [10]int = [10]int{2: 22, 5: 55}
     #access element by index: array[index]
     #change element value at index: array[index] = value
 
@@ -129,7 +148,7 @@ func main() {
     #create
         #using make to create empty map:
             map_name := make(map [key_type] value_type)     //e.g. make(map[string]int)
-        #using map literal:
+        #using composite literal:
             map_name := map[key_type]value_type {
                 key_name: value,
                 key_name: value,
@@ -239,7 +258,7 @@ Loop
                 func split(sum int) (x, y int) {
                     x = sum / 2
                     y = sum - x
-                    return          // this will return x and y
+                    return          // this will return the latest value of x and y
                 }
             the named return values are treated as variables defined at the top of the function
                 use them for documentation purposes
@@ -282,12 +301,19 @@ Loop
 #Defer statement
         func a() int {
             a := 1
-            defer fmt.Println(a)    //call defer right before return if possible (else just keep it close to it's arguments definitions)
+            defer fmt.Println(a)    //call defer right before return if possible
             return a
         }
-        func main() {
+	func main() {
             defer fmt.Println("world")
             fmt.Println("hello")
+    	}
+        func main() {
+	    file, err := os.Open(filename)
+	    if err != nil {
+		return "", err
+	    }
+	    defer file.Close()  // call defer close to the definition of file
         }
     A defer statement defers the execution of a function until the surrounding function returns.
     The deferred call's arguments are evaluated immediately,

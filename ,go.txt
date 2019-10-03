@@ -1,29 +1,29 @@
 package main
 import "fmt"
 func main() {
-	fmt.Println("Hello, 世界")
+    fmt.Println("Hello, 世界")
 }
 
 #--------------------------------------------------------------------------------
 #Print string with new line
     fmt.Println("hello world")
 #Printf
-	fmt.Printf("%v %v %v %q", integer_value, float_value, boolean_value, string_value)
+    fmt.Printf("%v %v %v %q", integer_value, float_value, boolean_value, string_value)
     fmt.Printf("the value %v has type %T", value, value)
 
 #--------------------------------------------------------------------------------
 #Variable declaration:
-    var variable_name = value
-    var variable_name variable_type
-    var variable_name variable_type = value
+    var variableName = value
+    var variableName variable_type
+    var variableName variable_type = value
 #Short assignment statement for variable
         func main() { k := 3 }
     Inside a function, the := short assignment statement can be used in place of a var declaration with implicit type.
 
 #Constant declaration
-    const constant_name = value
-    const constant_name constant_type
-    const constant_name constant_type = value
+    const constantName = value
+    const constantName constant_type
+    const constantName constant_type = value
 
 #--------------------------------------------------------------------------------
 #Data types
@@ -50,36 +50,42 @@ func main() {
         Pointer         : nil
         Slice           : nil
         Map             : nil
+        Channel         : nil
     Struct with omitted fields will have its omitted fields initialized to their respective types' zero values
 
-#Type conversion:
-    type(value)
-	var a float64 = 3.8
-	var b int = int(a)  //b is 3
+#Type conversion: type(value)
+    var a float64 = 3.8
+    var b int = int(a)  //b is 3
 
 #--------------------------------------------------------------------------------
 #Data Allocation
 
-#Using new
-	new(T) allocates zeroed storage for a new item of type T and returns its address, a value of type *T
-	it returns a pointer to a newly allocated zero value of type T
-	when you define a new data structure, make sure you can use new on it without further initialization
-		i.e. it must be ready to use without setting things like this: customDataStructure.property = zero_value
+#Using new: var variableName *type_name = new(type_name)
+    new(T) allocates zeroed storage for a new item of type T and returns its address, a value of type *T
+    it returns a pointer to a newly allocated zero value of type T
+    when you define a new data structure, make sure you can use new on it without further initialization
+        i.e. it must be ready to use without setting things like this: customDataStructure.property = zero_value
 #new and composite literal
-	new(structName) is equal to &structName{}
+    new(structName) is equal to &structName{}
+
+#Using make: var variableName type_name = make(type_name, arguments)
+    can only be used to create slices, maps, and channels
+    returns an initialized (not zeroed) value of type_name
+        we'll get nil value if we use new(T) with slices, maps, and channels
+    unlike new(T), make doesn't return a pointer of the type
 
 #--------------------------------------------------------------------------------
 #Pointer
         pointer holds the memory address of a value
         Go has no pointer arithmetic
     #declaration: var p *int
-    #create pointer: p = &integer_variable
+    #create pointer: p = &integerVariable
     #dereferencing/indirecting pointer:
         fmt.Println(*p)     // read i through the pointer p
         *p = 21             // set i through the pointer p
     #access struct field through pointer
-        (*p).struct_field
-        p.struct_field      //shorthand
+        (*p).structField
+        p.structField      //shorthand
 
 #--------------------------------------------------------------------------------
 #Struct: a collection of fields
@@ -87,26 +93,26 @@ func main() {
         type structName struct {
             fieldName1 field_type
             fieldName2 field_type
-	    fieldName3 field_type
+            fieldName3 field_type
         }
     #create using composite literal:
         var structVariable = structName{value, value, value}
         var structVariable = structName{fieldName1: value, fieldName2: value}   //partial initialization permitted
-	var structVariable = structName{fieldName2: value, fieldName1: value}   //unordered initialization permitted
-	var structVariable = structName{} 					//all struct field set to zero value
+        var structVariable = structName{fieldName2: value, fieldName1: value}   //unordered initialization permitted
+        var structVariable = structName{}                                       //all struct field set to zero value
     #access field: structVariable.fieldName1
 
 #--------------------------------------------------------------------------------
 #Array
         (zero index, homogeneous, fixed-length)
     #create array with zero values
-        var array_name [length]value_type
+        var arrayName [length]value_type
         var a [10]int   //initialized to zero values
     #create using composite literal:
-        var array_name [length]value_type = [length] value_type {value, value}
-        var array_name [length]value_type = [length] value_type {index: value, index: value}
-	var a [10]int = [10]int{11,22}
-	var a [10]int = [10]int{2: 22, 5: 55}
+        var arrayName [length]value_type = [length] value_type {value, value}
+        var arrayName [length]value_type = [length] value_type {index: value, index: value}
+        var a [10]int = [10]int{11,22}
+        var a [10]int = [10]int{2: 22, 5: 55}
     #access element by index: array[index]
     #change element value at index: array[index] = value
 
@@ -120,11 +126,11 @@ func main() {
         Slices can contain any type, including other slices.
     #create
         #from array:
-            var slice_name []value_type = array_name[upper_index : lower_index]
-            var slice_name []value_type = array_name[1:3]   //will include elements of index 1 and 2 from array_name
-            var slice_name []value_type = array_name[1:]    //will include elements from index 1 until the last element from array_name
-            var slice_name []value_type = array_name[:3]    //will include elements of index 0, 1, and 2 from array_name
-            var slice_name []value_type = array_name[:]     //will include all elements from array_name
+            var sliceName []value_type = arrayName[upper_index : lower_index]
+            var sliceName []value_type = arrayName[1:3]   //will include elements of index 1 and 2 from arrayName
+            var sliceName []value_type = arrayName[1:]    //will include elements from index 1 until the last element from arrayName
+            var sliceName []value_type = arrayName[:3]    //will include elements of index 0, 1, and 2 from arrayName
+            var sliceName []value_type = arrayName[:]     //will include all elements from arrayName
         #slice literal: []bool{true, true, false}
             this creates the array [3]bool{true, true, false}
             then builds a slice that references it
@@ -133,32 +139,32 @@ func main() {
             make([]slice_type, length, capacity)
             b := make([]int, 0, 5)                  // len(b)=0, cap(b)=5
     #reslicing:
-        slice_name = slice_name[new_upper_index : new_lower_index]
+        sliceName = sliceName[new_upper_index : new_lower_index]
     #change underlying array:
-        slice_name = array_name[upper_index : lower_index]
+        sliceName = arrayName[upper_index : lower_index]
     #get slice length (the number of elements it contains)
-        len(slice_name)
+        len(sliceName)
     #get slice capacity: the number of elements in the underlying array, counting from the first element in the slice
-        cap(slice_name)
-    #append value: slice_name = append(slice_name, value, value, ...)
+        cap(sliceName)
+    #append value: sliceName = append(sliceName, value, value, ...)
 
 #--------------------------------------------------------------------------------
 #Map: maps keys to values
         A nil map has no keys, nor can keys be added
     #create
         #using make to create empty map:
-            map_name := make(map [key_type] value_type)     //e.g. make(map[string]int)
+            mapName := make(map [key_type] value_type)     //e.g. make(map[string]int)
         #using composite literal:
-            map_name := map[key_type]value_type {
-                key_name: value,
-                key_name: value,
+            mapName := map[key_type]value_type {
+                keyName: value,
+                keyName: value,
             }
-    #access element by key: map[key_name]
-    #add value to key: map[key_name] = value
-    #change value by key: map[key_name] = value
-    #delete element by key: delete(map, key_name)
+    #access element by key: map[keyName]
+    #add value to key: map[keyName] = value
+    #change value by key: map[keyName] = value
+    #delete element by key: delete(map, keyName)
     #check if an element exist at a key:
-        elem, isExist := map[key_name]             //if no element found at key_name, isExist will be false and elem will be zero-valued
+        elem, isExist := map[keyName]             //if no element found at keyName, isExist will be false and elem will be zero-valued
 
 #--------------------------------------------------------------------------------
 Conditional
@@ -187,24 +193,24 @@ Conditional
             statements
         default:
             statements
-	}
+    }
 #break
 
 #Type switch statement
-	var value interface{}
-	value = functionOfSomeType()
-	switch t := value.(type) {
-	default:
-		fmt.Printf("unexpected type %T\n", t) // %T prints whatever type t has
-	case bool:
-		fmt.Printf("boolean %t\n", t) // t has type bool
-	case int:
-		fmt.Printf("integer %d\n", t) // t has type int
-	case *bool:
-		fmt.Printf("pointer to boolean %t\n", *t) // t has type *bool
-	case *int:
-		fmt.Printf("pointer to integer %d\n", *t) // t has type *int
-	}
+        var value interface{}
+        value = functionOfSomeType()
+        switch t := value.(type) {
+        default:
+            fmt.Printf("unexpected type %T\n", t) // %T prints whatever type t has
+        case bool:
+            fmt.Printf("boolean %t\n", t) // t has type bool
+        case int:
+            fmt.Printf("integer %d\n", t) // t has type int
+        case *bool:
+            fmt.Printf("pointer to boolean %t\n", *t) // t has type *bool
+        case *int:
+            fmt.Printf("pointer to integer %d\n", *t) // t has type *int
+        }
 
 #--------------------------------------------------------------------------------
 Loop
@@ -222,39 +228,39 @@ Loop
 #continue
 
 #Label
-	label:
-	for i := 0; i < 10; i++ {
-		for j := 0; j < 10; j++ {
-			if j > 3 { break }
-			if i > 3 { break label }
-			fmt.Println(i, j)
-		}
-	}
+    label:
+    for i := 0; i < 10; i++ {
+        for j := 0; j < 10; j++ {
+            if j > 3 { break }
+            if i > 3 { break label }
+            fmt.Println(i, j)
+        }
+    }
 
 #Iterate over array, string, and slice using range
-    for index, value := range slice_name { statements }
-    for index := range slice_name { statements }            //capture index only
-    for _, value := range slice_name { statements }         //capture value only
-    for range slice_name { statements }                     //without capturing index or value
+    for index, value := range sliceName { statements }
+    for index := range sliceName { statements }            //capture index only
+    for _, value := range sliceName { statements }         //capture value only
+    for range sliceName { statements }                     //without capturing index or value
 
 #Iterate over map using range
-    for key, value := range map_name { statements }
-    for key := range map_name { statements }            //capture index only
-    for _, value := range map_name { statements }       //capture value only
-    for range map_name { statements }                   //without capturing index or value
+    for key, value := range mapName { statements }
+    for key := range mapName { statements }            //capture index only
+    for _, value := range mapName { statements }       //capture value only
+    for range mapName { statements }                   //without capturing index or value
 
 #--------------------------------------------------------------------------------
 #Function
         first-class object
     #definition
-        #basic: func function_name() { function_body }
-        #with parameters: func function_name(parameter_name parameter_type, parameter_name parameter_type) { function_body }
+        #basic: func functionName() { function_body }
+        #with parameters: func functionName(parameterName parameter_type, parameterName parameter_type) { function_body }
             When consecutive parameters share a type, you can omit the type from all but the last.
                 func add(x, y int, z string) { function_body }
-        #with return value: func function_name() return_type { return value }
-        #with multiple return value: func function_name() (return_type, return_type) { return value, value }
+        #with return value: func functionName() return_type { return value }
+        #with multiple return value: func functionName() (return_type, return_type) { return value, value }
         #with named return value:
-                func function_name() (return_name return_type) { return value }
+                func functionName() (returnName return_type) { return value }
                 func split(sum int) (x, y int) {
                     x = sum / 2
                     y = sum - x
@@ -266,7 +272,7 @@ Loop
             func (){ function_body }
             func (){ function_body }()  //automatically run the function
     #higher-order function:
-        func function_name
+        func functionName
             (callback func(parameter_type,parameter_type) return_type)  //take a callback function as argument
             func(parameter_type,parameter_type) return_type             //return a function as closure
             { function_body }
@@ -277,16 +283,16 @@ Loop
         The receiver argument can be of type parameter_type or a pointer to parameter_type
             Go will resolve the pointer automatically
     #definition:
-        func (receiver_argument_name type) method_name(parameter_name parameter_type) return_type { function_body }
+        func (receiverArgumentName type) methodName(parameterName parameter_type) return_type { function_body }
         func (v Vertex) Abs() float64 { statements }
-    #call: variable_name.method_name(argument, argument)
+    #call: variableName.methodName(argument, argument)
     #add method for types defined in different package (e.g. built-in types):
         type MyInt int                      //use type alias
         func (x MyInt) square() int {       //declare the method on the type alias
             return int(x*x)                 //do type casting to original type if you want to
         }   
         a := MyInt(-2)                      //convert the original type into the type alias
-	    a.square()                          //use the method (convert it back to the original type if necessary)
+        a.square()                          //use the method (convert it back to the original type if necessary)
 #Method with pointer receiver
         type Vertex struct {X, Y float64}
         func (v *Vertex) Scale(f float64) { //if you don't use the * and declare the receiver as pointer,
@@ -304,16 +310,16 @@ Loop
             defer fmt.Println(a)    //call defer right before return if possible
             return a
         }
-	func main() {
+        func main() {
             defer fmt.Println("world")
             fmt.Println("hello")
-    	}
-        func main() {
-	    file, err := os.Open(filename)
-	    if err != nil {
-		return "", err
-	    }
-	    defer file.Close()  // call defer close to the definition of file
+        }
+        func functionName() {
+            file, err := os.Open(filename)
+            if err != nil {
+                return "", err
+            }
+            defer file.Close()      // call defer close to the definition of file
         }
     A defer statement defers the execution of a function until the surrounding function returns.
     The deferred call's arguments are evaluated immediately,
@@ -324,7 +330,7 @@ Loop
 #--------------------------------------------------------------------------------
 #Interface
     interface type is a set of method signatures
-        type interface_name interface {
+        type interfaceName interface {
             method signature
             method signature
         }
@@ -332,14 +338,14 @@ Loop
     A type implements an interface simply by implementing its methods (no implements keyword necessary)
 #Nil underlying value
     If the concrete value inside the interface itself is nil, the method will be called with a nil receiver.
-        var i interface_name
+        var i interfaceName
         var t *type_name
         i = t
         func (t *T) M() { return t == nil }     //this will return true because the underlying value t is nil
     An interface value that holds a nil concrete value is itself non-nil.
 #Nil interface
     A nil interface value holds neither value nor concrete type.
-        var i interface_name
+        var i interfaceName
         i == nil                //true
     calling a method of a nil interface causes runtime error, unlike calling a method with nil underlying value
         this is because you can handle the nil underlying value inside the function
@@ -356,13 +362,13 @@ Loop
         f, ok := i.(float64)            //f == 0; ok == false
         f = i.(float64)                 //panic
 #Type switches
-    switch value := interface_name.(type) {
+    switch value := interfaceName.(type) {
     case int:
         value += 1      // here value has type int
     case string:
         value += " "    // here value has type string
     default:
-        // no match; here value has the same type as interface_name
+        // no match; here value has the same type as interfaceName
     }
 
 #fmt.Stringer interface: for types that can describe itself as a string
@@ -426,17 +432,17 @@ Loop
             This allows goroutines to synchronize without explicit locks or condition variables.
          Only the sender should close a channel, never the receiver.
          Sending on a closed channel will cause a panic.
-    #create: channel_name := make(chan type_name)
-    #send value to channel: channel_name <- value
-    #receive value from channel: variable_name := <- channel_name
-    #close channel (from sending value): close(channel_name)
-    #check if channel is closed: variable_name, still_open := <-ch
-        still_open will be false if the channel is closed
+    #create: channelName := make(chan type_name)
+    #send value to channel: channelName <- value
+    #receive value from channel: variableName := <- channelName
+    #close channel (from sending value): close(channelName)
+    #check if channel is closed: variableName, stillOpen := <-ch
+        stillOpen will be false if the channel is closed
 #Example usage of channel and goroutine
-    func function_name(ch chan int){ ch <- 1; ch <- 2; close(ch) }
+    func functionName(ch chan int){ ch <- 1; ch <- 2; close(ch) }
     func main() {
         ch := make(chan int)
-        go function_name(ch)
+        go functionName(ch)
         
         fmt.Println(<-ch)       //print 1
         fmt.Println(<-ch)       //print 2
@@ -444,17 +450,17 @@ Loop
     }
 
 #Buffered Channel: channel that can be filled by value from the same goroutine
-    channel_name := make(chan type_name, buffer_length)
+    channelName := make(chan type_name, buffer_length)
     ch := make(chan int, 100)
 #Example usage of buffered channel
     ch := make(chan int, 2)
-	ch <- 1; ch <- 2
+    ch <- 1; ch <- 2
     ch <- 3             //overflowing the buffer causes fatal error
-	fmt.Println(<-ch)
-	fmt.Println(<-ch)
+    fmt.Println(<-ch)
+    fmt.Println(<-ch)
 
 #Iterate over a channel (until it is closed)
-    for value := range channel_name { fmt.Println(value) }
+    for value := range channelName { fmt.Println(value) }
 
 #Select statement
     lets a goroutine wait on multiple communication operations
@@ -463,15 +469,15 @@ Loop
     The default case in a select is run if no other case is ready.
         Use a default case to try a send or receive without blocking:
 #Example
-    func function_name(first_channel, second_channel chan int){
+    func functionName(firstChannel, secondChannel chan int){
         select {
-            case variable_name := <- first_channel: fmt.Printf("first_channel: %v\n", variable_name)
-            case <- second_channel:                 fmt.Println("received signal from second_channel")
+            case variableName := <- firstChannel: fmt.Printf("firstChannel: %v\n", variableName)
+            case <- secondChannel:                 fmt.Println("received signal from secondChannel")
         }
     }
     func main(){
         a := make(chan int); b := make(chan int);
-        go function_name(a,b)
+        go functionName(a,b)
         a <- 1
     }
 #Example with default case

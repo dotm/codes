@@ -123,12 +123,6 @@ func main() {
         cap(slice_name)
     #append value: slice_name = append(slice_name, value, value, ...)
 
-#Iterate over slice using range
-    for index, value := range slice_name { statements }
-    for index := range slice_name { statements }            //capture index only
-    for _, value := range slice_name { statements }         //capture value only
-    for range slice_name { statements }                     //without capturing index or value
-
 #--------------------------------------------------------------------------------
 #Map: maps keys to values
         A nil map has no keys, nor can keys be added
@@ -168,13 +162,31 @@ Conditional
         can use init_statement after the switch keyword (just like if statement)
         can be used without init_statement and expression (used as an if statement)
     switch init_statement; expression {
-        case value:
+        case condition:
             statements
-        case value:
+        case condition, condition, condition:
             statements
         default:
             statements
 	}
+#break
+
+#Type switch statement
+	var value interface{}
+	value = functionOfSomeType()
+	switch t := value.(type) {
+	default:
+		fmt.Printf("unexpected type %T\n", t) // %T prints whatever type t has
+	case bool:
+		fmt.Printf("boolean %t\n", t) // t has type bool
+	case int:
+		fmt.Printf("integer %d\n", t) // t has type int
+	case *bool:
+		fmt.Printf("pointer to boolean %t\n", *t) // t has type *bool
+	case *int:
+		fmt.Printf("pointer to integer %d\n", *t) // t has type *int
+	}
+
 #--------------------------------------------------------------------------------
 Loop
 
@@ -187,7 +199,31 @@ Loop
         variables declared in init_statement are available only inside the loop
 #Infinite loop: for { break }   //use break to stop the loop
 #While loop: for condition_expression { statements }
-    
+#break
+#continue
+
+#Label
+	label:
+	for i := 0; i < 10; i++ {
+		for j := 0; j < 10; j++ {
+			if j > 3 { break }
+			if i > 3 { break label }
+			fmt.Println(i, j)
+		}
+	}
+
+#Iterate over array, string, and slice using range
+    for index, value := range slice_name { statements }
+    for index := range slice_name { statements }            //capture index only
+    for _, value := range slice_name { statements }         //capture value only
+    for range slice_name { statements }                     //without capturing index or value
+
+#Iterate over map using range
+    for key, value := range map_name { statements }
+    for key := range map_name { statements }            //capture index only
+    for _, value := range map_name { statements }       //capture value only
+    for range map_name { statements }                   //without capturing index or value
+
 #--------------------------------------------------------------------------------
 #Function
         first-class object

@@ -5,11 +5,66 @@ func main() {
 }
 
 #--------------------------------------------------------------------------------
-#Print string with new line
-    fmt.Println("hello world")
-#Printf
-    fmt.Printf("%v %v %v %q", integer_value, float_value, boolean_value, string_value)
-    fmt.Printf("the value %v has type %T", value, value)
+// single line comment
+/* multi line comment */
+
+#--------------------------------------------------------------------------------
+#Print string
+    #basic: fmt.Print("hello world", "!")
+    #with new line: fmt.Println("hello world", "!")
+    #formatted:
+        fmt.Printf("%v %v %v %q", integer_value, float_value, boolean_value, string_value)
+        fmt.Printf("the value %v has type %T", value, value)
+
+#Print into io.Writer interface (stream)
+    #basic: fmt.Fprint(os.Stdout, "hello world", "!")
+    #with new line: fmt.Fprintln(os.Stderr, "hello world", "!")
+    #formatted: fmt.Fprintf(CustomStream, "%d", integer_value)
+
+#Output string
+    #basic: fmt.Sprint("hello world", "!")
+    #with new line: fmt.Sprintln("hello world", "!")
+    #formatted: fmt.Sprintf("%d", integer_value)
+
+
+#Format Specifiers
+    numeric formats such as %d do not take flags for signedness or size
+        instead, the printing routines use the type of the argument to decide these properties
+            var x uint64 = 1<<64 - 1
+            fmt.Printf("%d %x; %d %x\n", x, x, int64(x), int64(x))
+            //will print 18446744073709551615 ffffffffffffffff; -1 -1
+    the default conversion specifier %v produce exactly what Print and Println would produce
+    when printing a struct, the modified format %+v
+        annotates the fields of the structure with their names
+            fmt.Printf("%v\n", vector)      //will print &{3 -1}
+            fmt.Printf("%+v\n", vector)     //will print &{x: 3, y: -1}
+    for any value the alternate format %#v
+        prints the value in full Go syntax
+            fmt.Printf("%#v\n", vector)     //will print &main.Vector{x: 3, y: -1}
+    the quoted string format is available through %q
+        when applied to a value of type string or []byte
+    the %q format also applies to integers and runes,
+        producing a single-quoted rune constant.
+    the alternate format %#q will use backquotes on type string instead if possible
+    the %x works on strings, byte arrays and byte slices as well as on integers,
+        generating a long hexadecimal string,
+        and with a space in the format (% x) it puts spaces between the bytes.
+    prints the type of a value with %T
+
+#Default format for custom type
+        func (t *type_name) String() string {
+            return fmt.Sprintf("%d/%g/%q", t.a, t.b, t.c)
+        }
+    If you need to print values of type type_name as well as pointers to type_name,
+        the receiver for String must be of value type;
+        the example above used a pointer because that's more efficient and idiomatic for struct types.
+    Beware of infinite recursion when defining default format for custom type
+        func (m MyString) String() string {
+            return fmt.Sprintf("MyString=%s", m)            // Error: will recur forever.
+        }
+        func (m MyString) String() string {
+            return fmt.Sprintf("MyString=%s", string(m))    // OK: note the conversion.
+        }
 
 #--------------------------------------------------------------------------------
 #Variable declaration:
@@ -30,7 +85,7 @@ func main() {
     #Boolean: bool
         true false
     #Integers:
-            int  int8  int16  int32  int64
+            int    int8    int16    int32    int64
             uint uint8 uint16 uint32 uint64
             uintptr
             byte        // alias for uint8
@@ -55,7 +110,7 @@ func main() {
 
 #Type conversion: type(value)
     var a float64 = 3.8
-    var b int = int(a)  //b is 3
+    var b int = int(a)    //b is 3
 
 #--------------------------------------------------------------------------------
 #Data Allocation
@@ -85,7 +140,7 @@ func main() {
         *p = 21             // set i through the pointer p
     #access struct field through pointer
         (*p).structField
-        p.structField      //shorthand
+        p.structField       //shorthand
 
 #--------------------------------------------------------------------------------
 #Struct: a collection of fields
@@ -97,17 +152,27 @@ func main() {
         }
     #create using composite literal:
         var structVariable = structName{value, value, value}
-        var structVariable = structName{fieldName1: value, fieldName2: value}   //partial initialization permitted
-        var structVariable = structName{fieldName2: value, fieldName1: value}   //unordered initialization permitted
-        var structVariable = structName{}                                       //all struct field set to zero value
+        var structVariable = structName{fieldName1: value, fieldName2: value}     //partial initialization permitted
+        var structVariable = structName{fieldName2: value, fieldName1: value}     //unordered initialization permitted
+        var structVariable = structName{}                                         //all struct field set to zero value
     #access field: structVariable.fieldName1
 
 #--------------------------------------------------------------------------------
 #Array
         (zero index, homogeneous, fixed-length)
+        value type (pass by value)
+            assigning one array to another copies all the elements
+            passing an array to a function will copy it (and not passing the reference)
+        the size of an array is part of its type
+            types [10]int and [20]int are distinct
+        they are a building block for slices
+            array's value property can be useful but also expensive
+            if you want efficiency, you can pass a pointer to the array
+            but that style isn't idiomatic; use slices instead
+        unless the dimensions (length) of an array is fixed, use slices
     #create array with zero values
         var arrayName [length]value_type
-        var a [10]int   //initialized to zero values
+        var a [10]int     //initialized to zero values
     #create using composite literal:
         var arrayName [length]value_type = [length] value_type {value, value}
         var arrayName [length]value_type = [length] value_type {index: value, index: value}
@@ -117,17 +182,22 @@ func main() {
     #change element value at index: array[index] = value
 
 #Slices:
-        is like a variable-length array
-        doesn't actually store any data, it just describes a section of an underlying array
-        changing the elements of a slice
+        value type (pass by value)
+        a run-time data structure that have 3 fields:
+            length: the number of elements the slice currently hold
+            capacity: the number of elements in the underlying array, counting from the first element in the slice
+            a pointer to its underlying array
+        if you assign one slice to another, both will refer to the same array
+        a proxy to its underlying array
+            changing the elements of a slice
             modifies the corresponding elements of its underlying array
-            and other slices can see the change because slices are just references
-        A nil slice has a length and capacity of 0 and has no underlying array.
-        Slices can contain any type, including other slices.
+            and other entities can see the change
+        a nil slice has a length and capacity of 0 and has no underlying array.
+        slices can contain any type, including other slices.
     #create
         #from array:
             var sliceName []value_type = arrayName[upper_index : lower_index]
-            var sliceName []value_type = arrayName[1:3]   //will include elements of index 1 and 2 from arrayName
+            var sliceName []value_type = arrayName[1:3]     //will include elements of index 1 and 2 from arrayName
             var sliceName []value_type = arrayName[1:]    //will include elements from index 1 until the last element from arrayName
             var sliceName []value_type = arrayName[:3]    //will include elements of index 0, 1, and 2 from arrayName
             var sliceName []value_type = arrayName[:]     //will include all elements from arrayName
@@ -135,22 +205,31 @@ func main() {
             this creates the array [3]bool{true, true, false}
             then builds a slice that references it
         #using make function to allocate a zeroed array and returns a slice that refers to that array:
-            make([]slice_type, length)              //capacity == length
+            make([]slice_type, length)                //capacity == length
             make([]slice_type, length, capacity)
-            b := make([]int, 0, 5)                  // len(b)=0, cap(b)=5
+            b := make([]int, 0, 5)                    // len(b)=0, cap(b)=5
     #reslicing:
         sliceName = sliceName[new_upper_index : new_lower_index]
     #change underlying array:
         sliceName = arrayName[upper_index : lower_index]
-    #get slice length (the number of elements it contains)
-        len(sliceName)
-    #get slice capacity: the number of elements in the underlying array, counting from the first element in the slice
-        cap(sliceName)
+    #get slice length: len(sliceName)
+    #get slice capacity: cap(sliceName)
     #append value: sliceName = append(sliceName, value, value, ...)
+
+#Two-dimensional slices
+    To create the equivalent of a 2D array or slice, it is necessary to define an array-of-arrays or slice-of-slices
+        type Transform [3][3]float64    // A 3x3 array, really an array of arrays.
+        type LinesOfText [][]byte         // A slice of byte slices.
+    Because slices are variable-length, it is possible to have each inner slice be a different length.
 
 #--------------------------------------------------------------------------------
 #Map: maps keys to values
-        A nil map has no keys, nor can keys be added
+        pass by reference
+        a nil map has no keys, nor can keys be added
+        the key can be of any type for which the equality operator is defined:
+            integers, floating point, complex numbers, strings,
+            interfaces (as long as the dynamic type supports equality),
+            pointers, structs, arrays
     #create
         #using make to create empty map:
             mapName := make(map [key_type] value_type)     //e.g. make(map[string]int)
@@ -165,6 +244,11 @@ func main() {
     #delete element by key: delete(map, keyName)
     #check if an element exist at a key:
         elem, isExist := map[keyName]             //if no element found at keyName, isExist will be false and elem will be zero-valued
+        _, isExist := map[keyName]
+
+#Set
+    A set can be implemented as a map with value type bool
+        set := map[string]bool{"uuid": true, "uuid": true}
 
 #--------------------------------------------------------------------------------
 Conditional
@@ -220,9 +304,9 @@ Loop
     for init_statement; condition_expression; post_statement { statements }
         the init_statement and post_statement is optional:
             for ; condition_expression ; { statements }
-            for condition_expression { statements }          //the ; can be omitted if only the condition_expression exist
+            for condition_expression { statements }            //the ; can be omitted if only the condition_expression exist
         variables declared in init_statement are available only inside the loop
-#Infinite loop: for { break }   //use break to stop the loop
+#Infinite loop: for { break }     //use break to stop the loop
 #While loop: for condition_expression { statements }
 #break
 #continue
@@ -246,8 +330,8 @@ Loop
 #Iterate over map using range
     for key, value := range mapName { statements }
     for key := range mapName { statements }            //capture index only
-    for _, value := range mapName { statements }       //capture value only
-    for range mapName { statements }                   //without capturing index or value
+    for _, value := range mapName { statements }         //capture value only
+    for range mapName { statements }                     //without capturing index or value
 
 #--------------------------------------------------------------------------------
 #Function
@@ -264,16 +348,16 @@ Loop
                 func split(sum int) (x, y int) {
                     x = sum / 2
                     y = sum - x
-                    return          // this will return the latest value of x and y
+                    return            // this will return the latest value of x and y
                 }
             the named return values are treated as variables defined at the top of the function
                 use them for documentation purposes
         #anonymous function: ???
             func (){ function_body }
-            func (){ function_body }()  //automatically run the function
+            func (){ function_body }()    //automatically run the function
     #higher-order function:
         func functionName
-            (callback func(parameter_type,parameter_type) return_type)  //take a callback function as argument
+            (callback func(parameter_type,parameter_type) return_type)    //take a callback function as argument
             func(parameter_type,parameter_type) return_type             //return a function as closure
             { function_body }
     
@@ -287,18 +371,18 @@ Loop
         func (v Vertex) Abs() float64 { statements }
     #call: variableName.methodName(argument, argument)
     #add method for types defined in different package (e.g. built-in types):
-        type MyInt int                      //use type alias
-        func (x MyInt) square() int {       //declare the method on the type alias
+        type MyInt int                        //use type alias
+        func (x MyInt) square() int {         //declare the method on the type alias
             return int(x*x)                 //do type casting to original type if you want to
-        }   
-        a := MyInt(-2)                      //convert the original type into the type alias
-        a.square()                          //use the method (convert it back to the original type if necessary)
+        }     
+        a := MyInt(-2)                        //convert the original type into the type alias
+        a.square()                            //use the method (convert it back to the original type if necessary)
 #Method with pointer receiver
         type Vertex struct {X, Y float64}
         func (v *Vertex) Scale(f float64) { //if you don't use the * and declare the receiver as pointer,
-            v.X = v.X * f                   //the two lines here won't work
-            v.Y = v.Y * f                   //it wont modify the original vertex
-        }                                   //hence calling vertex.Scale(2) won't work
+            v.X = v.X * f                     //the two lines here won't work
+            v.Y = v.Y * f                     //it wont modify the original vertex
+        }                                     //hence calling vertex.Scale(2) won't work
     There are two reasons to use a pointer receiver:
         so that the method can modify the value that its receiver points to
         to avoid copying the value on each method call (which can impact efficiency if the value is a large struct)
@@ -319,7 +403,7 @@ Loop
             if err != nil {
                 return "", err
             }
-            defer file.Close()      // call defer close to the definition of file
+            defer file.Close()        // call defer close to the definition of file
         }
     A defer statement defers the execution of a function until the surrounding function returns.
     The deferred call's arguments are evaluated immediately,
@@ -364,7 +448,7 @@ Loop
 #Type switches
     switch value := interfaceName.(type) {
     case int:
-        value += 1      // here value has type int
+        value += 1        // here value has type int
     case string:
         value += " "    // here value has type string
     default:
@@ -397,7 +481,7 @@ Loop
         if err := run(); err != nil { fmt.Println(err) }
         
         i, err := strconv.Atoi("42")
-        if err != nil   { fmt.Printf("couldn't convert number: %v\n", err) }
+        if err != nil     { fmt.Printf("couldn't convert number: %v\n", err) }
         else            { fmt.Println(i) }
     }
 
@@ -444,9 +528,9 @@ Loop
         ch := make(chan int)
         go functionName(ch)
         
-        fmt.Println(<-ch)       //print 1
-        fmt.Println(<-ch)       //print 2
-        fmt.Println(<-ch)       //print 0 since channel is closed; will raise fatal error if channel is not closed
+        fmt.Println(<-ch)         //print 1
+        fmt.Println(<-ch)         //print 2
+        fmt.Println(<-ch)         //print 0 since channel is closed; will raise fatal error if channel is not closed
     }
 
 #Buffered Channel: channel that can be filled by value from the same goroutine
@@ -507,16 +591,16 @@ Loop
     }
     func (c *SafeCounter) Increment() {
         fmt.Println("Function called")
-        c.mux.Lock();               fmt.Println("Lock so only one goroutine at a time can access c.v");
+        c.mux.Lock();                 fmt.Println("Lock so only one goroutine at a time can access c.v");
         time.Sleep(time.Second);
-        c.v++;                      fmt.Printf("Counter changed to %v\n", c.v);
+        c.v++;                        fmt.Printf("Counter changed to %v\n", c.v);
         c.mux.Unlock();             fmt.Println("Release lock");
     }
     func (c *SafeCounter) Value() int {
         c.mux.Lock()
         // Lock so only one goroutine at a time can access the map c.v.
         defer c.mux.Unlock()
-        return c.v                  //returns the current value of the counter
+        return c.v                    //returns the current value of the counter
     }
     func main() {
         c := SafeCounter{v: 0}

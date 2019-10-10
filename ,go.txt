@@ -1,8 +1,56 @@
+#File Structure
+
+!main.go
+//Run with: go run src/playground/main.go
 package main
-import "fmt"
+
+import (
+	"fmt"
+	"log"
+	"os"
+	"time"
+)
+
 func main() {
-    fmt.Println("Hello, 世界")
+	// this is the main entry point
+	// will be run after all init functions are already executed
+
+	// get CLI arguments
+	args := os.Args
+	programLocation := args[0]
+	firstArg := args[1]
+
+	fmt.Println("Hello, " + firstArg + ". You're running: " + programLocation)
 }
+
+func init() {
+	// init is called after all the variable declarations
+	// in the package have evaluated their initializers,
+	// and those are evaluated only after all
+	// the imported packages have been initialized
+	fmt.Println("starting program created by", programCreator)
+
+	//used for initializations that cannot be expressed as declarations
+	if true { timeNow = time.Now() }
+
+	//used to verify or repair correctness of the program state before real execution begins
+	if programCreator == "" {
+		log.Fatal("programCreator not set") //verify correctness
+	}
+	if dbPath == "" {
+		dbPath = "~/db" //repair correctness
+	}
+}
+
+func init() {
+	// multiple init functions is allowed
+	// order of execution: the init at the top will be run before the init at the bottom
+	fmt.Println("ready to run in", dbPath, "at current time", timeNow)
+}
+
+const programCreator = "Yoshua"
+var dbPath string
+var timeNow time.Time
 
 #--------------------------------------------------------------------------------
 // single line comment
@@ -51,7 +99,7 @@ func main() {
         and with a space in the format (% x) it puts spaces between the bytes.
     prints the type of a value with %T
 
-#Default format for custom type
+#Default format for custom type (make custom type printable)
         func (t *type_name) String() string {
             return fmt.Sprintf("%d/%g/%q", t.a, t.b, t.c)
         }
@@ -60,13 +108,25 @@ func main() {
         the example above used a pointer because that's more efficient and idiomatic for struct types.
     Beware of infinite recursion when defining default format for custom type
         func (m MyString) String() string {
-            return fmt.Sprintf("MyString=%s", m)            // Error: will recur forever.
+            return fmt.Sprintf("MyString=%s", m)
+            // Error: will recur forever (the Sprintf will call this String() method again resulting in infinite recursion)
         }
         func (m MyString) String() string {
-            return fmt.Sprintf("MyString=%s", string(m))    // OK: note the conversion.
+            return fmt.Sprintf("MyString=%s", string(m))
+            // OK: note the conversion. (the Sprintf here won't call the String() method again)
         }
 
 #--------------------------------------------------------------------------------
+#Constant vs. Variable
+    constants
+        are created at compile time, even when defined as locals in functions
+        can only be numbers, characters (runes), strings or booleans
+    because of the compile-time restriction,
+        the expressions that define constants must be constant expressions (evaluatable by the compiler).
+            1<<3 is a constant expression
+            math.Sin(4) is not because math.Sin is called at run time
+    variable initializer can be a general expression computed at run time
+
 #Variable declaration:
     var variableName = value
     var variableName variable_type
@@ -141,6 +201,54 @@ func main() {
     #access struct field through pointer
         (*p).structField
         p.structField       //shorthand
+
+#--------------------------------------------------------------------------------
+#Enumerations
+        don't use zero values for enum value because it can be mistaken for an uninitialized enum value
+    #without custom type
+        const (
+            Male = 1
+            Female = 2
+        )
+    #with custom type
+        const (
+            Male    Gender = 1
+            Female  Gender = 2
+        )
+
+#Using iota enumerator to automate enum value generation
+    iota can be part of an expression and the expressions is implicitly repeated
+    the first iota value is 0 and hence it can be mistaken for an uninitialized int value
+        so we can ignore the first value by assigning to blank identifier
+            type ByteSize float64
+            const (
+                _           = iota
+                KB ByteSize = 1 << (10 * iota)
+                MB
+                GB
+                TB
+            )
+        or assign it as an unknown case
+            type ServerStatus int
+            const (
+                Unknown ServerStatus = iota
+                Running
+                Stopped
+                Resumed
+            )
+        or just make the first value non-zero
+            const (
+                Male = iota + 1
+                Female
+            )
+#Producing Alphabets using iota
+    const (
+        a = string(iota + 'a') // a
+        b                      // b
+        c                      // c
+        d                      // d
+        e                      // e
+    )
 
 #--------------------------------------------------------------------------------
 #Struct: a collection of fields
@@ -363,30 +471,37 @@ Loop
     
 #Method
         Go doesn't have classes. But, you can define methods on types.
-        A method is a function with a special receiver argument.
+        A method is a function with a special receiver argument
         The receiver argument can be of type parameter_type or a pointer to parameter_type
-            Go will resolve the pointer automatically
+        All methods on a given type should have either value or pointer receivers, but not both
+        The rule about pointers vs. values for receivers is that:
+            value methods can be invoked on pointers and values
+                if pointer is passed into a method with value receiver, Go will resolve the pointer automatically:
+                pointerName.methodName() ---is-resolved-into--> (&pointerName).methodName()
+            pointer methods can only be invoked on pointers
+                this is because passing value would cause the method
+                to receive a copy of the value, so any modifications would be discarded.
+                The language therefore disallows this mistake.
     #definition:
         func (receiverArgumentName type) methodName(parameterName parameter_type) return_type { function_body }
         func (v Vertex) Abs() float64 { statements }
     #call: variableName.methodName(argument, argument)
     #add method for types defined in different package (e.g. built-in types):
-        type MyInt int                        //use type alias
-        func (x MyInt) square() int {         //declare the method on the type alias
-            return int(x*x)                 //do type casting to original type if you want to
+        type MyInt int                          //use type alias
+        func (x MyInt) square() int {           //declare the method on the type alias
+            return int(x*x)                     //do type casting to original type if you want to
         }     
-        a := MyInt(-2)                        //convert the original type into the type alias
-        a.square()                            //use the method (convert it back to the original type if necessary)
+        a := MyInt(-2)                          //convert the original type into the type alias
+        a.square()                              //use the method (convert it back to the original type if necessary)
 #Method with pointer receiver
         type Vertex struct {X, Y float64}
-        func (v *Vertex) Scale(f float64) { //if you don't use the * and declare the receiver as pointer,
-            v.X = v.X * f                     //the two lines here won't work
-            v.Y = v.Y * f                     //it wont modify the original vertex
-        }                                     //hence calling vertex.Scale(2) won't work
+        func (v *Vertex) Scale(f float64) {     //if you don't use the * and declare the receiver as pointer,
+            v.X = v.X * f                       //the two lines here won't work
+            v.Y = v.Y * f                       //it wont modify the original vertex
+        }                                       //hence calling vertex.Scale(2) won't work
     There are two reasons to use a pointer receiver:
         so that the method can modify the value that its receiver points to
         to avoid copying the value on each method call (which can impact efficiency if the value is a large struct)
-    All methods on a given type should have either value or pointer receivers, but not both
 
 #Defer statement
         func a() int {

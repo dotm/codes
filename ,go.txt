@@ -24,6 +24,8 @@ func main() {
 }
 
 func init() {
+    // init will only run once (when the package is imported by another package for the first time)
+
 	// init is called after all the variable declarations
 	// in the package have evaluated their initializers,
 	// and those are evaluated only after all
@@ -53,8 +55,62 @@ var dbPath string
 var timeNow time.Time
 
 #--------------------------------------------------------------------------------
+#Go "comma ok" idiom
+    if v, ok := mapConfig["key1"]; ok { fmt.Printf("%s exists", v) }
+    func functionName() (value return_type, ok bool){
+        ok = false
+        if condition_expression {
+            value = something
+            ok = true
+            return
+        }
+    }
+
+#--------------------------------------------------------------------------------
 // single line comment
 /* multi line comment */
+
+#--------------------------------------------------------------------------------
+#Constant vs. Variable
+    constants
+        are created at compile time, even when defined as locals in functions
+        can only be numbers, characters (runes), strings or booleans
+    because of the compile-time restriction,
+        the expressions that define constants must be constant expressions (evaluatable by the compiler).
+            1<<3 is a constant expression
+            math.Sin(4) is not because math.Sin is called at run time
+    variable initializer can be a general expression computed at run time
+
+#Variable declaration:
+    var variableName = value
+    var variableName variable_type
+    var variableName variable_type = value
+#Short assignment statement for variable
+        func main() { k := 3 }
+    Inside a function, the := short assignment statement can be used in place of a var declaration with implicit type.
+
+#Constant declaration
+    const constantName = value
+    const constantName constant_type
+    const constantName constant_type = value
+
+#--------------------------------------------------------------------------------
+#The blank identifier _
+    #in multiple assignment: if _, ok = functionName(); ok {}
+    #unused import:
+        var _ = package.Function
+        var _ package.Type
+    #unused variable:
+        _ = variableName
+    #import for side effect:
+        import _ "net/http/pprof"
+    #interface check:
+        _, ok = variableName.(interfaceName)        // check if variableName conforms to interfaceName
+        var _ interfaceName = (*type_name)(nil)     // check if type_name conforms to interfaceName
+
+#Import side effect
+    just the import of the package will cause some code (init function) to execute on app start
+    putting my system in a state different than it would be without having imported that package
 
 #--------------------------------------------------------------------------------
 #Print string
@@ -99,7 +155,8 @@ var timeNow time.Time
         and with a space in the format (% x) it puts spaces between the bytes.
     prints the type of a value with %T
 
-#Default format for custom type (make custom type printable)
+#Default format for custom type (make custom type printable) using the fmt.Stringer interface
+        type Stringer interface { String() string }
         func (t *type_name) String() string {
             return fmt.Sprintf("%d/%g/%q", t.a, t.b, t.c)
         }
@@ -115,30 +172,6 @@ var timeNow time.Time
             return fmt.Sprintf("MyString=%s", string(m))
             // OK: note the conversion. (the Sprintf here won't call the String() method again)
         }
-
-#--------------------------------------------------------------------------------
-#Constant vs. Variable
-    constants
-        are created at compile time, even when defined as locals in functions
-        can only be numbers, characters (runes), strings or booleans
-    because of the compile-time restriction,
-        the expressions that define constants must be constant expressions (evaluatable by the compiler).
-            1<<3 is a constant expression
-            math.Sin(4) is not because math.Sin is called at run time
-    variable initializer can be a general expression computed at run time
-
-#Variable declaration:
-    var variableName = value
-    var variableName variable_type
-    var variableName variable_type = value
-#Short assignment statement for variable
-        func main() { k := 3 }
-    Inside a function, the := short assignment statement can be used in place of a var declaration with implicit type.
-
-#Constant declaration
-    const constantName = value
-    const constantName constant_type
-    const constantName constant_type = value
 
 #--------------------------------------------------------------------------------
 #Data types
@@ -168,9 +201,37 @@ var timeNow time.Time
         Channel         : nil
     Struct with omitted fields will have its omitted fields initialized to their respective types' zero values
 
-#Type conversion: type(value)
+#Type bending
+    Use a type assertion or type switch
+        if you have to wrap your concrete type into an interface and want your concrete type back,
+    Use a type conversion
+        if you need to convert one concrete type to an other
+#Type assertions
+    provides access to an interface value's underlying concrete value
+    can raise runtime error (panic) without the comma ok idiom
+        var i interface{} = "Hello"
+        s := i.(string)                 //s == "Hello"
+        s, ok := i.(string)             //s == "Hello"; ok == true
+        f, ok := i.(float64)            //f == 0; ok == false
+        f = i.(float64)                 //panic
+#Type conversion: concrete_type(valueOfConcreteType)
     var a float64 = 3.8
     var b int = int(a)    //b is 3
+#Type switch statement
+    var variableName interface{} = functionOfSomeType()
+    switch t := variableName.(type) {
+        case interfaceName:
+            // here t has the type of interfaceName
+            fmt.Printf("variableName conforms to interfaceName")
+        case bool:
+            // here t has the type of bool
+            fmt.Printf("boolean %t\n", t)
+        case *bool:
+            fmt.Printf("pointer to boolean %t\n", *t) // t has type *bool
+        default:
+            // no match; here t has the same type as variableName
+            fmt.Printf("unexpected type %T\n", t) // %T prints whatever type t has
+    }
 
 #--------------------------------------------------------------------------------
 #Data Allocation
@@ -369,10 +430,12 @@ Conditional
     } else {
         statements
     }
-#If statement with init_statement: if init_statement; condition { statements }
+#If statement with init_statement:
+        if init_statement; condition { statements }
+        if val, err = functionName(); err == nil { statements }
     variables declared in init_statement are available only inside the if statement
     the else if and else statement can access variables from the if init_statement
-        but they can't have an the init_statement
+        but they can't have an init_statement
 
 #Switch statement
         doesn't fallthrough (break is inserted automatically at the end of each case)
@@ -387,22 +450,6 @@ Conditional
             statements
     }
 #break
-
-#Type switch statement
-        var value interface{}
-        value = functionOfSomeType()
-        switch t := value.(type) {
-        default:
-            fmt.Printf("unexpected type %T\n", t) // %T prints whatever type t has
-        case bool:
-            fmt.Printf("boolean %t\n", t) // t has type bool
-        case int:
-            fmt.Printf("integer %d\n", t) // t has type int
-        case *bool:
-            fmt.Printf("pointer to boolean %t\n", *t) // t has type *bool
-        case *int:
-            fmt.Printf("pointer to integer %d\n", *t) // t has type *int
-        }
 
 #--------------------------------------------------------------------------------
 Loop
@@ -460,9 +507,11 @@ Loop
                 }
             the named return values are treated as variables defined at the top of the function
                 use them for documentation purposes
-        #anonymous function: ???
+        #anonymous function/function literal:
             func (){ function_body }
             func (){ function_body }()    //automatically run the function
+            func (parameterName parameter_type, parameterName parameter_type){ function_body }
+            func (parameterName parameter_type, parameterName parameter_type){ function_body }(argument, argument)
     #higher-order function:
         func functionName
             (callback func(parameter_type,parameter_type) return_type)    //take a callback function as argument
@@ -497,7 +546,7 @@ Loop
         type Vertex struct {X, Y float64}
         func (v *Vertex) Scale(f float64) {     //if you don't use the * and declare the receiver as pointer,
             v.X = v.X * f                       //the two lines here won't work
-            v.Y = v.Y * f                       //it wont modify the original vertex
+            v.Y = v.Y * f                       //it won't modify the original vertex
         }                                       //hence calling vertex.Scale(2) won't work
     There are two reasons to use a pointer receiver:
         so that the method can modify the value that its receiver points to
@@ -533,8 +582,21 @@ Loop
             method signature
             method signature
         }
+    Interfaces with only one or two methods are common in Go and are usually given a name derived from the method
         type Absolutable interface { Abs() float64 }
+        type Writer interface { Write(p []byte) (n int, err error) }   // available in io.Writer
     A type implements an interface simply by implementing its methods (no implements keyword necessary)
+    A type can implement multiple interfaces
+    It's an idiom in Go to convert the type of an expression to access a different set of methods
+        sort.IntSlice(userDefinedSequenceType).Sort()
+        fmt.Sprint( []int( userDefinedSequenceType ) )
+    Since almost anything can have methods attached
+        (except pointer and interface),
+        almost anything can satisfy an interface
+        including a function type:
+            type HandlerFunc func(ResponseWriter, *Request)
+            func (f HandlerFunc) ServeHTTP(w ResponseWriter, req *Request) { f(w, req) }
+
 #Nil underlying value
     If the concrete value inside the interface itself is nil, the method will be called with a nil receiver.
         var i interfaceName
@@ -542,6 +604,7 @@ Loop
         i = t
         func (t *T) M() { return t == nil }     //this will return true because the underlying value t is nil
     An interface value that holds a nil concrete value is itself non-nil.
+
 #Nil interface
     A nil interface value holds neither value nor concrete type.
         var i interfaceName
@@ -549,35 +612,37 @@ Loop
     calling a method of a nil interface causes runtime error, unlike calling a method with nil underlying value
         this is because you can handle the nil underlying value inside the function
         e.g. by using a guard like: if t == nil {do something}
-#Empty interface
+
+#Empty interface: interface {}
     is interface type with zero method signature
     may hold values of any type
     are used by code that handles values of unknown type
-#Type assertions
-    provides access to an interface value's underlying concrete value
-        var i interface{} = "Hello"
-        s := i.(string)                 //s == "Hello"
-        s, ok := i.(string)             //s == "Hello"; ok == true
-        f, ok := i.(float64)            //f == 0; ok == false
-        f = i.(float64)                 //panic
-#Type switches
-    switch value := interfaceName.(type) {
-    case int:
-        value += 1        // here value has type int
-    case string:
-        value += " "    // here value has type string
-    default:
-        // no match; here value has the same type as interfaceName
+
+#--------------------------------------------------------------------------------
+#Embedding
+    composition over inheritance
+        Go does not provide subclassing,
+        but it does have the ability to “borrow” pieces of an implementation
+        by embedding types within a struct or interface.
+
+#Embedding interface
+    type Reader interface { Read(p []byte) (n int, err error) }
+    type Writer interface { Write(p []byte) (n int, err error) }
+    type ReadWriter interface {
+        Reader
+        Writer
     }
 
-#fmt.Stringer interface: for types that can describe itself as a string
-    type Stringer interface {
-        String() string
+#Embedding struct
+    type structName struct {
+        fieldName field_type
+        *anotherStructName
     }
-    type Person struct { Name string; Age int }
-    func (p Person) String() string {
-        return fmt.Sprintf("%v (%v years)", p.Name, p.Age)
-    }
+#initialize the struct: structVariable := structName{value, &anotherStructName{}}
+#accessing embedded struct: structVariable.anotherStructName
+
+#--------------------------------------------------------------------------------
+#Error
 
 #Error interface - go programs express error state with error values
     type error interface {
@@ -596,9 +661,38 @@ Loop
         if err := run(); err != nil { fmt.Println(err) }
         
         i, err := strconv.Atoi("42")
-        if err != nil     { fmt.Printf("couldn't convert number: %v\n", err) }
-        else            { fmt.Println(i) }
+        if err != nil {
+            fmt.Printf("couldn't convert number: %v\n", err)
+        } else {
+            fmt.Println(i)
+        }
     }
+
+#Panic and recover
+    panic creates a run-time error
+        that immediately stops execution of the current function
+        and begins unwinding the stack of the goroutine,
+        running any deferred functions along the way.
+        If that unwinding reaches the top of the goroutine's stack, the program dies.
+    However, it is possible to use the built-in function recover
+        to regain control of the goroutine and resume normal execution.
+    recover must be inside deferred function
+#panic
+    panic(e interface{})    //takes anything
+    panic("usually a string is passed to be printed or logged")
+#recover
+    defer func() {
+        if err := recover(); err != nil {
+            log.Println("work failed:", err)
+        }
+    }()
+#repanic (recover and panic again)
+    defer func() {
+        if err := recover(); err != nil {
+            log.Println("work failed:", err)
+            panic(err)
+        }
+    }()
 
 #--------------------------------------------------------------------------------
 #Exporting
@@ -612,31 +706,62 @@ Loop
         "fmt"
         "math"
     )
+#Import with alias
+    import (
+        textTemplate "text/template"
+        htmlTemplate "html/template"
+    )
 
 #--------------------------------------------------------------------------------
 #Concurrency
+    Do not communicate by sharing memory; instead, share memory by communicating.
+        This approach can be taken too far.
+        Reference counts may be best done by putting a mutex around an integer variable.
+    Although Go's approach to concurrency originates in Hoare's Communicating Sequential Processes (CSP),
+        it can also be seen as a type-safe generalization of Unix pipes.
 
-#Goroutine: a lightweight thread managed by the Go runtime
+#Goroutine
     go f(x, y, z)
         starts a new goroutine running f
         The evaluation of f, x, y, and z happens in the current goroutine
         the execution of f happens in the new goroutine
-    Goroutines run in the same address space,
-        so access to shared memory must be synchronized
+    It is
+        a function executing concurrently with other goroutines in the same address space
+            so access to shared memory must be synchronized
+        a lightweight thread managed by the Go runtime
+    It is lightweight, costing little more than the allocation of stack space.
+        And the stacks start small, so they are cheap,
+        and grow by allocating (and freeing) heap storage as required.
+    Goroutines are multiplexed onto multiple OS threads
+        so if one should block, others continue to run.
+        Their design hides many of the complexities of thread creation and management.
 
 #Channel
         a typed conduit through which you can send and receive values with the channel operator <-
         first-in-first-out (queue)
         By default, sends and receives block until the other side is ready.
             This allows goroutines to synchronize without explicit locks or condition variables.
-         Only the sender should close a channel, never the receiver.
-         Sending on a closed channel will cause a panic.
+        Only the sender should close a channel, never the receiver.
+        Sending on a closed channel will cause a panic.
     #create: channelName := make(chan type_name)
     #send value to channel: channelName <- value
     #receive value from channel: variableName := <- channelName
     #close channel (from sending value): close(channelName)
     #check if channel is closed: variableName, stillOpen := <-ch
         stillOpen will be false if the channel is closed
+#Buffered Channel: channel that can be filled by value from the same goroutine
+    channelName := make(chan type_name, buffer_length)
+    ch := make(chan int, 100)
+#Iterate over a channel (until it is closed)
+    for value := range channelName { fmt.Println(value) }
+#Channel blocking mechanism
+    Receivers always block until there is data to receive. 
+    If the channel is unbuffered,
+        the sender blocks until the receiver has received the value. 
+    If the channel has a buffer,
+        the sender blocks only until the value has been copied to the buffer; 
+        if the buffer is full, this means waiting until some receiver has retrieved a value.
+
 #Example usage of channel and goroutine
     func functionName(ch chan int){ ch <- 1; ch <- 2; close(ch) }
     func main() {
@@ -647,19 +772,42 @@ Loop
         fmt.Println(<-ch)         //print 2
         fmt.Println(<-ch)         //print 0 since channel is closed; will raise fatal error if channel is not closed
     }
-
-#Buffered Channel: channel that can be filled by value from the same goroutine
-    channelName := make(chan type_name, buffer_length)
-    ch := make(chan int, 100)
 #Example usage of buffered channel
     ch := make(chan int, 2)
     ch <- 1; ch <- 2
     ch <- 3             //overflowing the buffer causes fatal error
     fmt.Println(<-ch)
     fmt.Println(<-ch)
-
-#Iterate over a channel (until it is closed)
-    for value := range channelName { fmt.Println(value) }
+#Using unbuffered channel and goroutine to do something in the background
+    c := make(chan int)     // Allocate a channel.
+    go func() {             // Start the sort in a goroutine; when it completes, signal on the channel.
+        list.Sort()
+        c <- 1              // Send a signal; value does not matter.
+    }()
+    doSomethingForAWhile()
+    <-c                     // Wait for sort to finish; discard sent value.
+#Using buffered channel and goroutine to implement a semaphore
+    var semaphore = make(chan int, MaxResourcesInPool)
+    func Serve(queue chan *Request) {
+        for req := range queue {
+            req := req              // create a new req, shadowing the req from the for loop, this is to avoid reuse behavior of for loop variable
+            semaphore <- 1          // increment semaphore
+            go func() {
+                process(req)        // use the limited resource from the pool
+                <-semaphore         // decrement semaphore
+            }()
+        }
+    }
+#Managing limited resources without semaphore
+    func handle(queue chan *Request) {
+        for r := range queue { process(r) }
+    }
+    func Serve(clientRequests chan *Request, quit chan bool) {
+        for i := 0; i < MaxResourcesInPool; i++ {
+            go handle(clientRequests)               // Start handlers
+        }
+        <-quit                                      // Wait to be told to exit
+    }
 
 #Select statement
     lets a goroutine wait on multiple communication operations
@@ -723,3 +871,16 @@ Loop
         time.Sleep(time.Second * 5)
         fmt.Println(c.Value())
     }
+
+#--------------------------------------------------------------------------------
+#Generality
+
+If a type exists only to implement an interface
+and will never have exported methods beyond that interface,
+there is no need to export the type itself.
+
+Exporting just the interface makes it clear
+the value has no interesting behavior beyond what is described in the interface.
+It also avoids the need to repeat the documentation on every instance of a common method.
+
+In such cases, the constructor should return an interface value rather than the implementing type. 

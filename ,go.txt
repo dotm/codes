@@ -1,53 +1,51 @@
-#File Structure
-
 !main.go
 //Run with: go run src/playground/main.go
 package main
 
 import (
-	"fmt"
-	"log"
-	"os"
-	"time"
+    "fmt"
+    "log"
+    "os"
+    "time"
 )
 
 func main() {
-	// this is the main entry point
-	// will be run after all init functions are already executed
+    // this is the main entry point
+    // will be run after all init functions are already executed
 
-	// get CLI arguments
-	args := os.Args
-	programLocation := args[0]
-	firstArg := args[1]
+    // get CLI arguments
+    args := os.Args
+    programLocation := args[0]
+    firstArg := args[1]
 
-	fmt.Println("Hello, " + firstArg + ". You're running: " + programLocation)
+    fmt.Println("Hello, " + firstArg + ". You're running: " + programLocation)
 }
 
 func init() {
     // init will only run once (when the package is imported by another package for the first time)
 
-	// init is called after all the variable declarations
-	// in the package have evaluated their initializers,
-	// and those are evaluated only after all
-	// the imported packages have been initialized
-	fmt.Println("starting program created by", programCreator)
+    // init is called after all the variable declarations
+    // in the package have evaluated their initializers,
+    // and those are evaluated only after all
+    // the imported packages have been initialized
+    fmt.Println("starting program created by", programCreator)
 
-	//used for initializations that cannot be expressed as declarations
-	if true { timeNow = time.Now() }
+    //used for initializations that cannot be expressed as declarations
+    if true { timeNow = time.Now() }
 
-	//used to verify or repair correctness of the program state before real execution begins
-	if programCreator == "" {
-		log.Fatal("programCreator not set") //verify correctness
-	}
-	if dbPath == "" {
-		dbPath = "~/db" //repair correctness
-	}
+    //used to verify or repair correctness of the program state before real execution begins
+    if programCreator == "" {
+        log.Fatal("programCreator not set") //verify correctness
+    }
+    if dbPath == "" {
+        dbPath = "~/db" //repair correctness
+    }
 }
 
 func init() {
-	// multiple init functions is allowed
-	// order of execution: the init at the top will be run before the init at the bottom
-	fmt.Println("ready to run in", dbPath, "at current time", timeNow)
+    // multiple init functions is allowed
+    // order of execution: the init at the top will be run before the init at the bottom
+    fmt.Println("ready to run in", dbPath, "at current time", timeNow)
 }
 
 const programCreator = "Yoshua"
@@ -619,6 +617,19 @@ Loop
     are used by code that handles values of unknown type
 
 #--------------------------------------------------------------------------------
+#Generality
+
+If a type exists only to implement an interface
+and will never have exported methods beyond that interface,
+there is no need to export the type itself.
+
+Exporting just the interface makes it clear
+the value has no interesting behavior beyond what is described in the interface.
+It also avoids the need to repeat the documentation on every instance of a common method.
+
+In such cases, the constructor should return an interface value rather than the implementing type. 
+
+#--------------------------------------------------------------------------------
 #Embedding
     composition over inheritance
         Go does not provide subclassing,
@@ -739,6 +750,8 @@ Loop
 #Channel
         a typed conduit through which you can send and receive values with the channel operator <-
         first-in-first-out (queue)
+        channels are allocated with make, and the resulting value is a reference to an underlying data structure
+        channel is a first-class value that can be allocated and passed around like any other
         By default, sends and receives block until the other side is ready.
             This allows goroutines to synchronize without explicit locks or condition variables.
         Only the sender should close a channel, never the receiver.
@@ -871,16 +884,3 @@ Loop
         time.Sleep(time.Second * 5)
         fmt.Println(c.Value())
     }
-
-#--------------------------------------------------------------------------------
-#Generality
-
-If a type exists only to implement an interface
-and will never have exported methods beyond that interface,
-there is no need to export the type itself.
-
-Exporting just the interface makes it clear
-the value has no interesting behavior beyond what is described in the interface.
-It also avoids the need to repeat the documentation on every instance of a common method.
-
-In such cases, the constructor should return an interface value rather than the implementing type. 

@@ -37,6 +37,7 @@ git config --global alias.rs reset
 git config --global alias.lo 'log --oneline'
 git config --global alias.c 'commit -am'
 git config --global alias.a 'add -A'
+git config --global alias.ccr 'commit --allow-empty -m "[ci enable][run test]"'
 
 #-----------------------------------------------------------------------------------
 #Setup SSH

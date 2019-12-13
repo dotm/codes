@@ -38,6 +38,8 @@ git config --global alias.lo 'log --oneline'
 git config --global alias.c 'commit -am'
 git config --global alias.a 'add -A'
 git config --global alias.ccr 'commit --allow-empty -m "[ci enable][run test]"'
+git config --global alias.mom 'merge origin/master'
+git config --global alias.mod 'merge origin/develop'
 
 #-----------------------------------------------------------------------------------
 #Setup SSH

@@ -1,0 +1,30 @@
+#Concurrency
+
+#GCD
+
+    Dispatch (Grand Central Dispatch) is a wrapper for iOS threading library.
+    Instead of creating new threads on your own,
+    you are provided with ready-to-use threads.
+
+    You still need to create your own queues if you don't want to use the provided (non-custom) queues.
+
+    Provided queues:
+    - Main queue: serial queue on main thread
+    - Global queues: concurrent queues with different priorities (high, default, low, and background)
+
+    Queues can be either serial or concurrent.
+    Serial queues guarantee that only one task runs at any given time.
+        - 1 - 1 - 1 - 2 - 2 - 3 ->
+    Concurrent queues allow multiple tasks to run at the same time.
+        - 1 - 1 - 2 - 1 - 2 - 3 ->
+
+    Once you create a queue, you can supply blocks of closure
+    as a task (DispatchWorkItem) to be executed in that queue.
+    You can dispatch a task either synchronously or asynchronously.
+
+#OperationQueue
+
+    OperationQueue is built on top of Grand Central Dispatch
+
+    Prefer GCD where task is not much complex and optimum CPU performance is required.
+    Prefer NSOperationQueue where task is complex and requires canceling or suspending a block and dependency management.

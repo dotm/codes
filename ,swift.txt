@@ -442,6 +442,7 @@ Loop
     #with return value: func function_name() -> Return_Type { return value }
       Return_Type of function with no return value
         is Void which can be represented by an empty tuple ()
+    #implicit returns from single-expression functions: func function_name() -> Return_Type { value }
     #with multiple return value
       #using tuple: func function_name() -> (Type, Type, ...) { return (value, value, ...) }
       #using named tuple: func function_name() -> (name: Type, name: Type, ...) { return (value, value, ...) }
@@ -808,11 +809,12 @@ As a general guideline, prefer structures and enumerations because they’re eas
 
     //computed properties provide a getter and an optional setter to retrieve and set other properties and values indirectly
     var computed_property: Type {
-      get {
-        statements
-        return property
+      get {                   //if the getter is composed of only a single expression
+        statements            //(that is, if there's no statements here),
+        return property       //you can return value implicitly (without using the return keyword)
       }
       set {
+        statements
         property = newValue
       }
     }
@@ -983,11 +985,12 @@ As a general guideline, prefer structures and enumerations because they’re eas
 
     //computed properties provide a getter and an optional setter to retrieve and set other properties and values indirectly
     var computed_property: Type {
-      get {
-        statements
-        return property
+      get {                   //if the getter is composed of only a single expression
+        statements            //(that is, if there's no statements here),
+        return property       //you can return value implicitly (without using the return keyword)
       }
       set {
+        statements
         property = newValue
       }
     }
@@ -1101,6 +1104,82 @@ As a general guideline, prefer structures and enumerations because they’re eas
   final func function_name(){}
   final class func function_name(){}
   final subscript (index: Type) -> Type {}
+
+#--------------------------------------------------------------------------------
+#Property Wrappers
+  Use Property Wrappers to
+    reuse getter and setter
+    access the property in multiple form with protected value
+
+#Defining Property Wrappers
+  @propertyWrapper
+  struct PropertyWrapperName {  //can be struct, enum, or class
+
+    //a computed property used when the wrapped property
+    //  is accessed using normal property API: Entity.property
+    var wrappedValue: Int {
+      get {                   //if the getter is composed of only a single expression
+        statements            //(that is, if there's no statements here),
+        return property       //you can return value implicitly (without using the return keyword)
+      }
+      set {
+        statements
+        property = newValue
+      }
+    }
+
+    //a property that can be accessed using: Entity.$property
+    var projectedValue: Type          //projectedValue can be a stored property
+    var projectedValue: Type {        //projectedValue can be a read_only_computed_property
+      statements
+      return value                    //you can return tuple or struct to expose multiple values or functionalities
+    }
+    
+    private var property: Type        //The property here is used as an internal storage for wrappedValue
+    private var otherProperty: Type
+
+    init() {  //with no arguments
+      property = value
+      otherProperty = value
+    }
+    init(wrappedValue: Type) {  //with only the wrappedValue passed as arguments
+      property = wrappedValue
+      otherProperty = value
+    }
+    init(wrappedValue: Type, otherProperty: Type) {  //with other properties passed as arguments
+      property = wrappedValue
+      self.otherProperty = otherProperty
+    }
+  }
+
+#Using Property Wrappers
+  struct StructureName {
+
+    //using the init with no arguments
+    @PropertyWrapperName var property: Type
+
+    //using the init(wrappedValue:)
+    @PropertyWrapperName var property: Type = value
+    @PropertyWrapperName(wrappedValue: value) var property: Type
+
+    //using the init(wrappedValue:otherProperty:)
+    @PropertyWrapperName(wrappedValue: value, otherProperty: value) var property: Type = value
+    @PropertyWrapperName(otherProperty: value) var property: Type = value
+
+    func accessing_wrappedValue(){
+      //the same API as accessing normal property
+      property = newValue
+      let constant_name = property
+    }
+
+    func accessing_projectedValue(){
+      //using the dollar sign API
+      let constant_name = $property
+      //if you expose multiple values using tuple or struct
+      //you can access it normally
+      let constant_name = $property.value
+    }
+  }
 
 #--------------------------------------------------------------------------------
 #Nested Types
@@ -1333,6 +1412,35 @@ protocol InheritingProtocol: ProtocolName, ProtocolName { definitions }
   func function_name<TypeParameters>() -> Return_Type where condition { statements }
   extension Type where condition { definitions }
   protocol { associatedtype TypeName where Condition }
+
+#--------------------------------------------------------------------------------
+#Opaque Types
+  #Generics vs. Opaque Types
+    generic provides a way to supply type from the calling module:
+      func function_name<GenericType>(parameter_name: GenericType) -> GenericType  //function_name defined in the called module
+      let constant_name: ConcreteType function_name(parameter_name: ConcreteType)  //specify type in the calling module
+    opaque types provides a way to supply type from the called module:
+      func function_name() -> some GenericType { return ConcreteType() }           //the Type is specified in the called module
+      let constant_name: GenericType = function_name()                             //the calling module doesn’t need to know about ConcreteType
+  #Protocol vs. Opaque Types
+    Use Opaque Types when you encounter this compile error:
+      protocol can only be used as a generic constraint because it has self or associated type requirements
+
+#Using Opaque Types
+  struct StructName {
+    //in property declaration
+    var variable_name: some Type = value
+
+    //in subscript declaration:
+    subscript(index: Type) -> some Equatable {
+      return value
+    }
+
+    //in function return type
+    func function_name() -> some Equatable {
+      return value
+    }
+  }
 
 #--------------------------------------------------------------------------------
 #Error Handling

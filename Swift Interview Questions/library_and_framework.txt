@@ -1,0 +1,71 @@
+#Static vs Dynamic Library (Unix)
+    Unix-like systems have static library and dynamic library.
+
+    In the case of static libraries (*.a), the code that the app uses
+        is copied to the generated executable file by a static linker during compilation time.  
+
+    Dynamic libraries (*.dylib) are linked
+        with the app’s executable at runtime, but not copied into it.
+    As a result, the executable is smaller and,
+        because the code is loaded only when it is needed,
+        the startup time is typically faster.
+
+#Library vs Dynamic Framework (iOS)
+
+iOS framework is simply a Unix (static or dynamic) library
+    that can include its own resources, such as:
+        headers, localization files, assets (images, sound files),
+        storyboards, documentation, examples of usage, etc.
+
+#Bundle
+    A framework is a specific kind of a bundle).
+    A bundle is a file directory with subdirectories inside
+        used to conveniently ship related files together in one package
+        (images, nibs, or compiled code).
+    The system treats it as one file and you can access
+        bundle resources without knowing its internal structure.
+
+#Embedded Framework
+    Although we ship frameworks with resources inside (XIBs, images, etc.),
+        Xcode will still ignore some of them. 
+    By embedding the framework we can use these resource files.
+    
+    To embed a framework,
+        click on your target in the Xcode
+        and add your framework in the "Embed Frameworks" section.
+
+#Umbrella Framework
+    The main purpose of umbrella frameworks
+        is to hide complex dependencies between frameworks from a developer.
+    It allows you to ship several frameworks as one framework, 
+        exposing only some of the headers to the target application.
+    In order to build an umbrella framework, you have to include the umbrella header,
+        which is nothing more than a regular header file with selected imports;
+        these are important for a framework user.
+
+#Modular Framework
+    To be able to call a framework modular, one must include the module map:
+        framework module ModularFramework {
+            module Module1 {
+                header "File1.h"
+            }
+            module Module2 {
+                header "File2.h"
+            }
+        }
+    This will allow you to import only the modules you need:
+        import ModularFramework.Module1
+        import ModularFramework.Module2
+
+#Fake Framework
+    A fake framework is a common technique of
+        "transforming" a bundle into a framework
+    
+    e.g. when you create your own framework and use a 3rd party library inside,
+        you can ship your code and 3rd party library together (as one framework)
+
+#Pod
+    The CocoaPods dependency manager actively uses umbrella and modular frameworks.
+    If you integrate some pods into your project,
+        you just search for the “modulemap” and “umbrella” keywords
+        in the project and see what they look like.

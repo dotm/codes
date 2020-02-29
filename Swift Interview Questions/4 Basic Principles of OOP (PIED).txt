@@ -1,0 +1,23 @@
+4 Basic Principles of OOP (PIED)
+
+Polymorphism is the ability to call multiple types in the same way.
+This can be done through:
+- Ad hoc Polymorphism
+    e.g. defining two functions called Add for multiple types (Int, Float, String, etc.)
+    this can be controlled through protocol/interface
+- Parametric Polymorphism
+    e.g. using generic so that a class can handle many types
+    e.g. using associated type so that a protocol can handle many types
+- Subtyping (a.k.a. Inheritance)
+
+Inheritance is the ability to reuse code from parent class.
+This reuse mechanism can sometimes be replaced using Composition
+(Composition over Inheritance).
+
+Encapsulation is the mechanism of hiding of data implementation by:
+- restricting access to private property and method
+- allowing access to private things through public API (getter and setter)
+
+Data Abstraction is about hiding the implementation detail of something by
+using inheritance to abstract class or conforming to a protocol/interface
+so that clients can use something without needing to know how it is implemented.

@@ -3,7 +3,7 @@ protocol ButtonProtocol {
 }
 
 class Button: ButtonProtocol {
-    var delegate: ButtonDelegate?
+    var delegate: ButtonDelegate? //should be weak to guard when the delegate is a class protocol
     
     init(delegate: ButtonDelegate) {
         self.delegate = delegate

@@ -1,0 +1,17 @@
+# BASE
+
+Eventually-consistent services are often classified as providing
+BASE (Basically Available, Soft state, Eventual consistency) semantics.
+
+Basically Available:
+    read-write operations are available as much as possible
+    (using all nodes of a database cluster),
+    but without any kind of consistency guarantees
+    (write may not persist after conflicts are reconciled, read may not get the latest write)
+Soft state:
+    we only have some probability of knowing the state,
+    since it may not yet have converged
+Eventually consistent:
+    if the system is functioning and we wait long enough after any given set of inputs,
+    we will eventually be able to know what the state of the database is,
+    and so any further reads will be consistent with our expectations

@@ -10,7 +10,7 @@
 
     Provided queues:
     - Main queue: serial queue on main thread
-    - Global queues: concurrent queues with different priorities (high, default, low, and background)
+    - Global queues: concurrent queues on background thread with different priorities (high, default, low, and background)
 
     Queues can be either serial or concurrent.
     Serial queues guarantee that only one task runs at any given time.

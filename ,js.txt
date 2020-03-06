@@ -15,8 +15,8 @@
   all variable and function declarations are hoisted (lifted and declared) to the top of its context (the containing scope)
   only declarations are hoisted (initialization/assignments are not hoisted)
   function declaration takes precedence over variable declarations but not over variable assignment
-  var myName;  ​    function myName(){};  console.log(typeof myName);  -> function
-  var myName='la';  ​function myName(){};  console.log(typeof myName);  -> string
+    var myName;  ​     function myName(){};  console.log(typeof myName);  -> function
+    var myName='la';  ​function myName(){};  console.log(typeof myName);  -> string
 
 #User string input
   confirm("Yes or no?");
@@ -33,7 +33,7 @@
   typeof variableName;    typeof(variableName);
 
 #Operators: + - * / %
-#Comparataors: > < <= >= === !==
+#Comparators: > < <= >= === !==
 
 #Manipulating strings
   strings
@@ -56,12 +56,14 @@
   #Function expression
     anonymous function expression:            var identifier = function(parameters) { statements; }
     named function expression:                var identifier = function functionName(parameters) { statements; }
-    immediately invoked function expression: (function greet() { alert("hello!"); })();
-      another valid way to use IIFE:         (function greet() { alert("hello!"); }());
+    immediately invoked function expression:  (function greet() { alert("hello!"); })();
+      another valid way to use IIFE:          (function greet() { alert("hello!"); }());
 #Function hoisting
   function declarations and function variables are moved to the top of their scope by JavaScript interpreter
-  do function expressions get hoisted too?
-  the variable declarations get hoisted but their assignment expressions don’t:  var identifier = undefined
+  with function expressions,
+    the variable declarations get hoisted
+    but their assignment expressions don’t:
+        var identifier = undefined
 #Function cascade
     get(object).method().method().method()
   Some methods do not have a return value.
@@ -160,13 +162,12 @@
 #Array []
 Array is a zero-indexed heterogeneous, linear, ordered collection of elements
   #Creating array
-    #with literal:
-      var empty = [];
-      var arrayName = [null, true, 'two'];
+    #with literal: var arrayName = [null, true, 'two'];
     #with constructor: var arrayName = new Array();
   #Array length: array.length
   #Add data value to an array
-    array.push(data);     :=    array[array.length] = data
+    array.push(data);
+    array[array.length] = data
   #Accessing element by index
     var element = array[index];
     the [] converts any expression inside it toString

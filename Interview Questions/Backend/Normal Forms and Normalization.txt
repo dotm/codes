@@ -1,0 +1,102 @@
+# Normal Forms and Normalization
+
+## Purposes of Normalization
+
+Avoid update anomaly: a data exist in two (or more different place), and when an update happens, it only updates one of them.
+
+Avoid insertion anomaly: certain facts cannot be recorded at all.
+Example: we want to insert a row to an employee table, but we can't because the employee doesn't have a team yet.
+
+Avoid deletion anomaly: a data is deleted, but to delete it, we need to delete other data.
+Example: deleting whole row of employee's data just because he is not assigned to a team.
+
+Minimize redesign when extending the database structure.
+
+## Requirements
+
+UNF stands for unnormalized form (no requirements)
+
+1NF : Primary key (no duplicate tuples), No repeating groups, Atomic columns (cells have single value)
+2NF : 1NF + No partial dependencies (values depend on the whole of every Candidate key)
+3NF : 2NF + No transitive dependencies (values depend only on Candidate keys)
+EKNF: 3NF + Every non-trivial functional dependency involves either a superkey or an elementary key's subkey
+BCNF: EKNF + No redundancy from any functional dependency
+4NF : BCNF + Every non-trivial, multi-value dependency has a superkey
+ETNF: 4NF + A component of every explicit join dependency is a superkey
+5NF : ETNF + Every non-trivial join dependency is implied by a candidate key
+DKNF: 5NF + Every constraint is a consequence of domain constraints and key constraints
+
+6NF : 3NF + Every join dependency is trivial
+
+A relational database relation is often described as "normalized" if it meets 3NF.
+Most 3NF relations are free of insertion, update, and deletion anomalies.
+
+Normal forms beyond 4NF are mainly of academic interest,
+as the problems they exist to solve rarely appear in practice.
+
+## 1NF (First Normal Form)
+
+Primary key: each row must have a unique primary key (e.g. ID)
+
+Atomic columns: one column can't have multiple values
+Example violation: a column "phone_numbers" that contains an array of phone numbers
+
+No repeating groups
+Example violation: a "User" table have 3 columns called phone_number1, phone_number2, and phone_number3
+
+Solution: create a table of "User - Phone Number" where one user ID can have many Phone Number
+User table columns: ID, name
+User - Phone Number table columns: userID, phone_number
+
+## 2NF (Second Normal Form)
+
+Superkey: a set of attributes that, when combined, is unique across rows (no two rows have the same superkey value)
+Example
+Book table columns: Title, Format, Author, Price, Pages, Publisher ID
+Superkey: Title, Format, Author
+NOT Superkey (can have the same value in many rows): Price, Publisher ID
+
+Candidate key: a minimal superkey for that relation
+Candidate key of Book table: Title, Format
+
+No partial dependencies (values depend on the whole of every Candidate key)
+
+Example
+In the Book table above, all of the attributes
+that are not part of the candidate key depend on Title.
+However, only Price depends on Format (e.g. Hardcover, E-book, Paperback).
+Other attributes don't depend on Format.
+
+Solution
+To conform to 2NF, every non-key attribute must depend on the whole key, not just part of it.
+To normalize this table, make Title the only key so that every non-key attribute depends upon the whole key,
+and remove Price into a separate table so that its dependency on Format can be preserved.
+
+Book table columns: Title, Author, Pages, Publisher ID
+Format - Prices table columns: Title, Format, Price
+
+## 3NF (Third Normal Form)
+
+No transitive dependencies (values depend only on Candidate keys)
+Transitive dependency:
+an attribute B depends on the candidate key A (and A doesn't depend on B),
+but another attribute C depends on B
+Then the functional dependency of A to C is a transitive dependency.
+
+Example
+Book table columns: Title, Author, Pages, Genre ID, Genre Name
+Here, Genre ID and Genre Name depends on Title.
+But, Genre Name also depends on Genre ID creating a transitive dependency.
+
+Solution
+Abstract the dependency of Genre Name on Genre ID into its own table.
+Book table columns: Title, Author, Pages, Genre ID
+Book Genre table columns: Genre ID, Genre Name
+
+## EKNF (Elementary Key Normal Form)
+
+Every non-trivial functional dependency involves either a superkey or an elementary key's subkey
+
+Functional dependency: an attribute depends on other attribute
+For example: Genre Name has a functional dependency to Genre ID
+

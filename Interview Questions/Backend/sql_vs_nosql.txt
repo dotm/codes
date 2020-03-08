@@ -1,0 +1,12 @@
+# SQL vs. NoSQL
+
+SQL Advantages:
+- SQL has more powerful and easy to use language for playing with database.
+- Consistency of data across all replica set.
+
+NoSQL Advantages:
+- Scalability is better and just works (no setup required) in NoSQL.
+- Management and setup is easy. Nothing to provision, nothing to configure.
+- The schema of NoSQL is flexible. Changing the schema is painless.
+
+We can combine SQL and NoSQL in one app to get the advantages from both technologies.

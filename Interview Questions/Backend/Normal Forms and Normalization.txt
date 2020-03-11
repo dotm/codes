@@ -1,22 +1,24 @@
 # Normal Forms and Normalization
 
 ## Purposes of Normalization
+is to minimize redesign when extending the database structure
+and reduce data redundancy which can cause anomalies.
 
-Avoid update anomaly: a data exist in two (or more different place), and when an update happens, it only updates one of them.
+Update anomaly: a data exist in many different place
+when an update happens, we might forget to update all of them
+causing data inconsistencies.
 
-Avoid insertion anomaly: certain facts cannot be recorded at all.
+Insertion anomaly: a data duplication exists or certain facts cannot be recorded at all.
 Example: we want to insert a row to an employee table, but we can't because the employee doesn't have a team yet.
 
-Avoid deletion anomaly: a data is deleted, but to delete it, we need to delete other data.
+Deletion anomaly: a data is deleted, but to delete it, we need to delete other data.
 Example: deleting whole row of employee's data just because he is not assigned to a team.
-
-Minimize redesign when extending the database structure.
 
 ## Requirements
 
 UNF stands for unnormalized form (no requirements)
 
-1NF : Primary key (no duplicate tuples), No repeating groups, Atomic columns (cells have single value)
+1NF : No duplicate tuples/rows, No repeating groups, Atomic values, No ordering to the rows and columns
 2NF : 1NF + No partial dependencies (values depend on the whole of every Candidate key)
 3NF : 2NF + No transitive dependencies (values depend only on Candidate keys)
 EKNF: 3NF + Every non-trivial functional dependency involves either a superkey or an elementary key's subkey
@@ -35,10 +37,7 @@ Normal forms beyond 4NF are mainly of academic interest,
 as the problems they exist to solve rarely appear in practice.
 
 ## 1NF (First Normal Form)
-
-Primary key: each row must have a unique primary key (e.g. ID)
-
-Atomic columns: one column can't have multiple values
+Atomic values: one column can't have multiple values
 Example violation: a column "phone_numbers" that contains an array of phone numbers
 
 No repeating groups
@@ -47,6 +46,12 @@ Example violation: a "User" table have 3 columns called phone_number1, phone_num
 Solution: create a table of "User - Phone Number" where one user ID can have many Phone Number
 User table columns: ID, name
 User - Phone Number table columns: userID, phone_number
+
+Additional requirements:
+There are no duplicate rows.
+There's no top-to-bottom ordering to the rows.
+There's no left-to-right ordering to the columns.
+All columns are regular [i.e. rows have no hidden components such as row IDs, object IDs, or hidden timestamps].
 
 ## 2NF (Second Normal Form)
 
@@ -100,3 +105,6 @@ Every non-trivial functional dependency involves either a superkey or an element
 Functional dependency: an attribute depends on other attribute
 For example: Genre Name has a functional dependency to Genre ID
 
+## BCNF
+
+For every non trivial functional dependency X -> A. X must be a candidate key.

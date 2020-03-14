@@ -1,0 +1,70 @@
+Mapping is the process of defining how a document, and the fields it contains, are stored and indexed.
+
+Use mappings to define:
+    which string fields should be treated as full text fields.
+    which fields contain numbers, dates, or geolocations.
+    the format of date values.
+    custom rules to control the mapping for dynamically added fields.
+
+## Mapping Type (Deprecated in 6.0.0)
+(See "Removal of mapping types" for alternatives)
+
+Each index has one mapping type which determines how the document will be indexed.
+
+A mapping type has:
+
+Meta-fields
+    Meta-fields are used to customize how a document’s metadata associated is treated.
+    Examples of meta-fields include the document’s _index, _type, _id, and _source fields.
+Fields or properties
+    A mapping type contains a list of fields or properties pertinent to the document.
+
+## Field datatypes
+
+Each field has a data type which can be:
+    a simple type (text, keyword, date, long, double, boolean or ip)
+    a type which supports the hierarchical nature of JSON (object or nested)
+    or a specialised type (geo_point, geo_shape, or completion)
+
+nested type is a specialised version of the object datatype
+    that allows arrays of objects to be indexed in a way
+    that they can be queried independently of each other.
+A JSON like this
+    "user" : [{ "first" : "John", "last" :  "Smith" }, { "first" : "Alice", "last" :  "White" }]
+when stored as object, become like this:
+    { "user.first" : [ "alice", "john" ], "user.last" :  [ "smith", "white" ] }
+this prevents the object to be queried independently of each other
+
+It is often useful to index the same field in different ways for different purposes.
+e.g. string field could be indexed as a text field for full-text search,
+     and as a keyword field for sorting or aggregations.
+This is the purpose of multi-fields.
+Most datatypes support multi-fields via the fields parameter.
+
+## Dynamic mapping
+
+Fields and mapping types do not need to be defined before being used. 
+Thanks to dynamic mapping, new field names will be added automatically, just by indexing a document.
+New fields can be added both to the top-level mapping type, and to inner object and nested fields.
+
+The dynamic mapping rules can be configured to customise the mapping that is used for new fields.
+
+Defining too many fields in an index is
+    a condition that can lead to a mapping explosion,
+    which can cause out of memory errors
+    and difficult situations to recover from.
+This is quite common with dynamic mappings.
+Fortunately, there are settings that allow you
+    to limit the number of field mappings
+    that can be created manually or dynamically,
+    in order to prevent bad documents from causing a mapping explosion.
+
+## Explicit mappings
+While dynamic mapping can be useful to get started,
+at some point you will want to specify your own explicit mappings.
+
+You can create field mappings when you
+- create an index
+- add fields to an existing index
+
+You can also view the current mapping of an index and a specific field

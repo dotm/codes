@@ -39,6 +39,7 @@ and those will execute within the context of that bucket.
 }
 
 ## Returning only aggregation results
+
 There are many occasions when aggregations are required but search hits are not.
 For these cases the hits can be ignored by setting size=0.
 This avoids executing the fetch phase of the search making the request more efficient.

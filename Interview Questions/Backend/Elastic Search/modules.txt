@@ -1,0 +1,52 @@
+Modules are responsible for various aspects of the functionality in Elasticsearch.
+
+Each module has settings which may be:
+    static
+        must be set at the node level,
+        either in the elasticsearch.yml file,
+        or as an environment variable,
+        or on the command line when starting a node.
+        They must be set on every relevant node in the cluster.
+    dynamic
+        can be dynamically updated on a live cluster
+        with the cluster-update-settings API.
+
+## List of modules
+
+Discovery and cluster formation
+    How nodes discover each other, elect a master and form a cluster.
+
+Shard allocation and cluster-level routing
+    Settings to control where, when, and how shards are allocated to nodes.
+
+Gateway
+    How many nodes need to join the cluster before recovery can start.
+
+HTTP
+    Settings to control the HTTP REST interface.
+
+Indices
+    Global index-related settings.
+
+Network
+    Controls default network settings.
+
+Node client
+    A Java node client joins the cluster, but doesn’t hold data or act as a master node.
+
+Plugins
+    Using plugins to extend Elasticsearch.
+
+Thread pools
+    Information about the dedicated thread pools used in Elasticsearch.
+
+Transport
+    Configure the transport networking layer, used internally by Elasticsearch to communicate between nodes.
+
+Remote clusters
+    Remote clusters are used in features that work by connecting across clusters on the transport layer.
+
+Cross-cluster search
+    Cross-cluster search enables executing search requests
+    across more than one cluster without joining them
+    and acts as a federated client across them.

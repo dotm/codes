@@ -1,0 +1,46 @@
+Text analysis is the process of converting unstructured text
+into a structured format that’s optimized for search.
+
+Elasticsearch performs text analysis when indexing or searching text fields.
+
+## Analyzer
+
+An analyzer (whether built-in or custom) is just a package
+which contains three lower-level building blocks:
+- zero or more character filters
+- exactly one tokenizer
+- zero or more token filters
+
+A character filter receives the original text as a stream of characters
+and can transform the stream by adding, removing, or changing characters.
+
+A tokenizer receives a stream of characters (e.g. "blue ocean"),
+breaks it up into individual tokens (usually individual words),
+and outputs a stream of tokens (e.g. [blue, ocean]).
+
+A token filter receives the token stream and may add, remove, or change tokens.
+
+## Index and search analysis
+
+Text analysis occurs at two times:
+    Index time
+        When a document is indexed, any text field values are analyzed.
+    Search time (query time)
+        When running a full-text search on a text field, the query string (the text the user is searching for) is analyzed.
+
+The analyzer, or set of analysis rules, used at each time is called
+the index analyzer or search analyzer respectively.
+
+While less common, it sometimes makes sense to use
+different analyzers at index and search time.
+
+## Normalizers
+
+Normalizers are similar to analyzers except that they may only emit a single token.
+As a consequence, they do not have a tokenizer
+and only accept a subset of the available char filters and token filters.
+Only the filters that work on a per-character basis are allowed.
+
+## See Docs
+
+for guides on built-in analyzer, building custom analyzer, building normalizers

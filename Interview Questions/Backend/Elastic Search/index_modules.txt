@@ -1,0 +1,41 @@
+Index Modules are modules created per index and control all aspects related to an index.
+
+Index level settings can be set per-index. Settings may be:
+    static
+        can only be set at index creation time or on a closed index.
+    dynamic
+        can be changed on a live index using the update-index-settings API.
+
+## List of index modules
+
+See Index modules docs for a list of all static and dynamic index settings
+that are not associated with any specific index module.
+
+Other index settings are available in index modules:
+
+Analysis
+    Settings to define analyzers, tokenizers, token filters and character filters.
+
+Index shard allocation
+    Control over where, when, and how shards are allocated to nodes.
+
+Mapping
+    Enable or disable dynamic mapping for an index.
+
+Merging
+    Control over how shards are merged by the background merge process.
+
+Similarities
+    Configure custom similarity settings to customize how search results are scored.
+
+Slowlog
+    Control over how slow queries and fetch requests are logged.
+
+Store
+    Configure the type of filesystem used to access shard data.
+
+Translog
+    Control over the transaction log and background flush operations.
+
+History retention
+    Control over the retention of a history of operations in the index.

@@ -1,0 +1,139 @@
+Elasticsearch provides a full Query DSL (Domain Specific Language) based on JSON to define queries.
+Think of the Query DSL as an AST (Abstract Syntax Tree) of queries, consisting of two types of clauses.
+
+## Types of clauses
+
+Leaf query clauses: look for a particular value in a particular field, such as the match, term or range queries.
+    These queries can be used by themselves.
+Compound query clauses: wrap other leaf or compound queries 
+    These queries are used to combine multiple queries in a logical fashion (such as the bool or dis_max query),
+    or to alter their behaviour (such as the constant_score query).
+
+## Relevance scores
+
+By default, Elasticsearch sorts matching search results by relevance score,
+which measures how well each document matches a query.
+
+The relevance score is a positive floating point number,
+returned in the _score meta-field of the search API.
+The higher the _score, the more relevant the document.
+
+While each query type can calculate relevance scores differently,
+score calculation also depends on whether
+the query clause is run in a query or filter context.
+
+## Query and filter context
+
+GET /_search
+{
+  "query": {            // query context
+    "bool": {           // filter context
+      "must": [
+        { "match": { "title": "Search" }},
+        { "match": { "content": "Elasticsearch" }}
+      ],
+      "filter": [       // filter context
+        { "term":  { "status": "published" }},
+        { "range": { "publish_date": { "gte": "2015-01-01" }}}
+      ]
+    }
+  }
+}
+
+In the query context,
+    a query clause answers the question
+    “How well does this document match this query clause?”
+Besides deciding whether or not the document matches,
+    the query clause also calculates a relevance score in the _score meta-field.
+Query context is in effect whenever
+    a query clause is passed to a query parameter, 
+    such as the query parameter in the search API.
+
+In a filter context, 
+    a query clause answers the question
+    “Does this document match this query clause?”
+    The answer is a simple Yes or No — no scores are calculated.
+Filter context is in effect whenever
+    a query clause is passed to a filter parameter,
+    such as the filter or must_not parameters in the bool query,
+    the filter parameter in the constant_score query,
+    or the filter aggregation.
+
+## List of queries
+
+### Compound queries
+    Compound queries wrap other compound or leaf queries, 
+        either to combine their results and scores,
+        to change their behaviour,
+        or to switch from query to filter context.
+
+### Full text queries
+    enable you to search analyzed text fields
+
+### Geo queries
+    Elasticsearch supports two types of geo data:
+        geo_point fields which support lat/lon pairs,
+        geo_shape fields which support points, lines, circles, polygons, multi-polygons, etc.
+
+### Shape queries
+    Elasticsearch supports the ability to index arbitrary
+        two dimension (non Geospatial) geometries
+        making it possible to map out
+        virtual worlds, sporting venues, theme parks, and CAD diagrams.
+    The shape field type supports points, lines, polygons, multi-polygons, envelope, etc.
+
+### Joining queries
+    Performing full SQL-style joins in a distributed system like Elasticsearch is prohibitively expensive.
+    Elasticsearch offers two forms of join which are designed to scale horizontally.
+    
+    nested query
+        Documents may contain fields of type nested.
+        These fields are used to index arrays of objects,
+        where each object can be queried
+        (with the nested query) as an independent document.
+    has_child and has_parent queries
+        A join field relationship can exist between documents within a single index.
+        The has_child query returns parent documents whose child documents match the specified query.
+        The has_parent query returns child documents whose parent document matches the specified query.
+
+### Match all and Match none
+    match_all
+        The most simple query, which matches all documents, giving them all a _score of 1.0 (configurable).
+    match_none
+        This matches no documents.
+
+### Span queries
+    low-level positional queries
+    They provide expert control over the order and proximity of the specified terms.
+
+### Specialized queries
+    This group contains queries which do not fit into the other groups.
+
+    distance_feature query
+        A query that computes scores based on the dynamically computed distances
+        between the origin and documents' date, date_nanos and geo_point fields.
+        It is able to efficiently skip non-competitive hits.
+    more_like_this query
+        This query finds documents which are similar to
+        the specified text, document, or collection of documents.
+    percolate query
+        This query finds queries that are stored as documents that match with the specified document.
+    rank_feature query
+        A query that computes scores based on the values of numeric features
+        and is able to efficiently skip non-competitive hits.
+    script query
+        This query allows a script to act as a filter.
+        Also see the function_score query.
+    script_score query
+        A query that allows to modify the score of a sub-query with a script.
+    wrapper query
+        A query that accepts other queries as json or yaml string.
+    pinned query
+        A query that promotes selected documents over others matching a given query.
+
+### Term-level queries
+    find documents based on precise values in structured data.
+
+    Examples of structured data include date ranges, IP addresses, prices, or product IDs.
+    Unlike full-text queries, term-level queries do not analyze search terms.
+    Instead, term-level queries match the exact terms stored in a field.

@@ -1,0 +1,306 @@
+# DBMS
+
+Why learn DBMS?
+A modern DBMS has the following characteristics:
+- models real world entity
+- relation-based tables
+- less redundancy through normalization
+- data consistency
+- powerful query language
+- ACID transaction
+- multiuser concurrent access
+- multiple views for different user roles
+- security through user roles, privileges, and authentication
+
+## User Roles
+
+Administrators
+− maintain the DBMS
+- administer the database
+- look after its usage and by whom it should be used
+- create access profiles for users
+- apply limitations to maintain isolation and force security
+- look after DBMS resources like system license, required tools, and other software and hardware related maintenance.
+
+Designers
+- designing part of the database
+- keep a close watch on what data should be kept and in what format
+- identify and design the whole set of entities, relations, constraints, and views
+
+End Users use the DBMS.
+End users can range from simple viewers who pay attention to the entries
+to sophisticated users such as business analysts or statistician.
+
+## Tier Architecture
+
+In 1-tier architecture, the DBMS is the only entity.
+The user directly sits on the DBMS and uses it (using CRUD queries).
+
+In 2-tier architecture, the DBMS have an application through which the DBMS can be accessed.
+Programmers use 2-tier architecture where they access the DBMS by means of an application.
+
+The 3-tier architecture is the most widely used architecture to design a DBMS.
+1. Database (Data) Tier
+    At this tier, the database resides along with its query processing languages.
+    We also have the relations that define the data and their constraints at this level.
+2. Application (Middle) Tier
+    At this tier reside the application server and the programs that access the database.
+3. User (Presentation) Tier
+    At this layer, multiple views of the database can be provided by the application tier.
+
+## Data Models
+
+### Entity-Relationship Model
+
+ER Model is based on
+    Entities and their attributes.
+    Relationships (logical association) among entities.
+For example:
+    The student entity have attributes such as student name, identification number, etc.
+    The class entity have attributes such as class name, class code, etc.
+    The student entity have a many-to-many relationship to the class entity
+    The class entity have a many-to-many relationship to the student entity
+
+An entity set is a collection of similar types of entities.
+e.g. a Students table is an entity set of student  entities
+
+Attribute's domain is the set of possible values for an attribute.
+    e.g. the domain of student status can be: active, inactive, graduated
+    e.g. the domain of age is positive integer
+
+Types of attributes:
+    Simple attribute is atomic value which cannot be divided further
+        e.g. a student's phone number is an atomic value of 10 digits
+    Composite attribute is made of more than one simple attribute
+        e.g. a student's complete name may have first_name and last_name
+    Derived attribute do not exist in the physical database, but are derived from other attributes
+        e.g. average_salary in a department is derived, age can be derived from data_of_birth
+    Single-value attribute contains single value
+        e.g. Social_Security_Number
+    Multi-value attribute may contain more than one values
+        e.g. a person can have more than one phone number, email_address, etc.
+
+Key is an attribute or collection of attributes that uniquely identifies an entity among entity set.
+    Super Key: a set of attributes (one or more) that collectively identifies an entity in an entity set.
+    Candidate Key: a minimal super key is called a candidate key.
+        An entity set may have more than one candidate key.
+    Primary Key: one of the candidate keys chosen by the database designer to uniquely identify the entity set.
+    Foreign key: a primary key of a relation that can be referred in other relation.
+
+The association among entities is called a relationship. 
+    e.g. an employee works_at a department, a student enrolls in a course
+    Here, works_at and enrolls are called relationships.
+
+A set of relationships of similar type is called a relationship set.
+
+Descriptive attributes: attributes of a relationship.
+
+Degree of Relationship: the number of participating entities in a relationship
+    Binary relationship has degree 2 (a student enrolls in many classes)
+    Ternary relationship has degree 3 (a distributor supply a product to a company)
+    n-ary relationship has degree n
+
+Mapping cardinalities define the number of association between two entities:
+    - one to one (one entity can be associated with at most one other entity)
+    - one to many (one entity can be associated, zero, one, or more entities)
+    - many to one
+    - many to many
+
+Participation Constraints
+    Total Participation: each entity is involved in the relationship.
+    Partial participation: not all entities are involved in the relationship (can be null).
+
+### Relational Model
+
+It is a scientific model based on first-order predicate logic and defines a table as an n-ary relation.
+
+A table (relation) represent a relation/an entity set
+    such as a student table that represent the student entity set.
+The table can have many columns representing the attributes of the entity (student name, identification number)
+    and have many tuples in its row representing a specific record of student value (e.g. John Doe, 12345).
+
+Relation instance
+    A finite set of tuples in the relational database system represents relation instance.
+    Relation instances do not have duplicate tuples.
+
+Relation schema
+    A relation schema describes the relation name (table name), attributes, and their names.
+
+Relation key
+    Each row has one or more attributes, known as relation key,
+    which can identify the row in the relation (table) uniquely.
+
+### Step-by-step of mapping ER model to Relational model
+
+Mapping Entity
+    - Create table for each entity.
+    - Entity's attributes should become fields of tables with their respective data types.
+    - Declare primary key.
+
+Mapping Relationship
+    - Create table for a relationship.
+    - Add the primary keys of all participating Entities as fields of table.
+    - If relationship has any attribute, add each attribute as field of table.
+    - Declare a primary key composing all the primary keys of participating entities.
+    - Declare all foreign key constraints.
+
+Mapping Weak Entity Sets
+    - Create table for weak entity set.
+    - Add all its attributes to table as field.
+    - Add the primary key of identifying entity set.
+    - Declare all foreign key constraints.
+
+Mapping Hierarchical Entities
+    - Create tables for all higher-level entities.
+    - Create tables for lower-level entities.
+    - Add primary keys of higher-level entities in the table of lower-level entities.
+    - In lower-level tables, add all other attributes of lower-level entities.
+    - Declare primary key of higher-level table and the primary key for lower-level table.
+    - Declare foreign key constraints.
+
+## Constraints
+
+Every relation/table has some conditions
+that must hold for it to be a valid relation.
+These conditions are called Relational Integrity Constraints.
+There are three main integrity constraints:
+    Key constraints/Entity constraints
+        There must be at least one minimal subset of attributes in the relation, which can identify a tuple uniquely.
+            These attributes is called key attributes
+            No two tuples can have identical values for key attributes.
+            A key attribute can not have NULL values.
+    Domain constraints
+        Every attribute value must come from the attribute's domain
+            e.g. an age attribute can not be -1
+    Referential integrity constraints
+        All references should be valid (exist).
+        If a relation refers to a key attribute
+            of a different (foreign key)
+            or same relation,
+            then that key element must exist.
+
+## Database Schema
+
+A database schema is the skeleton structure that represents the logical view of the entire database.
+    It defines its entities and the relationship among them.
+    It formulates all the constraints that are to be applied on the data.
+    It can be depicted by means of schema diagrams.
+    The database designers design the schema to help programmers understand the database and make it useful.
+
+A database schema can be divided broadly into two categories
+    Physical Database Schema
+        This schema pertains to the actual storage of data and its form of storage like files, indices, etc.
+        It defines how the data will be stored in a secondary storage.
+    Logical Database Schema
+        This schema defines all the logical constraints that need to be applied on the data stored.
+        It defines tables, views, and integrity constraints.
+
+Database instance: a state of operational database with data at any given time.
+    It contains a snapshot of the database.
+
+A DBMS ensures that its every instance (state) is in a valid state,
+    by diligently following all the validations, constraints, and conditions
+    that the database designers have imposed.
+
+## Codd's 12 rules
+define what is required from a database management system
+in order for it to be considered relational (RDBMS)
+
+Rule 0: (The foundation rule)
+    For any system that is advertised as or claimed to be an RDBMS,
+    that system must be able to manage data bases entirely through its relational capabilities.
+
+Rule 1: (The information rule)
+    All information in a relational data base is represented explicitly
+    at the logical level and in exactly one way – by values in tables.
+    The data stored in a database, may it be user data or metadata,
+    must be a value of some table cell.
+    Everything in a database must be stored in a table format.
+
+Rule 2: (The guaranteed access rule)
+    Each and every datum (atomic value) in a relational data base
+    is guaranteed to be logically accessible by resorting
+    to a combination of table name, primary key value and column name.
+    No other means, such as pointers, can be used to access data.
+
+Rule 3: (Systematic treatment of null values)
+    The NULL values in a database must be given a systematic and uniform treatment.
+    This is important because a NULL can be interpreted
+    as data is missing, unknown, or is not applicable.
+
+Rule 4: (Dynamic online catalog based on the relational model)
+    The data base description is represented at the logical level
+        in the same way as ordinary data,
+        so that authorized users can apply the same relational language
+        to its interrogation as they apply to the regular data.
+    The structure description of the entire database must be stored
+        in an online catalog, known as data dictionary,
+        which can be accessed by authorized users.
+        Users can use the same query language to access the catalog
+        which they use to access the database itself.
+
+Rule 5: (The comprehensive data sublanguage rule)
+    A database can only be accessed using a language having linear syntax
+        that supports data definition, data manipulation, and transaction management operations.
+        This language can be used directly or by means of some application.
+        If the database allows access to data without any help of this language,
+        then it is considered as a violation.
+    A relational system may support several languages
+        and various modes of terminal use (for example, the fill-in-the-blanks mode).
+        However, there must be at least one language whose statements are expressible,
+        per some well-defined syntax, as character strings and that is comprehensive
+        in supporting all of the following items:
+            - Data definition
+            - View definition
+            - Data manipulation (interactive and by program)
+            - Integrity constraints
+            - Authorization
+            - Transaction boundaries (begin, commit and rollback)
+
+Rule 6: (The view updating rule)
+    All views that are theoretically updatable are also updatable by the system.
+
+Rule 7: (Possible for high-level insert, update, and delete)
+    The capability of handling a base relation or a derived relation as a single operand
+        applies not only to the retrieval of data but also to the insertion, update and deletion of data.
+    A database must support high-level insertion, updation, and deletion.
+        This must not be limited to a single row, that is,
+        it must also support union, intersection and minus operations
+        to yield sets of data records.
+
+Rule 8: (Physical data independence)
+    Application programs and terminal activities remain logically unimpaired
+        whenever any changes are made in either storage representations or access methods.
+    The capability to change the physical data
+        (e.g. changing storage from HDD to SSD)
+        without impacting the schema or logical data.
+
+Rule 9: Logical data independence:
+    Application programs and terminal activities remain logically unimpaired
+        when information-preserving changes of any kind
+        that theoretically permit unimpairment are made to the base tables.
+    The logical data in a database must be independent of its user’s view (application).
+        Any change in logical data must not affect the applications using it.
+
+Rule 10: (Integrity independence)
+    Integrity constraints specific to a particular relational data base
+    must be definable in the relational data sublanguage and storable in the catalog,
+    not in the application programs.
+
+Rule 11: (Distribution independence)
+    The end-user must not be able to see that the data is distributed over various locations.
+    Users should always get the impression that the data is located at one site only.
+
+Rule 12: (The nonsubversion rule)
+    If a relational system has a low-level (single-record-at-a-time) language,
+    that low level cannot be used to subvert or bypass the integrity rules and constraints
+    expressed in the higher level relational language (multiple-records-at-a-time).
+
+## Skipped
+https://www.tutorialspoint.com/dbms/index.htm
+skipped:
+storage + file structure
+
+## Unread
+Indexing
+https://www.tutorialspoint.com/dbms/dbms_indexing.htm

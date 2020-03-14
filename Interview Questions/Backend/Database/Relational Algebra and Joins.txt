@@ -1,0 +1,234 @@
+Relational Algebra and Joins
+
+# Relational Algebra
+
+## Set operators
+
+The relational algebra uses
+set union, set difference, and Cartesian product from set theory,
+but adds additional constraints to these operators.
+
+For set union and set difference, the two relations involved must be union-compatible
+(the two relations must have the same set of attributes).
+Because set intersection is defined in terms of set union and set difference,
+the two relations involved in set intersection must also be union-compatible.
+
+For the Cartesian product to be defined, the two relations involved must have disjoint headers
+(they must not have a common attribute name).
+
+Example relations
+Attributes: Name, Coin, Server
+Relation R1: {(Joe, 100, USA), (Dup, 300, Asia)}
+Relation R2: {(Sam, 200, USA), (Dup, 300, Asia)}
+
+Union operator (∪) is used to select
+all the rows (tuples) from two tables (relations)
+where duplicate rows are removed.
+R1 ∪ R2 = {(Joe, 100, USA), (Sam, 200, USA), (Dup, 300, Asia)}
+
+Intersection operator (∩) is used to select
+common rows (tuples) from two tables (relations).
+R1 ∩ R2 = {(Dup, 300, Asia)}
+
+Using Set Difference (–), when we want to select
+all those tuples (rows) that are
+in Relation R1 but not in Relation R2,
+we can use R1 – R2.
+R1 – R2 = {(Joe, 100, USA)}
+
+We can use projection on the relations before doing union (or any set operations).
+When we do this, duplicate rows are removed.
+∏ R1 (Server) ∪ ∏ R2 (Server) = {(USA), (Asia)}
+
+### Example of Cartesian product (X)
+
+Table R1:
+Col_A    Col_B
+-----    ------
+A        1
+B        20
+C        300   
+
+Table R2:
+Col_X     Col_Y
+-----     -----
+X         99
+Y         11
+
+R1 X R2:
+Col_A    Col_B    Col_X     Col_Y
+-----    ------   ------    ------
+A        1        X         99
+A        1        Y         11
+B        20       X         99
+B        20       Y         11
+C        300      X         99
+C        300      Y         11
+
+## Projection (Π)
+
+A projection is a unary operation
+    Π_(a_1, ..., a_n) (R)
+    where:
+        R is a relation (table)
+        a_1, ..., a_n are the set of attributes (columns) that we want to get from the relation
+        the attributes must come from the set of all attributes in the relation
+
+SQL equivalent:
+    SELECT a_1, ..., a_n FROM R;
+
+## Selection (σ)
+
+A selection is a unary operation
+    σ_φ (R)
+    where:
+        R is a relation (table)
+        φ is a propositional formula that consists of
+            atoms as allowed in the normal selection
+            and the logical operators ∧ (and), ∨ (or) and ¬ (negation).
+
+This selection selects all those tuples in R for which φ holds.
+
+SQL equivalent:
+    SELECT * WHERE φ;
+
+## Rename (ρ)
+
+A rename is a unary operation
+    ρ_(a/b) (R)
+    where:
+        R is a relation (table)
+        the result is identical to R except that
+        the 'b' attribute in all tuples
+        is renamed to an 'a' attribute.
+
+# Join operations
+
+Join operation is essentially a cartesian product followed by a selection criterion.
+
+Types of JOIN
+Inner Joins: Theta join, equijoin, Natural join, Semijoin, Antijoin
+    only those tuples that satisfy the matching criteria are included, while the rest are excluded.
+Outer join: Left Outer Join, Right Outer Join, Full Outer Join
+    along with tuples that satisfy the matching criteria
+    we also include some or all tuples that do not match the criteria
+    where the unmatched value is filled with NULL value (ω).
+
+## Natural join (⋈)
+
+Table: Employee
+Name    EmpId   DeptName
+Harry   3415	Finance
+Sally   2241	Sales
+Mary	1257	HR
+
+Table: Dept
+DeptName    Manager
+Finance     George
+Sales       Harriet
+Production  Charles
+
+Employee ⋈ Dept
+Name    EmpId   DeptName    Manager
+Harry   3415    Finance     George
+Sally   2241    Sales       Harriet
+
+## Semijoin (⋉)(⋊)
+
+The left semijoin is a joining similar to the natural join.
+The difference from a natural join is that other columns of one relation do not appear.
+
+Employee ⋉ Dept
+Name    EmpId   DeptName
+Harry   3415    Finance
+Sally   2241    Sales
+
+## Antijoin (▷)
+
+Antijoin is similar to the semijoin.
+But the result is only those tuples in R for which there is no tuple in S
+that is equal on their common attribute names.
+
+Employee ▷ Dept
+Name    EmpId   DeptName
+Mary	1257	HR
+
+## Left outer join (⟕)
+
+Employee ⟕ Dept
+Name    EmpId   DeptName    Manager
+Harry   3415    Finance     George
+Sally   2241    Sales       Harriet
+Mary	1257	HR          ω
+
+## Right outer join (⟖)
+
+Employee ⟖ Dept
+Name    EmpId   DeptName    Manager
+Harry   3415    Finance     George
+Sally   2241    Sales       Harriet
+ω       ω       Production  Charles
+
+## Full outer join (⟗)
+
+Employee ⟗ Dept
+Harry   3415    Finance     George
+Sally   2241    Sales       Harriet
+Mary	1257	HR          ω
+ω       ω       Production  Charles
+
+## Theta join (⋈_θ)
+R1 ⋈_θ R2 = σ_θ(R1 × R2)
+
+Table: Car
+CarModel    CarPrice
+CarA        30000
+CarB        50000
+
+Table: Boat
+BoatModel   BoatPrice
+Boat1       10000
+Boat2       40000
+Boat3       60000
+
+Car ⋈_(CarPrice >= BoatPrice) Boat
+CarModel    CarPrice    BoatModel   BoatPrice
+CarA        30000       Boat1       10000
+CarB        50000       Boat1       10000
+CarB        50000       Boat2       40000
+
+Car ⋈_(CarPrice = 30000) Boat
+CarModel    CarPrice    BoatModel   BoatPrice
+CarA        30000       Boat1       10000
+CarA        30000       Boat2       40000
+CarA        30000       Boat3       60000
+
+## Equijoin
+
+With Theta join, in case the operator θ is the equality operator (=) then this join is also called an equijoin.
+
+## Division (÷)
+
+The result consists of the restrictions of tuples in R
+to the attribute names unique to R (in the header of R but not in the header of S),
+for which it holds that all their combinations with tuples in S are present in R.
+
+Table: Completed
+Student Task
+Fred    Database1
+Fred    Database2
+Fred    Compiler1
+Eugene  Database1
+Eugene  Compiler1
+Sarah   Database1
+Sarah   Database2
+
+Table: DBProject
+Task
+Database1
+Database2
+
+Completed ÷ DBProject
+Student
+Fred
+Sarah

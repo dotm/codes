@@ -38,7 +38,7 @@ as the problems they exist to solve rarely appear in practice.
 
 Primary key: each row must have a unique primary key (e.g. ID)
 
-Atomic columns: one column can't have multiple values
+Atomic columns: a datum can't have multiple values
 Example violation: a column "phone_numbers" that contains an array of phone numbers
 
 No repeating groups
@@ -100,3 +100,8 @@ Every non-trivial functional dependency involves either a superkey or an element
 Functional dependency: an attribute depends on other attribute
 For example: Genre Name has a functional dependency to Genre ID
 
+## BCNF
+
+For any non-trivial functional dependency, X → A, X must be a part of the candidate key.
+This ensures no redundancy from any functional dependency.
+Each attribute represents a fact about the key, the whole key, and nothing but the key.

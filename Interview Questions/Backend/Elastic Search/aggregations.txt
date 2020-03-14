@@ -1,0 +1,57 @@
+An aggregation can be seen as a unit-of-work
+that builds analytic information over a set of documents
+
+## Four main families of aggregations
+
+Bucketing
+    aggregations that build buckets, where
+    each bucket is associated with a key and a document criterion.
+    When the aggregation is executed,
+    all the buckets criteria are evaluated on every document in the context
+    and when a criterion matches, the document is considered to "fall in" the relevant bucket.
+    By the end of the aggregation process, we’ll end up with a list of buckets; 
+    each one with a set of documents that "belong" to it.
+Metric: aggregations that keep track and compute metrics over a set of documents.
+    e.g. average, max, min, sum, etc.
+Matrix
+    aggregations that operate on multiple fields and
+    produce a matrix result based on the values
+    extracted from the requested document fields.
+Pipeline: aggregate the output of other aggregations and their associated metrics
+
+## Nesting Aggregations
+
+Since each bucket effectively defines a document set (all documents belonging to the bucket),
+one can potentially associate aggregations on the bucket level,
+and those will execute within the context of that bucket.
+
+## Structuring Aggregations
+
+"aggregations" : {
+    "<aggregation_name>" : {
+        "<aggregation_type>" : {
+            <aggregation_body>
+        }
+        [,"meta" : {  [<meta_data_body>] } ]?
+        [,"aggregations" : { [<sub_aggregation>]+ } ]?
+    }
+    [,"<aggregation_name_2>" : { ... } ]*
+}
+
+## Returning only aggregation results
+There are many occasions when aggregations are required but search hits are not.
+For these cases the hits can be ignored by setting size=0.
+This avoids executing the fetch phase of the search making the request more efficient.
+
+GET /twitter/_search
+{
+  "size": 0,
+  "aggregations": {
+    "my_agg": {
+      "terms": {
+        "field": "text"
+      }
+    }
+  }
+}
+

@@ -1,0 +1,160 @@
+# Dissecting Front-End Architecture based on Responsibilities
+
+
+## Terms
+Beware... Design patterns terminology ahead.
+
+View: displaying, layouting, and updating UI.
+It is a composite pattern (View can have many other Views as children).
+It can be used by different types of parent (View or View Controller) using the strategy pattern.
+
+View Controller: accept and relay UI events to Mediator.
+Some examples of UI events are click, scroll, rotate screen, form submission, etc.
+
+Mediator (Event Handler): a mediator pattern between View Controller, Router, and Interactor.
+Receives events (mostly UI events from View Controller)
+and call Router or Interactor based on the events.
+
+Router: routing between pages.
+Router can be implemented as a global State Manager
+since the current page hierarchy, active pages, and displayed page
+is a state that can be changed.
+
+View Model: presentation logic to make model ready to display.
+
+Interactor: contains business logic, make request to Persistence Layer, listen to Persistence Layer and State Manager.
+Your product owner must work with you to define the business logic here.
+
+Persistence Layer: CRUD using a backend system through the network or using a local storage.
+This includes database, search engine, backend caching, analytics, data collection, etc.
+
+Model/Entity: plain object for modeling data.
+
+State Manager (State Management System): manage the states of the app.
+An example of a State Management System is Redux.js.
+Unlike Persistence Layer, the State Manager only store state until the app is finished running.
+
+System Event Listener: listen to non-UI events.
+Some examples of system event are volume changed, brightness changed, scheduled job triggered, etc.
+
+Application-wide Services: provide services that can be accessed from any Mediator.
+It can be bundled together with a State Manager if the service contains state.
+Some examples of such services are user authentication, logging, notification, etc.
+
+Application-wide Mediator: a mediator pattern between System Event Listener, Router, and Global Interactor.
+Unlike local Mediator, it can only listen to system events.
+
+
+## Map
+
+>                                               ┌──────────────────┬─────────────────────────────────┐
+>                                               │                  │                                 │
+>                                               │                  │               Global            │
+>                                               │                  │            ╔═ State   ──────────┤
+>                                               │                  │            ║  Manager           │
+>                               ╔══════ Application-wide ══ Global Interactor ══╣                    │
+>                               ║           Mediator                            ║  Global            │  Global
+>                               ║               ║ ║                             ╚═ Persistence ──────┤
+>                               ║               ║ ║                                Layer             │
+>                               ║               ║ ╚════════════════════╗                             │
+>                               ║               ║                      ║                             │ 
+>                               ║               ║              Application-wide                      │
+>  System Event Listener ═══════╣             Router               Services                       Models
+>                               ║               ║                    Call                            │
+>                               ║               ║                      ║                             │
+>╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶║╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶║╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶║╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶│╶╶╶╶╶╶
+>                               ║               ║ ╔════════════════════╝                             │
+>                               ║               ║ ║                                Local             │
+>                               ║               ║ ║                             ╔═ Persistence ──────┤
+>  View ═╗                      ╚═════════╗     ║ ║                             ║  Layer             │
+>        ║                                ╠═ Mediator ═════ Local Interactor ═══╣                    │  Local
+>  View ═╬═ Root View ══ View Controller ═╝   │   │                │            ║  Local             │
+>        ║                     │              │   │                │            ╚═ State   ──────────┤      
+>  View ═╝                     └─ View Model ─┘   │                │               Manager           │
+>                                      │          │                │                                 │
+>                                      └──────────┴────────────────┴─────────────────────────────────┘
+
+
+
+## Local vs. Global
+
+Local means the scope of something is only one page wide (can't be accessed from other pages).
+Global means the scope of something is application-wide (can be accessed by all pages).
+
+View is local when it is instantiated. But it can be reused in multiple View Controller.
+
+View Controller is always local.
+
+Mediator is always local.
+
+View Model is always local.
+
+Model is mostly global.
+But using namespaces (e.g. modules), we can group related Models together and restrict access to that group.
+
+Router is always global.
+But using namespaces (e.g. modules),
+it can be broken down into multiple small Routers
+that are then put together into one global Router.
+
+State Manager can be local or global.
+If the state it manages is used in many Mediators, then we make it as a global singleton.
+If the state it manages is used in one Mediator, then we make it as a local property.
+
+Interactor, just like State Manager, can be local or global.
+If the business logic it contains is used in many Mediators, then we make it as a global singleton.
+If the business logic it contains is used in one Mediator, then we make it as a local property.
+
+Persistence Layer, just like State Manager, can be local or global.
+If the data it stores is used in many Mediators, then we make it as a global singleton.
+If the data it stores is used in one Mediator, then we make it as a local property.
+
+System Event Listener is always global.
+We can wrap them in a global singleton if we need to simplify its interface.
+We can listen to system event both from local Mediator or Application-wide Mediator
+
+Application-wide Services is always global.
+
+Application-wide Mediator is always global
+
+
+#Functional Architecture
+
+Using event log style backend server
+Using purely-functional State Manager
+
+
+#Reactive Architecture
+
+Using:
+- a View that that publish UI event trigger
+- a State Manager that publish state change event (is an observable)
+- a Persistence Layer that always publish its data
+    - through observable local storage
+    - through WebSocket if it is a backend server
+
+Reactive front-to-back data flow:
+- UI events from View -> accepted by View Controller -> passed to Mediator
+    -> change the page using Router
+- UI events from View -> accepted by View Controller -> passed to Mediator
+    -> transformed into data and processed with business logic in Interactor
+    -> dispatch action into State Manager
+- UI events from View -> accepted by View Controller -> passed to Mediator
+    -> transformed into data and processed with business logic in Interactor
+    -> send CRUD request to Persistence Layer
+
+Reactive back-to-front data flow:
+- Persistence Layer data is changed -> observed by Interactor
+    -> transformed into ready-to-present data by View Model (if necessary)
+    -> passed to Mediator -> passed to View Controller
+    -> passed to View to update its UI
+- State Manager state changed -> observed by Interactor
+    -> transformed into ready-to-present data by View Model (if necessary)
+    -> passed to Mediator -> passed to View Controller
+    -> passed to View to update its UI
+
+Non-reactive back-to-front data flow:
+- Persistence Layer responds to read request of CRUD -> processed by Interactor
+    -> transformed into ready-to-present data by View Model (if necessary)
+    -> passed to Mediator -> passed to View Controller
+    -> passed to View to update its UI

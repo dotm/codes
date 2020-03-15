@@ -1,0 +1,104 @@
+Within Redis, there are two different ways of persisting data
+(getting data out of memory and into disk). 
+    1. Snapshotting: takes the data as it exists at one moment in time and writes it to disk.
+    2. AOF (append—only file): copying incoming write commands to disk as they happen.
+
+These methods can be used together, separately, or not at all in some circumstances.
+Which to choose will depend on your data and your application.
+
+While persisting data to disk can avoid data loss in some kind of failures,
+    having replication mechanism will make your system more robust against system failures.
+
+## Snapshotting
+
+There are five methods to initiate a snapshot:
+    Any Redis client can initiate a snapshot by calling the BGSAVE command.
+        On platforms that support BGSAVE (basically all except Windows),
+        Redis will fork and the child process will write the snapshot to disk
+        while the parent process continues to respond to commands.
+    A Redis client can also initiate a snapshot by calling the SAVE command,
+        which causes Redis to stop responding to any/all commands until the snapshot completes.
+        This command isn’t commonly used, except in situations where we need our data on disk,
+        and either we’re okay waiting for it to complete, or we don’t have enough memory for a BGSAVE.
+    If Redis is configured with save lines, such as save 60 10000,
+        Redis will automatically trigger a BGSAVE operation if 10,000 writes have occurred within 60 seconds
+        since the last successful save has started (using the configuration option described).
+        When multiple save lines are present, any time one of the rules match, a BGSAVE is triggered.
+    When Redis receives a request to shut down by the SHUTDOWN command, or it receives a standard TERM signal,
+        Redis will perform a SAVE, blocking clients from performing any further commands, and then shut down.
+    If a Redis server connects to another Redis server and issues the SYNC command to begin replication,
+        the master Redis server will start a BGSAVE operation if one isn’t already executing or recently completed.
+
+## AOF
+
+Sync options to use with appendfsync (AOF)
+    always: Every write command to Redis results in a write to disk.
+        This slows Redis down substantially if used.
+        When using this with SSD, you can reduce the lifetime of SSDs
+            from years to just a few months in some cases.
+            because you are writing small amounts of data to the end of a file often.
+    everysec (Recommended): Once per second, explicitly syncs write commands to disk.
+        If the system were to crash, we could lose at most one second of data
+            that had been written or updated in Redis.
+        In the case where the disk is unable to keep up with the write volume,
+            Redis would gracefully slow down to accommodate the maximum write rate of the drive.
+    no (Not Recommended): Let the operating system control syncing to disk.
+        if the system were to crash, we’d lose an unknown and unpredictable amount of data.
+        If we’re using a hard drive that isn’t fast enough for our write load,
+            Redis would perform fine until the buffers to write data to disk were filled,
+            at which point Redis would get very slow as it got blocked from writing.
+
+Using AOF because every write to Redis causes a log of the command to be written to disk,
+    the append-only log file will continuously grow.
+Over time, a growing AOF could cause your disk to run out of space.
+But more commonly, upon restart, Redis will be executing every command in the AOF in order.
+When handling large AOFs, Redis can take a very long time to start up.
+
+To solve the growing AOF problem, we can use BGREWRITEAOF,
+    which will rewrite the AOF to be as short as possible by removing redundant commands.
+BGREWRITEAOF works similarly to the snapshotting BGSAVE:
+    performing a fork and subsequently rewriting the append-only log in the child.
+As such, all of the same limitations with snapshotting performance
+    regarding fork time, memory use, and so on still stand when using append-only files.
+But even worse, because AOFs can grow to be many times the size of a dump (if left uncontrolled),
+    when the AOF is rewritten, the OS needs to delete the AOF,
+    which can cause the system to hang for multiple seconds while it’s deleting an AOF of tens of gigabytes.
+
+There are two configuration options that enable automatic BGREWRITEAOF execution:
+    auto-aof-rewrite-percentage and auto-aof-rewrite-min-size.
+For example:
+    when AOF is enabled
+    with auto-aof-rewrite-percentage 100 and auto-aof-rewrite-min-size 64mb,
+    Redis will initiate a BGREWRITEAOF when
+        the AOF is at least 100% larger than it was when Redis last finished rewriting the AOF,
+        and when the AOF is at least 64 megabytes in size.
+If our AOF is rewriting too often, we can increase the 100 to something larger,
+    though it will cause Redis to take longer to start up if it has been a while since a rewrite happened.
+
+## Verifying snapshots and append-only files
+
+When confronted with system failures, we have tools to help us recover
+when either snapshotting or append-only file logging had been enabled.
+
+Redis includes two command-line applications
+    for testing the status of a snapshot and an append-only file:
+        redis-check-aof [--fix] <file.aof>
+        redis-check-dump <dump.rdb>
+
+If we provide –fix as an argument to redis-check-aof,
+    the command will fix the file by scanning through the provided AOF
+    and looking for an incomplete or incorrect command.
+    Upon finding the first bad command, it trims the file
+    to just before that command would’ve been executed.
+    For most situations, this will discard the last partial write command.
+
+Unfortunately, there’s no currently supported method of repairing a corrupted snapshot.
+Though there’s the potential to discover where the first error had occurred.
+    Because the snapshot itself is compressed,
+    an error partway through the dump has the potential
+    to make the remaining parts of the snapshot unreadable.
+It’s for these reasons that I’d generally recommend
+    keeping multiple backups of important snapshots,
+    and calculating the SHA1 or SHA256 hashes
+    to verify content during restoration
+    (using the sha1sum and sha256sum CLI commands).

@@ -1,0 +1,34 @@
+For example, you want to store a collection of guilds sorted by the wealth of its members.
+
+First, create a collection of guilds
+    using a ZSET
+    the key specified as "guild:"
+    the members are IDs of the guilds
+    the scores are the total wealth of each guild
+Second, create a guild model
+    using a HASH
+    the key specified as "guild:GuildID" (e.g. "guild:23")
+    the fields are attributes of the guild (e.g. name, wealth, founding date, status, etc.)
+Third, create a collection of each guild's members
+    this can be done in multiple ways
+        using a SET with the key specified as "guild:GuildID:members" (e.g. "guild:23:members")
+            the elements of the sets are the IDs of users (the UserID)
+        using a SET with the key specified as "guild-members:GuildID" (e.g. "guild-members:23")
+            the elements of the sets are the IDs of users (the UserID)
+        inside the guild:GuildID HASH
+            use a field that has a set as value with a subkey of "members"
+            the elements of the sets are the IDs of users (the UserID)
+            
+Finally, create a user model
+    using a HASH
+    the key specified as "user:UserID" (e.g. "user:456")
+    the fields are attributes of the user (e.g. name, money, registration date, etc.)
+Optionally, you can create a users collection
+    using a SET
+    the key specified as "user:"
+    the elements of the sets are the IDs of all users
+
+To separate namespaces in a key, you can use symbols such as / . : |
+Dots or dashes are often used for multi-word fields
+    comment:1234:reply.to
+    comment:1234:reply-to

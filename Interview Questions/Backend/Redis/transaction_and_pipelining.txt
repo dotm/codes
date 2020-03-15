@@ -1,0 +1,77 @@
+Redis doesn't have SQL-style transaction for concurrency control because of performance reasons.
+Instead it has optimistic locking using some specific commands.
+
+## Commands
+
+MULTI
+    Mark the start of a transaction block
+
+DISCARD
+    Discard all commands issued after MULTI
+EXEC
+    Execute all commands issued after MULTI
+
+WATCH key [key ...]
+    Watch the given keys to determine execution of the MULTI/EXEC block
+UNWATCH
+    Forget about all watched keys
+
+## Example transaction (not for production because of performance issue)
+
+def purchase_item(conn, buyerid, itemid, sellerid, lprice):
+    buyer = "users:%s"%buyerid
+    seller = "users:%s"%sellerid
+    item = "%s.%s"%(itemid, sellerid)
+    inventory = "inventory:%s"%buyerid
+    end = time.time() + 10
+    pipe = conn.pipeline()
+
+    while time.time() < end:
+        try:
+            pipe.watch("market:", buyer)               //Watch for changes to the market and to the buyer’s account information.
+
+            price = pipe.zscore("market:", item)
+            funds = int(pipe.hget(buyer, "funds"))
+
+            if price != lprice or price > funds:       //Check for a sold/repriced item or insufficient funds.
+            pipe.unwatch()
+            return None
+
+            //Transfer funds from the buyer to the seller, and transfer the item to the buyer.
+            pipe.multi()
+            pipe.hincrby(seller, "funds", int(price))
+            pipe.hincrby(buyer, "funds", int(-price))
+            pipe.sadd(inventory, itemid)
+            pipe.zrem("market:", item)
+            pipe.execute()
+
+            return True
+        except redis.exceptions.WatchError:     //Data changed
+            pass
+
+    return False //Retry if the buyer’s account or the market changed.
+
+## Pipelining
+
+In many client libraries, one benefit to using transactions (with MULTI and EXEC)
+    is the underlying library’s use of a pipeline, which improves performance.
+Instead of connecting multiple times to a Redis instance to execute multiple commands,
+    we can batch multiple commands into a pipeline and send it to Redis at once.
+By using this method, we can minimize the roundtrip from client to Redis.
+
+## Example of Pipelining
+
+def update_token_pipeline(conn, token, user, item=None):
+    timestamp = time.time()
+    pipe = conn.pipeline(False)  //Set up the pipeline. We pass False so that the pipeline is not wrapped with a MULTI/EXEC pair.
+
+    //Batch multiple commands
+    pipe.hset('login:', token, user)
+    pipe.zadd('recent:', token, timestamp)
+    if item:
+        pipe.zadd('viewed:' + token, item, timestamp)
+        pipe.zremrangebyrank('viewed:' + token, 0, -26)
+        pipe.zincrby('viewed:', item, -1)
+    
+    //Execute the commands in the pipeline at once
+    pipe.execute()

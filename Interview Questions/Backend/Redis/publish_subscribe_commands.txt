@@ -1,0 +1,13 @@
+SUBSCRIBE channel [channel …]
+    Subscribes to the given channels
+UNSUBSCRIBE [channel [channel …]]
+    Unsubscribes from the provided channels
+    Unsubscribes from all channels if no channel is given
+PUBLISH channel message
+    Publishes a message to the given channel
+PSUBSCRIBE pattern [pattern …]
+    Subscribes to messages broadcast
+    to channels that match the given pattern
+PUNSUBSCRIBE [pattern [pattern …]]
+    Unsubscribes from the provided patterns
+    Unsubscribes from all subscribed patterns if none are given

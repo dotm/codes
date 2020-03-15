@@ -1,0 +1,16 @@
+Redis is an in-memory non-relational database.
+
+Redis is not a plain key-value store.
+It is actually a data structures server,
+    supporting different kinds of values.
+While in traditional key-value stores
+    you associate string keys to string values,
+    in Redis the value is not limited to a simple string,
+    but can also hold more complex data structures.
+
+Each Redis database contains a set of keys (key-value pairs).
+Each keys is mapped to one of several data structure types available at Redis.
+
+Redis keys are binary safe, this means that you can use any binary sequence as a key,
+    from a string like "foo" to the content of a JPEG file. The empty string is also a valid key.
+That being said if you want to use a large key, it's better to shorten it (e.g. by hashing)

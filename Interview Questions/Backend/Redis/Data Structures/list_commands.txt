@@ -1,0 +1,47 @@
+LLEN key - Get the length of a list
+
+LINDEX key offset — Returns the item at the given offset
+LRANGE key start end — Returns the items in the list at the offsets from start to end, inclusive
+
+LSET key index element - Set the value of an element in a list by its index
+LTRIM key start end — Trims the list to only include items at indices between start and end, inclusive
+LINSERT key BEFORE|AFTER pivot element
+    Insert an element before or after another element in a list
+LREM key count element
+    Remove elements from a list
+    The count argument:
+        count > 0: Remove elements equal to element moving from head to tail
+        count < 0: Remove elements equal to element moving from tail to head
+        count = 0: Remove all elements equal to element
+    LREM key -2 "hello" will remove the last two occurrences of "hello"
+
+## Pop and Push
+
+RPUSH key value [value …] — Pushes the value(s) onto the right end of the list
+LPUSH key value [value …] — Pushes the value(s) onto the left end of the list
+
+RPOP key — Removes and returns the rightmost item from the list
+LPOP key — Removes and returns the leftmost item from the list
+
+RPOPLPUSH source-key dest-key
+    RPOP item from the source and 
+    LPUSH the item to the destination,
+    also returning the item to the user.
+
+RPUSHX key value [value ...] - Append a value to a list, only if the list exists
+LPUSHX key value [value ...] - Prepend a value to a list, only if the list exists
+
+## Blocking commands
+
+BLPOP key [key …] timeout
+    Pops the leftmost item from the first non-empty LIST,
+    or waits the timeout in seconds for an item
+    (block until an item is available to be popped)
+BRPOP key [key …] timeout
+    Pops the rightmost item from the first non-empty LIST,
+    or waits the timeout in seconds for an item
+    (block until an item is available to be popped)
+BRPOPLPUSH source-key dest-key timeout
+    BRPOP the rightmost item from the source
+    and LPUSHes the item to the destination,
+    also returning the item to the user.

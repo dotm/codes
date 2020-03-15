@@ -1,0 +1,19 @@
+Check all available commands for a data structure
+    by accessing https://redis.io/commands
+    and filtering by group
+
+## Data structure list
+
+STRING - a key-value pair where the value can be strings, integers, or floating-point
+    STRING can be used as bit arrays or bitmaps using certain commands
+LIST - a key-value pair where the value is a linked list of strings
+SET - a key-value pair where the value is an unordered collection of unique strings
+HASH - a key-value pair where the value is an unordered hash table of key-value pairs
+    the key of the whole HASH is called hash-key or just key
+    the keys inside the HASH is called sub-key or field
+ZSET (sorted set) - a key-value pair where the value
+    is an ordered mapping of string members to floating-point scores,
+    ordered by score
+
+HyperLogLogs
+Streams

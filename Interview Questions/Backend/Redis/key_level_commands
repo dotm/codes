@@ -1,0 +1,50 @@
+KEYS pattern
+    Find all keys matching the given pattern
+RANDOMKEY
+    Return a random key from the keyspace
+EXISTS key [key ...]
+    Determine if a key exists
+
+DEL key [key ...]
+    Delete a key
+UNLINK key [key ...]
+    Delete a key asynchronously in another thread.
+    Otherwise it is just as DEL, but non blocking.
+
+MIGRATE host port key|"" destination-db timeout [COPY] [REPLACE] [AUTH password] [KEYS key [key ...]]
+    Atomically transfer a key from a Redis instance to another one.
+MOVE key db
+    Move a key to another database
+
+OBJECT subcommand [arguments [arguments ...]]
+    Inspect the internals of Redis objects
+
+TOUCH key [key ...]
+    Alters the last access time of a key(s).
+    Returns the number of existing keys specified.
+
+TYPE key
+    Determine the type stored at key
+
+WAIT numreplicas timeout
+    Wait for the synchronous replication of all the write commands
+    sent in the context of the current connection
+
+RENAME key newkey
+    Rename a key
+RENAMENX key newkey
+    Rename a key, only if the new key does not exist
+
+DUMP key
+    Return a serialized version of the value stored at the specified key.
+RESTORE key ttl serialized-value [REPLACE] [ABSTTL] [IDLETIME seconds] [FREQ frequency]
+    Create a key using the provided serialized value, previously obtained using DUMP.
+    If ttl is 0 the key is created without any expire,
+        otherwise the specified expire time (in milliseconds) is set.
+    If the ABSTTL modifier was used,
+        ttl should represent an absolute Unix timestamp (in milliseconds)
+        in which the key will expire.
+
+SCAN cursor [MATCH pattern] [COUNT count] [TYPE type]
+    Incrementally iterate the keys space
+    (iterate over all the keys in the Redis database)

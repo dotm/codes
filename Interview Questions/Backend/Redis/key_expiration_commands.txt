@@ -1,0 +1,21 @@
+PERSIST key-name
+    Removes the expiration from a key
+
+TTL key-name
+    Returns the amount of time remaining in seconds before a key will expire
+    Returns -2 if the key does not exist
+    Returns -1 if the key exists but has no associated expire
+PTTL key-name
+    Returns the number of milliseconds before the key will expire
+    Returns -2 if the key does not exist
+    Returns -1 if the key exists but has no associated expire
+
+EXPIRE key-name seconds
+    Sets the key to expire in the given number of seconds
+PEXPIRE key-name milliseconds
+    Sets the key to expire in the given number of milliseconds
+
+EXPIREAT key-name timestamp
+    Sets the expiration time as the given Unix timestamp
+PEXPIREAT key-name timestamp-milliseconds
+    Sets the expiration time to be the given Unix timestamp specified in milliseconds

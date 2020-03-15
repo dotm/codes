@@ -1,0 +1,98 @@
+Redis has adopted this master-slaves method of replication as a way of helping to scale.
+
+Why add additional slave Redis servers?
+    we need to scale out read queries
+    we need to write temporary data
+
+After receiving an initial copy of the data from the master,
+    slaves are kept up to date in real time as clients write data to the master.
+With a master/slave setup, instead of connecting to the master for reading data,
+    clients will connect to one of the slaves to read their data
+    (typically choosing them in a random fashion to try to balance the load).
+
+Though a variety of options control behavior of the slave itself,
+    only one option is really necessary to enable slaving: slaveof.
+If we were to set `slaveof host port` in our configuration file,
+    the Redis that’s started with that configuration 
+    will use the provided host and port as the master Redis server it should connect to.
+If we have an already running system,
+    we can tell a Redis server to stop slaving,
+    or even to slave to a new or different master.
+To connect to a new master, we can use the `SLAVEOF host port` command,
+    or if we want to stop updating data from the master, we can use `SLAVEOF no one`.
+
+## Redis replication startup process (What happens when a slave connects to a master)
+
+Step 1
+    Master operations: (waiting for a command)
+    Slave operations: (Re-)connects to the master; issues the SYNC command
+Step 2
+    Master operations: Starts BGSAVE operation; keeps a backlog of all write commands sent after BGSAVE
+    Slave operations: Serves old data (if any), or returns errors to commands (depending on configuration)
+Step 3
+    Master operations: Finishes BGSAVE; starts sending the snapshot to the slave; continues holding a backlog of write commands
+    Slave operations: Discards all old data (if any); starts loading the dump as it’s received
+Step 4
+    Master operations: Finishes sending the snapshot to the slave; starts sending the write command backlog to the slave
+    Slave operations: Finishes parsing the dump; starts responding to commands normally again
+Step 5
+    Master operations: Finishes sending the backlog; starts live streaming of write commands as they happen
+    Slave operations: Finishes executing backlog of write commands from the master; continues executing commands as they happen
+
+Redis manages to keep up with most loads during replication,
+    except in cases where network bandwidth between the master and slave instances isn’t fast enough,
+    or when the master doesn’t have enough memory to fork and keep a backlog of write commands.
+Though it isn’t necessary, it’s generally considered to be a good practice
+    to have Redis masters only use about 50–65% of the memory in our system,
+    leaving approximately 30–45% for spare memory during BGSAVE and command backlogs.
+If multiple slaves connect at the same time,
+    the outgoing bandwidth used to synchronize all of the slaves initially
+    may cause other commands to have difficulty getting through,
+    and could cause general network slowdowns for other devices on the same network.
+
+## Master/slave chains
+
+Some developers have found that when they need
+    to replicate to more than a handful of slaves,
+    some networks are unable to keep up.
+    Especially when replication is being performed
+    over the internet or between data centers.
+Because there’s nothing particularly special about being a master or a slave in Redis,
+    slaves can have their own slaves, resulting in master/slave chaining.
+
+         ┌── Slave 1 ──┬── Slave 4
+Master ──┼── Slave 2   ├── Slave 5
+         └── Slave 3   └── Slave 6
+
+When read load significantly outweighs write load,
+    and when the number of reads pushes well beyond what a single Redis server can handle,
+    it’s common to keep adding slaves to help deal with the load.
+As load continues to increase, we can run into situations where the single master
+    can’t write to all of its slaves fast enough,
+    or is overloaded with slaves reconnecting and resyncing.
+To alleviate such issues, we may want to set up a layer
+    of intermediate Redis master/slave nodes
+    that can help with replication duties.
+
+## Verifying disk writes
+
+Verifying that the data we wrote to the master made it to the slave is easy:
+    we merely need to write a unique dummy value after our important data, and then check for it on the slave.
+
+Verifying that the data made it to disk is more difficult.
+    If we wait at least one second, we know that our data made it to disk.
+    But if we’re careful, we may be able to wait less time
+        by checking the output of the INFO command for the value of aof_pending_bio_fsync,
+        which will be 0 if all data that the server knows about has been written to disk.
+
+## Replacing a failed master
+
+What should we do if a master total system or network failure?
+
+We can use Redis Sentinel that pays attention
+to Redis masters and the slaves of the masters 
+and automatically handles failover if the master goes down.
+
+Or we can manually handle failover by:
+    creating a new node, making it the new master, and pointing all existing slaves to it
+    make one of the slaves a new master, pointing all the other slaves to it

@@ -1,0 +1,65 @@
+STRLEN key
+    Get the length of the value stored in a key
+
+## CRUD
+
+GET key
+DEL key
+
+SET key value [EX seconds|PX milliseconds] [NX|XX] [KEEPTTL]
+    Set the string value of a key
+
+GETSET key value
+    Set the string value of a key and return its old value
+
+MGET key [key ...]
+    Get the values of all the given keys
+MSET key value [key value ...]
+    Set multiple keys to multiple values
+
+SETEX key seconds value
+    Set the value and expiration of a key
+PSETEX key milliseconds value
+    Set the value and expiration in milliseconds of a key
+
+SETNX key value
+    Set the value of a key, only if the key does not exist
+MSETNX key value [key value ...]
+    Set multiple keys to multiple values, only if none of the keys exist
+
+## Increment and Decrement
+
+INCR key — Increment by 1
+DECR key — Decrement by 1
+INCRBY key amount — Increment by the provided integer value
+DECRBY key amount — Decrement by the provided integer value
+INCRBYFLOAT key amount — Increment by the provided float value
+
+## Substring manipulation
+
+APPEND key value
+    Concatenates the value to the string at the given key
+GETRANGE key start end
+    Fetches the substring, including all characters
+    from the start offset to the end offset, inclusive
+SETRANGE key offset value
+    Overwrite the substring starting at the provided offset to the given value
+
+## Bit operations
+
+GETBIT key offset
+    Treats the byte string as a bit string,
+    and returns the value of the bit in the string at the provided bit offset
+SETBIT key offset value
+    Treats the byte string as a bit string,
+    and sets the value of the bit in the string at the provided bit offset
+BITPOS key bit [start] [end]
+    Find first bit set (value of 1) or clear (value of 0) in a string
+BITCOUNT key [start end]
+    Counts the number of set bits (value of 1) in the string,
+    optionally starting and finishing at the provided byte offsets
+BITOP operation dest-key key [key …]
+    Performs one of the bitwise operations, AND, OR, XOR, or NOT,
+    on the strings provided, storing the result in the destination key
+BITFIELD key [GET type offset] [SET type offset value] [INCRBY type offset increment] [OVERFLOW WRAP|SAT|FAIL]
+    Perform arbitrary bitfield integer operations on strings

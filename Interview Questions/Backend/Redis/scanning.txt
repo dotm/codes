@@ -1,0 +1,5 @@
+Scanning commands:
+    SCAN iterates the set of keys in the currently selected Redis database.
+    SSCAN iterates elements of Sets types.
+    HSCAN iterates fields of Hash types and their associated values.
+    ZSCAN iterates elements of Sorted Set types and their associated scores.

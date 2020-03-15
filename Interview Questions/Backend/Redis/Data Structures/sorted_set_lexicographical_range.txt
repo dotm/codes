@@ -1,0 +1,49 @@
+When all the elements in a sorted set are inserted with the same score,
+    in order to force lexicographical ordering,
+    this command returns all the elements in the sorted set
+    at key with a value between min and max.
+
+If the elements in the sorted set have different scores,
+    the returned elements are unspecified.
+
+The elements are considered to be ordered from lower to higher strings
+    as compared byte-by-byte using the memcmp() C function.
+Longer strings are considered greater than shorter strings if the common part is identical.
+
+## How to specify intervals
+
+Valid start and stop must start with ( or [,
+    in order to specify if the range item is respectively exclusive or inclusive.
+
+The special values of + or - for start and stop have the special meaning of
+    positively infinite and negatively infinite strings
+The command ZRANGEBYLEX myzset - + is guaranteed to
+    return all the elements in the sorted set, if all the elements have the same score.
+
+## Example
+
+redis> ZADD myzset 0 a 0 b 0 c 0 d 0 e 0 f 0 g
+(integer) 7
+
+redis> ZRANGEBYLEX myzset - [c
+1) "a"
+2) "b"
+3) "c"
+
+redis> ZRANGEBYLEX myzset [c +
+1) "c"
+2) "d"
+3) "e"
+4) "f"
+5) "g"
+
+redis> ZRANGEBYLEX myzset - (c
+1) "a"
+2) "b"
+
+redis> ZRANGEBYLEX myzset [aaa (g
+1) "b"
+2) "c"
+3) "d"
+4) "e"
+5) "f"

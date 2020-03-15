@@ -1,0 +1,7 @@
+Undocumented Commands:
+    Cluster
+    Geo
+    HyperLogLog
+    Scripting
+    Server
+    Streams

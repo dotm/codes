@@ -1,0 +1,45 @@
+SADD key-name item [item …]
+    Adds the items to the set
+    and returns the number of items successfully added
+    (excluding items that already exist in the set)
+SREM key-name item [item …]
+    Removes the items
+    and returns the number of items that were removed
+SISMEMBER key-name item
+    Returns whether the item is in the SET
+SCARD key-name
+    Returns the number of items in the SET
+SMEMBERS key-name
+    Returns all of the items in the SET as a Python set
+SRANDMEMBER key-name [count]
+    Returns one or more random items from the SET.
+    When count is positive, Redis will return count distinct randomly chosen items.
+    When count is negative, Redis will return count randomly chosen items that may not be distinct.
+SPOP key-name
+    Removes and returns a random item from the SET
+SMOVE source-key dest-key item
+    If the item is in the source,
+    removes the item from the source
+    and adds it to the destination,
+    returning true if the item was moved
+
+SDIFF key-name [key-name …]
+    Returns the items in the first SET
+    that weren’t in any of the other SETs
+SDIFFSTORE dest-key key-name [key-name …]
+    Stores at the dest-key
+    the items in the first SET
+    that weren’t in any of the other SETs
+SINTER key-name [key-name …]
+    Returns the items that are in all of the SETs
+SINTERSTORE dest-key key-name [key-name …]
+    Stores at the dest-key
+    the items that are in all of the SETs
+SUNION key-name [key-name …]
+    Returns the items that are in at least one of the SETs
+SUNIONSTORE dest-key key-name [key-name …]
+    Stores at the dest-key
+    the items that are in at least one of the SETs
+
+SSCAN key cursor [MATCH pattern] [COUNT count]
+    Incrementally iterate Set elements

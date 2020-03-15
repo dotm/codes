@@ -1,0 +1,138 @@
+Distributed messaging platform like NSQ
+    is just a mediator pattern
+    used to decouple publishers 
+    of inter-process messages
+    and the subscribers of those messages.
+
+# Internals
+
+NSQ is composed of 3 daemons:
+    nsqd is the daemon that
+        receives, queues, and delivers messages to clients.
+    nsqlookupd is the daemon
+        that manages topology information and
+        provides an eventually consistent discovery service.
+    nsqadmin is a web UI
+        to introspect the cluster in realtime
+        (and perform various administrative tasks).
+
+## Topics and Channels
+
+Data flow in NSQ is modeled as a tree of streams and consumers.
+A topic is a distinct stream of data. 
+A channel is a logical grouping of consumers subscribed to a given topic.
+
+A single nsqd can have many topics.
+Each topic can have many channels.
+Each channel can have many consumers.
+
+nsqd
+╔═════════════════════════════════════╗
+║         ┌── Channel ──┬── Consumer  ║
+║ Topic ──┼── Channel   ├── Consumer  ║
+║         └── Channel   └── Consumer  ║
+║                                     ║
+║         ┌── Channel ──┬── Consumer  ║
+║ Topic ──┼── Channel   ├── Consumer  ║
+║         └── Channel   └── Consumer  ║
+╚═════════════════════════════════════╝
+
+A channel receives a copy of all the messages for the topic,
+    enabling multicast style delivery
+Each message on a channel is distributed amongst its subscribers,
+    enabling load-balancing.
+
+For example:
+An "Add New Product Topic" can have 2 channels:
+    An Elasticsearch channel used to route message to an Elasticsearch instance as consumer
+    A Data Enrichment channel used to enrich the product data before storing it somewhere
+The Data Enrichment channel can have many processes as consumers.
+    These consumers are then load-balanced
+    to process the messages (by enriching the product data)
+    that are sent to the Data Enrichment channel.
+
+Ephemeral topics/channels discard message overflow
+    (rather than write to disk) and 
+    disappear when they no longer have clients subscribed.
+
+## Implementation detail
+
+### Publish message to a topic
+
+NSQ topic/channel is just a buffered go-chan (Go's channel) of Message pointers. 
+The size of the buffer is equal to the --mem-queue-size configuration parameter.
+
+After reading data off the wire, the act of publishing a message to a topic involves:
+    instantiation of a Message struct (and allocation of the message body []byte)
+    read-lock to get the Topic
+    read-lock to check for the ability to publish
+    send on a buffered go-chan
+
+### From Topic to Channel
+
+Each topic maintains 3 primary goroutines.
+    router: read newly published messages off the incoming go-chan and store them in a queue (memory or disk)
+    messagePump: copy and push messages to channels
+    DiskQueue IO: writing message overflow to disk when the in-memory bound is exceeded
+
+NSQ Channels share the underlying goal of exposing
+    a single input and single output go-chan
+    to abstract away the fact that, internally,
+    messages might be in memory or on disk.
+Each channel maintains 2 time-ordered priority queues
+    responsible for deferred and in-flight message timeouts
+    (and 2 accompanying goroutines for monitoring them).
+
+Topics and channels have a struct member declared
+    as a Backend interface rather than a concrete type.
+Normal topics and channels use a DiskQueue
+    while ephemeral ones stub in a DummyBackendQueue,
+    which implements a no-op Backend.
+
+## Heartbeats and Timeouts
+
+The NSQ TCP protocol is push oriented.
+After connection, handshake, and subscription
+    the consumer is placed in a RDY state of 0.
+When the consumer is ready to receive messages it updates
+    that RDY state to the number of messages it is willing to accept.
+NSQ client libraries continually manage this behind the scenes,
+    resulting in a flow-controlled stream of messages.
+
+After client indicates they are ready to receive messages
+    NSQ sends a message and temporarily stores the data locally (in the event of re-queue or timeout)
+    client replies FIN (finish) or REQ (re-queue) indicating success or failure respectively.
+If client does not reply
+    NSQ will timeout after a configurable duration
+    and automatically re-queue the message
+
+# Features and Guarantees
+
+Features:
+    support distributed topologies with no SPOF
+    horizontally scalable (no brokers, seamlessly add more nodes to the cluster)
+    low-latency push based message delivery (performance)
+    combination load-balanced and multicast style message routing
+    excel at both streaming (high-throughput) and job oriented (low-throughput) workloads
+    primarily in-memory (beyond a high-water mark messages are transparently kept on disk)
+    runtime discovery service for consumers to find producers (nsqlookupd)
+    transport layer security (TLS)
+    data format agnostic
+    few dependencies (easy to deploy) and a sane, bounded, default configuration
+    simple TCP protocol supporting client libraries in any language
+    HTTP interface for stats, admin actions, and producers (no client library needed to publish)
+    integrates with statsd for realtime instrumentation
+    robust cluster administration interface (nsqadmin)
+
+Guarantees:
+    - messages are not durable (by default)
+        it is primarily an in-memory messaging platform
+        but --mem-queue-size can be set to 0 to ensure that
+            all incoming messages are persisted to disk
+    - messages are delivered at least once
+        messages can be delivered multiple times
+            (client timeouts, disconnections, requeues, etc.)
+        It is the client’s responsibility
+            to perform idempotent operations or de-dupe.
+    - messages received are un-ordered
+    - consumers eventually find all topic producers

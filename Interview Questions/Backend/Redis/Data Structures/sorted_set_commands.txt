@@ -1,0 +1,74 @@
+ZRANK key-name member
+    Returns the position of the given member in the ZSET
+ZREVRANK key-name member
+    Returns the position of the member in the ZSET,
+    with members ordered in reverse (scores ordered from high to low)
+
+ZSCORE key-name member
+    Returns the score of the member in the ZSET
+
+ZADD key [NX|XX] [CH] [INCR] score member [score member ...]
+    Add one or more members to a sorted set, or update its score if it already exists
+
+ZINCRBY key-name increment member
+    Increments the member in the ZSET
+
+ZSCAN key cursor [MATCH pattern] [COUNT count]
+    Incrementally iterate sorted sets elements and associated scores
+
+## Get Count
+
+ZCARD key-name
+    Returns the number of members in the ZSET
+ZCOUNT key-name min max
+    Returns the number of members with scores between the provided minimum and maximum
+ZLEXCOUNT key min max
+    Count the number of members in a sorted set between a given lexicographical range
+
+## Get Members
+
+ZRANGE key-name start stop [WITHSCORES]
+    Returns the members and optionally the scores
+    for the members with ranks between start and stop
+ZREVRANGE key-name start stop [WITHSCORES]
+    Fetches the given members from the ZSET by rank,
+    with members in reverse order (scores ordered from high to low)
+
+ZRANGEBYSCORE key min max [WITHSCORES] [LIMIT offset count]
+    Fetches the members between min and max
+ZREVRANGEBYSCORE key max min [WITHSCORES] [LIMIT offset count]
+    Fetches the members between min and max in reverse order (scores ordered from high to low)
+
+ZRANGEBYLEX key min max [LIMIT offset count]
+    Return a range of members in a sorted set, by lexicographical range
+ZREVRANGEBYLEX key max min [LIMIT offset count]
+    Return a range of members in a sorted set, by lexicographical range, ordered from higher to lower strings.
+
+## Pop operations
+
+ZPOPMAX key [count]
+    Remove and return members with the highest scores in a sorted set
+ZPOPMIN key [count]
+    Remove and return members with the lowest scores in a sorted set
+BZPOPMIN key [key ...] timeout
+    Remove and return the member with the lowest score from one or more sorted sets, or block until one is available
+BZPOPMAX key [key ...] timeout
+    Remove and return the member with the highest score from one or more sorted sets, or block until one is available
+
+## Delete operations
+
+ZREM key-name member [member …]
+    Removes the members from the ZSET, returning the number of members that were removed
+ZREMRANGEBYRANK key-name start stop
+    Removes the items from the ZSET with ranks between start and stop
+ZREMRANGEBYSCORE key-name min max
+    Removes the items from the ZSET with scores between min and max
+ZREMRANGEBYLEX key min max
+    Remove all members in a sorted set between the given lexicographical range
+
+## Set operations
+
+ZINTERSTORE dest-key key-count key [key …] [WEIGHTS weight [weight …]] [AGGREGATE SUM|MIN|MAX]
+    Performs a SET-like intersection of the provided ZSETs
+ZUNIONSTORE dest-key key-count key [key …] [WEIGHTS weight [weight …]] [AGGREGATE SUM|MIN|MAX]
+    Performs a SET-like union of the provided ZSETs

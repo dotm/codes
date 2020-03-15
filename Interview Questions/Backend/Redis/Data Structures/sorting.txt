@@ -1,0 +1,2 @@
+SORT key [BY pattern] [LIMIT offset count] [GET pattern [GET pattern ...]] [ASC|DESC] [ALPHA] [STORE destination]
+    Sort the elements in a list, set or sorted set

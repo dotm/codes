@@ -1,0 +1,38 @@
+## Hash level commands
+
+HKEYS key-name
+    Fetches the keys in the HASH
+HVALS key-name
+    Fetches all the values in the HASH
+HGETALL key-name
+    Fetches all key-value pairs from the HASH
+
+HLEN key-name
+    Returns the number of key-value pairs in the HASH
+
+HSCAN key cursor [MATCH pattern] [COUNT count]
+    Incrementally iterate hash fields and associated values
+
+## Field level commands
+
+HGET key-name field
+HMGET key-name field [field …]
+    Fetches the values for multiple fields in the HASH
+
+HSET key-name field value [field value …]
+HSETNX key field value
+    Set the value of a hash field, only if the field does not exist
+
+HDEL key-name field [field …]
+    Deletes the key-value pairs in the HASH, returning the number of pairs that were found and deleted
+
+HSTRLEN key field
+    Get the length of the value of a hash field
+
+HEXISTS key-name field
+    Returns whether the given key exists in the HASH
+
+HINCRBY key-name field increment
+    Increments the value stored at the given key by the integer increment
+HINCRBYFLOAT key-name field increment
+    Increments the value stored at the given key by the float increment

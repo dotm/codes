@@ -176,7 +176,7 @@ var timeNow time.Time
     #Boolean: bool
         true false
     #Integers:
-            int    int8    int16    int32    int64
+            int int8 int16 int32 int64
             uint uint8 uint16 uint32 uint64
             uintptr
             byte        // alias for uint8
@@ -727,8 +727,8 @@ In such cases, the constructor should return an interface value rather than the 
 #Concurrency
     Do not communicate by sharing memory; instead, share memory by communicating.
         This approach can be taken too far.
-        Reference counts may be best done by putting a mutex around an integer variable.
-    Although Go's approach to concurrency originates in Hoare's Communicating Sequential Processes (CSP),
+            Reference counts may be best done by putting a mutex around an integer variable.
+    Go's approach to concurrency originates in Hoare's Communicating Sequential Processes (CSP),
         it can also be seen as a type-safe generalization of Unix pipes.
 
 #Goroutine
@@ -791,36 +791,6 @@ In such cases, the constructor should return an interface value rather than the 
     ch <- 3             //overflowing the buffer causes fatal error
     fmt.Println(<-ch)
     fmt.Println(<-ch)
-#Using unbuffered channel and goroutine to do something in the background
-    c := make(chan int)     // Allocate a channel.
-    go func() {             // Start the sort in a goroutine; when it completes, signal on the channel.
-        list.Sort()
-        c <- 1              // Send a signal; value does not matter.
-    }()
-    doSomethingForAWhile()
-    <-c                     // Wait for sort to finish; discard sent value.
-#Using buffered channel and goroutine to implement a semaphore
-    var semaphore = make(chan int, MaxResourcesInPool)
-    func Serve(queue chan *Request) {
-        for req := range queue {
-            req := req              // create a new req, shadowing the req from the for loop, this is to avoid reuse behavior of for loop variable
-            semaphore <- 1          // increment semaphore
-            go func() {
-                process(req)        // use the limited resource from the pool
-                <-semaphore         // decrement semaphore
-            }()
-        }
-    }
-#Managing limited resources without semaphore
-    func handle(queue chan *Request) {
-        for r := range queue { process(r) }
-    }
-    func Serve(clientRequests chan *Request, quit chan bool) {
-        for i := 0; i < MaxResourcesInPool; i++ {
-            go handle(clientRequests)               // Start handlers
-        }
-        <-quit                                      // Wait to be told to exit
-    }
 
 #Select statement
     lets a goroutine wait on multiple communication operations
@@ -832,7 +802,7 @@ In such cases, the constructor should return an interface value rather than the 
     func functionName(firstChannel, secondChannel chan int){
         select {
             case variableName := <- firstChannel: fmt.Printf("firstChannel: %v\n", variableName)
-            case <- secondChannel:                 fmt.Println("received signal from secondChannel")
+            case <- secondChannel:                fmt.Println("received signal from secondChannel")
         }
     }
     func main(){
@@ -870,7 +840,7 @@ In such cases, the constructor should return an interface value rather than the 
         c.mux.Lock();                 fmt.Println("Lock so only one goroutine at a time can access c.v");
         time.Sleep(time.Second);
         c.v++;                        fmt.Printf("Counter changed to %v\n", c.v);
-        c.mux.Unlock();             fmt.Println("Release lock");
+        c.mux.Unlock();               fmt.Println("Release lock");
     }
     func (c *SafeCounter) Value() int {
         c.mux.Lock()
@@ -883,4 +853,69 @@ In such cases, the constructor should return an interface value rather than the 
         for i := 0; i < 3; i++ { go c.Increment() }
         time.Sleep(time.Second * 5)
         fmt.Println(c.Value())
+    }
+
+#--------------------------------------------------------------------------------
+#Concurrency Patterns
+
+#Using unbuffered channel and goroutine to do something in the background
+    c := make(chan int)     // Allocate a channel.
+    go func() {             // Start the sort in a goroutine; when it completes, signal on the channel.
+        list.Sort()
+        c <- 1              // Send a signal; value does not matter.
+    }()
+    doSomethingForAWhile()
+    <-c                     // Wait for sort to finish; discard sent value.
+#Using buffered channel and goroutine to implement a semaphore
+    var semaphore = make(chan int, MaxResourcesInPool)
+    func Serve(queue chan *Request) {
+        for req := range queue {
+            req := req              // create a new req, shadowing the req from the for loop, this is to avoid reuse behavior of for loop variable
+            semaphore <- 1          // increment semaphore
+            go func() {
+                process(req)        // use the limited resource from the pool
+                <-semaphore         // decrement semaphore
+            }()
+        }
+    }
+#Managing limited resources without semaphore
+    func handle(queue chan *Request) {
+        for r := range queue { process(r) }
+    }
+    func Serve(clientRequests chan *Request, quit chan bool) {
+        for i := 0; i < MaxResourcesInPool; i++ {
+            go handle(clientRequests)               // Start handlers
+        }
+        <-quit                                      // Wait to be told to exit
+    }
+
+#Pipeline
+    is a series of stages connected by channels,
+    where each stage is a group of goroutines running the same function
+#Example Pipeline (generate int, square it, then print it)
+    func generateInt(nums ...int) <-chan int {
+        output := make(chan int)
+        go func() {
+            for _, n := range nums {
+                output <- n
+            }
+            close(output)
+        }()
+        return output
+    }
+    func square(input <-chan int) <-chan int {
+        output := make(chan int)
+        go func() {
+            for n := range input {
+                output <- n * n
+            }
+            close(output)
+        }()
+        return output
+    }
+    func main() {
+        // Set up the pipeline and consume the output.
+        for n := range square(square(generateInt(2, 3))) {
+            fmt.Println(n) // 16 then 81
+        }
     }

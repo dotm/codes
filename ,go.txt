@@ -187,6 +187,8 @@ var timeNow time.Time
         Go will default to complex128 for a complex number literal in 64-bit systems
     #Pointer: *value_type
     #string
+        to create string, use double quote "a string"
+        to create a rune as character, use single quote 'a'
     #nil
 #Zero values
     Variables declared without an explicit initial value are given their zero value:
@@ -247,6 +249,13 @@ var timeNow time.Time
     returns an initialized (not zeroed) value of type_name
         we'll get nil value if we use new(T) with slices, maps, and channels
     unlike new(T), make doesn't return a pointer of the type
+
+#Custom allocation
+    you can define your own
+        NewSomeType function or SomeType.New method
+        to allocate data in a customized way
+        the function or method can have configurations in its body
+        and can return either a value of or a pointer to SomeType
 
 #--------------------------------------------------------------------------------
 #Pointer
@@ -323,6 +332,15 @@ var timeNow time.Time
         var structVariable = structName{fieldName2: value, fieldName1: value}     //unordered initialization permitted
         var structVariable = structName{}                                         //all struct field set to zero value
     #access field: structVariable.fieldName1
+#with anonymous field
+    #declaration
+        type structName struct {
+            field_type
+            field_type
+        }
+    #create using composite literal:
+        var structVariable = structName{value, value}
+    #access field: structVariable.field_type
 
 #--------------------------------------------------------------------------------
 #Array
@@ -345,6 +363,11 @@ var timeNow time.Time
         var arrayName [length]value_type = [length] value_type {index: value, index: value}
         var a [10]int = [10]int{11,22}
         var a [10]int = [10]int{2: 22, 5: 55}
+    #create with dynamic length
+        arrayName := [...] value_type {value, value}
+        arrayName := [...] value_type {index: value, index: value}
+        a := [...]int{11,22}
+        a := [...]int{2: 22, 5: 55}
     #access element by index: array[index]
     #change element value at index: array[index] = value
 
@@ -375,6 +398,9 @@ var timeNow time.Time
             make([]slice_type, length)                //capacity == length
             make([]slice_type, length, capacity)
             b := make([]int, 0, 5)                    // len(b)=0, cap(b)=5
+        #copy from another slice:
+            destinationSlice := make([]type_name, len(sourceSlice))
+            copy(destinationSlice, sourceSlice)
     #reslicing:
         sliceName = sliceName[new_upper_index : new_lower_index]
     #change underlying array:
@@ -392,7 +418,9 @@ var timeNow time.Time
 #--------------------------------------------------------------------------------
 #Map: maps keys to values
         pass by reference
-        a nil map has no keys, nor can keys be added
+        a map value can be nil
+            reading a nil map is like reading an empty map with no keys (it will return zero value)
+            writing to a nil map will cause runtime panic
         the key can be of any type for which the equality operator is defined:
             integers, floating point, complex numbers, strings,
             interfaces (as long as the dynamic type supports equality),
@@ -405,13 +433,15 @@ var timeNow time.Time
                 keyName: value,
                 keyName: value,
             }
-    #access element by key: map[keyName]
+    #access element by key:
+        element = map[keyName]
+        element, isExist = map[keyName]             //you can use the comma ok idiom here
+    #check if an element exist at a key:
+        element, isExist := map[keyName]            //if no element found at keyName, isExist will be false and elem will be zero-valued
+        _, isExist := map[keyName]
     #add value to key: map[keyName] = value
     #change value by key: map[keyName] = value
     #delete element by key: delete(map, keyName)
-    #check if an element exist at a key:
-        elem, isExist := map[keyName]             //if no element found at keyName, isExist will be false and elem will be zero-valued
-        _, isExist := map[keyName]
 
 #Set
     A set can be implemented as a map with value type bool
@@ -479,6 +509,12 @@ Loop
     for index := range sliceName { statements }            //capture index only
     for _, value := range sliceName { statements }         //capture value only
     for range sliceName { statements }                     //without capturing index or value
+#Notes:
+    `value` is a variable that will be updated each loop with a copy of the element at that index
+        this means that if you want to mutate the value, you must use access by index:
+            for index, value := range sliceName { //where sliceName contains reference type
+                sliceName[index].fieldName = newValue
+            }
 
 #Iterate over map using range
     for key, value := range mapName { statements }
@@ -494,6 +530,7 @@ Loop
         #with parameters: func functionName(parameterName parameter_type, parameterName parameter_type) { function_body }
             When consecutive parameters share a type, you can omit the type from all but the last.
                 func add(x, y int, z string) { function_body }
+        #with variadic parameters: func functionName(parameterName ...parameter_type) { function_body }
         #with return value: func functionName() return_type { return value }
         #with multiple return value: func functionName() (return_type, return_type) { return value, value }
         #with named return value:
@@ -512,9 +549,14 @@ Loop
             func (parameterName parameter_type, parameterName parameter_type){ function_body }(argument, argument)
     #higher-order function:
         func functionName
-            (callback func(parameter_type,parameter_type) return_type)    //take a callback function as argument
+            (callback func(parameter_type,parameter_type) return_type)  //take a callback function as argument
             func(parameter_type,parameter_type) return_type             //return a function as closure
             { function_body }
+    #nested function
+        func functionName(){
+            nestedFunction := func(){}  //defined as anonymous function
+            nestedFunction()            //called as normal function
+        }
     
 #Method
         Go doesn't have classes. But, you can define methods on types.
@@ -531,7 +573,9 @@ Loop
                 The language therefore disallows this mistake.
     #definition:
         func (receiverArgumentName type) methodName(parameterName parameter_type) return_type { function_body }
+        func (receiverArgumentName *type) mutatingMethod(parameterName parameter_type) { function_body }
         func (v Vertex) Abs() float64 { statements }
+        func (v *Vertex) ChangeProperties(X, Y float64) { statements }
     #call: variableName.methodName(argument, argument)
     #add method for types defined in different package (e.g. built-in types):
         type MyInt int                          //use type alias
@@ -573,6 +617,30 @@ Loop
     Deferred function calls are pushed onto a stack.
         When a function returns, its deferred calls are executed in last-in-first-out order.
 
+#Adding method to function using interface
+    func main() {
+        //trackImpression is a callable function. but it also have method
+        trackImpression := productImpressionAnalytics(hitProductImpressionAnalytics)
+        //you can also use anonymous function like below
+        // var trackImpression productImpressionAnalytics = func(productName string) {
+        // 	fmt.Println("BackendTracker.trackProductImpression(" + productName + ")")
+        // }
+
+        fmt.Println(trackImpression.getAnalyticsName())
+        trackImpression("rice")
+    }
+    func hitProductImpressionAnalytics(productName string) {
+        BackendTracker.trackProductImpression(productName)
+    }
+    type isAnalytics interface {
+        getAnalyticsName() string
+    }
+    type productImpressionAnalytics func(productName string)
+    func (t productImpressionAnalytics) getAnalyticsName() string {
+        //here we return a property by using a method that always returns the same value
+        return "productImpressionAnalytics"
+    }
+
 #--------------------------------------------------------------------------------
 #Interface
     interface type is a set of method signatures
@@ -580,18 +648,28 @@ Loop
             method signature
             method signature
         }
-    Interfaces with only one or two methods are common in Go and are usually given a name derived from the method
-        type Absolutable interface { Abs() float64 }
-        type Writer interface { Write(p []byte) (n int, err error) }   // available in io.Writer
     A type implements an interface simply by implementing its methods (no implements keyword necessary)
     A type can implement multiple interfaces
     It's an idiom in Go to convert the type of an expression to access a different set of methods
         sort.IntSlice(userDefinedSequenceType).Sort()
         fmt.Sprint( []int( userDefinedSequenceType ) )
-    Since almost anything can have methods attached
-        (except pointer and interface),
-        almost anything can satisfy an interface
-        including a function type:
+    Interfaces with only one or two methods are common in Go
+        They are usually given a name derived from the method
+            type Absolutable interface { Abs() float64 }
+            type Writer interface { Write(p []byte) (n int, err error) }   // available in io.Writer
+        If you are making a library that exposes an interface with one function defined
+            it is a common idiom to also expose a MyInterfaceFunc type.
+                type BlindAlerter interface {
+                    ScheduleAlertAt(duration time.Duration, amount int)
+                }
+                // BlindAlerterFunc allows you to implement BlindAlerter with a function
+                type BlindAlerterFunc func(duration time.Duration, amount int)
+                // ScheduleAlertAt is BlindAlerterFunc implementation of BlindAlerter
+                func (a BlindAlerterFunc) ScheduleAlertAt(duration time.Duration, amount int) {
+                    a(duration, amount)
+                }
+    Since almost anything can have methods attached (except pointer and interface),
+        almost anything can satisfy an interface including a function type:
             type HandlerFunc func(ResponseWriter, *Request)
             func (f HandlerFunc) ServeHTTP(w ResponseWriter, req *Request) { f(w, req) }
 
@@ -604,6 +682,7 @@ Loop
     An interface value that holds a nil concrete value is itself non-nil.
 
 #Nil interface
+    A variable of interface can have nil value
     A nil interface value holds neither value nor concrete type.
         var i interfaceName
         i == nil                //true
@@ -635,6 +714,9 @@ In such cases, the constructor should return an interface value rather than the 
         Go does not provide subclassing,
         but it does have the ability to “borrow” pieces of an implementation
         by embedding types within a struct or interface.
+    Don't use embedding because it's convenient
+        Think about the effect embedding has on your public API.
+        Do you really want to expose these methods and have people coupling their own code to them?
 
 #Embedding interface
     type Reader interface { Read(p []byte) (n int, err error) }
@@ -654,6 +736,10 @@ In such cases, the constructor should return an interface value rather than the 
 
 #--------------------------------------------------------------------------------
 #Error
+    error is an interface
+        it can be nil
+    whether an error is thrown or a nil is returned
+        both case need to be checked and handled gracefully
 
 #Error interface - go programs express error state with error values
     type error interface {
@@ -793,7 +879,7 @@ In such cases, the constructor should return an interface value rather than the 
     fmt.Println(<-ch)
 
 #Select statement
-    lets a goroutine wait on multiple communication operations
+    lets a goroutine wait (block) on multiple channel (communication operations)
     select blocks until one of its cases can run, then it executes that case
         It chooses one at random if multiple are ready
     The default case in a select is run if no other case is ready.
@@ -801,14 +887,13 @@ In such cases, the constructor should return an interface value rather than the 
 #Example
     func functionName(firstChannel, secondChannel chan int){
         select {
-            case variableName := <- firstChannel: fmt.Printf("firstChannel: %v\n", variableName)
-            case <- secondChannel:                fmt.Println("received signal from secondChannel")
+            case variableName := <- firstChannel:
+                fmt.Printf("firstChannel: %v\n", variableName)
+            case <- secondChannel:
+                fmt.Println("received signal from secondChannel")
+            case <-time.After(timeout):
+		        fmt.Println("timed out")
         }
-    }
-    func main(){
-        a := make(chan int); b := make(chan int);
-        go functionName(a,b)
-        a <- 1
     }
 #Example with default case
     func main() {
@@ -858,6 +943,50 @@ In such cases, the constructor should return an interface value rather than the 
 #--------------------------------------------------------------------------------
 #Concurrency Patterns
 
+#Make channel and listen only to its close event (we don't care what value is sent through the channel)
+    //empty struct is the smallest data type (from a memory perspective)
+    //  it's even smaller than struct{bool}
+    channelName := make(chan struct{})
+    select {
+        case <-channelName: channelClosedEventHandler()
+    }
+#Running anonymous function inside goroutine using for loop
+    #incorrect example:
+        for _, url := range urls {          //url here is a variable that is changed every loop
+            go func() {                     //this will spin up a new goroutine
+                functionName(url)           //the url here is passed by reference
+            }()                             //all of the goroutines will be created after the for loop is finished (because looping is faster)
+            time.Sleep(someThreshold)       //without this, all of the goroutines will only accept the last url in urls
+        }                                   //because once the for loop is finished, the url variable will point to the last url
+    #correct example
+        for _, url := range urls {
+            go func(copiedURL string) {
+                functionName(copiedURL)
+            }(url)                          //this will copy the current value of url variable and pass it to the anonymous function
+        }
+#Avoiding race condition such as concurrent map writes
+    #incorrect example:
+        for _, url := range urls {
+            go func(copiedURL string) {
+                //concurrent map writes can cause fatal error
+                mapName[copiedURL] = functionName(copiedURL)
+            }(url)
+        }
+    #correct example:
+        type result struct {
+            string
+            bool
+        }
+        for _, url := range urls {
+            go func(copiedURL string) {
+                //we use channel so that, while functionName can return in parallel, map writes happen one at a time
+                resultChannel <- result{copiedURL, functionName(copiedURL)}
+            }(url)
+        }
+        for i := 0; i < len(urls); i++ {
+            result := <-resultChannel
+            mapName[result.string] = result.bool
+        }
 #Using unbuffered channel and goroutine to do something in the background
     c := make(chan int)     // Allocate a channel.
     go func() {             // Start the sort in a goroutine; when it completes, signal on the channel.
@@ -919,3 +1048,145 @@ In such cases, the constructor should return an interface value rather than the 
             fmt.Println(n) // 16 then 81
         }
     }
+
+#--------------------------------------------------------------------------------
+#Testing, Benchmarking, and Example
+    all of these can be made in a test suite
+    if you have an implementation file called hello.go
+        you can define the test suite file as hello_test.go
+    when writing a project with multiple packages,
+        name your test package as _test at the end: package hello_test
+            thus you'll only be able to have access
+            to the public types in your package
+            which helps enforce the discipline of only testing public APIs.
+        name with the same name as your implementation package: package hello
+            only if you still wish to test internals
+            but make sure it's a separate test file
+            than the one used to test public APIs
+    export stubs, mocks, spies, etc. (capitalize their name)
+        this will make it easier for other programmers to extend your tests
+
+#Testing
+    #basic command: go test
+    #show coverage: go test -cover
+    #checking for race condition: go test -race
+
+#Benchmarking
+    #command: go test -bench=. -benchmem
+
+#Creating Test, Benchmark, and Example
+    !adder_test.go
+    package adder_test
+    func TestAdder(t *testing.T) {  //test function must be prefixed by Test and take *testing.T as the first argument
+        got := Add(2, 2)
+        want := 4
+
+        if got != want {
+            t.Errorf("want '%d', got '%d'", expected, sum)  //check out other testing method other than Errorf inside t
+        }
+    }
+    func BenchmarkAdd(b *testing.B) { //benchmark function must be prefixed by Benchmark and take *testing.B as the first argument
+        for i := 0; i < b.N; i++ {
+            SumAll([]int{1, 2, 4}, []int{0, 9, 2})
+        }
+    }
+    func ExampleAdd() {     //example function must be prefixed by Example
+        sum := Add(1, 5)
+        fmt.Println(sum)
+        // Output: 6
+    }
+
+#Defining test helpers
+    assertEqualSlices := func(t *testing.T, got, want []int) {  //you can define the helper like this or as normal named function
+		t.Helper()                                              //this is a MUST so that error will point to the line that calls assertEqualSlices
+		if !reflect.DeepEqual(got, want) {                      //you can only test slice equality using reflect.DeepEqual
+			t.Errorf("got %v want %v", got, want)
+		}
+	}
+
+#Custom error constants
+    const (
+        //ErrNotFound is used when a dictionary doesn't have the entry for a word
+        ErrNotFound = DictionaryErr("could not find the word you were looking for")
+    )
+
+    //DictionaryErr is a wrapper so that error for dictionaries can be defined as constant
+    type DictionaryErr string
+
+    //conforming to Go's error interface
+    func (e DictionaryErr) Error() string {
+        return string(e)
+    }
+
+    //using the custom error
+    func (d Dictionary) Get(word string) (entry, error) {
+        value, ok = d[word]
+        if !ok {
+            return "", ErrNotFound
+        }
+        return value, nil
+    }
+
+#Table driven test
+    func TestArea(t *testing.T) {
+        areaTests := []struct {
+            name    string
+            shape   Shape
+            hasArea float64
+        }{                                          //below is the table for the test
+            {name: "Rectangle", shape: Rectangle{Width: 12, Height: 6}, hasArea: 72.0},
+            {name: "Circle", shape: Circle{Radius: 10}, hasArea: 314.1592653589793},
+            {name: "Triangle", shape: Triangle{Base: 12, Height: 6}, hasArea: 36.0},
+        }
+
+        for _, tt := range areaTests {              //tt means table test
+            t.Run(tt.name, func(t *testing.T) {
+                got := tt.shape.Area()
+                if got != tt.hasArea {
+                    t.Errorf("%#v got %g want %g", tt.shape, got, tt.hasArea)
+                }
+            })
+        }
+    }
+
+#BDD
+    func TestDescribeSomething(t *testing.T) {
+        shouldDoSomething(t)
+        t.Run("when context", shouldDoOtherThing)
+    }
+    func shouldDoSomething(t *testing.T) {
+        got := functionName()
+        want := value
+        expectEqual(t,got,want)
+    }
+    func shouldDoOtherThing(t *testing.T) {
+        got := functionName()
+        want := value
+        expectEqual(t,got,want)
+    }
+    func expectEqual(t *testing.T, got, want interface{}) {
+        t.Helper()
+        if !reflect.DeepEqual(got,want) {
+            t.Errorf("got %v want %v", got, want)
+        }
+    }
+
+#--------------------------------------------------------------------------------
+#File I/O
+    Gotchas:
+        when reading all content inside a file multiple times,
+            make sure to seek back to the beginning of file before each read
+        when writing from the beginning of file to an already written file,
+            make sure to clear/truncate the data first.
+            this will avoid cases such as:
+            writing "abc" to "12345" resulting in "abc45"
+
+#--------------------------------------------------------------------------------
+#Pre-commit routines
+
+go generate (?)
+errcheck
+go vet
+go test
+go test -race
+go test -bench=. -benchmem (?)

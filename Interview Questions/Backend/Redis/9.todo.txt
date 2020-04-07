@@ -5,3 +5,6 @@ Undocumented Commands:
     Scripting
     Server
     Streams
+
+Last section read front-to-back:
+https://redislabs.com/ebook/part-2-core-concepts/chapter-6-application-components-in-redis/6-3-counting-semaphores/6-3-2-fair-semaphores/

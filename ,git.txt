@@ -37,10 +37,10 @@ git config --global alias.rs reset
 git config --global alias.lo 'log --oneline'
 git config --global alias.c 'commit -am'
 git config --global alias.a 'add -A'
-git config --global alias.ccr 'commit --allow-empty -m "[ci enable][run test]"'
+git config --global alias.com 'checkout master'
 git config --global alias.mom 'merge origin/master'
-git config --global alias.mod 'merge origin/develop'
 git config --global alias.rsh 'reset --hard'
+git config --global alias.ccr 'commit --allow-empty -m "[ci enable][run test]"'
 
 #-----------------------------------------------------------------------------------
 #Rename a local and remote branch in git

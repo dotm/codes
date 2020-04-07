@@ -21,3 +21,6 @@ Breaking changes
 Release notes
 
 All the topics above are to be read when needed (lazy-learning).
+
+Last section read front-to-back:
+https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-edgengram-tokenfilter.html

@@ -106,6 +106,7 @@ export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
+export GOPATH=$HOME/go
 export PATH=$GOPATH/bin:$PATH
 
 alias cdlendingapp="cd $GOPATH/src/github.com/dhanapala-id/lendingapp/"

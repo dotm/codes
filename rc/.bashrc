@@ -135,7 +135,7 @@ alias work="cd /mnt/c/Workspace"
 alias site="cd /mnt/c/Users/y6326/Desktop/Site"
 
 # open bashrc
-alias brc="vim ~/.bashrc"
+alias shrc="vim ~/.bashrc"
 # open vimrc
 alias vrc="vim ~/.vimrc"
 # open tmux config

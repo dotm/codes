@@ -623,7 +623,7 @@ Loop
         trackImpression := productImpressionAnalytics(hitProductImpressionAnalytics)
         //you can also use anonymous function like below
         // var trackImpression productImpressionAnalytics = func(productName string) {
-        // 	fmt.Println("BackendTracker.trackProductImpression(" + productName + ")")
+        //  fmt.Println("BackendTracker.trackProductImpression(" + productName + ")")
         // }
 
         fmt.Println(trackImpression.getAnalyticsName())
@@ -892,7 +892,7 @@ In such cases, the constructor should return an interface value rather than the 
             case <- secondChannel:
                 fmt.Println("received signal from secondChannel")
             case <-time.After(timeout):
-		        fmt.Println("timed out")
+                fmt.Println("timed out")
         }
     }
 #Example with default case
@@ -1069,6 +1069,9 @@ In such cases, the constructor should return an interface value rather than the 
 #Testing
     #basic command: go test
     #show coverage: go test -cover
+    #show coverage in html:
+        go test ./... -coverprofile=coverage.out
+        go tool cover -html=coverage.out
     #checking for race condition: go test -race
 
 #Benchmarking
@@ -1098,11 +1101,11 @@ In such cases, the constructor should return an interface value rather than the 
 
 #Defining test helpers
     assertEqualSlices := func(t *testing.T, got, want []int) {  //you can define the helper like this or as normal named function
-		t.Helper()                                              //this is a MUST so that error will point to the line that calls assertEqualSlices
-		if !reflect.DeepEqual(got, want) {                      //you can only test slice equality using reflect.DeepEqual
-			t.Errorf("got %v want %v", got, want)
-		}
-	}
+        t.Helper()                                              //this is a MUST so that error will point to the line that calls assertEqualSlices
+        if !reflect.DeepEqual(got, want) {                      //you can only test slice equality using reflect.DeepEqual
+            t.Errorf("got %v want %v", got, want)
+        }
+    }
 
 #Custom error constants
     const (
@@ -1129,17 +1132,18 @@ In such cases, the constructor should return an interface value rather than the 
 
 #Table driven test
     func TestArea(t *testing.T) {
-        areaTests := []struct {
+        table := []struct {
             name    string
             shape   Shape
             hasArea float64
-        }{                                          //below is the table for the test
+        }{
+            //below is the table for the test
             {name: "Rectangle", shape: Rectangle{Width: 12, Height: 6}, hasArea: 72.0},
             {name: "Circle", shape: Circle{Radius: 10}, hasArea: 314.1592653589793},
             {name: "Triangle", shape: Triangle{Base: 12, Height: 6}, hasArea: 36.0},
         }
 
-        for _, tt := range areaTests {              //tt means table test
+        for _, tt := range table {                  //tt means table test
             t.Run(tt.name, func(t *testing.T) {
                 got := tt.shape.Area()
                 if got != tt.hasArea {
@@ -1171,6 +1175,9 @@ In such cases, the constructor should return an interface value rather than the 
         }
     }
 
+#Script to automatically gather code coverage
+See https://github.com/dotm/codes/blob/master/tokopedia/unit-test-sharing-session/runtests.sh
+
 #--------------------------------------------------------------------------------
 #File I/O
     Gotchas:
@@ -1184,11 +1191,16 @@ In such cases, the constructor should return an interface value rather than the 
 #--------------------------------------------------------------------------------
 #Pre-commit routines
 
-go generate (?)
-errcheck
-go vet
-go test
-go test -race
-go test -bench=. -benchmem (?)
 dep ensure -v
-checkdependencies (?)
+go generate (?)
+errcheck ./...
+go vet ./... &> vet-result.txt
+go test ./...
+go test -race ./...
+go test -bench=. -benchmem (?)
+
+#Optional routines
+
+go generate (?) //for when we use dynamic code generation
+go test -bench=. -benchmem (?) //for when we want to test benchmarks
+checkdependencies (?) (custom script to check that dependencies follow clean architecture requirements)

@@ -1,0 +1,278 @@
+Tom's Obvious, Minimal Language
+    is explicitly intended as a configuration file format
+    is not intended for serializing arbitrary data structures
+        it doesn't permit top-level arrays or floats, so it cannot directly serialize some data
+        there is no standard identifying the start or end of a TOML file, which can complicate sending it through a stream
+
+TOML MIME type is application/toml
+
+Spec:
+    TOML is case sensitive
+    A TOML file must be a valid UTF-8 encoded Unicode document
+    Whitespace means tab (0x09) or space (0x20)
+    Newline means LF (0x0A) or CRLF (0x0D 0x0A)
+
+# single line comment
+
+#--------------------------------------------------------------------------------
+#Key/Value Pair: key = "value" \n
+Values must have one of the following types
+    String
+    Integer
+    Float
+    Boolean
+    Offset Date-Time
+    Local Date-Time
+    Local Date
+    Local Time
+    Array
+    Inline Table
+There must be a newline after a key/value pair.
+    See Inline Table for exceptions.
+
+#--------------------------------------------------------------------------------
+#Keys
+A key may be either bare, quoted or dotted.
+Best practice is to use bare keys except when absolutely necessary.
+Defining a key multiple times is invalid.
+
+#Bare key
+    may only contain ASCII letters, ASCII digits, underscores, and dashes (A-Za-z0-9_-)
+    must be non-empty
+        `= "value" \n` is invalid
+Example:
+    key = "value"
+    bare_key = "value"
+    bare-key = "value"
+    1234 = "value"      #the 1234 is interpreted as string
+
+#Quoted key
+    follow the exact same rules as either basic strings or literal strings
+    can be empty (though discouraged)
+Example:
+    "127.0.0.1" = "value"
+    "character encoding" = "value"
+    "ʎǝʞ" = "value"
+    'key2' = "value"
+    'quoted "value"' = "value"
+    "" = "blank"                #valid but discouraged
+    '' = 'blank'                #valid but discouraged
+
+#Dotted key
+    sequence of bare or quoted keys joined with a dot
+    allows for grouping similar properties together
+Example:
+    name = "Orange"
+    physical.color = "orange"
+    physical.shape = "round"
+    site."google.com" = true
+equivalent to this JSON:
+    {
+        "name": "Orange",
+        "physical": {
+            "color": "orange",
+            "shape": "round"
+        },
+        "site": {
+            "google.com": true
+        }
+    }
+
+
+As long as a key hasn't been directly defined, you may still write to it and to names within it.
+    a.b.c = 1
+    a.d = 2     #valid
+    a.d.e = 3   #invalid
+
+#--------------------------------------------------------------------------------
+#String
+    Ways to express strings: basic, multi-line basic, literal, and multi-line literal.
+    All strings must contain only valid UTF-8 characters.
+
+#Basic string
+    str = "I'm a string. \"You can quote me\". Name\tJos\u00E9\nLocation\tSF."
+
+#Multi-line basic string
+    A newline immediately following the opening delimiter will be trimmed.
+    All other whitespace and newline characters remain intact.
+str1 = """
+Roses are red
+Violets are blue"""
+
+#Multi-line basic string with line ending backslash
+same_as_below = "The quick brown fox jumps over the lazy dog."
+same_as_above = """
+The quick brown \
+
+  fox jumps over \
+    the lazy dog."""
+same_as_above = """\
+       The quick brown \
+       fox jumps over \
+       the lazy dog.\
+       """
+
+#Literal strings: do not allow escaping (escape character) at all
+winpath  = 'C:\Users\nodejs\templates'  #no need to escape the backslash
+regex    = '<\i\c*\s*>'                 #no need to escape the backslash
+
+#Multi-line literal strings: can be used for inserting single quote in a literal string
+regex2 = '''I [dw]on't need \d{2} apples'''
+
+#--------------------------------------------------------------------------------
+#Integer
+64 bit (signed long) range expected (−9,223,372,036,854,775,808 to 9,223,372,036,854,775,807).
+
+int1 = +99
+int2 = 42
+int3 = 0
+int4 = -17
+int5 = 1_000
+int6 = 5_349_221
+int7 = 1_2_3_4_5     # valid but discouraged
+
+-0 == 0 == +0
+
+Non-negative integer values may also be expressed in hexadecimal, octal, or binary.
+#Hexadecimal
+hex1 = 0xDEADBEEF   #case insensitive
+hex2 = 0xdeadbeef   #case insensitive
+hex3 = 0xdead_beef  #underscores allowed
+
+#Octal
+oct1 = 0o01234567   #leading 0 is allowed
+oct2 = 0o755        #useful for Unix file permissions
+
+#Binary
+bin1 = 0b11010110
+
+#--------------------------------------------------------------------------------
+#Float
+IEEE 754 binary64 values
+
+flt8 = 224_617.445_991_228  #underscores allowed
+
+#Fractional
+flt1 = +1.0
+flt2 = 3.1415
+flt3 = -0.01
+
+#Exponent
+flt4 = 5e+22
+flt5 = 1e06
+flt6 = -2E-2
+
+#Fractional + Exponent
+flt7 = 6.626e-34
+
+#Special values
+sf1 = inf  # positive infinity
+sf2 = +inf # positive infinity
+sf3 = -inf # negative infinity
+sf4 = nan  # actual sNaN/qNaN encoding is implementation specific
+sf5 = +nan # same as `nan`
+sf6 = -nan # valid, actual encoding is implementation specific
+
+#--------------------------------------------------------------------------------
+#Boolean
+bool1 = true
+bool2 = false
+
+#--------------------------------------------------------------------------------
+#Offset Date-Time
+    RFC 3339 formatted date-time with offset (timezone)
+
+odt1 = 1979-05-27T07:32:00Z
+odt2 = 1979-05-27T00:32:00-07:00
+odt3 = 1979-05-27T00:32:00.999999-07:00
+odt4 = 1979-05-27 07:32:00Z
+
+#--------------------------------------------------------------------------------
+#Local Date-Time
+    Conversion to a time instance is implementation specific.
+
+ldt1 = 1979-05-27T07:32:00
+ldt2 = 1979-05-27T00:32:00.999999
+
+#--------------------------------------------------------------------------------
+#Local Date
+
+ld1 = 1979-05-27
+
+#--------------------------------------------------------------------------------
+#Local Time
+
+lt1 = 07:32:00
+lt2 = 00:32:00.999999
+
+#--------------------------------------------------------------------------------
+Array
+    Whitespace is ignored
+    Elements are separated by commas
+    Heterogenous elements
+
+mixed_type_array = [ 0.1, 1, "Hello" ]
+nested_mixed_array = [
+    [ 1, 2 ], ["a", "b", "c"]
+]
+contributors = [
+  "Foo Bar <foo@example.com>",
+  { name = "Baz Qux", email = "bazqux@example.com", url = "https://example.com/bazqux" }
+]
+
+#--------------------------------------------------------------------------------
+#Table
+    collections of key/value pairs (a.k.a. hash tables or dictionaries)
+    Whitespace around the key is ignored
+    Empty tables are allowed and simply have no key/value pairs within them.
+    Like keys, you cannot define any table more than once.
+    Defining tables out-of-order is discouraged.
+
+[parent_table]
+leaf_value = 1
+
+Naming rules for tables are the same as for keys
+    [dog."tater.man"]
+    type.name = "pug"
+equivalent to
+    { "dog": { "tater.man": { "type": { "name": "pug" } } } }
+
+#--------------------------------------------------------------------------------
+#Inline Table
+    a more compact syntax for expressing tables using curly braces
+    Inline tables fully define the keys and sub-tables within them.
+        New keys and sub-tables cannot be added to them.
+        Can not be used to add keys or sub-tables to an already-defined table.
+
+point = { x = 1, y = 2 }
+animal = { type.name = "pug" }
+
+#--------------------------------------------------------------------------------
+#Array of Tables (Array of Objects)
+    Nested array of tables is allowed too
+
+#Example
+    [[products]]
+    name = "Hammer"
+    sku = 738594937
+
+    [[products]]
+
+    [[products]]
+    name = "Nail"
+    sku = 284758393
+
+    color = "gray"
+is equivalent to:
+    {
+        "products": [
+            { "name": "Hammer", "sku": 738594937 },
+            { },
+            { "name": "Nail", "sku": 284758393, "color": "gray" }
+        ]
+    }
+
+#Using Inline Table
+points = [ { x = 1, y = 2, z = 3 },
+           { x = 7, y = 8, z = 9 },
+           { x = 2, y = 4, z = 8 } ]

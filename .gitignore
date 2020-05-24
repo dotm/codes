@@ -1,3 +1,9 @@
+#Vim
 new*.txt
 *.*~
+
+#MacOS
 .DS_Store
+
+#Rust
+target/

@@ -1,0 +1,230 @@
+Here we focus on Intel-32 processor architecture (IA-32, i386) with NASM assembler
+
+Each family of processors has its own set of instructions for handling various operations
+such as getting input from keyboard, displaying information on screen and performing various other jobs.
+These set of instructions are called machine language instructions.
+They are strings of 1's and 0's. 
+
+Assembly language is designed for a specific family of processors.
+It represents the various machine language instructions in symbolic code and a more understandable form.
+
+The main internal hardware of a PC consists of processor, memory, and registers.
+Registers are processor components that hold data and address.
+To execute a program, the system copies it from the external device into the internal memory.
+The processor executes the program instructions.
+
+The fundamental unit of computer storage is a bit (1 and 0).
+A group of 8 related bits makes a byte.
+
+The process through which the processor controls the execution of instructions
+is referred as the fetch-decode-execute cycle or the execution cycle.
+It consists of three continuous steps:
+    Fetching the instruction from memory
+    Decoding or identifying the instruction
+    Executing the instruction
+
+There are two kinds of memory addresses:
+    Absolute address - a direct reference of specific location.
+    Segment address (or offset) - starting address of a memory segment with the offset value.
+
+Everything after semicolon is a comment:
+    ; single line comment
+
+Assembly language programs consist of three types of statements:
+    Instructions (Executable instructions)
+        tell the processor what to do.
+        each instruction consists of an operation code (opcode).
+        each executable instruction generates one machine language instruction.
+    Assembler directives or pseudo-ops
+        tell the assembler about the various aspects of the assembly process.
+        they are non-executable and do not generate machine language instructions.
+    Macros
+        a text substitution mechanism
+
+Assembly language statements are entered one statement per line.
+Each statement follows the following format:
+    [label]   mnemonic   [operands]   [;comment]
+
+#--------------------------------------------------------------------------------
+#Sections
+An assembly program can be divided into three sections (segments):
+    section.data
+        can also be declared using: segment.data
+        used for declaring initialized data or constants (constant values, file names, buffer size, etc.)
+        that does not change at runtime
+    section.bss (Better Save Space or Block Start by Symbol)
+        can also be declared using: segment.bss
+        used for declaring uninitialized variables
+        will be merged with .data section in memory
+        used so that we don't unnecessarily bloat the object file with zero values
+            only the length of the bss section, but no data, is stored in the object file
+        on some platforms, some or all of the bss section is initialized to zeroes
+    section.text
+        can also be declared using: segment.text
+        used for keeping the actual code
+        and must begin with the declaration `global _start`
+        which tells the kernel where the program execution begins:
+            section.text
+                global _start
+            _start:
+
+#Memory Segments
+    A segmented memory model divides the system memory 
+        into groups of independent segments
+        referenced by pointers located in the segment registers
+    Each segment is used to contain a specific type of data. 
+        Code segment is used to contain instruction codes (.text section) and its size is fixed
+        Data segment stores the data elements (.data and .bss section) and its size is fixed
+        Stack segment keeps the program stack and its size can grow as the program runs
+
+#--------------------------------------------------------------------------------
+#Hello world
+
+Compiling and Linking an Assembly Program in NASM
+    compile/assemble into object file       : nasm -f elf hello.asm
+    link object file and create executable  : ld -m elf_i386 -s -o hello hello.o
+    run/execute the program                 : ./hello
+
+!hello.asm
+```
+section	.text       ;can also be declared using: segment .data
+   global _start    ;must be declared for linker (ld)
+	
+_start:	            ;tells linker entry point
+   mov	edx,len     ;message length
+   mov	ecx,msg     ;message to write
+   mov	ebx,1       ;file descriptor (stdout)
+   mov	eax,4       ;system call number (sys_write)
+   int	0x80        ;call kernel
+	
+   mov	eax,1       ;system call number (sys_exit)
+   int	0x80        ;call kernel
+
+section	.data
+msg db 'Hello, world!', 0xa  ;string to be printed
+len equ $ - msg     ;length of the string
+```
+
+#--------------------------------------------------------------------------------
+#Registers
+    reading data from and storing data into memory is slow
+    to speed up the processor operations, the processor includes some internal memory storage locations, called registers
+
+#Processor Registers
+    In IA-32 architecture, there are:
+        ten 32-bit processor registers (EAX, EBX, ECX, EDX, EIP, ESP, EBP, ESI, EDI, flag registers)
+        six 16-bit processor registers (CS, DS, SS, ES, FS, GS)
+    The registers are grouped into categories:
+        General registers
+            Data registers
+            Pointer registers
+            Index registers
+        Control registers
+        Segment registers
+
+#Data Registers
+    These four 32-bit registers can be used in three ways:
+        As complete four 32-bit data registers:
+            EAX, EBX, ECX, EDX
+        Lower halves of the 32-bit registers can be used as four 16-bit data registers:
+            AX, BX, CX, DX
+        Lower (L) and higher (H) halves of the four 16-bit registers can be used as eight 8-bit data registers:
+            AH, AL, BH, BL, CH, CL, DH, DL
+    Memory layout illustration:
+        |--------|--------|---AH---|---AL---|   //AL and AH is 8 bit. AL + AH == AX. AX with the two 8-bits on the left (higher half) is equal to EAX.
+        |--------|--------|---BH---|---BL---|   //the same is true for B, C, and D.
+        |--------|--------|---CH---|---CL---|
+        |--------|--------|---DH---|---DL---|
+    The categories of data register:
+        AX: primary accumulator
+            used in input/output and most arithmetic instructions
+            e.g. in multiplication, one operand is stored in EAX, AX, or AL according to the size of the operand
+        BX: base register
+            named as it is because it could be used in indexed addressing.
+        CX: count register
+            it store the loop count in iterative operations.
+        DX: data register
+            used in input/output operations
+            used with AX register along with DX for multiply and divide operations involving large values.
+
+#Pointer Registers
+    The pointer registers are 32-bit EIP, ESP, and EBP registers and corresponding 16-bit right portions IP, SP, and BP.
+        |----------------|-------IP-------|     //the whole left and right portions is EIP
+        |----------------|-------SP-------|
+        |----------------|-------BP-------|
+    The categories of pointer register:
+        IP: Instruction Pointer
+            stores the offset address of the next instruction to be executed
+                IP in association with the CS register (as CS:IP) gives the complete address of the current instruction in the code segment
+        SP: Stack Pointer
+            provides the offset value within the program stack
+                SP in association with the SS register (SS:SP) refers to be current position of data or address within the program stack
+        BP: Base Pointer
+            mainly helps in referencing the parameter variables passed to a subroutine
+                the address in SS register is combined with the offset in BP to get the location of the parameter
+            BP can also be combined with DI and SI as base register for special addressing
+    
+#Index Registers
+    The 32-bit index registers, ESI and EDI, and their 16-bit rightmost portions, SI and DI,
+        are used for indexed addressing and sometimes used in addition and subtraction.
+    Memory layout illustration:
+        |----------------|-------SI-------|     //the whole left and right portions is ESI
+        |----------------|-------DI-------|
+    The categories of index register:
+        SI: Source Index
+            used as source index for string operations.
+        DI: Destination Index
+            used as destination index for string operations.
+
+#Control Registers
+    The 32-bit instruction pointer register (the IP pointer register) and the 32-bit flags register combined are considered as the control registers.
+    Many instructions
+        involve comparisons and mathematical calculations
+            and change the status of the flags
+        and some other conditional instructions
+            test the value of these status flags to take the control flow to other location.
+    The common flag bits are:
+        OF: Overflow Flag
+            indicates the overflow of a high-order bit (leftmost bit) of data after a signed arithmetic operation.
+        DF: Direction Flag
+            determines left or right direction for moving or comparing string data
+                when the DF value is 0, the string operation takes left-to-right direction
+                and when the value is set to 1, the string operation takes right-to-left direction.
+        IF: Interrupt Flag
+            determines whether the external interrupts like keyboard entry, etc., are to be ignored or processed
+                it disables the external interrupt when the value is 0 and enables interrupts when set to 1.
+        TF: Trap Flag
+            allows setting the operation of the processor in single-step mode
+                The DEBUG program we used sets the trap flag,
+                so we could step through the execution one instruction at a time.
+        SF: Sign Flag
+            shows the sign of the result of an arithmetic operation
+                This flag is set according to the sign of a data item following the arithmetic operation.
+                The sign is indicated by the high-order of leftmost bit.
+                A positive result clears the value of SF to 0 and negative result sets it to 1.
+        ZF: Zero Flag
+            indicates the result of an arithmetic or comparison operation
+                A nonzero result clears the zero flag to 0, and a zero result sets it to 1.
+        AF: Auxiliary Carry Flag
+            contains the carry from bit 3 to bit 4 following an arithmetic operation; used for specialized arithmetic
+                The AF is set when a 1-byte arithmetic operation causes a carry from bit 3 into bit 4.
+        PF: Parity Flag
+            indicates the total number of 1-bits in the result obtained from an arithmetic operation
+                An even number of 1-bits clears the parity flag to 0 and an odd number of 1-bits sets the parity flag to 1.
+        CF: Carry Flag
+            contains the carry of 0 or 1 from a high-order bit (leftmost) after an arithmetic operation.
+            It also stores the contents of last bit of a shift or rotate operation.
+
+#Segment Registers
+    see Memory Segments for explanation on segments
+    CS, DS, SS are all 16-bit
+    The categories of segment register:
+        CS: Code Segment Register
+            stores the starting address of the code segment
+        DS: Data Segment Register
+            stores the starting address of the data segment
+        SS: Stack Segment Register
+            stores the starting address of the stack
+        There are other extra segment registers
+            ES (extra segment), FS and GS,
+            which provide additional segments for storing data.

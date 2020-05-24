@@ -1,11 +1,40 @@
 ## Stack and Heap
     are stored in computer RAM
 
+Call stack: a stack data structure that stores information about the active subroutines of a computer program
+Stack frame: a frame of data that gets pushed onto the stack
+
+All data stored on the stack must have a known, fixed size.
+Data with an unknown size at compile time or a size that might change must be stored on the heap.
+
+The process of allocating on the heap:
+    when you put data on the heap, you request a certain amount of space.
+    The operating system finds an empty spot in the heap that is big enough,
+    marks it as being in use, and returns a pointer, which is the address of that location.
+Pushing values onto the call stack is not considered allocating.
+    Because the pointer is a known, fixed size, you can store the pointer on the stack,
+    but when you want the actual data, you must follow the pointer.
+
+Pushing stack frame to the stack is faster than allocating on the heap
+    the operating system never has to search for a place to store new data;
+    that location is always at the top of the stack.
+Allocating space on the heap requires more work
+    the operating system must first find a big enough space to hold the data
+    and then perform bookkeeping to prepare for the next allocation
+
+Accessing data in the heap is slower than accessing data on the stack
+    because you have to follow a pointer to get there. 
+
+When your code calls a function,
+    the values passed into the function (including pointers to data on the heap)
+    and the function’s local variables get pushed onto the stack.
+    When the function is over, those values get popped off the stack.
+
 ## Stack vs. Heap
 
 Each thread gets a stack, while there's typically only one heap for the application.
 
-When a function is called, a block is reserved on the top of the stack
+When a function is called, a block (stack frame) is reserved on the top of the stack
     for local variables, passed arguments, and return address.
     When that function returns, the block becomes unused
     and can be used the next time a function is called.

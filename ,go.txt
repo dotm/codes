@@ -386,8 +386,8 @@ var timeNow time.Time
         slices can contain any type, including other slices.
     #create
         #from array:
-            var sliceName []value_type = arrayName[upper_index : lower_index]
-            var sliceName []value_type = arrayName[1:3]     //will include elements of index 1 and 2 from arrayName
+            var sliceName []value_type = arrayName[lower_index : upper_index]
+            var sliceName []value_type = arrayName[1:3]   //will include elements of index 1 and 2 from arrayName
             var sliceName []value_type = arrayName[1:]    //will include elements from index 1 until the last element from arrayName
             var sliceName []value_type = arrayName[:3]    //will include elements of index 0, 1, and 2 from arrayName
             var sliceName []value_type = arrayName[:]     //will include all elements from arrayName
@@ -402,9 +402,9 @@ var timeNow time.Time
             destinationSlice := make([]type_name, len(sourceSlice))
             copy(destinationSlice, sourceSlice)
     #reslicing:
-        sliceName = sliceName[new_upper_index : new_lower_index]
+        sliceName = sliceName[new_lower_index : new_upper_index]
     #change underlying array:
-        sliceName = arrayName[upper_index : lower_index]
+        sliceName = arrayName[lower_index : upper_index]
     #get slice length: len(sliceName)
     #get slice capacity: cap(sliceName)
     #append value: sliceName = append(sliceName, value, value, ...)
@@ -412,7 +412,7 @@ var timeNow time.Time
 #Two-dimensional slices
     To create the equivalent of a 2D array or slice, it is necessary to define an array-of-arrays or slice-of-slices
         type Transform [3][3]float64    // A 3x3 array, really an array of arrays.
-        type LinesOfText [][]byte         // A slice of byte slices.
+        type LinesOfText [][]byte       // A slice of byte slices.
     Because slices are variable-length, it is possible to have each inner slice be a different length.
 
 #--------------------------------------------------------------------------------
@@ -1192,12 +1192,10 @@ See https://github.com/dotm/codes/blob/master/tokopedia/unit-test-sharing-sessio
 #Pre-commit routines
 
 dep ensure -v
-go generate (?)
-errcheck ./...
 go vet ./... &> vet-result.txt
 go test ./...
 go test -race ./...
-go test -bench=. -benchmem (?)
+golangci-lint run (this will include errcheck and many other linters)
 
 #Optional routines
 

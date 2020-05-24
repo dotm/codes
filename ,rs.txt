@@ -1,0 +1,1419 @@
+rustup: a command line tool for managing Rust versions and associated tools.
+Cargo: Rust’s build system and package manager
+Crates.io: official Rust package registry
+    where Rustacean post their open source Rust projects for others to use
+
+#Compilation
+    Compile one file: rustc main.rs
+    Run the file: ./main
+
+#Using cargo
+    Create new binary package           : cargo new package_name
+    Create new library package          : cargo new --lib package_name
+    Check if package can be compiled    : cargo check
+    Compile package                     : cargo build
+    Compile then run package            : cargo run
+    Compile package for release         : cargo build --release
+    Run all tests                       : cargo test
+    Run some tests                      : cargo test filename
+Compile package for release will gives you a more performant program
+    but it will take longer to build it than if you don't use the release flag.
+    Use build --release for benchmarking.
+Cargo may run multiple tests concurrently, so make sure that they don't race with each other.
+    e.g. if they all output to a file, you should make them write to different files.
+
+#Importing dependencies
+    modify the Cargo.toml file to include the crate as a dependency
+        [dependencies]
+        clap = "2.27.1"                                 # from crates.io
+        rand = { git = "https://github.com/dotm/rand" } # from online repo
+        bar = { path = "../bar" }                       # from a path in the local filesystem
+    run from terminal: cargo build
+        Cargo fetches the latest versions of everything from the registry,
+            which is a copy of data from Crates.io
+        After updating the registry,
+            Cargo checks the [dependencies] section and downloads any crates you don’t have yet
+    add this line to a source file to import dependencies: extern crate library_name;
+#Updating dependencies
+    run: cargo update
+        this will ignore the Cargo.lock file
+        and figure out all the latest versions
+        that fit your specifications in Cargo.toml.
+        If that works, Cargo will write those versions to the Cargo.lock file
+
+#Cargo.toml semver
+    0.5.5 is actually shorthand for ^0.5.5, which means
+        any version that has a public API compatible with version 0.5.5
+
+#--------------------------------------------------------------------------------
+// single line comment
+/* multi line comment */
+
+/// Generate library docs comment (doc string) for the following item
+//! Generate library docs comment (doc string) for the enclosing item
+
+#Operators: + - * / %
+  integer division round result down: 5/9 === 0; 5.0/9.0 === 0.555
+  modulo operator can't be applied to float or double
+#Comparison operators: < <= > >= == !=
+#Logical Operators: && || !
+  && and || use short-circuit evaluation
+#Bitwise Operators: & | ! ^ << >>
+#Assignment Operators: += -= *= /= %= <<= >>= &= |= ^=
+
+#--------------------------------------------------------------------------------
+#Formatted print
+
+#Macros
+    format!: write formatted text to String
+    print!: write formatted text to console (io::stdout)
+    println!: print! appended with a newline
+    eprint!: write formatted text to standard error (io::stderr)
+    eprintln!: eprint! appended with a newline
+#Formatted string
+    #basic ({} will stringify any argument):
+        println!("{} days", 31);
+    #with positional argument:
+        println!("{0}, this is {1}. {1}, this is {0}", "Alice", "Bob");
+    #with named argument:
+        println!("{subject} {verb} {object}", object="a variable", subject="I", verb="am defining");
+    #with special formatting:
+        println!("{} of {:b} people know binary, the other half doesn't", 1, 2);
+    #with right-align:
+        println!("{number:>width$}", number=1, width=6);    //This will output "     1" (5 white spaces and a "1")
+    #with padding (in this case with zero as padding):
+        println!("{number:>0width$}", number=1, width=6)    //This will output "000001"
+#Print struct:
+    //add #[derive(Debug)] above the struct definition and then print like below
+    println!("{:?}", struct_variable);
+
+#Not Yet Understood??????
+std::fmt contains many traits which govern the display of text. The base form of two important ones are listed below:
+
+fmt::Debug: Uses the {:?} marker. Format text for debugging purposes.
+fmt::Display: Uses the {} marker. Format text in a more elegant, user friendly fashion.
+Here, we used fmt::Display because the std library provides implementations for these types. To print text for custom types, more steps are required.
+
+Implementing the fmt::Display trait automatically implements the ToString trait which allows us to convert the type to String.
+
+#--------------------------------------------------------------------------------
+#Basic
+    Rustacean prefer naming variable and function with snake_case
+    It's possible to declare variable bindings first, and initialize them later.
+        However, this form is seldom used, as it may lead
+        to errors that is caused by the use of uninitialized variables.
+#Statement vs. Expression
+    statement ends with semicolon and will return the unit type ()
+    expression doesn't end with semicolon and will return the value of it's result
+#Block
+    are defined using curly braces {}
+    introduces a new scope
+        things outside the block doesn't know about things inside the block
+    are expression too and can be assigned to variable
+        it will return the value of the expression in its last line
+        if the last line is a statement, then the block will evaluate to unit type ()
+#Variables vs Constant
+    the type of constant value must be annotated
+    constants can be declared in any scope, including the global scope
+        global constant is valid for the entire time a program runs
+    constants may be set only to a constant expression
+        it can not be set to the result of a function call or any other value that could only be computed at runtime.
+#Shadowing variable
+    you can declare a new variable with the same name as a previous variable
+        and the new variable shadows the previous variable.
+    We can shadow a variable by using the same variable’s name
+        and repeating the use of the let keyword.
+#Shadowing vs Mutable Variables
+    By using let, we can perform a few transformations on a value
+        but have the variable be immutable after those transformations have been completed.
+        We’ll get a compile-time error if we try to reassign
+            shadowed variable without using the let keyword.
+    We’re effectively creating a new variable when we use the let keyword again,
+        so we can change the type of the value but reuse the same name.
+        We can't reassign to different type when using mutable variable
+#Constant vs. Static
+    const: An unchangeable value (the common case).
+    static: A possibly mutable variable with 'static lifetime.
+        The static lifetime is inferred and does not have to be specified.
+        Accessing or modifying a mutable static variable is unsafe (need to be put inside unsafe block).
+    https://github.com/rust-lang/rfcs/blob/master/text/0246-const-vs-static.md
+
+#Constant
+    const CONSTANT_NAME: type_name = value;
+    const MAX_POINTS: u32 = 100_000;
+#Static
+    static STATIC_NAME: type_name = value;
+
+#Immutable variable
+    let variable_name: type_name;
+    let variable_name = value;
+    let variable_name: type_name = value;
+#Mutable variable
+    defining:
+        let mut variable_name = value;
+        let mut variable_name: type_name = value;
+    mutating:
+        variable_name = value;
+#Silence unused variable warning using underscore
+    let _unused_variable = value;
+#Initializing variable using a block
+    let variable_name = {
+        statements;
+        expression
+    };
+
+#Shadowing variable
+    fn main() {
+        let x = 5;
+        let x = x + 1;
+        println!("The value of x is: {}", x); //The value of x is 6
+
+        let spaces = "     ";
+        let spaces = spaces.len();
+    }
+
+#Variable reference and dereferencing (let ref, let &, &, *)
+    ref on the left side of = is the same as & on the right:
+        let ref reference_variable = value;
+        let reference_variable = &value;
+    & on the left side of = is the same as * on the right:
+        let &variable_name = reference_variable;
+        let variable_name = *reference_variable;
+
+#--------------------------------------------------------------------------------
+#Data Types
+    #Scalar Types
+        #Integer Types
+            #signed: i8 i16 i32 i64 i128 isize
+            #unsigned: u8 u16 u32 u64 u128 usize
+            #notes:
+                the number suffix indicates how many bits a type uses in the memory
+                    e.g. i8 uses 8 bits (1 byte)
+                isize and usize types depend on the kind of computer your program is running on
+                    64 bits on a 64-bit architecture, 32 bits on a 32-bit architecture
+                    they are the same size as the pointer size of the computer counted in bit
+                default integer type is i32
+                integer (except byte literal) can be separated with underscore: 100_000
+            #example literals:
+                Decimal             98_222
+                Hex                 0xff
+                Octal               0o77
+                Binary              0b1111_0000
+                Byte (u8 only)      b'A'
+            #using suffix annotation to define integer size:
+                let an_i16 = 100i16;
+                let an_i16 = 100_i16;
+                let an_u128 = 100u128;
+                let an_u128 = 100u_128;
+        #Floating-Point Types: f32 f64
+            default type: f64
+            example literals: 3.14 1e5 1e+5 1e-3 1_000.10
+            using suffix annotation: 3.14f32 1e5_f32
+        #Boolean Type: bool
+            #value: true false
+        #Character Type: char
+            notes:
+                four bytes in size
+                represents a Unicode Scalar Value (it can represent a lot more than just ASCII)
+                Unicode Scalar Values range from U+0000 to U+D7FF and U+E000 to U+10FFFF inclusive
+            example literals: 'a' 'ℤ' '😻'
+        #Unit type is the empty tuple: ()
+    #Compound Types
+        #Primitive Compound Types: tuple, array
+        #Custom Types: struct, enum
+
+#Type Casting (Type Conversion)
+    #using the as keyword: variable_name as type_name
+    #using the std::convert::From trait
+        #definition
+            struct Number {
+                value: i32,
+            }
+            impl From<i32> for Number {
+                fn from(item: i32) -> Self {    //Self in this context is Number
+                    Number { value: item }
+                }
+            }
+        #usage:
+            Number::from(30)
+    #using std::convert::Into
+        #definition
+            struct Wrapper<T>(Vec<T>);
+            impl<T> Into<Vec<T>> for Wrapper<T> {
+                fn into(self) -> Vec<T> {
+                    self.0
+                }
+            }
+        #usage
+            let vector: Vec = wrapper.into(); //type annotation is required
+    #using the std::convert::TryFrom trait
+        #definition
+            #[derive(Debug, PartialEq)]
+            struct EvenNumber(i32);
+            impl TryFrom<i32> for EvenNumber {
+                type Error = ();
+                fn try_from(value: i32) -> Result<Self, Self::Error> {
+                    if value % 2 == 0 {
+                        Ok(EvenNumber(value))
+                    } else {
+                        Err(())
+                    }
+                }
+            }
+        #usage:
+            EvenNumber::try_from(8)
+    #using the std::convert::TryInto trait
+        #definition
+            just define TryFrom and you'll get TryInto for free
+        #usage
+            let result: Result<EvenNumber, ()> = 8i32.try_into();
+#Notes for From and Into
+    if you have define the From trait, you'll get the Into trait for free.
+        so you should prefer to use From over using Into.
+    implement Into if a conversion to a type outside the current crate is required.
+        in older version of Rust, From cannot do these type of conversions because of Rust's orphaning rules.    
+    Prefer using Into over using From when specifying trait bounds on a generic function.
+        This way, types that directly implement Into can be used as arguments as well.
+
+#Get the size of value: std::mem::size_of_val
+
+#Type Alias: type NewTypeName = type_name;
+    The type statement can be used to give a new name to an existing type.
+    Type Alias doesn't create new type and so it doesn't provide any extra type safety.
+        type NanoSecond = u64; type Inch = u64;
+        you can add NanoSecond to Inch and the compiler won't complain.
+    Types must have UpperCamelCase names, or the compiler will raise a warning.
+        The exception to this rule are the primitive types: usize, f32.
+        You can use this attribute to silence the warning:
+            #[allow(non_camel_case_types)]
+            type u64_t = u64;
+    You can use type alias with generics: type IoResult<T> = Result<T, IoError>;
+
+#--------------------------------------------------------------------------------
+#Conditional
+
+#If-else
+    if-else conditionals are expressions and all branches must return the same type.
+        if statement in Rust is just if-else expression that returns ()
+    because if-else is expression, the result can be assigned to variable
+#If statement
+    if condition {
+        statements;
+    } else if condition {
+        statements;
+    } else {
+        statements;
+    }
+#If expression
+    if condition {
+        expression
+    } else if condition {
+        expression
+    } else {
+        expression
+    }
+#Inline if expression: let variable_name = if condition { value } else { value };
+
+#Conditional compilation
+    #using the cfg attribute:
+        #[cfg(target_os = "linux")]
+        fn function_name() {} //this function only gets compiled if the target OS is linux
+        #[cfg(not(target_os = "linux"))]
+        fn function_name() {} //this function only gets compiled if the target OS is not linux
+    #using the cfg! macro:
+        if cfg!(target_os = "linux") {
+            println!("Yes. It's definitely linux!");
+        } else {
+            println!("Yes. It's definitely *not* linux!");
+        }
+#Custom conditional compilation
+    !custom.rs
+        #[cfg(some_condition)]
+        fn conditional_function() {}
+        fn main() {
+            conditional_function();
+        }
+    from cli, run:
+        rustc --cfg some_condition custom.rs
+
+#--------------------------------------------------------------------------------
+Loop
+
+#Plain infinite loop
+    loop { statement; break }
+    let variable_name = loop { statement; break expression }
+
+#While loop
+    while condition { statement; }
+
+#For in loop
+    for number in 1..4 { println!("{}!", number); }         // will print: 1, 2, 3
+    for number in 1..=4 { println!("{}!", number); }        // will print: 1, 2, 3, 4
+    for number in (1..4).rev() { println!("{}!", number); } // will print: 3, 2, 1
+#iterating over array:
+    for index in 0..array_name.len() { statement; }
+    for element in array_name.iter(){ statement; }
+    for (index, element) in array_name.iter().enumerate(){ statement; }     //with pattern matching to destructure tuple
+#For in with Iterator trait
+    into_iter, iter, and iter_mut
+        all handle the conversion of a collection
+        into an iterator in different ways,
+        by providing different views on the data within.
+    by default the for loop will apply
+        the into_iter function to the supplied collection.
+#iter: will borrow each element
+    for name in names.iter() {
+        match name {
+            &"Ferris" => println!("There is a rustacean among us!"),
+            _ => println!("Hello {}", name),
+        }
+    }
+#into_iter: will consume/move each element (making the original collection unusable)
+    for name in names.into_iter() {
+        match name {
+            "Ferris" => println!("There is a rustacean among us!"),
+            _ => println!("Hello {}", name),
+        }
+    }
+#iter_mut: will mutably borrows each element (allowing for the collection to be modified in place)
+    for name in names.iter_mut() {
+        *name = match name {        //modifying element by dereferencing
+            &mut "Ferris" => "There is a rustacean among us!",
+            _ => "Hello",
+        }
+    }
+
+#Control Transfer Statements for Loop
+    continue
+    break
+    break expression;       //break and return value from a loop (semicolon is optional)
+#Labels
+    'outer: loop {          //labels start with '
+        'inner: loop {
+            break 'outer;   //break to label (you can also continue to label)
+        }
+    }
+
+#--------------------------------------------------------------------------------
+#Function
+    first-class citizen
+    is not closure
+        can not capture the enclosing environment
+#Definition
+    #basic: fn function_name(){ statements; }
+    #with return value:
+        #explicit return: fn function_name() -> type_name { return value }
+        #implicit return: fn function_name() -> type_name { expression }
+        #notes:
+            no semicolon when returning expression
+            return keyword can be implicit
+            void return type can be optionally represented using empty tuple ()
+    #with multiple return value
+        #using tuple: fn function_name() -> (type_name, type_name, ...) { return (value, value, ...) }
+    #with parameter: fn function_name(parameter_name: type_name, parameter_name: type_name){ statements; }
+#Call
+    #basic: function_name()
+    #with parameter: function_name(value, value)
+    #ignoring return value: let _ = function_name()
+#Nested function:
+    fn a(){ b(); fn b(){ statements; } }
+
+#--------------------------------------------------------------------------------
+#Lambda expression
+    Closures in Rust (lambda expressions or lambdas) are functions that can capture the enclosing environment.
+    Closure of a single expression doesn't need to use body delimination ({})
+#Definition
+    let closure_annotated = |x: i32, y: i32| -> i32 { x + y };
+    let closure_inferred  = |i| i + 1  ;
+    let closure_with_no_parameter = || 1;
+#Call
+    closure_annotated(3,4)
+    closure_inferred(3)
+    closure_with_no_parameter()
+#Immediately Invoked Closure
+    (|| println!("hello"))();
+
+#Closure memory management (for heap data)
+    Closures can automatically capture variables in the heap:
+        by reference: &T
+        by mutable reference: &mut T
+        by value: T
+    They preferentially capture variables by reference and only go lower when required.
+    Using move before vertical pipes forces closure to take ownership of captured variables
+#Example (all variables below exist in the heap)
+    #borrow an immutable reference:
+        let print = || println!("{}", immutable_variable);
+    #borrow a mutable reference:
+        let mut inc = || mutable_variable += 1;
+            a `let mut` is required because a `&mut` is stored inside
+            calling the closure mutates the closure which requires a `mut`
+    #move variable:
+        let consume = || mem::drop(variable_name);
+        let contains = move || println!("{}", variable_name);   //this will move variable_name manually
+
+#--------------------------------------------------------------------------------
+#Rust Memory Management
+    Rust does not use Garbage Collection
+        which causes runtime delay when the GC run.
+    Rust does not use manual memory management and so doesn't have the problem associated with:
+        forgetting to deallocate a heap memory
+        deallocating to early (using a previously freed memory)
+        deallocating a memory more than once
+    Rust automatically return heap memory to the heap manager
+        by calling the `drop` function once the variable that owns it goes out of scope.
+    This pattern of deallocating resources at the end of an item’s lifetime
+        is sometimes called Resource Acquisition Is Initialization (RAII).
+
+#Stack vs Heap
+    In general
+        types which size the compiler can know (integer, string literal) is put inside the stack
+        types which size can change in runtime is put inside the heap
+    More specifically, in Rust:
+        types with Copy trait is stored in the stack
+            including: scalar values, tuple which contains only Copy type
+        types with Drop trait can't also be Copy
+            Drop trait is for types that need something special to happen when the value goes out of scope
+
+#Ownership
+    Problems that ownership addresses:
+        keeping track of what parts of code are using what data on the heap
+        minimizing the amount of duplicate data on the heap
+        cleaning up unused data on the heap so you don’t run out of space
+
+#Ownership Rules
+    Each value in Rust has a variable that’s called its owner
+    There can only be one owner at a time
+    When the owner goes out of scope, the value will be dropped
+
+#Heap deallocation inside a scope
+    {
+        //the s1 below will point to a string on the heap because String type is stored on the heap (see String Type vs literal)
+        let s1 = String::from("hello"); //s1 is valid from this point forward
+        //do stuff with s1
+    } //this scope is now over. s1 is dropped and no longer valid
+#Moving heap data to another variable
+    {
+        let s1 = String::from("hello");
+        let s2 = s1;
+        //s2 is NOT a shallow copy of the String type (pointer, length, capacity) in s1
+        //    the String type data (pointer, length, capacity) is NOT copied into s2
+        //instead the String type data (pointer, length, capacity) of s1 is moved into s2
+        //    and s1 is no longer valid (no longer accessible)
+
+        println!("{}, world!", s1); //this will raise "borrow of moved value" error because s1 is no longer valid
+    } //only s2 will be dropped, because s1 is no longer valid
+#Copying heap data
+    {
+        let s1 = String::from("hello");
+        let s2 = s1.clone();
+        //clone will perform a deep copy of s1 (NOT a shallow copy)
+        //    a new memory will be allocated in the heap
+        //    the memory will be filled with the same string value as s1 (hello)
+        //    a new String type will be created (which will point to the newly created memory)
+        //    this new String type (pointer, length, capacity) will be put into s2
+
+        println!("s1 = {}, s2 = {}", s1, s2); //will not raise error
+    }
+#Stack data is automatically copied
+    {
+        let x = 5;
+        let y = x; //y will contain a new copy of 5 (a new memory will be created in the stack)
+        println!("x = {}, y = {}", x, y);     //will not raise error
+    }
+#Passing heap data to function (same semantic as Moving heap data to another variable; the "another variable" here is the function's parameter)
+    {
+        let s1 = String::from("hello"); //s1 comes into scope
+        takes_ownership(s);             //s1's value moves into the function and so is no longer valid here
+        let x = 5;                      //x comes into scope
+        makes_copy(x);                  //x would move into the function, but i32 is Copy, so it’s okay to use x afterward
+    }                                   //x and s1 go out of scope. s1 is NOT dropped
+    fn takes_ownership(s: String) {     //s comes into scope
+        println!("{}", s);
+    }                                   //s goes out of scope and is dropped
+#Returning heap data from a function (same semantic as Moving heap data to another variable)
+    {
+        let s1 = gives_ownership();     //gives_ownership moves its return value into s1
+    }                                   //s1 is dropped
+    fn gives_ownership() -> String {
+        let s = String::from("hello");  //s comes into scope
+        s                               //s is returned and moves out to the calling function
+    }                                   //s goes out of scope but is NOT dropped
+
+#Borrowing using reference
+#Without reference it's hard to let a function borrow a value
+    {
+        let s1 = String::from("hello");
+        let (s2, len) = calculate_length(s1); //must return s2 to give ownership back
+    }
+    fn calculate_length(s: String) -> (String, usize) {
+        let length = s.len();
+        (s, length)
+    }
+#Borrowing value with immutable reference
+    {
+        let s1 = String::from("hello");
+        let len = calculate_length(&s1);
+    }
+    fn calculate_length(s: &String) -> usize {
+        s.len() //s here is NOT a shallow copy of s1 String type data (it doesn't point directly to the heap). s is just a pointer to s1.
+    }            //s is not dropped because it doesn't have ownership of the borrowed String type
+#Borrowing value with mutable reference
+    {
+        let mut s = String::from("hello");
+        change(&mut s);
+    }
+    fn change(some_string: &mut String) {
+        some_string.push_str(", world");        //if we use immutable reference, this line will raise compile error
+    }
+
+#References Rules
+    At any given time, you can have either one mutable reference or any number of immutable references
+    References must always be valid
+#Only one mutable reference to a piece of data is allowed in a particular scope
+    {
+        let mut s = String::from("hello");
+        let r1 = &mut s;
+        let r2 = &mut s;    //this will raise compile error
+    }
+    {
+        let mut s = String::from("hello");
+        {
+            let r1 = &mut s;
+        }                        //r1 goes out of scope here, so we can make a new reference with no problems.
+        let r2 = &mut s;        //this is okay
+    }
+#Cannot mix mutable and immutable reference to a piece of data in a particular scope (unless they don't overlap)
+    {
+        let mut s = String::from("hello");
+        let r1 = &s;        //this is okay
+        let r2 = &s;        //this is okay
+        let r3 = &mut s;    //this will raise compile error because we've already defined immutable reference
+        println!("{}, {}, and {}", r1, r2, r3);
+    }
+    {
+        let mut s = String::from("hello");
+        let r1 = &s;
+        let r2 = &s;
+        println!("{} and {}", r1, r2);
+        //r1 and r2 is no longer used after this line
+
+        let r3 = &mut s;
+        //this is okay and will NOT raise compile error
+        //    because r1 and r2 is no longer used
+        //    (the mutable and immutable references do not overlap)
+        println!("{}", r3);
+    }
+#References must always be valid (no dangling reference allowed)
+    {
+        let reference_to_nothing = dangle();
+    }
+    fn dangle() -> &String {    //this will raise "missing lifetime specifier" compile error
+        let s = String::from("hello");
+        &s    //we return a reference to the String s
+    }         //but s goes out of scope here and is dropped
+
+
+#--------------------------------------------------------------------------------
+#Tuple
+    fixed length and type after definition
+    heterogenous type
+    zero index
+    tuple can contain other tuples
+#Definition:
+    let tuple_name: (type_name, type_name) = (value, value);
+    let tuple_name: (i32, f64, u8) = (500, 6.4, 1);
+#One element tuple:
+    let tuple_name: (type_name,) = (value,);
+    let tuple_name: (i32,) = (500,);
+#Pattern matching for destructuring tuple:
+    let (x, y, z) = tuple_name;
+    let (_, _, z) = tuple_name; //ignoring the first two values
+#Access by index:
+    tuple_name.index_number
+    tuple_name.0    //first element
+    tuple_name.1    //second element
+
+#--------------------------------------------------------------------------------
+#Array
+    fixed length and type after definition, homogenous type, zero index
+    Arrays are useful when
+        you want your data allocated on the stack rather than the heap
+        or when you want to ensure you always have a fixed number of elements
+            (use vector type if you want a variable-length collection)
+    If you try to access an element of an array that is past the end of the array,
+        the program resulted in a runtime error and didn’t exit successfully
+        (Rust will panic).
+#Definition
+    #with type annotation: let array_name: [type_name; array_length] = [value, value, value];
+    #with type annotation: let array_name: [i32; 3] = [7,7,7];
+    #without type annotation: let array_name = [value, value, value];
+    #without type annotation: let array_name = [7,7,7];
+    #with repeating syntax: let array_name = [value; array_length];
+    #with repeating syntax: let array_name = [7; 3];
+#Access by index
+    array_name[index_number]
+    array_name[0]                //first element
+#get array length: array_name.len()
+
+#--------------------------------------------------------------------------------
+#Slice
+    is a reference to a contiguous sequence of elements in a collection
+    follows the References Rules since it is a reference
+    String slice range indices must occur at valid UTF-8 character boundaries.
+        If you attempt to create a string slice 
+        in the middle of a multibyte character,
+        your program will exit with an error.
+    is a two-word object
+        the first word is a pointer to the data
+        and the second word is the length of the slice
+    in the case of `let slice_name = &s[6..11];`
+        slice_name would be a slice that contains
+            a pointer to the 7th byte (counting from 1) of s
+            a length value of 5
+    word size is the same as usize, determined by the processor architecture
+    slices can be used to borrow a section of an array of type T, and have the type signature &[T].
+#create
+    #from array or string:
+        let slice_name = &array_name[starting_index..ending_index]
+        let slice_name = &array_name[1..3]  //will include elements of index 1 and 2 from array_name
+        let slice_name = &array_name[1:]    //will include elements from index 1 until the last element from array_name
+        let slice_name = &array_name[:3]    //will include elements of index 0, 1, and 2 from array_name
+        let slice_name = &array_name[:]     //will include all elements from array_name
+    #get slice length: slice_name.len()
+#passing whole array as slice:
+    let array_name: [T; array_length] = [];
+    fn function_name(slice_name: &[T])
+    function_name(&array_name[..])          //can be done like this
+    function_name(&array_name)              //can also be done like this
+
+#--------------------------------------------------------------------------------
+#String
+    are array of bytes (character)
+        fn get_first_word(s: &str) -> &str {
+            let bytes = s.as_bytes();
+            for (i, &item) in bytes.iter().enumerate() {
+                if item == b' ' { return &s[0..i]; }
+            }
+            &s[..]
+        }
+    A String type is a wrapper over a Vec<u8>
+    3 relevant ways to look at strings (e.g. "नमस्ते") from Rust’s perspective:
+        bytes: [224, 164, 168, 224, 164, 174, 224, 164, 184, 224, 165, 141, 224, 164, 164, 224, 165, 135]
+        scalar values: ['न', 'म', 'स', '्', 'त', 'े']
+        grapheme clusters: ["न", "म", "स्", "ते"]
+    Rust doesn't allow string to be accessed by index (e.g. str[0])
+#String Type vs string literal
+    A string literal lives on the stack because it's immutable.
+        The text is hardcoded directly into the final executable.
+    A String type lives on the heap because it's mutable.
+        Creating String Type will request heap memory from the OS.
+    string literals are stored inside the binary (in the data segment)
+        in `let variable_name = "hello";`
+            what is inside variable_name is actually
+                a slice (with start index and length data)
+                pointing to a specific point of the binary
+            which is why variable_name
+                have the type &str (because a slice is a reference and reference type starts with &)
+                and is immutable (because the &str is actually an immutable reference)
+    A String type is made up of three parts:
+        a pointer to the memory that holds the contents of the string
+        a length: how much memory, in bytes, the contents of the String is currently using
+        a capacity: the total amount of memory, in bytes, that the String has received from the operating system
+#Creating String Type
+    let mut s = String::new();
+    let s = data.to_string();   //see Convert any type to String type
+    let s = String::from("string literal");
+#Concatenating String
+    #using push_str:
+        let mut s = String::from("hello ");
+        s.push_str("world");
+    #using push:
+        let mut s = String::from("a");
+        s.push('b');                                //only accept 1 character
+    #using + operator:
+        let s1 = String::from("hello ");            //s1 will be moved by +
+        let s2 = String::from("world");             //s2 is used by + as a borrowed reference
+        let s3 = s1 + &s2;                          //note the &
+    #using format! macro:
+        let s = format!("{}-{}-{}", s1, s2, s3);    //s1, s2, s3 are all borrowed
+#Slicing string
+        let non_utf8_string = "Здравствуйте";       //each of these char takes two u8
+        let s = &non_utf8_string[0..4];             //"Зд"
+    Be careful when using ranges to create string slices (it can crash your program).
+        let s = &non_utf8_string[0..1];             //this will panic because the char boundary is at range 0..2
+#Iterating over String
+    for c in "नमस्ते".chars() { println!("{}", c); }  //will print the scalar values: ['न', 'म', 'स', '्', 'त', 'े']
+    for b in "नमस्ते".bytes() { println!("{}", b); }  //will print the bytes: [224, 164, 168, 224, ...]
+    use crate from Crates.io if you want to iterate over grapheme clusters
+
+#Convert any type to String type
+    To convert to String, the type need to implement the ToString trait.
+    Rather than doing so directly, you should implement the fmt::Display trait
+        which automagically provides ToString and also
+        allows printing the type using print! and other such macros
+#Example
+    use std::fmt;
+    struct Circle { radius: i32 }
+    impl fmt::Display for Circle {
+        fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+            write!(f, "Circle of radius {}", self.radius)
+        }
+    }
+    fn main() {
+        println!("{}", (Circle { radius: 6 }).to_string());
+    }
+
+#Convert string to number (parsing string)
+    The idiomatic approach to this is to use the parse function and
+        either to arrange for type inference
+        or to specify the type to parse using the 'turbofish' syntax.
+    This will convert the string into the type specified
+        so long as the FromStr trait is implemented for that type.
+#Parse function
+    #with type inference
+        let parsed: i32 = "5".parse().unwrap();
+    #with turbofish syntax
+        let turbo_parsed = "10".parse::<i32>().unwrap();
+
+#String slices as parameter
+    instead of declaring a function like this:
+        fn get_first_word(s: &String) -> &str
+    it's better to declare it like this:
+        fn get_first_word(s: &str) -> &str
+    this is for performance reason:
+        with the first function signature,
+            you can pass String type easily:
+                let a_string_type = String::from("hello world");
+                let word = get_first_word(&a_string_type);
+            but you can only pass string literal by putting it inside the heap first (expensive):
+                let string_literal = "hello world";
+                let word = get_first_word(&String::from(string_literal));
+        with the second signature,
+            you can pass the string literal directly:
+                get_first_word(string_literal)
+            but you can also pass String type easily:
+                get_first_word(&a_string_type[..]);
+            because Rust uses a deref coercion, it automatically turns &a_string_type into &a_string_type[..]
+            and so you can pass String type more concisely:
+                get_first_word(&a_string_type);
+
+#--------------------------------------------------------------------------------
+#Collections std::collections
+    the data these collections point to is stored on the heap
+        the amount of data does not need to be known at compile time
+        and can grow or shrink as the program runs
+    common collections: String Vec HashMap
+
+#Vector
+    variable length but fixed type after definition, homogenous type, zero index
+    when the vector gets dropped (when it get goes out of scope), all of its contents are also dropped
+#Definition
+    #using new associated function: let vector_variable: Vec<i32> = Vec::new();
+    #using vec! macro: let vector_variable = vec![1, 2, 3];
+#Vector methods
+    #pushing to vector:
+        let mut vector_variable = Vec::new();   //mut is required
+        vector_variable.push(5);                //this will create a mutable reference to vector_variable
+#Accessing vector elements
+    #by index: let first: &i32 = &v[0];         //this will panic if index is out of range
+    #by get method:
+        match v.get(0) {                        //this won't panic if index is out of range
+            Some(first) => print!("{}", first),
+            None => (),
+        }
+#Iterating over vector elements
+    for element in &vector_variable { println!("{}", element); }
+    for element in &mut vector_variable { *element += 1 }
+#Storing heterogenous type
+    #using enum:
+        enum SpreadsheetCell {
+            Int(i32),
+            Float(f64),
+        }
+        let row = vec![SpreadsheetCell::Int(3), SpreadsheetCell::Float(10.12)];
+    #using trait
+
+
+
+#--------------------------------------------------------------------------------
+#Struct: a collection of fields
+    There are three types of structures that can be created:
+        The classic C structs
+        Tuple structs, which are, basically, named tuples
+        Unit structs, which are field-less, are useful for generics
+    #declaration:
+        #basic struct:
+            struct StructName {
+                field_name1: type_name,
+                field_name2: type_name,
+            }
+        #tuple struct:
+            struct StructName(type_name, type_name);
+        #unit struct:
+            struct StructName;
+    #create immutable struct:
+        #basic struct:
+            let struct_variable = StructName {
+                //the fields below doesn't need to be ordered exactly as the definition
+                field_name1: value,
+                field_name2: value,
+            }
+        #tuple struct:
+            let struct_variable = StructName(value, value);
+        #unit struct:
+            let struct_variable = StructName;
+    #create mutable struct:
+        let mut struct_variable = StructName {
+            //the fields below doesn't need to be ordered exactly as the definition
+            field_name1: value,
+            field_name2: value,
+        }
+    #access field:
+        #basic struct: struct_variable.field_name1
+        #tuple struct: struct_variable.index        //e.g. struct_variable.0 for the first element
+    #change field value of mutable struct:
+        struct_variable.field_name1 = value
+    #destructuring using let binding:
+        #basic struct:
+            let StructName {field_name1: x, field_name2: y} = struct_variable;
+        #tuple struct:
+            let StructName(x, y) = struct_variable;
+#Using field init shorthand in struct factory
+    fn main(){
+        let field_name1 = value;
+        let field_name2 = value;
+        let struct_variable = StructName {field_name1, field_name2};    //will be automatically set using the variables above
+    }
+    fn build_struct(field_name1: type_name) -> StructName {
+        StructName {
+            //field_name1 below will be automatically set using the argument passed into this factory function
+            //    because the parameter and the struct field has the same type and name 
+            field_name1,
+            field_name2: value,
+        }
+    }
+#Using struct update syntax
+    let struct_variable = StructName {
+        field_name1: value,
+        ..another_struct_variable   //fields other than field_name1 will be set to the same corresponding value of another_struct_variable
+    }
+#Ownership of Struct Data
+    struct User {
+        username: String,
+        //we usually use the owned String type in struct
+        //because we want instances of this struct to own all of its data
+        //and for that data to be valid for as long as the entire struct is valid.
+
+        email: &'static str,
+        //it’s possible for structs to store references to data owned by something else
+        //but to do so requires the use of lifetime specifiers
+    }
+
+#--------------------------------------------------------------------------------
+#Impl block
+    impl block can be used to define method and associated function
+    one item (struct, enum, or a trait object) can have multiple impl block
+
+#Method
+    is function that is defined within
+        the context of an item (literal value, struct, enum, or a trait object)
+        by using an impl block
+    first parameter is always self
+        which represents the instance of the item the method is being called on
+#Definition
+    impl Item {
+        //borrow using immutable reference
+        fn get_data(&self) -> type_name {
+            self.data;
+        }
+
+        //borrow using mutable reference
+        fn mutate_data(&mut self){
+            self.data = value;
+        }
+
+        //takes ownership of the item
+        fn takes_ownership(self) -> type_name {
+            //usually done when transforming the item into another item
+            //or any other operation that renders the calling item invalid
+            return value;
+        }
+    }
+#Call: item.method()
+    Rust will automatically convert the item to the first parameter of the method
+    e.g. you don't have to do (&item).get_data() or (&mut item).mutate_data()
+
+#Method on literal value
+    value.method()
+        9_i32.trailing_zeros()
+        "string literal".to_string()
+    (expression).method()
+        (-9_i32).abs()
+
+#Associated Functions (static method)
+    are functions within impl blocks that don’t take self as a parameter
+    are associated with an item
+    are often used for constructors that will return a new instance of a struct
+#Definition
+    impl Item {
+        fn function_name(){ statement; }
+    }
+#Call
+    Item::function_name()
+
+#--------------------------------------------------------------------------------
+#Enumeration
+    enum is a type that can have a fixed set of values
+        those values are called the enum’s variants
+    Rust’s enums are most similar to algebraic data types (tagged union) in functional languages
+#Definition
+    enum WebEvent {
+        //unit-like enum value
+        PageLoad,
+        PageUnload,
+        
+        //tuple struct enum value
+        KeyPress(char),
+        Paste(String),
+
+        //struct enum value
+        Click { x: i64, y: i64 },
+    }
+#Instantiate
+    #basic:
+        let pressed = WebEvent::KeyPress('x');
+        let pasted  = WebEvent::Paste("my text".to_owned()); //to_owned creates an owned String from a string slice.
+        let click   = WebEvent::Click { x: 20, y: 80 };
+        let load    = WebEvent::PageLoad;
+        let unload  = WebEvent::PageUnload;
+    #with use declaration:
+        use crate::WebEvent::{PageLoad, PageUnload};    //use some enum value
+        use crate::WebEvent::*;                         //use all enum value
+        let load = PageLoad;                            //no need to prefix this with WebEvent::
+#Pattern matching enum (see Pattern Matching for more detail)
+    #using match
+        fn handleWebEvent(event: WebEvent){
+            match event {
+                WebEvent::PageLoad => println!("page loaded"),
+                WebEvent::PageUnload => println!("page unloaded"),
+
+                //bind value (destructure) to c
+                WebEvent::KeyPress(c) => println!("pressed '{}'.", c),
+                WebEvent::Paste(s) => println!("pasted \"{}\".", s),
+
+                //bind value (destructure) of Click into x and y
+                WebEvent::Click { x, y } => {
+                    println!("clicked at x={}, y={}.", x, y);
+                },
+
+                //default case
+                _ => println!("other event"),
+            }
+        }
+    #using if let
+        if let WebEvent::KeyPress(key) = variable_name {
+            println!("user press {}",key);
+        }
+#Define Method for Enumeration
+    #Definition:
+        impl WebEvent {
+            fn call(&self) {
+                statement;
+            }
+        }
+    #Call:
+        WebEvent::KeyPress('x').call();
+
+#--------------------------------------------------------------------------------
+#Option Enum
+    Option enum is included in the prelude
+        you don’t need to bring it into scope explicitly
+        you can also use its variants (Some and None) directly without the Option:: prefix
+#Definition
+    enum Option<T> {
+        Some(T),
+        None,
+    }
+#Use:
+    let some_number = Some(5);
+    let some_string = Some("a string");
+    let absent_number: Option<i32> = None;  //you must add type annotation to define the T
+#Pattern matching Option enum
+    fn plus_one(x: Option<i32>) -> Option<i32> {
+        match x {
+            None => None,
+            Some(i) => Some(i + 1),
+        }
+    }
+
+#--------------------------------------------------------------------------------
+#Pattern Matching
+    Use if let statement if you feel pattern matching is unnecessary
+
+#Match Expression
+    Match is an expression
+        it can evaluate into a value
+    A match expression is made up of arms
+        its arms must have the same return type
+    An arm consists of a pattern and the code that should be run
+        if the value given to the beginning of the match expression fits that arm’s pattern
+    Match must have collectively exhaustive patterns in its arms (or Rust will throw compile error)
+#Example
+    let some_u8_value = 0u8;
+    match some_u8_value {
+        1 => println!("One!"),                              //match a single value
+        2 | 3 | 5 | 7 | 11 => println!("This is a prime"),  //match several values
+        13..=19 => println!("A teen"),                      //match an inclusive range
+        100 => {                                            //you can run multiple lines of code using curly brackets
+            println!("A hundred")
+            println!("A hundred!!!")
+        },
+        _ => (),                                            //this will do nothing (it'll only return the unit type value)
+    }
+#Example
+    let binary = match boolean_variable {                   //the result of match evaluates to a value
+        false => 0,
+        true => 1,
+    };
+
+#Using match to destructure
+    #tuple
+        let point = (0, -2);
+        match point {
+            (0, y) => println!("point is in x line'),   //will match any point with x == 0
+            (x, 0) => println!("point is in y line"),
+            _      => println!("point is elsewhere"),   // `_` means don't bind the value to a variable
+        }
+    #enum
+        see Pattern matching enum for example
+    #pointer (reference)
+        let reference: &i32 = &4;
+        match reference {
+            &val => println!("val is of type i32"),
+        }
+        match *reference {
+            val => println!("val is of type i32"),
+        }
+        let value = 5;
+        match value {
+            ref r => println!("r is of type &i32"), //use ref keyword to create a reference.
+        }
+        let mut mut_value = 6;
+        match mut_value {
+            ref mut m => {  //use ref mut keyword to create a mutable reference
+                *m += 10;   //mutate by dereferencing it first
+            },
+        }
+    #struct
+        struct Foo {
+            x: (u32, u32),
+            y: u32,
+        }
+        match foo {
+            Foo { x: (1, b), y } => println!("First of x is 1, b = {},  y = {} ", b, y),
+
+            // you can destructure structs and rename the variables,
+            // the order is not important
+            Foo { y: 2, x: i } => println!("y is 2, i = {:?}", i),
+
+            // and you can also ignore some variables:
+            Foo { y, .. } => println!("y = {}, we don't care about x", y),
+            // you can't ignore variables like this. it will give an error: pattern does not mention field `x`
+            //Foo { y } => println!("y = {}", y);
+        }
+
+#Guard
+    let pair = (2, -2);
+    match pair {
+        (x, y) if x == y => println!("Twins"),          // The `if condition` part is a guard
+        (x, y) if x + y == 0 => println!("Antimatter"),
+        (x, _) if x % 2 == 1 => println!("The first one is odd"),
+        _ => println!("No correlation..."),
+    }
+
+#If let statement
+    if let value = variable_name {          //read: if let destructure variable_name into value, then do statement
+        statement;
+    } else if let value = variable_name {
+        statement;
+    } else if condition {
+        statement;
+    } else {
+        statement;
+    }
+#Example
+    if let WebEvent::KeyPress(key) = variable_name {
+        println!("variable_name matches KeyPress with parameter value {}",key);
+    } else if let 3 = some_u8_value {
+        println!("is three");
+    } else if some_u8_value % 2 == 0 {
+        println!("is even");
+    } else {
+        println!("not three");
+    }
+
+#While let statement
+    let mut optional = Some(0);
+    //while `let` destructures `optional` into `Some(i)`, evaluate the block, else break out of loop
+    while let Some(i) = optional {
+        if i > 9 {
+            optional = None;    //quit
+        } else {
+            optional = Some(i + 1);
+        }
+    }
+
+#--------------------------------------------------------------------------------
+#Code Organization
+    Rust's module system features:
+        Packages: A Cargo feature that lets you build, test, and share crates
+        Crates: A tree of modules that produces a library or executable
+        Modules and use: Let you control the organization, scope, and privacy of paths
+        Paths: A way of naming an item, such as a struct, function, or module
+
+#Package: one or more crates that provide a set of functionality
+    package
+        is what get built when you run cargo new
+        contains a Cargo.toml file that describes how to build those crates
+    package
+        must contain at least one crate (library or binary)
+        can contain zero or one library crate
+        can contain as many binary crates as you want
+    If a package contains src/main.rs and src/lib.rs, it has two crates:
+        a binary and a library, both with the same name as the package.
+    A package can have multiple binary crates by placing files in the src/bin directory.
+        Each file will be a separate binary crate.
+        To compile or run src/bin/my_other_bin binary as opposed to the default binaries, pass cargo the `--bin my_other_bin` flag
+
+#Crate: a collection of Rust source code files
+    A crate can be compiled into a binary or into a library.
+        binary crate is executable
+        library crate contains code intended to be used in other programs
+    a crate will group related functionality together in a scope so the functionality is easy to share between multiple projects
+    a crate’s functionality is namespaced in its own scope (crate_name::functionality)
+#Crate root: a source file that the Rust compiler starts from and makes up the root module of your crate
+    src/main.rs
+        is the crate root of a binary crate with the same name as the package
+    src/lib.rs
+        is the crate root of a library crate with the same name as the package
+    Cargo passes the crate root files to rustc to build the library or binary.
+#Crate compilation
+    A crate is a compilation unit in Rust.
+        modules do not get compiled individually, only crates get compiled.
+    Whenever rustc some_file.rs is called,
+        some_file.rs is treated as the crate file.
+    If some_file.rs has mod declarations in it,
+        then the contents of the module files would be inserted
+        in places where mod declarations in the crate file are found,
+        before running the compiler over it.
+
+#Creating library crate: rustc --crate-type=lib library_name.rs
+    This will create a library_name.rlib in the lib directory
+    The name of the library can be specified manually by overriding the crate_name attribute.
+#Import library crate:
+    In the importing file, add this line:
+        extern crate library_name;
+    notes:
+        the extern crate declaration will not only link the library,
+        but also import all its items under a module named the same as the library.
+        The visibility rules that apply to modules also apply to libraries.
+    When compiling the importing crate, add the extern flag:
+        rustc executable.rs --extern library_name=path/to/library_name.rlib
+
+#Module tree
+    the contents of either of the crate root file
+        form a module named `crate`
+        at the root of the crate’s module structure,
+        known as the module tree.
+    the entire module tree is rooted under the implicit module named crate.
+#Module: a collection of items (usually placed inside one directory)
+    Inside modules, we can have items such as:
+        other modules, structs, methods, enums, constants, traits, or functions.
+    Modules control the privacy of items, i.e.
+        whether an item can be used by outside code (public)
+        or is an internal implementation detail and not available for outside use (private).
+    Rust visibility rules (the way privacy works in Rust):
+        - all items are private by default
+        - item in one module can use all the other (public and private) items in the same module
+        - items in a parent module can’t use the private items inside child modules
+        - items in child modules can use the private items in their ancestor modules
+        - private parent items will still restrict the visibility of its child item
+            even if the child item is declared as visible/public within a bigger scope.
+#Example
+    mod parent_module {                         //parent_module is private
+        const CONSTANT_NAME: type = value;
+
+        pub mod child_module {                  //use the pub keyword to make an item public
+            pub fn public_function() {
+                private_function()              //can access other items in the same module even when private
+            }
+            fn private_function() {}
+        }
+
+        pub mod sibling_module {
+            pub struct StructName {             //will make the struct public, but the struct’s fields will still be private.
+                pub public_field: type,         //we can make each field public or not on a case-by-case basis
+                private_field: type,
+            }
+            impl StructName {                   //When a struct have private fields, it can not be instantiated the normal way.
+                pub fn new() -> StructName {    //The struct needs to provide a public associated function
+                    StructName {                //  that constructs an instance of itself.
+                        public_field: value,    //This constructor is usually named as `new`
+                        private_field: value,   //  and is called with StructName::new()
+                    }
+                }
+            }
+
+            pub enum EnumName {                 //pub will make an enum and all of its variants public
+                variant1
+                variant2
+            }
+        }
+    }
+#The example above will create the module tree:
+    crate
+     └── parent_module
+          ├── CONSTANT_NAME
+          ├── child_module
+          │    ├── public_function
+          │    └── private_function
+          └── sibling_module
+               ├── StructName
+               └── EnumName
+#Separating modules into multiple files
+    !src/lib.rs
+        mod parent_module;
+    !src/parent_module.rs
+        const CONSTANT_NAME: type = value;
+        mod child_module;
+        mod sibling_module;
+    !src/parent_module/child_module.rs
+        pub fn public_function() {}
+        fn private_function() {}
+    !src/parent_module/sibling_module.rs
+        pub struct StructName {}
+        pub enum EnumName {}
+#Pub modifier variations
+    #default: make the item visible everywhere
+        pub fn function_name() {}
+    #pub in path: make the item visible within the given path (`path` must be a parent or ancestor module)
+        pub(in crate::parent_module) fn function_name() {}
+    #pub self: is the same as just declaring an item as private (is visible in self only)
+        pub(self) fn function_name() {}
+    #pub super: make the item visible within its immediate parent module only
+        pub(super) fn function_name() {}
+    #pub crate: make the item visible only within the current crate
+        pub(crate) fn function_name() {}
+
+#Path: show Rust where to find an item in a module tree (just like the path we use when navigating a filesystem)
+    Absolute vs Relative paths
+        Both absolute and relative paths are followed by one or more identifiers separated by double colons (::).
+        An absolute path starts from a crate root by using a crate name or a literal crate keyword.
+            crate::parent_module::child_module::public_function()
+        A relative path starts from the current module and uses self, super, or an identifier in the current module.
+            if we are in parent_module.rs, we can use both of these paths:
+                child_module::public_function()
+                self::child_module::public_function()
+            if we are in child_module.rs, we can use:
+                super::sibling_module::StructName::new()
+
+#Use keyword: a method to bring a path into a scope once and then call the items in that path as if they’re local items
+    Use can be defined
+        at the top of the file (outside of any block in a file)
+        inside a block (it will then bring a path into the local block scope)
+#Definition
+    #with absolute path: 
+        use crate::parent_module::child_module;
+        child_module::public_function()         //you can now call public_function like this
+    #with relative path:
+        use super::sibling_module::StructName;
+    #with glob operator (to bring all public items defined in a path into scope):
+        use std::collections::*;
+    #with alias:
+        use std::io::Result as IoResult;        //this will avoid name collision with the other Result
+        use std::fmt::Result;
+    #with nested paths:
+        use std::{cmp::Ordering, io};           //is the same as: use std::cmp::Ordering; use std::io;
+        use std::io::{self, Write};             //is the same as: use std::io; use std::io::Write;
+#Use convention
+    You can `use` directly to a function name. But it isn't idiomatic.
+        Bringing the function’s parent module into scope with `use`
+        forces us to specify the parent module when calling the function
+        which makes it clear that the function isn’t locally defined
+        while still minimizing repetition of the full path.
+    On the other hand, when bringing in structs, enums, and other items with use,
+        it’s idiomatic to specify the full path.
+        There’s no strong reason behind this idiom: it’s just the convention that has emerged.
+        The exception to this idiom is if we’re bringing two items with the same name into scope with use statements
+#Re-exporting with pub use
+    When we bring a name into scope with the use keyword,
+        the name available in the new scope is private.
+    To enable the code that calls our code to refer to that name
+        as if it had been defined in that code’s scope,
+        we can combine pub and use.
+    This technique is called re-exporting
+        because we’re bringing an item into scope 
+        but also making that item available for others to bring into their scope.
+#Re-exporting example
+    !child_module.rs
+    pub use super::sibling_module::StructName; 
+    //this will make StructName accessible from both
+    //  this child_module.rs file and
+    //  any file that use child_module
+
+#Rust standard library
+    Because the standard library is shipped with the Rust language,
+        we don’t need to change Cargo.toml to include std.
+    But we do need to refer to it with `use` to bring items from there into our package’s scope
+        use std::io;
+#Rust prelude
+    Rust inserts
+        `extern crate std;` into the crate root of every crate
+        `use std::prelude::v1::*;` into every module
+
+#--------------------------------------------------------------------------------
+#Attribute
+    metadata applied to some module, crate, or item
+    attribute application can be separated over multiple lines
+#Applying attribute
+    #crate level attribute          : #![attribute]
+    #module and item level attribute: #[attribute]
+    #with arguments:
+        #[attribute = "value"]
+        #[attribute(key = "value")]
+        #[attribute(value, value)]
+#Example
+    //allow dead code
+        #[allow(dead_code)]
+        fn unused_function() {}
+    //crate attributes
+        #![crate_type = "lib"]          //with this we no longer need to pass the --crate-type=lib flag to rustc
+        #![crate_name = "library_name"]
+
+#--------------------------------------------------------------------------------
+#Bookmarks
+
+TODO:
+read and summarize:
+    Cargo book -> ,rs.cargo.txt
+    rustdoc book -> ,rs.rustdoc.txt
+    rustc book -> ,rs.rustc.txt
+
+Rust by Example:
+9.2.2 As input parameters
+
+The Rust Programming Language:
+8 Common Collections
+
+#Skipped
+
+Rust by Example:
+1.2 Formatted Print
+12.4 Build Scripts (should be in ,rs.cargo.txt)
+
+
+fn print_type_name_of<T>(_: T) {
+    println!("{}", unsafe { std::intrinsics::type_name::<T>() })
+}
+
+Create an integer in the heap: Box::new(3)

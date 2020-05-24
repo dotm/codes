@@ -141,12 +141,11 @@ Regex
 Imperative, Structured, Procedural
 
 #Statements
-Local variable declaration
-Local variable definition (assignment)
-Global variable declaration
-Global variable definition (assignment)
-Constant declaration
-Constant definition
+
+Variable declaration and definition (assignment)
+  Local variable vs Global variable
+  Mutable variable vs Immutable variable
+Constant declaration and definition (assignment)
 
 #--------------------------------------------------------------------------------
 Conditional

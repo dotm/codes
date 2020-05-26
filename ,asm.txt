@@ -1,4 +1,6 @@
 Here we focus on Intel-32 processor architecture (IA-32, i386) with NASM assembler
+For x86_64 cheatsheet, see: https://cs.brown.edu/courses/cs033/docs/guides/x64_cheatsheet.pdf
+For tutorial: https://asmtutor.com/
 
 Each family of processors has its own set of instructions for handling various operations
 such as getting input from keyboard, displaying information on screen and performing various other jobs.
@@ -91,10 +93,10 @@ section	.text       ;can also be declared using: segment .data
    global _start    ;must be declared for linker (ld)
 	
 _start:	            ;tells linker entry point
-   mov	edx,len     ;message length
-   mov	ecx,msg     ;message to write
-   mov	ebx,1       ;file descriptor (stdout)
    mov	eax,4       ;system call number (sys_write)
+   mov	ebx,1       ;file descriptor (stdout)
+   mov	ecx,msg     ;message to write
+   mov	edx,len     ;message length
    int	0x80        ;call kernel
 	
    mov	eax,1       ;system call number (sys_exit)
@@ -228,3 +230,94 @@ len equ $ - msg     ;length of the string
         There are other extra segment registers
             ES (extra segment), FS and GS,
             which provide additional segments for storing data.
+
+#--------------------------------------------------------------------------------
+#System Calls
+    System calls are APIs for the interface between the user space and the kernel space.
+    To use Linux system calls in your program
+        Put the system call number in the EAX register.
+        Store the arguments to the system call in the registers EBX, ECX, EDX, ESI, EDI, and EBP.
+        Call kernel (80h)(int 0x80).
+        The result is usually returned in the EAX register.
+#Example: sys_write(stdout, msg, len)
+    mov	eax,4       ;system call number (sys_write)
+    mov	ebx,1       ;  file descriptor argument (stdout)
+    mov	ecx,msg     ;  message to write argument
+    mov	edx,len     ;  message length argument
+    int	0x80        ;call kernel
+
+#--------------------------------------------------------------------------------
+#Addressing Modes
+Some instructions do not require an operand, whereas some other instructions may require one, two, or three operands.
+
+#The three basic modes of addressing
+    #Register Addressing
+        In this addressing mode, a register contains the operand.
+            Depending upon the instruction, the register may be
+                the first operand:  MOV DX, TAX_RATE
+                the second operand: MOV COUNT, CX
+                or both:            MOV EAX, EBX
+        As processing data between registers does not involve memory,
+            it provides fastest processing of data.
+    #Immediate Addressing
+        An immediate operand has a constant value or an expression.
+            BYTE_VALUE  DB  150    ; A byte value is defined
+            WORD_VALUE  DW  300    ; A word value is defined
+            ADD  BYTE_VALUE, 65    ; An immediate operand 65 is added
+            MOV  AX, 45H           ; Immediate constant 45H is transferred to AX
+        When an instruction with two operands uses immediate addressing,
+            the first operand may be a register or memory location,
+            and the second operand is an immediate constant.
+            The first operand defines the length of the data.
+    #Direct Memory Addressing
+        When operands are specified in memory addressing mode,
+            direct access to main memory, usually to the data segment, is required.
+        This way of addressing results in slower processing of data.
+        To locate the exact location of data in memory,
+            we need the segment start address (typically found in the DS register)
+            and an offset value (this offset value is also called effective address).
+        The offset value is specified directly as part of the instruction, usually indicated by the variable name.
+            The assembler calculates the offset value and maintains a symbol table,
+            which stores the offset values of all the variables used in the program.
+        One of the operands refers to a memory location and the other operand references a register.
+            ADD	BYTE_VALUE, DL	; Adds the register in the memory location
+            MOV	BX, WORD_VALUE	; Operand from the memory is added to register
+    #Direct-Offset Addressing
+        This addressing mode uses the arithmetic operators to modify an address.
+        The following example operations access data from the tables in the memory into registers:
+            BYTE_TABLE DB  14, 15, 22, 45      ; Tables of bytes
+            WORD_TABLE DW  134, 345, 564, 123  ; Tables of words
+            MOV CL, BYTE_TABLE[2]	; Gets the 3rd element of the BYTE_TABLE
+            MOV CL, BYTE_TABLE + 2	; Gets the 3rd element of the BYTE_TABLE
+            MOV CX, WORD_TABLE[3]	; Gets the 4th element of the WORD_TABLE
+            MOV CX, WORD_TABLE + 3	; Gets the 4th element of the WORD_TABLE
+    #Indirect Memory Addressing
+        This addressing mode utilizes the computer's ability of Segment:Offset addressing.
+        Generally, the base registers EBX, EBP (or BX, BP) and the index registers (DI, SI),
+            coded within square brackets for memory references, are used for this purpose.
+        Indirect addressing is generally used for variables containing several elements like, arrays.
+            Starting address of the array is stored in, say, the EBX register.
+        The following example shows how to access different elements of the variable.:
+            MY_TABLE TIMES 10 DW 0  ; Allocates 10 words (2 bytes) each initialized to 0
+            MOV EBX, [MY_TABLE]     ; Effective Address of MY_TABLE in EBX
+            MOV [EBX], 110          ; MY_TABLE[0] = 110
+            ADD EBX, 2              ; EBX = EBX +2
+            MOV [EBX], 123          ; MY_TABLE[1] = 123
+
+#The MOV Instruction
+        MOV  destination, source
+    Both the operands in MOV operation should be of same size
+    The value of source operand remains unchanged
+#The 5 forms
+    MOV  register, register
+    MOV  register, immediate
+    MOV  register, memory
+    MOV  memory, register
+    MOV  memory, immediate
+#Common type specifiers
+    Type Specifier	Bytes addressed
+    BYTE	        1
+    WORD	        2
+    DWORD	        4
+    QWORD	        8
+    TBYTE	        10

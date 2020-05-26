@@ -688,14 +688,6 @@ Loop
 
 #--------------------------------------------------------------------------------
 #String
-    are array of bytes (character)
-        fn get_first_word(s: &str) -> &str {
-            let bytes = s.as_bytes();
-            for (i, &item) in bytes.iter().enumerate() {
-                if item == b' ' { return &s[0..i]; }
-            }
-            &s[..]
-        }
     A String type is a wrapper over a Vec<u8>
     3 relevant ways to look at strings (e.g. "नमस्ते") from Rust’s perspective:
         bytes: [224, 164, 168, 224, 164, 174, 224, 164, 184, 224, 165, 141, 224, 164, 164, 224, 165, 135]
@@ -833,7 +825,47 @@ Loop
         let row = vec![SpreadsheetCell::Int(3), SpreadsheetCell::Float(10.12)];
     #using trait
 
-
+#HashMap (a.k.a. hash, map, object, hash table, dictionary, or associative array)
+    homogeneous (keys must be of the same type, value must be of the same type)
+    HashMap ownership:
+        for types that implement the Copy trait, like i32, the values are copied into the hash map.
+        for owned values like String, the values will be moved and the hash map will be the owner of those values
+        if we insert references to values into the hash map, the values won’t be moved into the hash map.
+            the values that the references point to must be valid
+            for at least as long as the hash map is valid (see lifetime specifier)
+#Definition
+    use std::collections::HashMap;
+    let mut hashmap = HashMap::new();
+#Insert element: hashmap.insert(key, value)
+#Access value by key:
+    //the & in &key below is mandatory
+    //get returns an Option<&V>
+    match hashmap.get(&key)) {
+        Some(value) => println!("{}",value),
+        None => (),
+    }
+    if let Some(value) = hashmap.get(&key) {
+        println!("{}",value)
+    }
+#Iterating over HashMap
+    for (key, value) in &hashmap {
+        println!("{}: {}", key, value);
+    }
+#Updating HashMap
+    #replace old value with new value:
+        hashmap.insert(1, 10);
+        hashmap.insert(1, 25);  //hashmap with key 1 will now have a value of 25
+    #only insert if no value exist for a key:
+        hashmap.entry(key).or_insert(value);
+    #update value based on old value:
+        fn count_chars(s: &str) -> HashMap<char,i32> {
+            let mut hashmap = HashMap::new();
+            for c in s.chars() {
+                let count = hashmap.entry(c).or_insert(0);
+                *count += 1;
+            }
+            hashmap
+        }
 
 #--------------------------------------------------------------------------------
 #Struct: a collection of fields
@@ -909,6 +941,29 @@ Loop
         //but to do so requires the use of lifetime specifiers
     }
 
+#Using struct to enforce validation of contract
+    Having lots of error checks in all of your functions would be verbose and annoying.
+        Fortunately, you can use Rust’s type system to do many of the checks for you.
+            e.g. using unsigned integer, you can enforce that something should never have negative value.
+        You can also create custom type to add stricter contract.
+#Example:
+    pub struct TestScore { value: i32 }             //value is private so that it cannot be set arbitrarily
+    impl TestScore {
+        pub fn new(value: i32) -> TestScore {
+            let mut t = TestScore{value:0};
+            t.set_value(value);
+            t
+        }
+        pub fn set_value(&mut self, value: i32) {   //setter allows validation before mutation
+            if value < 1 || value > 100 {
+                panic!("enforce that value must be between 1 and 100, got {}.", value);
+            }
+            self.value = value
+        }
+        pub fn value(&self) -> i32 {                //getter must be provided so that private value can be accessed
+            self.value
+        }
+    }
 #--------------------------------------------------------------------------------
 #Impl block
     impl block can be used to define method and associated function
@@ -1055,9 +1110,11 @@ Loop
         it can evaluate into a value
     A match expression is made up of arms
         its arms must have the same return type
-    An arm consists of a pattern and the code that should be run
-        if the value given to the beginning of the match expression fits that arm’s pattern
+    An arm consists of
+        a pattern
+        and the code that should be run if the value given to the beginning of the match expression fits that arm’s pattern
     Match must have collectively exhaustive patterns in its arms (or Rust will throw compile error)
+    You can return early in a function from its match expression
 #Example
     let some_u8_value = 0u8;
     match some_u8_value {
@@ -1071,10 +1128,19 @@ Loop
         _ => (),                                            //this will do nothing (it'll only return the unit type value)
     }
 #Example
-    let binary = match boolean_variable {                   //the result of match evaluates to a value
-        false => 0,
-        true => 1,
-    };
+    fn read_username_from_file() -> Result<String, io::Error> {
+        let f = File::open("hello.txt");
+        let mut f = match f {           //the result of match evaluates to a value
+            Ok(file) => file,
+            Err(e) => return Err(e),    //you can return early from a match expression
+        };
+
+        let mut s = String::new();
+        match f.read_to_string(&mut s) {
+            Ok(_) => Ok(s),
+            Err(e) => Err(e),
+        }
+    }
 
 #Using match to destructure
     #tuple
@@ -1391,6 +1457,133 @@ Loop
         #![crate_name = "library_name"]
 
 #--------------------------------------------------------------------------------
+#Error Handling
+    when failure is expected, it’s more appropriate to return a Result than to make a panic! call
+    you can use panic:
+        in examples, prototype code, and tests
+        when you know that failure is impossible:
+            let home: std::net::IpAddr = "127.0.0.1".parse().unwrap();
+        when it’s possible that your code could end up in a bad state
+            a bad state is when some assumption, guarantee, contract, or invariant has been broken, 
+                such as when invalid values, contradictory values, or missing values are passed to your code.
+            a bad state is not something that’s expected to happen occasionally.
+            your code after this point needs to rely on not being in this bad state.
+            attempting to operate on invalid data can expose your code to vulnerabilities.
+    functions often have contracts: their behavior is only guaranteed if the inputs meet particular requirements.
+        Panicking when the contract is violated makes sense
+            because a contract violation always indicates a caller-side bug
+            and it’s not a kind of error you want the calling code to have to explicitly handle.
+        In fact, there’s no reasonable way for calling code to recover;
+            the calling programmers need to fix the code.
+        Contracts for a function, especially when a violation will cause a panic,
+            should be explained in the API documentation for the function.
+
+#Unrecoverable Errors with panic!
+        fn main() {
+            panic!("crash and burn");
+        }
+    When the panic! macro executes, your program will print a failure message, unwind and clean up the stack, and then quit
+    This walking back and cleanup is a lot of work. The alternative is to immediately abort.
+        This ends the program without cleaning up.
+        Memory that the program was using will then
+        need to be cleaned up by the operating system.
+        If in your project you need to make the resulting binary as small as possible,
+        you can switch from unwinding to aborting upon a panic by adding this in your Cargo.toml:
+            [profile.release]   #you can change release to other mode
+            panic = 'abort'
+    the filename and line number reported by the error message will be
+        where the panic! macro is called, not the line of our code that eventually led to the panic! call
+    To get backtrace, the RUST_BACKTRACE env variable must be switched on:
+        RUST_BACKTRACE=1 cargo run
+    In order to get backtraces with this information, debug symbols must be enabled.
+        Debug symbols are enabled by default when using cargo build or cargo run without the --release flag
+
+#Recoverable Errors with Result
+    #match manually:
+        use std::fs::File;
+        use std::io::ErrorKind;
+        fn main() {
+            let f = File::open("hello.txt");
+            let f = match f {
+                Ok(file) => file,
+                Err(error) => match error.kind() {
+                    ErrorKind::NotFound => match File::create("hello.txt") {
+                        Ok(fc) => fc,
+                        Err(e) => panic!("Problem creating the file: {:?}", e),
+                    },
+                    other_error => {
+                        panic!("Problem opening the file: {:?}", other_error)
+                    }
+                },
+            };
+        }
+    #with unwrap_or_else:
+        fn main() {
+            let f = File::open("hello.txt").unwrap_or_else(|error| {
+                if error.kind() == ErrorKind::NotFound {
+                    File::create("hello.txt").unwrap_or_else(|error| {
+                        panic!("Problem creating the file: {:?}", error);
+                    })
+                } else {
+                    panic!("Problem opening the file: {:?}", error);
+                }
+            });
+        }
+    #unwrap and expect methods
+            fn main() {
+                let f = File::open("hello.txt").unwrap();
+                let f = File::open("hello.txt").expect("Failed to open hello.txt");
+            }
+        unwrap will call the panic! macro for us if Result is Err
+        expect also raise panic but you can supply an error message
+#Propagating error: return the error to the calling code so that it can decide what to do
+    #match manually:
+        use std::fs::File; use std::io; use std::io::Read;
+        fn read_username_from_file() -> Result<String, io::Error> {
+            let f = File::open("hello.txt");
+
+            let mut f = match f {
+                Ok(file) => file,
+                Err(e) => return Err(e),
+            };
+
+            let mut s = String::new();
+
+            match f.read_to_string(&mut s) {
+                Ok(_) => Ok(s),
+                Err(e) => Err(e),
+            }
+        }
+    #using the ? operator for propagating error
+        #Example:
+            fn read_username_from_file() -> Result<String, io::Error> {
+                let mut s = String::new();
+                File::open("hello.txt")?.read_to_string(&mut s)?;
+                Ok(s)
+            }
+        #Explanation:
+            If the value of the Result is an Ok,
+                the value inside the Ok will get returned from this expression, and the program will continue.
+            If the value is an Err,
+                the Err will be returned from the whole function
+                as if we had used the return keyword
+                so the error value gets propagated to the calling code.
+            error values that have the ? operator called on them
+                go through the from function, defined in the From trait in the standard library,
+                which is used to convert errors from one type into another.
+                When the ? operator calls the from function, the error type received
+                is converted into the error type defined in the return type of the current function.
+                As long as each error type implements the from function to define how to convert itself to the returned error type,
+                the ? operator takes care of the conversion automatically.
+            use the ? operator in a function that returns Result or Option or another type that implements std::ops::Try.
+        #using ? in main function
+            use std::error::Error; use std::fs::File;
+            fn main() -> Result<(), Box<dyn Error>> {   //main can return Result
+                let f = File::open("hello.txt")?;
+                Ok(())
+            }
+
+#--------------------------------------------------------------------------------
 #Bookmarks
 
 TODO:
@@ -1400,15 +1593,16 @@ read and summarize:
     rustc book -> ,rs.rustc.txt
 
 Rust by Example:
-9.2.2 As input parameters
+14 Generics
 
 The Rust Programming Language:
-8 Common Collections
+10.1 Generic Data Types
 
 #Skipped
 
 Rust by Example:
 1.2 Formatted Print
+9.2.2 As input parameters
 12.4 Build Scripts (should be in ,rs.cargo.txt)
 
 

@@ -1,0 +1,76 @@
+#--------------------------------------------------------------------------------
+!hello-macho64.s
+
+;run from MacOSX cli with:
+;nasm -f macho64 -o tmp-9236.o hello-macho64.s && ld -macosx_version_min 10.15.0 -lSystem -o tmp-9236 tmp-9236.o && ./tmp-9236 && rm tmp-9236*
+;hello-macho64.s is the name of this file
+;tmp-9236 is an arbitrary unique name
+
+global _main
+
+section .text
+_main:
+  mov rax, 0x2000004  ; write(
+  mov rdi, 1          ;   STDOUT_FILENO,
+  mov rsi, msg        ;   "Hello, world!\n",
+  mov rdx, msg.len    ;   sizeof("Hello, world!\n")
+  syscall             ; );
+
+  mov rax, 0x2000001  ; exit(
+  mov rdi, 0          ;   EXIT_SUCCESS
+  syscall             ; );
+
+section .data
+msg:    db      "Hello, world!", 10   ;10 is \n
+.len:   equ     $ - msg
+
+#--------------------------------------------------------------------------------
+source: http://sevanspowell.net/posts/learning-nasm-on-macos.html
+
+
+
+
+
+
+
+
+#--------------------------------------------------------------------------------
+source: http://www.idryman.org/blog/2014/12/02/writing-64-bit-assembly-on-mac-os-x/
+
+the Mach-O is OSX executable file format
+    it’s similar to ELF,
+    but instead of sections of data, bss, and text,
+    it has segments that contains sections.
+Mach-O is pretty flexible.
+    You can embed a cstring section in your __TEXT segment instead of putting it in __DATA,__data.
+    Actually this is the default behavior that compiler does on your Mac.
+
+!in ELF
+    .section data
+    .section text
+    # your code here
+!in Mach-O
+    .section __DATA,__data  # __DATA is segment, __data is section
+    .section __TEXT,__text  # __TEXT is segment, __text is section
+    # your code here
+
+#--------------------------------------------------------------------------------
+#Simple exit program
+
+On x86 you do a system call by `int x80` instruction. On 64 bit machine, you do this by `syscall`
+
+!exit.s
+    .section __TEXT,__text
+    .globl _main
+        _main:
+        movl $0x2000001, %eax # system call $1 with $0x2000000 offset
+        movl $0, %ebx         # set the exit code to be $0
+        syscall
+
+To compile:
+    as exit.s -o exit.o
+    ld exit.o -e _main -o exit -macosx_version_min 10.13 -lSystem
+    ./exit
+    echo $?
+#--------------------------------------------------------------------------------
+#Hello Assembly

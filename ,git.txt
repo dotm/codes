@@ -37,10 +37,19 @@ git config --global alias.rs reset
 git config --global alias.lo 'log --oneline'
 git config --global alias.c 'commit -am'
 git config --global alias.a 'add -A'
+git config --global alias.cob 'checkout -b'
+git config --global alias.brd 'branch -D'
 git config --global alias.com 'checkout master'
 git config --global alias.mom 'merge origin/master'
 git config --global alias.rsh 'reset --hard'
 git config --global alias.ccr 'commit --allow-empty -m "[ci enable][run test]"'
+
+#Save and load changes to a file
+  git diff > /path/to/file.patch
+  git apply /path/to/file.patch
+
+#Check where we've been using reflog
+  git reflog
 
 #-----------------------------------------------------------------------------------
 #Rename a local and remote branch in git

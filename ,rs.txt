@@ -139,19 +139,19 @@ Implementing the fmt::Display trait automatically implements the ToString trait 
     https://github.com/rust-lang/rfcs/blob/master/text/0246-const-vs-static.md
 
 #Constant
-    const CONSTANT_NAME: type_name = value;
+    const CONSTANT_NAME: TypeName = value;
     const MAX_POINTS: u32 = 100_000;
 #Static
-    static STATIC_NAME: type_name = value;
+    static STATIC_NAME: TypeName = value;
 
 #Immutable variable
-    let variable_name: type_name;
+    let variable_name: TypeName;
     let variable_name = value;
-    let variable_name: type_name = value;
+    let variable_name: TypeName = value;
 #Mutable variable
     defining:
         let mut variable_name = value;
-        let mut variable_name: type_name = value;
+        let mut variable_name: TypeName = value;
     mutating:
         variable_name = value;
 #Silence unused variable warning using underscore
@@ -223,7 +223,7 @@ Implementing the fmt::Display trait automatically implements the ToString trait 
         #Custom Types: struct, enum
 
 #Type Casting (Type Conversion)
-    #using the as keyword: variable_name as type_name
+    #using the as keyword: variable_name as TypeName
     #using the std::convert::From trait
         #definition
             struct Number {
@@ -277,7 +277,7 @@ Implementing the fmt::Display trait automatically implements the ToString trait 
 
 #Get the size of value: std::mem::size_of_val
 
-#Type Alias: type NewTypeName = type_name;
+#Type Alias: type NewTypeName = TypeName;
     The type statement can be used to give a new name to an existing type.
     Type Alias doesn't create new type and so it doesn't provide any extra type safety.
         type NanoSecond = u64; type Inch = u64;
@@ -402,15 +402,15 @@ Loop
 #Definition
     #basic: fn function_name(){ statements; }
     #with return value:
-        #explicit return: fn function_name() -> type_name { return value }
-        #implicit return: fn function_name() -> type_name { expression }
+        #explicit return: fn function_name() -> TypeName { return value }
+        #implicit return: fn function_name() -> TypeName { expression }
         #notes:
             no semicolon when returning expression
             return keyword can be implicit
             void return type can be optionally represented using empty tuple ()
     #with multiple return value
-        #using tuple: fn function_name() -> (type_name, type_name, ...) { return (value, value, ...) }
-    #with parameter: fn function_name(parameter_name: type_name, parameter_name: type_name){ statements; }
+        #using tuple: fn function_name() -> (TypeName, TypeName, ...) { return (value, value, ...) }
+    #with parameter: fn function_name(parameter_name: TypeName, parameter_name: TypeName){ statements; }
 #Call
     #basic: function_name()
     #with parameter: function_name(value, value)
@@ -620,10 +620,10 @@ Loop
     zero index
     tuple can contain other tuples
 #Definition:
-    let tuple_name: (type_name, type_name) = (value, value);
+    let tuple_name: (TypeName, TypeName) = (value, value);
     let tuple_name: (i32, f64, u8) = (500, 6.4, 1);
 #One element tuple:
-    let tuple_name: (type_name,) = (value,);
+    let tuple_name: (TypeName,) = (value,);
     let tuple_name: (i32,) = (500,);
 #Pattern matching for destructuring tuple:
     let (x, y, z) = tuple_name;
@@ -644,7 +644,7 @@ Loop
         the program resulted in a runtime error and didn’t exit successfully
         (Rust will panic).
 #Definition
-    #with type annotation: let array_name: [type_name; array_length] = [value, value, value];
+    #with type annotation: let array_name: [TypeName; array_length] = [value, value, value];
     #with type annotation: let array_name: [i32; 3] = [7,7,7];
     #without type annotation: let array_name = [value, value, value];
     #without type annotation: let array_name = [7,7,7];
@@ -876,11 +876,11 @@ Loop
     #declaration:
         #basic struct:
             struct StructName {
-                field_name1: type_name,
-                field_name2: type_name,
+                field_name1: TypeName,
+                field_name2: TypeName,
             }
         #tuple struct:
-            struct StructName(type_name, type_name);
+            struct StructName(TypeName, TypeName);
         #unit struct:
             struct StructName;
     #create immutable struct:
@@ -916,7 +916,7 @@ Loop
         let field_name2 = value;
         let struct_variable = StructName {field_name1, field_name2};    //will be automatically set using the variables above
     }
-    fn build_struct(field_name1: type_name) -> StructName {
+    fn build_struct(field_name1: TypeName) -> StructName {
         StructName {
             //field_name1 below will be automatically set using the argument passed into this factory function
             //    because the parameter and the struct field has the same type and name 
@@ -978,7 +978,7 @@ Loop
 #Definition
     impl Item {
         //borrow using immutable reference
-        fn get_data(&self) -> type_name {
+        fn get_data(&self) -> TypeName {
             self.data;
         }
 
@@ -988,7 +988,7 @@ Loop
         }
 
         //takes ownership of the item
-        fn takes_ownership(self) -> type_name {
+        fn takes_ownership(self) -> TypeName {
             //usually done when transforming the item into another item
             //or any other operation that renders the calling item invalid
             return value;
@@ -1080,6 +1080,8 @@ Loop
         WebEvent::KeyPress('x').call();
 
 #--------------------------------------------------------------------------------
+#Common Monad
+
 #Option Enum
     Option enum is included in the prelude
         you don’t need to bring it into scope explicitly
@@ -1100,6 +1102,85 @@ Loop
             Some(i) => Some(i + 1),
         }
     }
+#Map using the map combinator
+    let out: Option<i32> = option_u32.map(|value| value as i32);
+#Flatmap using the and_then combinator (for when the function also return Option)
+    let out: Option<i32> = option_u32.and_then(|value| Some(value as i32));
+
+#Result Enum
+    Result enum is also included in the prelude
+    Result also have map and and_then (flat map) combinator
+#Definition
+    enum Result<T,E> {
+        Ok(T)
+        Err(E)
+    }
+#Result as main function return value
+    fn main() -> Result<(), ParseIntError> {}
+    fn main() -> Result<(), Box<dyn Error>> {
+#Result alias idiom
+    type AliasedResult<T> = Result<T, SomeError>;
+    //example: io::Result is an alias for Result<T, IoError>
+#Iterating over Result
+    #note:
+        an Iter::map operation might fail
+            let strings = vec!["tofu", "93", "18"];
+            let numbers: Vec<_> = strings
+                .into_iter()
+                .map(|s| s.parse::<i32>())  //will fail when parsing tofu
+                .collect();
+            //Results: [Err(ParseIntError { kind: InvalidDigit }), Ok(93), Ok(18)]
+        and there are strategies for handling this
+        we can use the strategies here for Option too
+    #Ignore the failed items with filter_map()
+        let numbers: Vec<_> = strings
+            .into_iter()
+            .map(|s| s.parse::<i32>()).filter_map(Result::ok)
+            .collect();
+        //Results: [93, 18]
+    #Fail the entire operation with collect()
+        let numbers: Result<Vec<_>, _> = strings
+            .into_iter()
+            .map(|s| s.parse::<i32>())
+            .collect();
+        //note: Result implements FromIter so that a vector of results (Vec<Result<T, E>>)
+        //  can be turned into a result with a vector (Result<Vec<T>, E>).
+        //  Once an Result::Err is found, the iteration will terminate.
+    #Collect all valid values and failures with partition()
+        let (numbers, errors): (Vec<_>, Vec<_>) = strings
+            .into_iter()
+            .map(|s| s.parse::<i32>()).partition(Result::is_ok);
+        //Numbers: [Ok(93), Ok(18)]
+        //Errors: [Err(ParseIntError { kind: InvalidDigit })]
+    #Collect and unwrap all valid values and failures with partition()
+        let (numbers, errors): (Vec<_>, Vec<_>) = strings
+            .into_iter()
+            .map(|s| s.parse::<i32>()).partition(Result::is_ok);
+        let numbers: Vec<_> = numbers.into_iter().map(Result::unwrap).collect();
+        let errors: Vec<_> = errors.into_iter().map(Result::unwrap_err).collect();
+        //Numbers: [93, 18]
+        //Errors: [ParseIntError { kind: InvalidDigit }]
+
+
+#Interaction between different Option and Result types
+    Sometimes an Option needs to interact with a Result,
+        or a Result<T, Error1> needs to interact with a Result<T, Error2>.
+        In those cases, we want to manage our different error types
+        in a way that makes them composable and easy to interact with.
+#Embedding
+    #note: the most basic way of handling mixed error types is to just embed them in each other
+    #example:
+        fn double_first(vec: Vec<&str>) -> Option<Result<i32, ParseIntError>> { //embed Result inside Option
+            vec.first().map(|first| { first.parse::<i32>().map(|n| 2 * n) })
+        }
+#Pulling Result out of Option
+    #example:
+        fn double_first(vec: Vec<&str>) -> Result<Option<i32>, ParseIntError> {
+            let opt = vec.first().map(|first| { first.parse::<i32>().map(|n| 2 * n) });
+            opt.map_or(Ok(None), |r| r.map(Some))
+        }
+#Defining an error type??? (TODO)
+    Sometimes it simplifies the code to mask all of the different errors with a single type of error.
 
 #--------------------------------------------------------------------------------
 #Pattern Matching
@@ -1115,6 +1196,8 @@ Loop
         and the code that should be run if the value given to the beginning of the match expression fits that arm’s pattern
     Match must have collectively exhaustive patterns in its arms (or Rust will throw compile error)
     You can return early in a function from its match expression
+        If you have a nested match expression,
+        you might be able to simplify it using early return
 #Example
     let some_u8_value = 0u8;
     match some_u8_value {
@@ -1127,14 +1210,13 @@ Loop
         },
         _ => (),                                            //this will do nothing (it'll only return the unit type value)
     }
-#Example
+#Example of Early Return
     fn read_username_from_file() -> Result<String, io::Error> {
         let f = File::open("hello.txt");
         let mut f = match f {           //the result of match evaluates to a value
             Ok(file) => file,
             Err(e) => return Err(e),    //you can return early from a match expression
         };
-
         let mut s = String::new();
         match f.read_to_string(&mut s) {
             Ok(_) => Ok(s),
@@ -1584,30 +1666,421 @@ Loop
             }
 
 #--------------------------------------------------------------------------------
+#Generic
+    Generic type parameter names convention in Rust:
+        are short, often just a letter, usually T
+        is CamelCase
+    We pay no runtime cost for using generics in Rust
+        because Rust perform monomorphization of the code that is using generics at compile time.
+    Monomorphization: the process of turning generic code into specific code
+        by code generation (filling in the concrete types that are used when compiled).
+        This expands the generic definition of Option<T> into Option_i32 and Option_f64,
+        thereby replacing the generic definition with the specific ones
+#Usage
+    You don't need to annotate generic type parameter when it can be inferred:
+        let option_bool = Option(true)  //no need for `let option_bool: Option<bool> = Option(true)`
+    Function or method sometimes need to have their type parameter explicitly specified
+        we can do this using the turbofish syntax:
+        function_name::<f32, i32>(x, y)
+        item.method_name::<f32, i32>(x, y)
+#Function
+    fn function_name<T,U>(parameter_name: T, parameter_name: U) -> U { expression }
+#Struct
+    struct Point<T,U> { x: T, y: U }
+#Enum
+    enum Option<T> { Some(T), None }
+    enum Result<T, E> {
+        Ok(T),
+        Err(E),
+    }
+#Method
+    #for: struct Point<T, U> {x: T, y: U}
+    #concrete method with generic struct
+        impl Point<f32, i32> { fn method_name() {} }
+    #generic method with generic struct
+        impl<T, U> Point<T, U> {
+            fn method_name(&self) -> &T { &self.x }
+        }
+    #generic method with generic struct and generic method parameter and return type
+        impl<T, U> Point<T, U> {
+            fn mixup<V, W>(self, other: Point<V, W>) -> Point<T, W> {
+                Point { x: self.x, y: other.y }
+            }
+        }
+#Trait
+    struct Empty; struct Null;          //non-copyable types.
+    trait DoubleDrop<T> {               //a trait generic over T
+        fn double_drop(self, _: T);
+    }
+    impl<T, U> DoubleDrop<T> for U {    //implement DoubleDrop for any generic parameter T and caller U
+        fn double_drop(self, _: T) {}   //takes ownership of both passed arguments, deallocating both.
+    }
+    fn main() {
+        let empty = Empty;
+        let null  = Null;
+        empty.double_drop(null);        //deallocate empty and null.
+    }
+
+
+#--------------------------------------------------------------------------------
+#Traits
+    are similar to interfaces in other languages, although traits are more powerful
+    Trait definitions are a way to group method signatures together to define a set of behaviors necessary to accomplish some purpose.
+        A type’s behavior consists of the methods we can call on that type.
+        Different types share the same behavior if we can call the same methods on all of those types.
+    we can implement a trait on a type only if either the trait or the type is local to our crate
+        we can’t implement external traits on external types
+        This restriction is part of a property of programs called coherence,
+        and more specifically the orphan rule, so named because the parent type is not present.
+        This rule ensures that other people’s code can’t break your code and vice versa.
+        Without the rule, two crates could implement the same trait for the same type,
+        and Rust wouldn’t know which implementation to use.
+#Defining
+    pub trait Summary {
+        fn summarize(&self) -> String;
+        fn function_with_default_implementation(&self) -> String {
+            //to add default implementation, just add a function body
+            //default implementation can be overriden when implementing trait on a type
+
+            self.summarize
+            //default implementations can call other methods in the same trait,
+            //  even if those other methods don’t have a default implementation.
+            //it isn’t possible to call the default implementation
+            //  from an overriding implementation of that same method.
+        }
+    }
+#Implement trait on a type
+    pub struct Tweet { pub username: String, pub content: String, pub retweet: bool }
+    impl Summary for Tweet {
+        fn summarize(&self) -> String { format!("{}: {}", self.username, self.content) }
+    }
+#Implement trait with default implementation on a type
+    impl TraitName for StructName {}    //we can use empty impl block if all trait's methods have default implementation
+#Using trait as parameter
+    #with impl trait syntax sugar:
+        pub fn function_name(parameter: impl TraitName) { statements; }
+    #with trait bound syntax:
+        pub fn function_name<T: TraitName>(item: T) { statements; }
+    #with multiple trait parameters:
+        pub fn function_name(parameter: impl TraitName + TraitName) { statements; }
+        pub fn function_name<T: TraitName + TraitName>(item: T) { statements; }
+    #with where clause:
+        //messy without where clause
+            fn function_name<T: Display + Clone, U: Clone + Debug>(t: T, u: U) -> i32 {}
+        //cleaner with where clause
+            fn some_function<T, U>(t: T, u: U) -> i32
+                where T: Display + Clone, U: Clone + Debug {}
+        //very hard without where clause
+        //where clause can apply bounds to arbitrary types likeOption, rather than just to type parameters.
+            trait PrintInOption { fn print_in_option(self); }
+            impl<T> PrintInOption for T where Option<T>: Debug {
+                fn print_in_option(self) { println!("{:?}", Some(self)); }
+            }
+#Using trait as return type
+        fn function_name() -> impl TraitName {}
+    #note:
+        you can only return a single type when using trait as return type
+            e.g. code that returns either a NewsArticle or a Tweet
+            with the return type specified as impl Summary trait wouldn’t work
+            due to restrictions around how the impl Trait syntax is implemented in the compiler.
+        we can use Trait Objects to return values of different types
+#Using trait bounds to conditionally implement generic methods
+    struct Pair<T> {x: T, y: T}
+    impl<T> Pair<T> {
+        //this method will be implemented on Pair with all type
+        fn new(x: T, y: T) -> Self { Self { x, y } }
+    }
+    impl<T: Display + PartialOrd> Pair<T> {
+        //this method will be implemented only if Pair inner type T implements the PartialOrd and Display trait
+        fn cmp_display(&self) {
+            println!("The largest member is {}", if self.x >= self.y { &self.x } else { &self.y });
+        }
+    }
+#Blanket implementations (implement a trait on any type that satisfies the trait bounds)
+    impl<T: Display> ToString for T {
+        //implement the ToString trait for any type T that satisfies the trait bound T:Display
+    }
+#Using empty trait bounds to group types
+    the function below will only take value of type StructName1 or StructName2
+        trait TraitName {}
+        impl TraitName for StructName1 {}
+        impl TraitName for StructName2 {}
+        fn function_name(parameter: impl TraitName) { statements; }
+    Eq and Ord are examples of empty bounds from the std library.
+
+#New Type Idiom
+    newtype idiom gives compile time guarantees that the right type of value is supplied to a program.
+    you can use this idiom for example to supply unit of measures
+#Example
+    struct Years(i64); struct Days(i64);
+    impl Years { pub fn to_days(&self) -> Days { Days(self.0 * 365)} }
+    impl Days { pub fn to_years(&self) -> Years { Years(self.0 / 365) } }
+    fn old_enough(age: &Years) -> bool {    //this will guarantee that the value supplied is of type Years
+        age.0 >= 18                         //use tuple syntax to obtain the newtype's value as the base type
+    }
+    fn main() {
+        let age = Years(5); let age_days = age.to_days();
+        println!("{}", old_enough(&age));                   //OK
+        println!("{}", old_enough(&age_days.to_years()));   //OK
+        println!("{}", old_enough(&age_days));              //compile error because the type supplied is Days
+    }
+
+#--------------------------------------------------------------------------------
+#Associated Types
+    struct Container(i32, i32);
+    trait Contains {    //A trait which checks if 2 items are stored inside of container.
+        type A; type B; //Define associated types
+        fn contains(&self, _: &Self::A, _: &Self::B) -> bool;
+        fn first(&self) -> i32;
+        fn last(&self) -> i32;
+    }
+    impl Contains for Container {
+        type A = i32; type B = i32;
+        // `&Self::A` and `&Self::B` are also valid here.
+        fn contains(&self, x: &i32, y: &i32) -> bool {
+            (&self.0 == x) && (&self.1 == y)
+        }
+        fn first(&self) -> i32 { self.0 }
+        fn last(&self) -> i32 { self.1 }
+    }
+    fn difference<C: Contains>(container: &C) -> i32 {
+        container.last() - container.first()
+
+        //without associated types, we'll need to define this function in a more complicated way:
+        //  fn difference<A, B, C>(container: &C) -> i32 where C: Contains<A, B> {
+    }
+    fn main() {
+        let x = 3; let y = 10; let container = Container(x, y);
+        println!("Does container contain {} and {}: {}", &x, &y, container.contains(&x, &y));
+        println!("The difference is: {}", difference(&container));
+    }
+
+#--------------------------------------------------------------------------------
+#Lifetimes
+    every reference in Rust has a lifetime (the scope for which that reference is valid).
+    names of lifetime parameters
+        must start with an apostrophe (') and
+        are usually all lowercase and very short.
+        Most people use the name 'a
+    similar to generic
+        rather than ensuring that a type has the behavior we want,
+            lifetimes ensure that references are valid as long as we need them to be
+    similar to type
+        lifetimes are often implicit and inferred
+        we must annotate lifetimes when the lifetimes of references could be related in a few different ways
+            (we must annotate types when multiple types are possible)
+    Rust compiler has a borrow checker that compares scopes to determine whether all borrows are valid
+    Ultimately, lifetime syntax is about connecting the lifetimes
+        of various parameters and return values of functions.
+        Once they’re connected, Rust has enough information to allow memory-safe operations and
+        disallow operations that would create dangling pointers or otherwise violate memory safety.
+
+#Dangling reference
+    The main aim of lifetimes is to prevent dangling references
+        which is an attempt to use a reference whose value has gone out of scope (borrowing dropped value)
+        which causes the program to reference data other than the data it’s intended to reference
+    When returning a reference from a function,
+        the lifetime parameter for the return type needs to match the lifetime parameter for one of the parameters.
+        If not, this means that it must refer to a value created within this function,
+        which would be a dangling reference because the value will go out of scope at the end of the function
+        the best fix would be to return an owned data type rather than a reference
+        so the calling function is then responsible for cleaning up the value
+    #illustration
+        {
+            let r;                // ──────┬─'a //note that 'a and 'b lifetimes
+            {                     //       │    //  starts at variable declaration
+                let x = 5;        // ─┬─'b │    //  and not block opening
+                r = &x;           //  │    │
+            }                     // ─┘    │    //while value goes out of scope at the end of scope (when it's dropped)
+            println!("r: {}", r); // ──────┘    //  reference goes out of scope the last time it is used
+        }
+    #note:
+        At compile time, Rust
+            compares the size of the two lifetimes
+            sees that r has a lifetime of 'a but that it refers to memory with a lifetime of 'b.
+            rejects the program because 'b is shorter than 'a
+                (r outlives/lives longer than x)
+                (x has smaller lifetime than r)
+                because the subject of the reference doesn’t live as long as the reference
+#Valid reference
+    #illustration
+        {
+            let x = 5;            // ──────┬─'b
+            let r = &x;           // ─┬─'a │
+            println!("r: {}", r); // ─┘    │
+        }                         // ──────┘
+    #note: valid reference because the data has a longer lifetime than the reference
+
+#Lifetime Annotation Syntax
+    &i32        // a reference
+    &'a i32     // a reference with an explicit lifetime
+    &'a mut i32 // a mutable reference with an explicit lifetime
+#Lifetime Annotations in Function Signatures
+    #example of generic lifetimes parameters and return values
+        fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {     //'a in this context is called the generic lifetime parameter
+            if x.len() > y.len() { x } else { y }               //  and it will be substituted with a concrete lifetime 
+        }                                                       //  every time the function is called
+        fn main() {
+            let s1 = String::from("long string is long");
+            {
+                let s2 = String::from("xyz");                   //the concrete lifetime of s2
+                let result = longest(s1.as_str(), s.as_str());  //  will be passed to this function
+                println!("The longest string is {}", result);   //  because it overlaps and is smaller with s1 lifetime
+            }
+        }
+    #note:
+        The function takes two parameters which live at least as long as lifetime 'a.
+        The returned value from the function will live at least as long as lifetime 'a.
+            In practice, this means that the lifetime of the reference returned by the longest function
+            is the same as the smaller of the lifetimes of the references passed in.
+        The lifetimes might be different each time the function is called
+            the function doesn’t know exactly how long x and y will live,
+            only that some scope can be substituted for 'a that will satisfy this signature.
+    #dangling reference example
+        fn main() {
+            let string1 = String::from("long string is long"); let result;
+            {
+                let string2 = String::from("xyz");
+                result = longest(string1.as_str(), string2.as_str());   //if no concrete lifetime can be supplied,
+            }                                                           //  then Rust will raise compile error
+            println!("The longest string is {}", result);
+        }
+#Lifetime Annotations in Struct Definitions
+        So far, we’ve only defined structs to hold owned types.
+        It’s possible for structs to hold references,
+            but we would need to add a lifetime annotation
+            on every reference in the struct’s definition.
+    #example: struct ImportantExcerpt<'a> { part: &'a str }
+    #note: this annotation means an instance of ImportantExcerpt can’t outlive the reference it holds in its `part` field
+#Lifetime Annotations in Method Definitions
+    #example:
+        impl<'a> ImportantExcerpt<'a> {
+            fn level(&self) -> i32 { 3 }
+        }
+    #note:
+        Lifetime names for struct fields always need to be declared
+            after the impl keyword and then used after the struct’s name, because those lifetimes are part of the struct’s type.
+        Lifetime annotations aren’t always necessary in method signatures
+            because of the lifetime elision rules.
+
+#The static lifetime ('static)
+    means that this reference can live for the entire duration of the program
+    All string literals have static lifetime:
+        let s: &'static str = "I have a static lifetime.";
+    When you see error messages suggesting that you use the 'static lifetime
+        think about whether the reference you have
+            actually lives the entire lifetime of your program or not.
+        consider whether you want it to live that long, even if it could.
+        Most of the time, the problem results from
+            attempting to create a dangling reference
+            or a mismatch of the available lifetimes.
+        In such cases, the solution is fixing those problems, not specifying the 'static lifetime.
+
+#Lifetime Elision Rules
+    are patterns programmed into Rust’s analysis of references.
+    aren’t rules for programmers to follow
+    are a set of particular cases that the compiler will consider,
+        and if your code fits these cases, you don’t need to write the lifetimes explicitly.
+    it’s possible that more deterministic patterns will emerge and be added to the compiler.
+        In the future, even fewer lifetime annotations might be required.
+    If Rust deterministically applies the rules but there are still references for which it can’t figure out lifetimes,
+        the compiler will give you an error that you can resolve by adding the lifetime annotations
+        that specify how the references relate to each other.
+    Lifetimes on
+        function or method parameters are called input lifetimes
+        return values are called output lifetimes
+#The rules
+    These rules apply to fn definitions as well as impl blocks
+    - each parameter that is a reference gets its own lifetime parameter
+        fn foo<'a, 'b>(x: &'a i32, y: &'b i32)  //a function with 2 parameters gets 2 separate lifetime parameters
+    - if there's one input lifetime parameter, that lifetime is assigned to all output lifetime parameters
+        fn foo<'a>(x: &'a i32) -> &'a i32.
+    - if there are multiple input lifetime parameters,
+        but one of them is &self or &mut self because this is a method,
+        the lifetime of self is assigned to all output lifetime parameters
+
+#--------------------------------------------------------------------------------
+#Phantom
+    PhantomData vs phantom types
+        A phantom type parameter is simply a type parameter which is never used
+        this often causes the compiler to complain, and the solution is
+        to add a dummy use by way of std::marker::PhantomData
+    A phantom type parameter
+        doesn't show up at runtime
+        is checked statically at compile time
+    Data types can use extra generic type parameters to act as markers or to perform type checking at compile time.
+    These extra parameters hold no storage values, and have no runtime behavior.
+    see The Rustonomicon for more explanation
+
+#--------------------------------------------------------------------------------
+#Testing
+    When we make a new library project with Cargo (cargo new --lib package_name)
+        a test module with a test function in it is automatically generated for us.
+    Tests fail when something in the test function panics
+    Tests module is a regular module that follows the usual visibility rules
+        Because the tests module is an inner module,
+        we need to bring the code under test in the outer module
+        into the scope of the inner module with `use super::*;`
+    For assertions like assert_eq, the values being compared must implement the PartialEq and Debug traits.
+        Because both traits are derivable traits,
+        this is usually as straightforward as adding
+        the #[derive(PartialEq, Debug)] annotation to your struct or enum definition
+
+#Assertions
+    assert!(condition)
+    assert_eq!(left, right)
+    assert_ne!(left, right)
+
+#--------------------------------------------------------------------------------
 #Bookmarks
 
-TODO:
 read and summarize:
     Cargo book -> ,rs.cargo.txt
     rustdoc book -> ,rs.rustdoc.txt
     rustc book -> ,rs.rustc.txt
-
-Rust by Example:
-14 Generics
-
-The Rust Programming Language:
-10.1 Generic Data Types
-
-#Skipped
+Optional:
+    https://www.rust-lang.org/learn
+    the Rustonomicon, Reference, WebAssembly, Command Line book
 
 Rust by Example:
 1.2 Formatted Print
 9.2.2 As input parameters
 12.4 Build Scripts (should be in ,rs.cargo.txt)
+15 Scoping Rules
+16 Traits
+17 macro_rules!
+18 Error Handling
+    18.4.2 - 18.4.5 (to be added) (wait until I understand trait object dynamic dispatch) (see Defining an error type??? above)
+19 Std library types
+20 Std misc
+21 Testing
+22 Unsafe operation
+23 Compatibility
+24 Meta
+
+The Rust Programming Language:
+11.1. How to Write Tests
+
+Rust Functions
+x    #using named tuple: func function_name() -> (name: Type, name: Type, ...) { return (value, value, ...) }
+x  #with optional return value
+x    func function_name() -> Return_Type? { return value }
+x    func function_name() -> (Type, Type, ...)? { return (value, value, ...) }
+x  #with default parameter: func function_name(parameter_name: Type, parameter_name: Type = value){ statements }
+#Variadic function
+x  func function_name(xs: Int...) -> () { print(xs) }; function_name(xs: 1,2,3);
+x  func function_name(_ xs: Int...) -> () { print(xs) }; function_name(1,2,3);
+#Higher-order function:
+x  func function_name(callback: ((Type, Type) -> Type)) -> ((Type) -> Type){ statements }
+#In-out parameters
+x    is a way for a function to have an effect (i.e. changing a variable value) outside of the scope of its body
+x  func function_name(parameter_name: inout Type, parameter_name: inout Type){ statements }
+x  function_name(&parameter_name, &parameter_name)
 
 
-fn print_type_name_of<T>(_: T) {
-    println!("{}", unsafe { std::intrinsics::type_name::<T>() })
+
+fn print_TypeName_of<T>(_: T) {
+    println!("{}", unsafe { std::intrinsics::TypeName::<T>() })
 }
 
 Create an integer in the heap: Box::new(3)

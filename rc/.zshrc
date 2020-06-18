@@ -100,7 +100,7 @@ source $ZSH/oh-my-zsh.sh
 
 bindkey -v
 bindkey '^R' history-incremental-search-backward
-alias shrc="vim ~/.zshrc"
+alias shrc="code ~/.zshrc"
 
 export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
@@ -109,5 +109,12 @@ export LC_ALL=en_US.UTF-8
 export GOPATH=$HOME/go
 export PATH=$GOPATH/bin:$PATH
 
-alias cdlendingapp="cd $GOPATH/src/github.com/dhanapala-id/lendingapp/"
-alias cddol="cd $GOPATH/src/github.com/dhanapala-id/dol"
+alias g="git"
+alias los="cd $GOPATH/src/github.com/dhanapala-id/lendingapp/"
+alias dol="cd $GOPATH/src/github.com/dhanapala-id/dol"
+alias ddk="cd $GOPATH/src/github.com/dhanapala-id/dol"
+
+alias u1="go run /Users/nakama/go/src/github.com/dhanapala-id/lendingapp/cmd/lendingapp"
+alias u2="go run /Users/nakama/go/src/github.com/dhanapala-id/lendingapp/cmd/nsq"
+alias u3="go run /Users/nakama/go/src/github.com/dhanapala-id/dol/cmd/dol"
+alias u3="go run /Users/nakama/go/src/github.com/dhanapala-id/dol/cmd/nsq"

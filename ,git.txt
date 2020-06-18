@@ -28,6 +28,12 @@
 git config --global alias.z push
 git config --global alias.l pull
 git config --global alias.s status
+git config --global alias.f fetch
+git config --global alias.t stash
+git config --global alias.ts 'stash save'
+git config --global alias.tl 'stash list'
+git config --global alias.ta 'stash apply'
+git config --global alias.tp 'stash pop'
 git config --global alias.co checkout
 git config --global alias.cm commit
 git config --global alias.b branch
@@ -40,6 +46,8 @@ git config --global alias.a 'add -A'
 git config --global alias.com 'checkout master'
 git config --global alias.mom 'merge origin/master'
 git config --global alias.rsh 'reset --hard'
+git config --global alias.rshH 'reset --hard HEAD'
+git config --global alias.rshB 'reset --hard HEAD~'
 git config --global alias.ccr 'commit --allow-empty -m "[ci enable][run test]"'
 
 #-----------------------------------------------------------------------------------

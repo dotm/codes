@@ -91,6 +91,7 @@ Host *
 ```
 4. ssh-add -K ~/.ssh/id_rsa
 5. Add SSH to GitHub
+  cat ~/.ssh/id_rsa.pub
 
 #Change https to SSH in local repo
 open .git/config

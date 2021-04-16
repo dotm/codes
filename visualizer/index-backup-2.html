@@ -1,0 +1,139 @@
+<style>
+    #thefile {
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        z-index: 100;
+    }
+
+    #canvas {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    audio {
+        position: fixed;
+        left: 10px;
+        bottom: 10px;
+        width: calc(100% - 20px);
+    }
+</style>
+<div id="content">
+    <input type="file" id="thefile" accept="audio/*" />
+    <canvas id="canvas"></canvas>
+    <audio id="audio" controls></audio>
+</div>
+<script>
+    window.onload = function() {
+    
+    var file = document.getElementById("thefile");
+    var audio = document.getElementById("audio");
+    
+    function getSwellValue(dataArray){
+        var bufferLength = dataArray.length
+        var limitBeforeLogScale = bufferLength/64
+        var limitHighFilterIndex = Number.MAX_SAFE_INTEGER
+        if (dataArray.length > 500) {
+            var percentageOfFrequencyToKeep = 0.05
+            limitHighFilterIndex = dataArray.length * percentageOfFrequencyToKeep
+        }
+
+        var max = 0
+        var sum = 0
+        for (var i = 0; i < bufferLength; i++){
+            if (i > limitHighFilterIndex){continue}
+
+            if (i < limitBeforeLogScale){
+                max += 255
+                sum += dataArray[i]
+            }else{
+                var logScaling = Math.pow(((bufferLength - i) / bufferLength), 1) //as index/frequency rises, logScaling value is lowered
+                max += 255 * logScaling
+                sum += dataArray[i] * logScaling
+            }
+        }
+
+        return sum/max
+    }
+    function getDeltaOfElements(arr1, arr2, index){
+        return Math.abs(arr1[index] - arr2[index])
+    }
+    function isTransient(arr1, arr2){
+        var transientSensitivity0 = 60;
+        var transientSensitivity1 = 50;
+        var delta0 = getDeltaOfElements(arr1, arr2, 0)
+        var delta1 = getDeltaOfElements(arr1, arr2, 1)
+        //console.log(arr2) //kodok
+        return (delta0 > transientSensitivity0) || (delta1 > transientSensitivity1);
+    }
+
+    file.onchange = function() {
+        var files = this.files;
+        audio.src = URL.createObjectURL(files[0]);
+        audio.load();
+        audio.play();
+        var context = new AudioContext();
+        var src = context.createMediaElementSource(audio);
+        var analyser = context.createAnalyser();
+
+        var canvas = document.getElementById("canvas");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        var ctx = canvas.getContext("2d");
+
+        src.connect(analyser);
+        analyser.connect(context.destination);
+
+        analyser.fftSize = 1024; //32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768
+
+        var bufferLength = analyser.frequencyBinCount;
+
+        var dataArray = new Uint8Array(bufferLength);
+
+        var WIDTH = canvas.width;
+        var HEIGHT = canvas.height;
+
+        var barWidth = (WIDTH / bufferLength);
+        var barHeight;
+        var x = 0;
+
+        function renderFrame() {
+            requestAnimationFrame(renderFrame);
+
+            x = 0;
+
+            var oldDataArray = dataArray.slice(); //copy values
+            analyser.getByteFrequencyData(dataArray);
+
+            ctx.fillStyle = "#000";
+            ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+            if (!audio.paused){
+                // console.log(dataArray)
+                console.log(getSwellValue(dataArray))
+                if (isTransient(oldDataArray, dataArray)){
+                    console.log("transient")
+                }
+            }
+            for (var i = 0; i < bufferLength; i++) {
+                barHeight = dataArray[i];
+                
+                var r = barHeight + (25 * (i/bufferLength));
+                var g = 250 * (i/bufferLength);
+                var b = 50;
+
+                ctx.fillStyle = "rgb(" + r + "," + g + "," + b + ")";
+                ctx.fillRect(x, HEIGHT - barHeight, barWidth, barHeight);
+
+                x += barWidth + 1;
+            }
+        }
+
+        audio.play();
+        renderFrame();
+    };
+};
+</script>

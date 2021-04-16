@@ -3,10 +3,11 @@
     #you can insert fallback content here for browsers that don't support canvas
   </canvas>
 #Checking support
-  create a canvas
-  get a reference to the canvas
-  try to get the rendering context
-    if (canvas.getContext){ start drawing } else { canvas-unsupported code here }
+  if (canvas.getContext){
+    //start drawing
+  } else {
+    //canvas-unsupported code here
+  }
 #Start drawing
   you can wrap all this script in a function for later use ( usually named draw() )
   or in IIFE to avoid polluting global namespace

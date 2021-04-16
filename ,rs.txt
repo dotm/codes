@@ -2014,6 +2014,12 @@ Loop
 
 #--------------------------------------------------------------------------------
 #Testing
+    A test in Rust is a function that’s annotated with the test attribute:
+        #[test]
+        fn function_name() {}
+    When you run your tests with the cargo test command,
+        Rust builds a test runner binary that runs the functions annotated with the test attribute
+        and reports on whether each test function passes or fails.
     When we make a new library project with Cargo (cargo new --lib package_name)
         a test module with a test function in it is automatically generated for us.
     Tests fail when something in the test function panics
@@ -2029,7 +2035,58 @@ Loop
 #Assertions
     assert!(condition)
     assert_eq!(left, right)
-    assert_ne!(left, right)
+    assert_ne!(left, right) //not equal
+#Assert with failure message: additional arguments are passed along to the format! macro
+    assert!(condition, "add custom failure message here {}", variable_name)
+    assert_eq!(left, right, "add custom failure message here {}", variable_name)
+
+#should_panic macro
+    basic:
+        #[test] #[should_panic]
+        fn function_name() {}
+    note:
+        To make should_panic tests more precise,
+        we can add an optional expected parameter to the should_panic attribute.
+        The test harness will make sure that the failure message contains the provided text.
+    with expected parameter:
+        #[test] #[should_panic(expected = "the panic must include this string as substring")]
+        fn function_name() {}
+
+#Example unit test
+    pub struct Guess { value: i32 }
+    impl Guess {
+        pub fn new(value: i32) -> Guess {
+            if value < 1 || value > 100 { panic!("Guess value must be between 1 and 100, got {}.", value); }
+            Guess { value }
+        }
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+
+        #[test] #[should_panic]
+        fn greater_than_100() {
+            Guess::new(200);
+        }
+    }
+
+#Using Result<T, E> in Tests
+    Writing tests so they return a Result<T, E> enables you
+        to use the question mark operator in the body of tests,
+        which can be a convenient way to write tests that should fail
+        if any operation within them returns an Err variant.
+    You can’t use the #[should_panic] annotation on tests that use Result<T, E>
+        instead, you should return an Err value directly when the test should fail
+#Example
+    #[cfg(test)]
+    mod tests {
+        #[test]
+        fn it_works() -> Result<(), String> {
+            if 2 + 2 == 4 { Ok(()) }
+            else { Err(String::from("two plus two does not equal four")) }
+        }
+    }
 
 #--------------------------------------------------------------------------------
 #Bookmarks

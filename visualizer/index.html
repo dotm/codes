@@ -1,0 +1,190 @@
+<div id="content">
+    <input type="file" id="thefile" accept="audio/*" />
+    <audio id="audio" controls></audio>
+    <canvas id="canvas"></canvas>
+</div>
+<style>
+    #thefile {
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        z-index: 1;
+    }
+    
+    body {
+        padding: 0;
+        margin: 0;
+    }
+
+    canvas {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+    }
+
+    audio {
+        position: fixed;
+        right: 10px;
+        top: 10px;
+        width: 30%;
+        z-index: 1;
+    }
+</style>
+
+<script>
+window.onload = function() {
+    var file = document.getElementById("thefile");
+    var audio = document.getElementById("audio");
+
+    file.onchange = function() {
+        var files = this.files;
+        audio.src = URL.createObjectURL(files[0]);
+        audio.load();
+        audio.play();
+        var context = new AudioContext();
+        var src = context.createMediaElementSource(audio);
+        var analyser = context.createAnalyser();
+
+        src.connect(analyser);
+        analyser.connect(context.destination);
+
+        analyser.fftSize = 2048; //32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768
+
+        var bufferLength = analyser.frequencyBinCount;
+
+        var dataArray = new Uint8Array(bufferLength);
+
+        /* Start Drawing */
+        var canvas = document.getElementById('canvas');
+
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+
+        var dynamicConfig = {
+            backgroundColor: 'rgba(0, 0, 0, 1)',
+            frequencyColor: 'white',
+            brandPrimaryColor: 'black',
+            brandSecondaryColor: 'white',
+            rectangleTiltAngle: (33 * Math.PI / 180), //33 degrees
+        }
+
+        var canvas = document.getElementById('canvas');
+        var c = canvas.getContext('2d');
+
+        function drawThreeRectangles(c, centerX, centerY, rectWidth, rectHeight, rectCenterXTop, rectCenterXSpacing, rectCenterYTop, rectCenterYSpacing, rotationAngle) {
+            for (let i = 0; i < 3; i++) {
+                const rectCenterX = rectCenterXTop + (rectCenterXSpacing * i)
+                const rectCenterY = rectCenterYTop + (rectCenterYSpacing * i)
+                const translationX = centerX - rectCenterX
+                const translationY = centerY - rectCenterY
+                c.translate(translationX, translationY);
+                c.rotate(rotationAngle);
+                c.translate(-translationX, -translationY);
+                c.beginPath();
+                c.rect(centerX, centerY, rectWidth, rectHeight);
+                c.fillStyle = dynamicConfig.brandSecondaryColor;
+                c.fill();
+                c.setTransform(1, 0, 0, 1, 0, 0); //Reset transformation matrix to the identity matrix
+            }
+        }
+
+        function drawScaffold(c, centerX, canvas) {
+            c.beginPath();
+            c.moveTo(centerX, 0);
+            c.lineTo(centerX, canvas.height);
+            c.lineWidth = 3;
+            c.strokeStyle = 'red';
+            c.stroke();
+        }
+
+        function drawAllFrequencyBars(c, centerX, centerY, radius) {
+            analyser.getByteFrequencyData(dataArray)
+            for (let i = 0; i < radius; i++) {
+                let byteValue = 0
+                if (typeof dataArray[i] !== 'undefined'){
+                    byteValue = dataArray[i + 1] / 255 //bass at the center; adding int to i so that the middle frequency bar has the most value
+                    //byteValue = dataArray[Math.ceil(radius) - i] / 255 // bass at the left and right
+                }
+
+                var frequencyBarXPosition = 0
+                
+                frequencyBarXPosition = centerX + i
+                drawOneFrequencyBar(c, centerX, centerY, radius, frequencyBarXPosition, byteValue)
+                
+                frequencyBarXPosition = centerX - i
+                drawOneFrequencyBar(c, centerX, centerY, radius, frequencyBarXPosition, byteValue)
+            }
+        }
+
+        function drawOneFrequencyBar(c, centerX, centerY, radius, frequencyBarXPosition, byteValue) {
+            const distanceXFromCenter = Math.abs(frequencyBarXPosition - centerX)
+            const yOffset = Math.pow((Math.pow(radius, 2) - Math.pow(distanceXFromCenter, 2)), (1 / 2)) //starts from the edges of the circle circumference
+            const yPosition = centerY + yOffset
+            
+            const frequencyBarWidth = 1
+
+            const frequencyBarHeight = getFrequencyBarHeight(frequencyBarXPosition, centerX, radius, byteValue)
+
+            c.beginPath();
+            c.rect(frequencyBarXPosition, yPosition, frequencyBarWidth, frequencyBarHeight);
+            c.fillStyle = dynamicConfig.frequencyColor;
+            c.fill();
+        }
+        function getFrequencyBarHeight(frequencyBarXPosition, centerX, radius, byteValue){
+            //byteValue = Math.round(Math.random()) //to test min max. min is the top curve. max is the bottom curve
+            const maxFrequencyHeight = radius * 1.1
+            const scalingOffset = 0
+            const scalingExponent = 0.5
+            const distanceXFromCenter = Math.abs(frequencyBarXPosition - centerX)
+            const scaling = scalingOffset + byteValue - Math.pow(distanceXFromCenter/radius, scalingExponent)
+            return maxFrequencyHeight * scaling
+        }
+
+        function draw() {
+            window.requestAnimationFrame(draw);
+            c.clearRect(0, 0, canvas.width, canvas.height);
+
+            c.fillStyle = dynamicConfig.backgroundColor;
+            c.fillRect(0, 0, canvas.width, canvas.height);
+
+            const centerX = canvas.width * 0.5;
+            const centerY = canvas.height * 0.3;
+            const radius = 200.5; //the diameter should be odd (which is why radius ends with .5)
+
+            const rectWidth = radius / 1.51975684
+            const rectHeight = radius / 8.60585198
+
+            c.beginPath();
+            c.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
+            c.fillStyle = dynamicConfig.brandPrimaryColor;
+            c.fill();
+            c.lineWidth = 1;
+            c.strokeStyle = dynamicConfig.frequencyColor;
+            c.stroke();
+
+            const rectCenterXSpacing = radius / 1.66666667
+            const rectCenterYSpacing = radius / -5.55555556
+
+            const rectCenterXLeftTop = radius / -2
+            const rectCenterYLeftTop = radius / 0.769230769
+            const rectCenterXRightTop = radius / -0.970873786
+            const rectCenterYRightTop = radius / -5.88235294
+
+            drawAllFrequencyBars(c, centerX, centerY, radius)
+            drawThreeRectangles(c, centerX, centerY, rectWidth, rectHeight, rectCenterXLeftTop, rectCenterXSpacing, rectCenterYLeftTop, rectCenterYSpacing, dynamicConfig.rectangleTiltAngle)
+            drawThreeRectangles(c, centerX, centerY, rectWidth, rectHeight, rectCenterXRightTop, rectCenterXSpacing, rectCenterYRightTop, -rectCenterYSpacing, -dynamicConfig.rectangleTiltAngle)
+
+            //drawScaffold(c, centerX, canvas)
+        }
+        draw();
+
+        audio.play();
+    };
+
+    window.onresize = function() {
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+    };
+}
+</script>

@@ -50,6 +50,7 @@ git config --global alias.mom 'merge origin/master'
 git config --global alias.rsh 'reset --hard'
 git config --global alias.rshH 'reset --hard HEAD'
 git config --global alias.rshB 'reset --hard HEAD~'
+git config --global alias.rsB 'reset HEAD~'
 git config --global alias.ccr 'commit --allow-empty -m "[ci enable][run test]"'
 
 #Save and load changes to a file

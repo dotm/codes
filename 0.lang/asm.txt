@@ -1,3 +1,7 @@
+assembly language program instruction consists of two parts: opcode, operand
+opcode = mnemonic = system calls
+instruction = statement
+
 Here we focus on Intel-32 processor architecture (IA-32, i386) with NASM assembler
 For x86_64 cheatsheet, see: https://cs.brown.edu/courses/cs033/docs/guides/x64_cheatsheet.pdf
 For tutorial: https://asmtutor.com/

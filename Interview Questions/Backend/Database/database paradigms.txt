@@ -1,0 +1,96 @@
+## Key value
+Popular DB: Redis, memcached, etcd
+
+one key has one value
+multiple keys creating rows
+
+fast because it can be stored in memory (RAM).
+limited data modelling because no query and joins.
+
+## Wide column
+Popular DB: Cassandra, Apache HBase
+
+multiple keys creating rows
+one row key has multiple columns
+
+can group data in one key
+schemaless
+CQL as replacement for SQL
+no joins
+easier to scale up horizontally
+easier to replicate data across multiple nodes
+decentralized
+high write, low read, low update
+
+Best for:
+- time series (e.g. records from IoT devices)
+- historical records (e.g. watch history)
+
+## Document
+Popular DB: MongoDB, FireStore, DynamoDB, CouchDB
+
+schemaless documents as containers for key-value pairs
+multiple related documents are grouped in collections
+
+fields in a collection can be indexed
+collections can be organized into a logical hierarchy (menu and employee collections embedded below restaurant collection)
+relational-ish data
+no joins
+encourage unnormalized data
+unnormalized means fast read but slower write+update and makes it harder to maintain consistency
+pretty easy to use
+general purpose enough
+
+Best for:
+- Most apps
+- Games
+- IoT
+
+## Relational
+Popular DB: CockroachDB, MariaDB, MySQL, PostgreSQL, SQL Server
+
+SQL (structured query language)
+need to define schema upfront (not ideal for unstructured data)
+with joins using primary and foreign keys
+ACID compliant to ensure data consistency
+
+check CockroachDB for scalable relational database
+
+Best for:
+- banking
+- finance
+
+## Graph
+Popular DB: Neo4j, Dgraph
+
+the data is a node, the relationship between them is edges
+
+simpler query
+better performance on larger data sets
+check this out when your joins start to become too performance intensive
+
+Best for:
+- knowledge graphs
+- recommender system
+
+## Full-text Search Engine
+Popular DB: ElasticSearch, Solr, algolia, meili search
+Usually based on top of Apache Lucene
+
+document oriented database but with inverted index to make searching fast
+
+a lot of overhead and can be expensive
+but can add a lot of value to the UX
+
+Best for:
+- search engine
+
+## Multi-model??
+Popular DB: Fauna DB
+
+multiple paradigms used and hidden behind GraphQL
+ACID compliant
+fast
+
+## Time series [u]
+## Data Warehouse [u]

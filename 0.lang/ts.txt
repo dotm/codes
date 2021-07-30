@@ -1,0 +1,1004 @@
+npm install -g typescript
+tsc test.ts; node test.js; rm test.js
+
+tsc --noEmitOnError test.ts
+tsc --target es2015 test.ts
+  the default target is ES3
+The --strict flag in the CLI, or "strict": true in a tsconfig.json
+  toggles all type-checking on simultaneously, but we can opt out of them individually
+
+#--------------------------------------------------------------------------------
+
+// single line comment
+/* multi line comment */
+
+#Constant declaration:
+  #with type inference: const constant_name = value
+  #with type annotation: const constant_name: type_name = value
+#Variable declaration:
+  #with type inference: let variable_name = value
+  #with type annotation: let variable_name: type_name = value
+#Using closure to declare variable or constant
+    const property: type_name = function(parameter_name: type_name){
+      statements;
+      return value;
+    }(value)
+
+#--------------------------------------------------------------------------------
+#Arithmetic operators: + - * / % ++ --
+  exponentiation: base ** exponent
+#Comparison operators: < <= > >= == !=
+#Strict comparison operators:
+  ===
+    true if the operands are equal and of the same type
+  !==
+    true if the operands are of the same type but not equal, or are of different type.
+#Logical operators: && || !
+  short circuit evaluation
+#Bitwise operators: ~ & | ^ << >> >>>
+#Compound assignment operators
+  every operators above can be compounded with assignment operator (=)
+  for example: a += 3
+
+#Non-null Assertion Operator (Postfix !)
+  function liveDangerously(x?: number | null) {
+    console.log(x!.toFixed()); //no compile error
+  }
+
+#--------------------------------------------------------------------------------
+#Data types
+  #The Primitives:
+    #basic: string number boolean
+    #bigint
+      const x = BigInt(100);
+      const x = 100n;
+    #symbol: used to create a globally unique reference
+      const firstName = Symbol("name");
+      const secondName = Symbol("name");
+      // firstName === secondName will never be true
+    #null
+    #undefined
+  #Builtin Generic Types
+    #Array: type_name[] Array<type_name>
+    #ReadonlyArray: ReadonlyArray<type_name> or `readonly type_name[]`
+      the array value can't be mutated (push, pop, etc.)
+      a readonly array value can't be assigned to a mutable variable
+    #Tuple:
+      #basic: [type_name1, type_name2]
+      #with optional_value: [type_name, optional_type?]
+      #with rest element:
+        [string, number, ...boolean[]]
+        [string, ...boolean[], number]
+        [...boolean[], string, number]
+      #using destructuring on tuple
+        const tuple_name = [value, value]
+        const [variable_name, variable_name] = tuple_name
+    #readonly Tuple
+      #type signature: readonly [type_name1, type_name2]
+      #creation using as const: const tuple_name = [value, value] as const
+    #Set<type_name>
+    #Promise<type_name>
+    #Map<key_type, value_type>
+    #ReturnType<typeof function_name>
+  #any: can be of any type
+  #function: is callable object
+  #object: any value that isn't a primitive
+    object is not the same as the empty object type {} or the global type Object
+    function is object
+      has properties
+      has Object.prototype in the prototype chain
+      is instanceof Object
+      can call Object.keys on function
+      etc.
+  #Union type: type_name1 | type_name2
+  #NaN
+  #void: for function that doesn't return anything
+    contextual typing with a return type of void does not force functions to not return something but any value returned will be ignored
+      example:
+        function higher_order_function(cb: ()=>void ){ statements }
+        let callback: () => return_type
+        higher_order_function(callback) //return value of callback will be ignored
+    but a literal function definition that has a void return type must not return anything
+      function f2(): void { return true } //this is illegal
+      const f3 = function (): void { return true } //this is illegal
+  #unknown: can be of any type (like any), but can't be used to do anything
+  #never
+    some functions never return a value. they throws an exception or terminates execution of the program.
+      function fail(msg: string): never { throw new Error(msg) }
+    never also appears when TypeScript determines there’s nothing left in a union
+      let x: string | number)
+      if (typeof x === "string") { // do something
+      } else if (typeof x === "number") { // do something else
+      } else { x; // has type 'never'!
+      }
+  #Function
+    the global type Function describes properties like bind, call, apply, and others present on all function values
+    values of type Function can always be called and will always return any
+    if you need to accept an arbitrary function but don’t intend to call it, the type () => void is generally safer
+
+#Type alias: type TypeName = type_name
+  #with object type: type TypeName = {optional_property_name?: type_name; property_name: type_name}
+  #with type union: type TypeName = type_name1 | type_name2
+#Type assertions
+  #using as keyword: any_value as type_name
+  #using angle-bracket syntax: <type_name>any_value
+  #double coercion: const a = (value as any) as type_name;
+    TypeScript only allows type assertions which convert to a more specific or less specific version of a type.
+    This rule prevents “impossible” coercions like: const x = "hello" as number;
+    Sometimes this rule can be too conservative and will disallow more complex coercions that might be valid.
+    If this happens, you can use two assertions, first to any or unknown, then to the desired type.
+
+#Falsy values: !!value === false
+  0 NaN "" 0n null undefined
+
+#Literal Types
+  are types that has a more specific value inside a general type
+  constants are automatically assigned a literal type:
+    const constantString = "a"; // here the literal type is "a"
+    //const constantString: "a"
+  variables can also be assigned to a literal type:
+    let alwaysTrue: true
+#combining literal types
+  #with other literal types:
+    let alignment: "left" | "right" | "center"
+  #with non-literal types:
+    let width: number | "auto"
+
+#Literal Types and object property
+  TypeScript assumes that the properties of that object might change values later.
+  So to use a property as a literal type, you can use these 2 methods.
+  The as const suffix acts like const but for the type system.
+    ensuring that all properties are assigned the literal type
+    instead of a more general version like string or number.
+#using literal type as object property
+  const req = { url: "https://example.com", method: "GET" as "GET" };
+#convert object to literal type using const suffix
+  const req = { url: "https://example.com", method: "GET" } as const;
+#convert array to literal type using const suffix
+  const args = [8, 5] as const;
+  function_that_takes_two_parameters(args)
+
+#typeof operator: typeof expression
+  work in an expression context
+#typeof type operator:
+    let x: typeof variable_name
+    let x: typeof obj.property_name
+  work in type context
+#typeof type operator and ReturnType type
+  #basic example:
+    function function_name(): return_type {return value}
+    let variable_name: ReturnType<typeof function_name> //variable_name will be of type return_type
+  #note:
+    when inferring from a type with multiple call signatures (overloaded function)
+    inferences are made from the last signature (presumably the most permissive catch-all case)
+#keyof type operator
+  #with object type will produces a string or numeric literal union of its keys:
+    type Point = { x: number; y: number };
+    type P = keyof Point;
+    let p: P = 'z' //this is illegal because P can only be 'x' or 'y'
+  #with array-ish index signature
+    type Arrayish = { [n: number]: unknown };
+    type A = keyof Arrayish;
+    let a: A //the type of a is number
+  #with map-ish index signature
+    type Mapish = { [k: string]: boolean };
+    type M = keyof Mapish;
+    let m: M //the type of m is string or number because JavaScript object keys are always coerced to a string
+
+#Indexed Access Type
+    this looks up specific property's type on another type
+  #with object property:
+    type Person = { age: number; name: string; alive: boolean };
+    type Age = Person["age"]; //number
+    type I1 = Person["age" | "name"]; //string | number
+    type I2 = Person[keyof Person]; //string | number | boolean
+    type AliveOrName = "alive" | "name";
+    type I3 = Person[AliveOrName]; //string | boolean
+    //below is illegal, change const Alive to type Alive instead
+    const Alive = "alive";
+    type I4 = Person[AliveOrName]; //illegal
+  #with array element using number keyword:
+    const MyArray = [ { name: "Alice", age: 15 } ];
+    type Person = typeof MyArray[number]; //{name: string; age: number}
+    type Age = typeof MyArray[number]["age"]; //number
+    type Age2 = Person["age"]; //number
+  #with generic type:
+    interface Email { message: string; }
+    type MessageOf<T extends { message: unknown }> = T["message"];
+    type EmailMessageContents = MessageOf<Email>;
+
+#Conditional type
+  type NewType = SomeType extends OtherType ? TrueType : FalseType;
+#example usage
+  type NameOrId<T extends number | string> = T extends number ? IdLabel : NameLabel;
+  function createLabel<T extends number | string>(idOrName: T): NameOrId<T> { throw "unimplemented" }
+#Conditional type constraints
+  #example:
+    type MessageOf<T> = T extends { message: unknown } ? T["message"] : never;
+    interface Email { message: string; }
+    interface Dog { bark(): void; }
+    type EmailMessageContents = MessageOf<Email>; // string
+    type DogMessageContents = MessageOf<Dog>; // never
+  #example using Flatten:
+    type Flatten<T> = T extends any[] ? T[number] : T;
+    type Str = Flatten<string[]>; //string // Extracts out the element type
+    type Num = Flatten<number>; //number // Leaves the type alone
+#Inferring Within Conditional Types
+    the inferred Item is only available in the true branch
+  #example using Flatten:
+    type Flatten<Type> = Type extends Array<infer Item> ? Item : Type;
+  #example using ReturnType
+    type ReturnType<Type> = Type extends (...args: never[]) => infer Return ? Return : never;
+#Distributive Conditional Types
+  type ToArray<Type> = Type extends any ? Type[] : never;
+  type StrArrOrNumArr = ToArray<string | number>; //string[] | number[]
+#Non-Distributive Conditional Types
+  type ToArrayNonDist<Type> = [Type] extends [any] ? Type[] : never;
+  type StrOrNumArr = ToArrayNonDist<string | number>; //(string | number)[]
+
+#Mapped Types
+  are generic types which uses a union of PropertyKeys (frequently created via a keyof)
+  to iterate through keys to create a new type
+#basic example:
+  type OptionsFlags<Type> = { [Property in keyof Type]: boolean; }; //turn every keyof Type into a boolean
+  type FeatureFlags = { darkMode: () => void; newHome: () => void; };
+  type FeatureOptions = OptionsFlags<FeatureFlags>;
+  //type FeatureOptions = { darkMode: boolean; newUserProfile: boolean; }
+#Mapping modifier (using - and + with readonly and optional)
+  type CreateMutable<Type> = { -readonly [Property in keyof Type]: Type[Property]; }; // Removes 'readonly' attributes from a type's properties
+  type Concrete<Type> = { [Property in keyof Type]-?: Type[Property]; }; // Removes 'optional' attributes from a type's properties
+  type CreateImmutable<Type> = { +readonly [Property in keyof Type]: Type[Property]; }; // Add 'readonly' attributes from a type's properties
+  type Nullable<Type> = { [Property in keyof Type]+?: Type[Property]; }; // Add 'optional' attributes from a type's properties
+  type CreateImmutable<Type> = { readonly [Property in keyof Type]: Type[Property]; }; // Add 'readonly' attributes from a type's properties
+  type Nullable<Type> = { [Property in keyof Type]?: Type[Property]; }; // Add 'optional' attributes from a type's properties
+#Key remapping using as to rename keys
+  type Getters<Type> = { [Property in keyof Type as `get${Capitalize<string & Property>}`]: () => Type[Property] };
+  interface Person { name: string; age: number; location: string; }
+  type LazyPerson = Getters<Person>;       
+  type LazyPerson = { getName: () => string; getAge: () => number; getLocation: () => string; }
+#Key remapping using as to filter out keys
+  type RemoveKindField<Type> = { [Property in keyof Type as Exclude<Property, "kind">]: Type[Property] }; // Remove the 'kind' property from some Type
+#Key remapping plus conditional type
+  type ExtractPII<Type> = { [Property in keyof Type]: Type[Property] extends { pii: true } ? true : false; };
+  type DBFields = { id: { format: "incrementing" }; name: { type: string; pii: true }; };
+  type ObjectsNeedingGDPRDeletion = ExtractPII<DBFields>;               
+  type ObjectsNeedingGDPRDeletion = { id: false; name: true; }
+
+#Template Literal Types
+  #example
+    type World = "world";
+    type Greeting = `hello ${World}`; //"hello world"
+  #example of union inside interpolation
+    type EmailLocaleIDs = "welcome_email" | "email_heading"; type FooterLocaleIDs = "footer_title" | "footer_sendoff";
+    type AllLocaleIDs = `${EmailLocaleIDs | FooterLocaleIDs}_id`; //"welcome_email_id" | "email_heading_id" | "footer_title_id" | "footer_sendoff_id"
+  #example of multiple interpolation
+    type QualityFactor = "1" | "0.5";
+    type Lang = "en" | "ja" | "pt";
+    type AcceptLanguage = `${Lang};q=${QualityFactor}`; //"en;q=1" | "en;q=0.5" | "ja;q=1" | "ja;q=0.5" | "pt;q=1" | "pt;q=0.5"
+  #example string unions in types
+    type PropEventSource<Type> = {
+      on<Key extends string & keyof Type>
+        (eventName: `${Key}Changed`, callback: (newValue: Type[Key]) => void ): void;
+    };
+    declare function makeWatchedObject<Type>(obj: Type): Type & PropEventSource<Type>;
+    const person = makeWatchedObject({firstName: "Saoirse", lastName: "Ronan", age: 26 });
+    //you can now safely define firstNameChanged, lastNameChanged, ageChanged on person
+    person.on("firstNameChanged", newName => { console.log(`new name is ${newName.toUpperCase()}`) });
+    //newName is automatically inferred to be a string
+#Intrinsic String Manipulation Types
+  #the types
+    Uppercase<StringType>
+    Lowercase<StringType>
+    Capitalize<StringType>
+    Uncapitalize<StringType>
+  #example usage
+    type Greeting = "Hello, world"
+      type ShoutyGreeting = Uppercase<Greeting> // "HELLO, WORLD"
+    type ASCIICacheKey<Str extends string> = `ID-${Uppercase<Str>}`
+      type MainID = ASCIICacheKey<"my_app"> // "ID-MY_APP"
+
+#--------------------------------------------------------------------------------
+Loop
+
+#For loop
+  for (let i = 0; i < array.length; i++){ statements }
+
+#--------------------------------------------------------------------------------
+#Object
+
+#Interfaces
+    interfaces are mostly like type alias using object type
+    use interface until you need to use features from type
+  #defining
+    interface Animal { name: string }
+    type Animal = { name: string }
+  #extending
+    interface Bear extends Animal { honey: boolean }
+    type Bear = Animal & { honey: Boolean }
+  #declaration merging: adding fields to existing interface (can't be done with type alias)
+    interface InterfaceName { property: type_name }
+    interface InterfaceName { new_property: type_name }
+
+#Property modifiers
+  #Optional property: interface InterfaceName { optional_property_name?: type_name; property_name: type_name }
+  #readonly property: interface InterfaceName { readonly property_name: type_name; property_name: type_name }
+    readonly property can still be mutable: obj.readonly_property.child_property++
+    readonly properties can also change via aliasing (see https://www.typescriptlang.org/docs/handbook/2/objects.html)
+  #index signatures: interface StringArray { [index: number]: string; }
+    this is for when you don’t know all the names of a type’s properties ahead of time, but you do know the shape of the values.
+    index signature property type must be either string or number
+      it is possible to support both types of indexers with a caveat (see https://www.typescriptlang.org/docs/handbook/2/objects.html#index-signatures)
+    they also enforce that all properties match their return type
+      interface NumberDictionary {
+        length: number; // ok
+        name: string; // illegal because obj.name is also obj["name"] in JavaScript
+        [index: string]: number; // the above would be fine if we use `string | number` instead of `number`
+      }
+  #readonly index signatures: interface ReadonlyStringArray { readonly [index: number]: string; }
+    this will make it illegal to make an assignment like this: readonly_array[index] = value
+
+#Extending Types
+  interface InterfaceName extends InterfaceName1, InterfaceName2 {
+    property_name: type_name;
+  }
+#Intersection Types
+  type TypeName = TypeName1 & TypeName2
+#Interfaces vs. Intersections
+  the principle difference between the two pattern above is how conflicts are handled
+
+#--------------------------------------------------------------------------------
+#Class
+
+#--------------------------------------------------------------------------------
+#Function
+    first-class object
+    can be overloaded
+    if a parameter type isn’t specified, it’s implicitly any
+    higher order function is used by supplying function type expression as parameter or return type
+  #definition (using both function expression and arrow function)
+    #basic:
+      function function_name(){ statements }
+      let function_name = () => { statements }
+    #with return value: return_type of function with no return value should be void or any
+      function function_name(): return_type { return value }
+      let function_name = (): return_type => value
+      let function_name = (): return_type => { return value }
+    #with parameter:
+      function function_name(parameter_name: type_name, parameter_name: type_name){ statements }
+      let function_name = (parameter_name: type_name, parameter_name: type_name) => { statements }
+    #with object type as parameter:
+      function function_name(object_name: {property_name: type_name; property_name: type_name}){ statements }
+      let function_name = (object_name: {property_name: type_name; property_name: type_name}) => { statements }
+    #with object type as parameter and using destructuring
+      function function_name({property_name, property_name}: {property_name: type_name; property_name: type_name}){ statements }
+      let function_name = ({property_name, property_name}: {property_name: type_name; property_name: type_name}) => { statements }
+    #with object type as parameter and using destructuring for alias (local_name is used inside the function body)
+      function function_name({property_name: local_name}: {property_name: type_name}){ statements }
+      let function_name = ({property_name: local_name}: {property_name: type_name}) => { statements }
+    #with object type as parameter and using destructuring with default values per field and on the whole object
+      function function_name({ property_name1 = "", property_name2 = 0 } = { property_name1: "default when passing no object at all" }) { statements }
+    #with optional parameter:
+      function function_name(parameter_name: type_name, optional_parameter_name?: type_name){
+        if(optional_parameter_name === undefined){ statements }
+        statements
+      }
+      let function_name = (parameter_name: type_name, optional_parameter_name?: type_name) => optional_parameter_name?.method()
+    #with optional property in object parameter:
+      function function_name(object_name: {optional_property_name?: type_name; property_name: type_name}){ statements }
+      let function_name = (object_name: {optional_property_name?: type_name; property_name: type_name}) => { statements }
+    #with optional property in object parameter that has a default value using destructuring:
+      interface InterfaceName {optional_property_name?: type_name; property_name: type_name}
+      function function_name({optional_property_name = default_value, property_name}: ){ statements }
+      let function_name = ({optional_property_name = default_value, property_name}: {optional_property_name?: type_name; property_name: type_name}) => { statements }
+    #with union type as parameter:
+      function function_name(parameter_name: type_name1 | type_name2){ statements }
+      let function_name = (parameter_name: type_name1 | type_name2) => { statements }
+    #with default parameter:
+      function function_name(parameter_name: type_name, parameter_name: type_name = value){ statements }
+    #with multiple return type using union type:
+      function function_name(): type_name1 | type_name2 { return value }
+      let function_name = (): type_name1 | type_name2 => value
+    #with optional return value
+      function function_name(): string | undefined { return value }
+      let function_name = (): string | undefined => value
+    #with multiple return value using tuple:
+      function function_name(): [type_name1, type_name2] { return [value, value] }
+      let function_name = (): [type_name1, type_name2] => [value, value]
+  #call
+    #basic: function_name()
+    #with parameter: function_name(value, value)
+    #with object type as parameter: function_name({property_name: value, property_name: value})
+    #with optional parameter: function_name(value) //the optional_parameter_name can be left undefined
+    #with optional property in object parameter: function_name({property_name: value}) //the optional_property_name can be left undefined
+  #variadic function with rest parameter
+    #definition
+      function function_name(...parameter_name: type_name[]){ statements }
+      let function_name = (...parameter_name: type_name[]) => { statements }
+    #basic call
+      function_name(value, value, value)
+    #with rest arguments using the spread syntax
+      function_name(...array_of_values)
+  #higher-order function:
+    function function_name(
+      callback: (parameter_name: type_name, parameter_name: type_name) => type_name
+    ): (parameter_name: type_name) => type_name
+    { statements }
+  #nested function:
+    function a(){ function b(){ statements } }
+
+#Parameter Destructuring
+  #definition
+    function sum3({ a, b, c }: { a: number; b: number; c: number }) { console.log(a + b + c) }
+  #definition using named type
+    type ABC = { a: number; b: number; c: number };
+    function sum3({ a, b, c }: ABC) { console.log(a + b + c) }
+  #call
+    sum3({ a: 10, b: 3, c: 9 })
+
+#Overloading function
+  //first, write 2 or more overload signatures
+    function function_name(a: type_name): return_type ;
+    function function_name(b: type_name, c: type_name): return_type ;
+  //then, write the implementation
+    function function_name(aOrB: type_name, c: type_name): return_type { return value }
+
+#Declare this manually in a function
+  interface DB { filterUsers(filter: (this: User) => boolean): User[]; }
+#function call
+  const admins = getDB().filterUsers(function (this: User) { return this.admin });
+
+#Call signature
+  we can add property to a callable object (function with property)
+  by using call signature (function type expression can't be used to do this)
+  in call signature, return types are preceded with : instead of =>
+#Example
+  type FunctionWithProperty = {
+    property: type_name;
+    (parameter_name: type_name): return_type;
+  };
+  let fn: FunctionWithProperty = newFunctionWithProperty()
+  console.log(fn.property + fn(6));
+#Construct Signatures
+  functions can also be invoked with the new operator
+    these are called constructors because they usually create a new object
+  write a construct signature by adding the new keyword in front of a call signature:
+#Example
+  type SomeConstructor = { new (s: string): SomeObject; };
+  let c: SomeConstructor
+  new c("hello");
+
+#--------------------------------------------------------------------------------
+#Array
+  #creating homogeneous array:
+    let array_name: type_name[] = [value, value]
+    let array_name: Array<type_name> = [value, value]
+  #creating heterogeneous array:
+    let array_name: (type_name1, type_name2)[] = [value, value]
+    let array_name: Array<type_name1, type_name2> = [value, value]
+
+#--------------------------------------------------------------------------------
+#Destructuring and Spread
+
+#Array destructuring
+  #basic:
+    let input = [1, 2];
+    let [first, second] = input;
+    [first, second] = [second, first]; // swap variables
+    let [, second, , fourth] = [1, 2, 3, 4];
+  #as parameter:
+    function function_name([first, second]: [number, number]) { statements }
+  #with ...:
+    let [first, ...rest] = [1, 2, 3, 4];
+    let [first] = [1, 2, 3, 4];
+#Tuple destructuring
+  let tuple: [number, string, boolean] = [7, "hello", true];
+  let [a, b, c] = tuple;
+  let [a, ...bc] = tuple; // bc: [string, boolean]
+  let [a, b, c, ...d] = tuple; // d: [], the empty tuple
+  let [a] = tuple; // a: number
+  let [, b] = tuple; // b: string
+#Object destructuring
+  #basic:
+    let obj = { a: "foo", b: 12, c: "bar", };
+    let { a, b } = obj;
+    ({ a, b } = { a: "baz", b: 101 });
+  #with ...:
+    let { a, ...passthrough } = obj;
+  #with property renaming:
+    let { a: newName1, b: newName2 } = obj;
+  #with default value:
+    let { a, b = 1001 } = obj; //{ a: string; b?: number }
+
+#Spread
+    spread on object will not spread methods (only properties can be spread)
+  #array:
+    let first = [1, 2];
+    let second = [3, 4];
+    let bothPlus = [0, ...first, ...second, 5];
+  #object:
+    let defaults = { food: "spicy", price: "$$", ambiance: "noisy" };
+    let search = { ...defaults, food: "rich" };
+
+#--------------------------------------------------------------------------------
+#Narrowing: the process of refining types to more specific types
+  #using typeof type guard: typeof variable === ("string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function")
+    function printId(id: number | string) {
+      if (typeof id === "string") { //id here is of type 'string'
+        console.log(id.toUpperCase());
+      } else { //id here is of type 'number'
+        console.log(id);
+      }
+    }
+    function doSomething(x: string | null) {
+      if (x === null) { return } //guard pattern
+      console.log("Hello, " + x.toUpperCase());
+    }
+  #using Truthiness narrowing: !variable
+    this will guard against null and undefined value
+    function multiplyAll(values: number[] | undefined, factor: number): number[] | undefined {
+      if (!values) { return values; }
+      else { return values.map((x) => x * factor); }
+    }
+  #using Equality narrowing
+    you can use equality comparison with type or literal type to narrow down type
+    function function_name(x: string | number | undefined, y: string | boolean | null) {
+      if (x === y) { x.toUpperCase(); y.toLowerCase(); return } //narrowing to string
+      if (x === 0) { x.toExponential() } //narrowing to literal type 0 which is a number
+
+      if (x != null) { console.log("x is not null or undefined") }
+      if (y != undefined) { console.log("y is not null or undefined") }
+    }
+  #using in operator narrowing (check if something has a certain field)
+    type Fish = { swim: () => void };
+    type Dog = { walk: () => void };
+    type Human = { swim?: () => void, walk?: () => void };
+    function move(animal: Fish | Dog | Human) {
+      if ("swim" in animal) { animal.swim() } //animal: Fish | Human
+      else { animal.walk } //animal: Dog | Human
+    }
+  #using instanceof narrowing
+    in JavaScript x instanceof Foo checks whether the prototype chain of x contains Foo.prototype
+    function logValue(x: Date | string) {
+      if (x instanceof Date) { console.log(x.toUTCString()); } //x: Date
+      else { console.log(x.toUpperCase()); } //x: string
+    }
+  #using assignment
+    let x = Math.random() < 0.5 ? 10 : "hello world!";  // x: string | number
+    x = 1; // x: number
+    x = "goodbye!"; // x: string
+  #using type predicates
+    function isFish(pet: Fish | Bird): pet is Fish {
+      return (pet as Fish).swim !== undefined;
+    }
+    isFish(value) ? value.swim() : value.fly()
+
+#Discriminated unions
+  when every type in a union contains a common property with literal types
+  this property is called the discriminant property
+  and TypeScript can use it to narrow out the members of the union
+#Example
+  interface Circle {
+    kind: "circle"; //the discriminant property
+    radius: number;
+  }
+  interface Square {
+    kind: "square";
+    sideLength: number;
+  }
+  type Shape = Circle | Square;
+  function getArea(shape: Shape) {
+    switch (shape.kind) {
+      case "circle": return Math.PI * shape.radius ** 2;
+      case "square": return shape.sideLength ** 2;
+    }
+  }
+
+#The never type
+  When narrowing, you can reduce the options of a union
+  to a point where you have removed all possibilities and have nothing left.
+  In those cases, TypeScript will use a never type to represent a state which shouldn’t exist.
+#Exhaustiveness checking
+    the never type is assignable to every type
+      however, no type is assignable to never (except never itself)
+    you can use narrowing and rely on `never` turning up
+      to do exhaustive checking in a switch statement
+      because it will raise error when every possible case has not been handled.
+  #example:
+    function getArea(shape: Circle | Square | Triangle;) {
+      switch (shape.kind) {
+        case "circle": return Math.PI * shape.radius ** 2;
+        case "square": return shape.sideLength ** 2;
+        default:
+          //this will raise error: Type 'Triangle' is not assignable to type 'never'.
+          const _exhaustiveCheck: never = shape;
+          return _exhaustiveCheck;
+      }
+    }
+
+#--------------------------------------------------------------------------------
+#Generics
+
+#Generic Functions
+  #definition
+    function function_name<TypeParameter, TypeParameter>(parameter_name: TypeParameter, parameter_name: TypeParameter): TypeParameter { return value }
+  #specifying type argument when calling function
+    function_name<type_name1, type_name2>(value, value)
+  #type signature
+    #with the same type parameter names:
+      let function_name: <TypeParameter, TypeParameter>(parameter_name: TypeParameter, parameter_name: TypeParameter) => TypeParameter
+    #with different names:
+      let function_name: <A, B>(parameter_name: A, parameter_name: B) => A
+    #as a call signature of an object literal type:
+      let function_name: { <TypeParameter, TypeParameter>(parameter_name: TypeParameter, parameter_name: TypeParameter): TypeParameter }
+  #with constraints
+    function longest<Type1 extends { length: number }, Type2 extends { length: number }>(a: Type1, b: Type2): Type1 | Type2 { return(a.length >= b.length) ? a : b }
+  #with constraints and interface
+    interface HasLength { length: number }
+    function longest<Type1 extends HasLength, Type2 extends HasLength>(a: Type1, b: Type2): Type1 | Type2 { return(a.length >= b.length) ? a : b }
+#Using Type Parameters in Generic Constraints
+    you can declare a type parameter that is constrained by another type parameter in the same function
+  #example (Key is constrained by Type)
+    function getProperty<Type, Key extends keyof Type>(obj: Type, key: Key) {
+      return obj[key];
+    }
+#type alias of generic function
+  interface GenericIdentityFn { <Type>(arg: Type): Type; }
+  type GenericIdentityFn = <Type>(arg: Type) => Type;
+
+#Generic Object Type: interface InterfaceName<TypeVariable>{ property_name: TypeVariable }
+#Generic Type Alias: type InterfaceName<TypeVariable> = { property_name: TypeVariable }
+  since type alias can describe more than just object type, we can use them like this:
+    type OrNull<TypeVariable> = TypeVariable | null;
+    type OneOrMany<TypeVariable> = TypeVariable | TypeVariable[];
+    type OneOrManyOrNull<TypeVariable> = OrNull<OneOrMany<TypeVariable>>;
+
+#Generic class
+  classes are only generic over their instance side rather than their static side
+    static members can not use the class’s type parameter
+#definition
+  class Box<Type> {
+    contents: Type;
+    constructor(value: Type) { this.contents = value }
+  }
+#Using Class Types in Generics
+    When creating factories in TypeScript using generics, it is necessary to refer to class types by their constructor functions.
+  #example
+    function create<Type>(c: { new (): Type }): Type { return new c() }
+  #more advanced example:
+    class BeeKeeper { hasMask: boolean = true }
+    class ZooKeeper { nametag: string = "Mikle" }
+    class Animal { numLegs: number = 4 }
+    class Bee extends Animal { keeper: BeeKeeper = new BeeKeeper(); }
+    class Lion extends Animal { keeper: ZooKeeper = new ZooKeeper(); }
+    function createInstance<A extends Animal>(c: new () => A): A { return new c(); }
+    createInstance(Lion).keeper.nametag;
+    createInstance(Bee).keeper.hasMask;
+#Relationships Between Classes
+  classes in TypeScript are compared structurally
+    class Point1 { x = 0; y = 0; }
+    class Point2 { x = 0; y = 0; }
+    const p: Point1 = new Point2(); // OK
+  subtype relationships between classes exist even if there’s no explicit inheritance:
+    class Person { name: string; age: number; }
+    class Employee { name: string; age: number; salary: number; }
+    const p: Person = new Employee(); // OK
+
+#--------------------------------------------------------------------------------
+#Modules
+  Modules are executed within their own scope, not in the global scope.
+
+#ES Module Syntax
+  if a file contains a top-level import, export, or await, it is a module
+    otherwise, it is treated as a script whose contents are available in the global scope (and therefore to modules as well).
+  turn your script into a module by adding this on the top of the file:
+    export {}; //a module that exports nothing
+#main export:
+  // @filename: hello.ts
+  export default function helloWorld() { console.log("Hello, world!") }
+  // other file
+  import hello from "./hello.js";
+  hello();
+#export multiple entity:
+  // @filename: maths.ts
+  export var pi = 3.14;
+  export let squareTwo = 1.41;
+  export const phi = 1.61;
+  export class RandomNumberGenerator {}
+  export function absolute(num: number) { return value }
+  // TypeScript export uses the same syntax
+  export type Age = number;
+  export interface InterfaceName {}
+  // other file
+  import { pi, phi, absolute, Age, InterfaceName } from "./maths.js";
+#import with alias:
+  import { symbol_name as alias_name } from "./module.js";
+#multiple import syntax:
+  // @filename: maths.ts
+  export const pi = 3.14;
+  export const phi = 1.61;
+  export default class RandomNumberGenerator {}
+  // @filename: app.ts
+  import RNGen, { phi, pi as π } from "./maths.js";
+#qualified import with alias:
+  // @filename: app.ts
+  import * as math from "./maths.js";
+  // other file
+  console.log(math.pi);
+#import for side effect only:
+  import "./maths.js";
+#import types and interfaces only:
+  import type { Age, InterfaceName } from "./math.js";
+#import with require behavior:
+  import fs = require("fs");
+  const code = fs.readFileSync("hello.ts", "utf8");
+
+#CommonJS Syntax
+  //Identifiers are exported via setting the exports property on a global called module
+    function absolute(num: number) {
+      if (num < 0) return num * -1;
+      return num;
+    }
+    module.exports = {
+      pi: 3.14,
+      squareTwo: 1.41,
+      phi: 1.61,
+      absolute,
+    };
+  //Then these files can be imported via a require statement:
+    const maths = require("maths");
+    maths.pi;
+  //you can also use the destructuring feature
+    const { squareTwo } = require("maths");
+    squareTwo;
+
+#Module resolution
+  the process of taking a string from the import or require statement, and determining what file that string refers to
+
+#--------------------------------------------------------------------------------
+#Classes
+    --strictPropertyInitialization ensures all fields should be initialized either from initial value or constructor
+  #declaration using class expressions
+    const ClassName = class<Type> {
+      content: Type;
+      constructor(value: Type) { this.content = value; }
+    };
+    const instance = new ClassName("Hello, world");
+  #declaration using Parameter Properties
+    class Params {
+      constructor(
+        //this syntax turns a constructor parameter into a class property with the same name and value
+        public readonly x: number,
+        protected y: number,
+        private z: number
+      ) {} // No body necessary
+    }
+  #declaration
+    class ClassName{
+    //##Properties
+    //public writable property
+    field_name: type_name; //might be optional
+    field_with_type_any;
+    
+    //initializer are initialized at instantiation
+    field_with_initial_value = value
+    field_with_type_and_initial_value: type_name = value
+
+    //use the definite assignment assertion operator to communicate to TypeScript that
+    //this field is initialized through means other than initializer or constructor
+    //e.g. calling a custom method in this class or having an external library filling in the value
+    other_field!: type_name
+
+    //can only be assigned from initializer and constructor
+    readonly constant_field: string = "world";
+
+    //##Constructors
+    //constructor signature can be overloaded
+    constructor()
+    constructor(parameter_with_default_value: type_name)
+    constructor(parameter_with_default_value: type_name, optional_parameter?: string)
+    //but multiple constructor implementations are not allowed
+    constructor(parameter_with_default_value: type_name = value, optional_parameter?: string) {
+      // constructors always return the class instance type and so return_type is disallowed
+
+      this.field_name = parameter_with_default_value
+      this.field_with_type_any = value
+      
+      if (optional_parameter !== undefined) {
+        this.constant_field = optional_parameter;
+      }
+    }
+    // constructors can’t have type parameters (these belong on the outer class declaration)
+
+    //##Methods
+    method_name(parameter_name: type_name): return_type {
+      this.field_name = parameter_name //forgetting to use this. will cause the method to check the enclosing scope
+      return value
+    }
+
+    //##Getters and Setters (Accessors)
+    _size = 0;
+    get size(): number { return this._size; }
+    set size(value: string | number | boolean) {
+      let num = Number(value);
+      if (!Number.isFinite(num)) { // Don't allow NaN, Infinity, etc
+        this._size = 0;
+        return;
+      }
+      this._size = num;
+    }
+
+    //##Index Signatures
+    [s: string]: number | ((parameter_name: type_name) => return_type) | any
+    check(s: string) {
+      return this[s] as type_name;
+    }
+    // because the index signature type needs to also capture the types of methods
+    // it’s not easy to usefully use these types
+    // generally it’s better to store indexed data in another place instead of on the class instance itself
+  }
+#Interface implementation
+  class ClassName implements InterfaceName, InterfaceName {}
+#Inheritance
+  #Example
+    class SubClassName extends ClassName {
+      constructor(){
+        //call super() in your constructor body
+        super()
+        //before using any this. members:
+        console.log(this.field_name)
+        //you can check the constructor signatures to see what arguments you can supply to super()
+      }
+
+      method_name(parameter_name?: type_name): return_type {
+        //overriding method should keep the contract of the parent method
+        //e.g. it is illegal to override to method_name(): void
+        return super.method_name(parameter_name || value) //this is how we call the parent method
+      }
+    }
+  #Inheriting Built-in Types (Error, Array, etc.)
+    class SubClassOfBuiltinTypes extends Error {
+      constructor(m: string) {
+        super(m);
+        Object.setPrototypeOf(this, SubClassOfBuiltinTypes.prototype); // Set the prototype explicitly.
+
+        //For runtimes that don’t support Object.setPrototypeOf,
+        //you may instead be able to use __proto__.
+      }
+    }
+
+#Member Visibility
+  class ClassName {
+    properties_and_method_default_to_public;
+    public explicitly_public_method(){}
+    protected protected_property; //can only be accessed inside the definition of this class and its subclasses
+    private method_name() //can only be accessed inside the definition of this class
+  }
+  class SubClassName extends ClassName {
+    public protected_property; //subclass can expose protected_property from super class
+  }
+#Cross-hierarchy protected access
+  class Base { protected x: number = 1; }
+  class Derived1 extends Base { protected x: number = 5; }
+  class Derived2 extends Base {
+    f1(other: Derived2) { other.x = 10 }
+    f2(other: Base) { other.x = 10 } //this is illegal
+  }
+#Cross-instance private access
+  class A {
+    private x = 10;
+    public sameAs(other: A) { return other.x === this.x } //this is OK
+  }
+#Caveats
+  private and protected are only enforced during type checking
+    JavaScript runtime can still access a private or protected member
+  if you need to protect values in your class from malicious actors,
+    you should use mechanisms that offer hard runtime privacy,
+    such as closures, weak maps, or private fields
+    https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Private_class_fields
+
+#Static Members (properties or methods)
+  class ClassName {
+    static x = 0; //can be prefixed with visibility modifiers: public, protected, or private
+    static printX() { console.log(ClassName.x) }
+  }
+  console.log(ClassName.x);
+  //static members are inherited
+  //there are no static class in TypeScript because JavaScript object is enough for that usecase
+
+#Abstract class
+  abstract class is a class that has an abstract member (method or field)
+  abstract method or abstract field is one that hasn’t had an implementation provided
+#example
+  abstract class Base {
+    abstract getName(): string;
+    printName() { console.log("Hello, " + this.getName()) }
+  }
+  class Derived extends Base {
+    getName() { return "world"; }
+  }
+
+#Abstract Construct Signatures
+  sometimes you want to accept some class constructor function
+    that produces an instance of a class which derives from some abstract class
+  to do this, write a function that accepts something with a construct signature
+#example
+  function greet(ctor: new () => Base) { //you use this instead of ctor: typeof Base
+    const instance = new ctor();
+    instance.printName();
+  }
+  greet(Derived); //OK
+  greet(Base); //this is illegal
+
+#this keyword
+  TypeScript doesn’t change the runtime behavior of JavaScript
+    which means this keyword will point according to JavaScript rule
+#this at Runtime in Classes
+  class MyClass {
+    name = "MyClass";
+    getName() { return this.name }
+  }
+  const c = new MyClass();
+  const obj = { name: "obj", getName: c.getName };
+  console.log(obj.getName()); // Prints "obj", not "MyClass"
+#fixing this using this parameters to statically enforce that the method is called correctly:
+  class MyClass {
+    name = "MyClass";
+    getName(this: MyClass) { return this.name }
+  }
+  const c = new MyClass();
+  c.getName(); // OK
+  const g = c.getName;
+  console.log(g()); // Error, would crash
+#this as type
+    a special type called this refers dynamically to the type of the current class
+    you can use this both as parameter type or return type
+  #example
+    class Box {
+      contents: string = "";
+      sameAs(other: this) { //this as parameter type
+        return other.content === this.content;
+      }
+      set(value: string): this { //this as return type
+        this.contents = value;
+        return this;
+      }
+    }
+    class ClearableBox extends Box {
+      clear() { this.contents = "" }
+    }
+    const a = new ClearableBox();
+    const b = a.set("hello"); //b will be of type ClearableBox instead of Box
+    b.sameAs(new ClearableBox()) //OK
+    b.sameAs(new Box()) //illegal
+#this-based type guards
+  #example
+    class FileSystemObject {
+      isFile(): this is FileRep { return this instanceof FileRep; }
+      isDirectory(): this is Directory { return this instanceof Directory; }
+      isNetworked(): this is Networked & this { return this.networked; }
+      constructor(public path: string, private networked: boolean) {}
+    }
+    class FileRep extends FileSystemObject {
+      constructor(path: string, public content: string) { super(path, false) }
+    }
+    class Directory extends FileSystemObject { children: FileSystemObject[] }
+    interface Networked { host: string }
+    const fso: FileSystemObject = new FileRep("foo/bar.txt", "foo");
+    if (fso.isFile()) {
+      fso.content; // FileRep
+    } else if (fso.isDirectory()) {
+      fso.children; // Directory
+    } else if (fso.isNetworked()) {
+      fso.host; // Networked & FileSystemObject
+    }
+  #lazy validation of a field
+    class Box<T> {
+      value?: T;
+      hasValue(): this is { value: T } { return this.value !== undefined; }
+    }
+    const box = new Box();
+    box.value = "Gameboy";
+    box.value; //(property) Box<unknown>.value?: unknown
+    if (box.hasValue()) {
+      box.value; //(property) value: unknown
+    }

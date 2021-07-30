@@ -1,0 +1,25 @@
+Synchronization in Interprocess Communication
+
+- Semaphore: a variable that controls the access to a common resource by multiple processes.
+    - Two types of semaphores: binary semaphores and counting semaphores
+- Mutual Exclusion (Mutex): only one process thread can enter the critical section at a time.
+    - This is useful for synchronization and also prevents race conditions.
+- Barrier: does not allow individual processes to proceed until all the processes reach it.
+- Spinlock: the processes trying to acquire this lock wait in a loop while checking if the lock is available or not.
+    - Also known as busy waiting because the process is not doing any useful operation even though it is active.
+
+Approaches to Interprocess Communication
+
+- Pipe: a unidirectional data channel
+    - Two pipes can be used to create a two-way data channel between two processes.
+    - This uses standard input and output methods.
+- Socket: endpoint for sending or receiving data in a network.
+    - This is true for data sent between processes on the same computer
+        or data sent between different computers on the same network.
+- File: a data record stored on a disk or a file server.
+- Signal: system messages that are sent from one process to another.
+    - Normally, signals are not used to transfer data but are used for remote commands between processes.
+- Shared Memory: memory that can be simultaneously accessed by multiple processes.
+- Message Queue
+    - Multiple processes can read and write data to the message queue without being connected to each other.
+    - Messages are stored in the queue until their recipient retrieves them.

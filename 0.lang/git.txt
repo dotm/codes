@@ -39,6 +39,7 @@ git config --global alias.cm commit
 git config --global alias.b branch
 git config --global alias.bl 'branch -l'
 git config --global alias.m merge
+git config --global alias.ri 'rebase --interactive'
 git config --global alias.rs reset
 git config --global alias.lo 'log --oneline'
 git config --global alias.c 'commit -am'
@@ -91,6 +92,7 @@ Host *
 ```
 4. ssh-add -K ~/.ssh/id_rsa
 5. Add SSH to GitHub
+  cat ~/.ssh/id_rsa.pub
 
 #Change https to SSH in local repo
 open .git/config

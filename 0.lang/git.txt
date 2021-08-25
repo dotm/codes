@@ -52,7 +52,7 @@ git config --global alias.rsh 'reset --hard'
 git config --global alias.rshH 'reset --hard HEAD'
 git config --global alias.rshB 'reset --hard HEAD~'
 git config --global alias.rsB 'reset HEAD~'
-git config --global alias.ccr 'commit --allow-empty -m "[ci enable][run test]"'
+git config --global alias.cfd 'clean -fd'
 
 #Save and load changes to a file
   git diff > /path/to/file.patch

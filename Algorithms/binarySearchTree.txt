@@ -1,3 +1,10 @@
+Binary search tree is a binary tree in which a node have a value greater than all values in its left subtree and smaller than all values in its right subtree.
+Binary tree is a non linear data structure where each node can have at most 2 child nodes.
+
+Use an AVL tree if you expect the number of look-ups to dominate the number of updates to the tree.
+Use RB tree if you want some performance on insertion/deletion operations.
+
+Operations:
 SEARCH
 PREDECESSOR
 SUCCESSOR

@@ -298,10 +298,44 @@ The --strict flag in the CLI, or "strict": true in a tsconfig.json
       type MainID = ASCIICacheKey<"my_app"> // "ID-MY_APP"
 
 #--------------------------------------------------------------------------------
+#Symbols
+  #basic:
+    let sym1 = Symbol();
+    let sym2 = Symbol("key"); // optional string key
+    let sym3 = Symbol("key");
+    sym2 === sym3; // false, symbols are unique
+  #using symbols as object keys:
+    let obj = { [sym]: "value" };
+    console.log(obj[sym]); // "value"
+  #using symbols with computed property declarations to declare object properties and class members.
+    const getClassNameSymbol = Symbol();
+    class C { [getClassNameSymbol]() { return "C"; } }
+    let c = new C();
+    let className = c[getClassNameSymbol](); // "C"
+  #Well-known Symbols
+    Symbol.hasInstance
+    Symbol.isConcatSpreadable
+    Symbol.iterator
+    Symbol.match
+    Symbol.replace
+    Symbol.search
+    Symbol.species
+    Symbol.split
+    Symbol.toPrimitive
+    Symbol.toStringTag
+    Symbol.unscopables
+
+#--------------------------------------------------------------------------------
 Loop
 
 #For loop
-  for (let i = 0; i < array.length; i++){ statements }
+  #basic
+    for (let i = 0; i < array.length; i++){ statements }
+  #iterate over index
+    let list = [4, 5, 6];
+    for (let i in list) { console.log(i); } // "0", "1", "2",
+  #with iterable
+    for (let element of some_iterable) { console.log(element) }
 
 #--------------------------------------------------------------------------------
 #Object

@@ -1,0 +1,29 @@
+Find Shortest Path from a Node to another Node
+    First Generate Shortest Distance Table Using BFS from the Source Node
+	And then simply use the Table to Backtrack from the Destination Node to the Source Node
+        If there's no path found, return no path
+        If a path is found, then it's the shortest path
+
+
+Generate Shortest Distance Table Using BFS
+    add the Source Node to the BFS Queue
+    until the BFS Queue is empty
+        dequeue the first in entry/node of the BFS Queue
+        If the current Node doesn't have any child, do nothing and continue to next loop
+        Else for all Outbound Edges of the Node
+            If the edge has been visited/inspected on a previous loop, do nothing and continue visiting the next edge.
+            Else
+                enqueue the Node at the end of this Edge to the BFS Queue
+                If no edge has been recorded for the Node at the end of this edge,
+                    then use this as the shortest path from the Source Node.
+                Else if a Node has been recorded but the Node at the end of this edge is shorter,
+                    then use this as the shortest path from the Source Node.
+                mark this Edge as visited using a set
+
+Backtrack from Destination Node to Source Node using the previously generated Shortest Distance Table
+    If there's no entry for the Destination Node on the Table,
+        then the Destination Node is unreachable, and there's no path from Source Node to Destination Node
+    Else Until you get into the Source Node
+        just record the path from the Destination Node to the Source Node
+        once you get to the Source Node, return the path from the Source Node to Destination Node
+    If you never get into the source node, then there's no path from Source Node to Destination Node

@@ -1,0 +1,15 @@
+Check Cycle of Graph
+    for all Nodes in Graph
+        do DFS to Check For Cycle and Remember the Path of the Cycle from any node
+
+DFS to Check For Cycle and Remember the Path of the Cycle
+    If there's no adjacent nodes for this node, early return undefined
+    For all adjacent nodes of this node
+        If adjacent node has been traversed before
+            then there's a cycle, return the path to this adjacent node
+        Else
+            after adding this adjacent node to the path
+            do another DFS from this adjacent node
+                If there's a cycle found, unwind the stack and return the path
+                Else, check the next adjacent node
+    If no adjacent nodes of this node contains a cycle, return undefined

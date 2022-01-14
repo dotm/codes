@@ -15,6 +15,12 @@ Global
 Linux/Mac OSX
 	touch - create new file or update modification time if file exists
 	sort - sort file's lines
+	uname - display system information
+	free - show memory usage
+	df - show disk space usage
+	ps - print process information
+	id - show current user information
+	hexdump - display data in hex
 	uniq - filters out adjacent, duplicate lines in a file
 		sort deserts.txt | uniq		#use sort before uniq so all file with the same name will become adjacent
 	less - page through a file

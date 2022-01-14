@@ -1,0 +1,95 @@
+HTML (HyperText Markup Language)
+CSS (Cascading Style Sheets)
+JS (JavaScript)
+SVG (Scalable Vector Graphics)
+MathML (Mathematical Markup Language): display mathematical syntax
+Web Components: define and use custom HTML tag
+
+## Web APIs
+
+- Background Fetch API
+- Background Tasks
+- Barcode Detection API
+- Battery API 
+- Beacon
+- Bluetooth API
+- Broadcast Channel API
+- CSS Counter Styles
+- CSS Font Loading API 
+- CSS Painting API
+- CSS Typed Object Model API
+- CSSOM
+- Canvas API
+- Channel Messaging API
+- Clipboard API
+- Console API
+- Contact Picker API
+- Content Index API
+- Credential Management API
+- DOM
+- Encoding API
+- Encrypted Media Extensions
+- Fetch API
+- File System API 
+- File System Access API
+- Frame Timing API
+- Fullscreen API
+- Gamepad API 
+- Geolocation API
+- HTML Drag and Drop API
+- HTML Sanitizer API
+- High Resolution Time
+- History API
+- Image Capture API
+- IndexedDB
+- Intersection Observer API
+- Long Tasks API 
+- Media Capabilities API 
+- Media Capture and Streams
+- Media Session API
+- Media Source Extensions 
+- MediaStream Recording
+- Navigation Timing
+- Network Information API 
+- Page Visibility API
+- Payment Request API
+- Performance API
+- Performance Timeline API
+- Periodic Background Sync
+- Permissions API
+- Picture-in-Picture API
+- Pointer Events
+- Pointer Lock API
+- Presentation API 
+- Proximity Events  
+- Push API 
+- Resize Observer API
+- Resource Timing API
+- Screen Capture API
+- Screen Wake Lock API
+- Sensor API
+- Server Sent Events
+- Service Workers API
+- Storage
+- Storage Access API
+- Streams 
+- Touch Events
+- URL API
+- Vibration API
+- Visual Viewport 
+- Web Animations
+- Web Audio API
+- Web Authentication API
+- Web Crypto API
+- Web MIDI API
+- Web Notifications
+- Web Speech API 
+- Web Storage API
+- Web Workers API
+- WebGL: 2D and 3D graphics for the web
+- WebRTC
+- WebVR API  
+- WebVTT
+- WebXR Device API
+- Websockets API
+- XMLHttpRequest: HTTP request over TCP

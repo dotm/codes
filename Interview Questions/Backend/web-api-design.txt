@@ -1,0 +1,45 @@
+Web API Design
+
+RESTful API
+- good for API that exposes CRUD operations
+- use HTTP Methods and subpath
+    e.g. GET http://fake.com/api/v1/users/user_id/orders/order_id
+- pros:
+    - standard method names, arguments, and status codes
+    - use HTTP
+    - easy to maintain
+- cons:
+    - big payloads
+    - multiple HTTP roundtrip might be required to fetch multiple resources
+
+RPC API
+- good for API that exposes several actions (especially non-CRUD actions)
+- one endpoint for each action
+    e.g. http://fake.com/api/v1/chat.AddSchedulingBot
+- pros:
+    - easy to understand
+    - lightweight payloads
+    - high performance
+- cons:
+    - discovery is difficult
+    - limited standardization
+    - leads to function explosion
+
+GraphQL API
+- best when you need querying flexibility
+- typically only GET and POST method is used
+- user specified the required structure
+    and then backend send exactly that structure
+    without unnecessary data and with just one roundtrip
+- pros:
+    - saves multiple roundtrips
+    - avoids versioning.
+        you can add and deprecate per field
+        instead of creating one breaking change version
+    - smaller payload size
+- cons:
+    - added complexity
+    - optimizing performance is difficult
+        since backend doesn't know ahead of time
+        the structure that will be requested
+    - too complicated for simple APIs

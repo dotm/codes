@@ -75,6 +75,9 @@ git config --global alias.cfd 'clean -fd'
 #-----------------------------------------------------------------------------------
 #Setup SSH
 
+Official Docs: https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
+Make sure you choose the correct OS
+
 #Checking for existing SSH keys
   ls -al ~/.ssh
 

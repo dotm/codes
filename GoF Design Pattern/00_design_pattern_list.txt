@@ -12,14 +12,14 @@ Flyweight
 Interpreter [u] (Binary expression tree?)
 Iterator
 Mediator
-Memento
+Memento: game save file
 Observer
 Prototype
 Proxy
 Singleton
 State
-Strategy
-Template Method
+Strategy: interface
+Template Method: function as argument to other function
 Visitor
 
 [u] means unimplemented

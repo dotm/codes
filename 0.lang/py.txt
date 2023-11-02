@@ -171,6 +171,7 @@ interpolation
   #get first: queue.popleft()
   
 #List Comprehensions
+  [result_element_expression for existing_element_variable in list_or_range if condition]
   [(x, y) for x in [1,2,3] for y in [3,1,4] if x != y]
   
 #--------------------------------------------------------------------------------

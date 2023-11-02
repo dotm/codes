@@ -1,0 +1,155 @@
+void setup() {
+  // put your setup code here, to run once:
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+}
+
+#--------------------------------------------------------------------------------
+#define
+  Defined constants don’t take up any program memory space.
+    The compiler will replace references to these constants with the defined value at compile time.
+  This can have some unwanted side effects though.
+    A constant name that had been #defined is included in some other constant or variable name,
+    the text would be replaced by the #defined number (or text).
+  Prefer to use const instead of #define
+
+Example:
+  #define ledPin 3
+  // The compiler will replace any mention of ledPin with the value 3 at compile time.
+
+#--------------------------------------------------------------------------------
+#include
+  Include outside libraries in your sketch allowing access to a large group of standard C libraries
+  (groups of pre-made functions), and also libraries written especially for Arduino.
+
+Syntax:
+  #include <LibraryFile.h>
+  #include "LocalFile.h"
+Explanation:
+  when the angle brackets syntax is used,
+    the libraries paths will be searched for the file.
+  When the double quotes syntax is used,
+    the folder of the file using the #include directive will be searched for the specified file,
+    then the libraries paths if it was not found in the local path.
+    Use this syntax for header files in the sketch’s folder.
+
+#--------------------------------------------------------------------------------
+// single line comment
+/* multi line comment */
+
+#--------------------------------------------------------------------------------
+#Variable declaration: type_name variable_name = value
+#Constant declaration: const type_name constant_name = value
+#Static declaration: static type_name variable_name = value
+
+Variables declared as static will only be created and initialized the first time a function is called.
+  They are visible to only one function.
+  Unlike local variables that get created and destroyed every time a function is called,
+    static variables persist beyond the function call, preserving their data between function calls.
+
+#--------------------------------------------------------------------------------
+#Operators
+  #Arithmetic operators: + - * / %
+    #Compound assignment operators: += -= *= /= %= &= |= ^= <<= >>=
+    #Increment and decrement operators: ++ --
+  #Boolean/Logical operators: and or not && || !
+    #short circuit operator
+  #Comparison operators: < <= > >= == !=
+    #Shallow equality: equality of references
+    #Deep equality: equality of values
+  #Bitwise operators:
+    #and: & bitand
+    #or: | bitor
+    #not: ~ compl
+    #xor: ^ xor
+    #left-shift: <<
+    #right-shift: >>
+
+#Bitwise vs Logical operators
+  bitwise operator yield a result of their operand type for which the operation has been performed on each bit
+  logical operators simply return true or false
+
+#--------------------------------------------------------------------------------
+#Print string
+
+#--------------------------------------------------------------------------------
+#Data types
+array
+bool
+boolean
+byte
+char
+double
+float
+int
+long
+short
+size_t
+string
+String()
+unsigned char
+unsigned int
+unsigned long
+void
+word
+
+#--------------------------------------------------------------------------------
+#Conditional
+
+#If statement
+  if(condition){
+    statements;
+  }else if(condition){
+    statements;
+  }else{
+    statements;
+  }
+
+#Switch statement
+  switch (expression) {
+    case constant_expression:
+      statements;
+      break;      //use break to not fall through to the next case
+    case constant_expression:
+      return value;   //you don't need to break since you return
+    default:
+      statements;   //default is optional
+  }
+
+#--------------------------------------------------------------------------------
+#Loop
+
+#For loop
+  for (int i=0; i<10; i++) { printf("%d\n",i); }
+#While loop
+  while (condition) { statements }
+#Do while loop
+  do { statements } while (condition);
+
+#Control Transfer Statements for Loop
+  #continue to next iteration: continue;
+  #break from loop: break;
+#Using label and goto
+  label_name:
+  statements
+  goto label_name;
+
+#--------------------------------------------------------------------------------
+#Pointer
+  #declaration:
+    pointee_type* pointer_name
+    char* p
+  #address of (referencing) operator &
+    variable_type* pointer_name = variable_name;
+    char* pointer_to_a = &alphabet[0]
+  #contents of (dereferencing) operator *
+    char a = *pointer_to_a
+
+#Declaring references
+    type_name& reference_name;
+  In a declaration, the unary suffix & means "reference to"
+  A reference is similar to a pointer, except that:
+    you don’t need to use a prefix * to access the value referred to by the reference
+    a reference cannot be made to refer to a different object after its initialization

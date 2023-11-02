@@ -1,0 +1,65 @@
+// Define a function.
+void printInteger(int aNumber) {
+  print('The number is $aNumber.'); // Print to console.
+}
+
+// This is where the app starts executing.
+void main() {
+  var number = 42; // Declare and initialize a variable.
+  printInteger(number); // Call a function.
+}
+
+#--------------------------------------------------------------------------------
+// single line comment
+/* multi line comment */
+
+/// single line documentation comment
+/** multi line documentation comment */
+
+#--------------------------------------------------------------------------------
+#Variable declaration:
+  var variableName = value;
+  variable_type variableName;
+  variable_type variableName = value;
+#Late variables: a non-nullable variable that’s lazily initialized after its declaration.
+  late String temperature = readThermometer(); // Lazily initialized.
+
+#Final and const
+  final variable can be set only once
+  const variable is a compile-time constant
+    can be at the class level, mark it static const
+    can also create constant values, as well as to declare constructors that create constant values.
+#Examples
+  final name = 'Bob'; // Without a type annotation
+  final String nickname = 'Bobby';
+  const bar = 1000000; // Unit of pressure (dynes/cm2)
+  final bar = const [1,2];
+  const bar = []; // Equivalent to `const []`
+
+#--------------------------------------------------------------------------------
+#Data types
+  Everything you can place in a variable is an object.
+    Even numbers, functions, and null are objects.
+    With the exception of null (if you enable sound null safety),
+    all objects inherit from the Object class.
+#num: int, double
+  Exponent: 1.42e5
+#String
+#bool
+#List (arrays)
+#Set
+#Map
+#Runes
+#Symbol
+#Null
+  null
+#Object: The superclass of all Dart classes except Null.
+#Enum: The superclass of all enums.
+#Future and Stream: Used in asynchrony support.
+#Iterable: Used in for-in loops and in synchronous generator functions.
+#Never: Indicates that an expression can never successfully finish evaluating.
+  Most often used for functions that always throw an exception.
+#dynamic: Indicates that you want to disable static checking.
+  Usually you should use Object or Object? instead.
+#void: Indicates that a value is never used.
+  Often used as a return type.

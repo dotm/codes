@@ -1,0 +1,3 @@
+- Open Registry Editor
+- HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Keyboard Layout
+- Delete the Scancode Map

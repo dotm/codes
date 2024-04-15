@@ -1,0 +1,317 @@
+List running containers:
+- docker ps
+List all containers:
+- docker ps -a
+
+Containerize an app:
+- go to your app root directory
+- to auto generate docker related files to existing projects: docker init
+  - this will generate: .dockerignore, compose.yaml, Dockerfile, README.Docker.md
+  - to build and run this: docker compose up --build -d
+    --build for building images before starting containers
+    -d for detached (in background)
+  - to stop detached containers: docker compose down
+- or you can create docker related files manually:
+  - create a Dockerfile (see Writing Dockerfile below for example)
+  - create a .dockerignore file
+    - you can add files and directories to exclude from the build context
+    - e.g. you don't want to COPY node_modules in Dockerfile
+  - docker build -t your-app-image-name .
+    - the . points to the root directory of your app (current directory of terminal)
+    - you can use `--platform linux/amd64` if you're an ARM Mac user building for Linux
+
+Updating an app image:
+- update the source code
+- docker build -t your-app-image-name .
+- docker ps
+  - to get container-id
+- docker stop container-id
+- docker rm container-id
+- you can stop and remove by:
+  - docker rm -f container-id
+
+Run a docker image:
+docker run -dp 127.0.0.1:3000:3000 your-app-image-name
+  -d (--detach) runs the container in the background
+  -p (--publish) creates a port mapping between the host and the container
+  host-port:container-port
+docker run -it ubuntu ls /
+  --interactive	-i		Keep STDIN open even if not attached
+  --tty	        -t		Allocate a pseudo-TTY
+  - run ls in root /
+docker run -it ubuntu bash
+  - run bash cli
+
+Run an npm script inside a container:
+  docker compose run server npm run test
+  - server is the name of the service inside of compose.yaml
+  - npm run test is the script to run
+  docker compose run [OPTIONS] SERVICE [COMMAND] [ARGS...]
+
+Log container standard output: docker logs -f <container-id>
+  --follow	-f		Follow log output
+
+## Named Volume
+  connect specific filesystem paths of the container
+    back to the host machine inside a Docker managed area
+  can be used to persist application state and data across containers
+
+create a volume:
+docker volume create volume-name
+
+mount a volume:
+docker run -dp 127.0.0.1:3000:3000 [named-volume-mount-arguments]
+[named-volume-mount-arguments]:
+  --mount type=volume,src=volume-name,target=/path/in/container your-app-image-name
+  - usually /path/in/container will be your database data directory
+
+inspect a volume:
+docker volume inspect volume-name
+- the Mountpoint is the actual location of the data on the disk inside the Docker managed area
+  "Mountpoint": "/var/lib/docker/volumes/todo-db/_data"
+
+## Bind Mount
+  connect specific filesystem paths of the container
+    back to the host machine outside a Docker managed area
+  can be used to sync files between local host and containers
+
+mount a bind:
+docker run -dp 127.0.0.1:3000:3000 [bind-mount-arguments]
+  [bind-mount-arguments]:
+  --mount type=bind,src=/path/in/host,target=/path/in/container
+mount current directory:
+  bash: docker run -it --mount type=bind,src="$(pwd)",target=/src ubuntu bash
+  powershell: docker run -it --mount "type=bind,src=$pwd,target=/src" ubuntu bash
+
+Run nodemon with bind mount for auto restart app on file changes:
+docker run -dp 127.0.0.1:3000:3000 -w /app --mount "type=bind,src=$pwd,target=/src" node:18-alpine sh -c "yarn install && yarn run dev"
+  - run detached with port mapping
+  - working directory (-w) inside the container is /app
+  - add bind mount from current directory to app
+  - node:18-alpine image used
+  - run command yarn install and run dev
+    - make sure run dev script in package json contains nodemon to check for file changes and auto restart
+docker logs -f <container-id>
+  - to check when yarn install is done, app is running, and available for auto restart (listening at port 3000)
+Once you're done with changes,
+  you can delete the running container,
+  docker build your docker image,
+  and push it to an image repository
+
+## Cache Mount
+  specify a persistent package cache to speed up build steps,
+    especially steps that involve installing packages using a package manager.
+
+Example npm:
+RUN --mount=type=bind,source=package.json,target=package.json \
+    --mount=type=bind,source=package-lock.json,target=package-lock.json \
+    --mount=type=cache,target=/root/.npm \
+    npm ci --include=dev
+
+Example go:
+RUN --mount=type=cache,target=/go/pkg/mod/ go mod download
+RUN --mount=type=cache,target=/go/pkg/mod/ go build -o /bin/client ./cmd/client
+
+## Container Networking
+
+Create the network:
+  docker network create network-name
+  docker network create todo-app
+
+Create database in a network:
+  docker run -d --network todo-app --network-alias mysql -v todo-mysql-data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=secret -e MYSQL_DATABASE=todos mysql:8.0
+    --network-alias can be used as top-level-domain in the docker network (just like com.)
+    -v bind mount a volume
+    -e for environment variables
+Connect to the database:
+  docker exec -it <mysql-container-id> mysql -u root -p
+    use the MYSQL_ROOT_PASSWORD in the environment variable
+Run mysql commands to verify:
+  mysql> SHOW DATABASES;
+  mysql> exit
+Check database IP address:
+  docker run -it --network todo-app nicolaka/netshoot
+  dig mysql
+    will check the --network-alias mysql in the docker network named todo-app
+
+Connect the app in the network to the database:
+  docker run -dp 127.0.0.1:3000:3000 -w /app -v "$(pwd):/app" --network todo-app -e MYSQL_HOST=mysql -e MYSQL_USER=root -e MYSQL_PASSWORD=secret -e MYSQL_DB=todos node:18-alpine sh -c "yarn install && yarn run dev"
+    run this from the getting-started-app directory
+    working directory (-w) inside the container is /app
+    -v bind mount current directory as a volume in /app
+    add to todo-app --network
+    -e for environment variables
+  add a todo list item in http://localhost:3000
+  check the newly added item exists in database:
+    docker exec -it <mysql-container-id> mysql -p todos
+    mysql> select * from todo_items;
+
+## Run Ubuntu from Docker
+
+docker run -it ubuntu bash
+  --interactive	-i		Keep STDIN open even if not attached
+  --tty	        -t		Allocate a pseudo-TTY
+  - run bash cli
+
+docker run -d ubuntu bash -c "shuf -i 1-10000 -n 1 -o /data.txt && tail -f /dev/null"
+  - run in -d (detach mode)
+  - run bash with -c (command)
+  - get random number and output to /data.txt
+  - keep the container running by watching dev null with tail -f
+docker exec container-id cat /data.txt
+  - exec cat in container-id
+docker run -it ubuntu ls /
+  - run ls in root /
+
+## Docker Hub Image Repository
+
+Share image in Docker Hub:
+- create an account in Docker Hub
+- create a new repository
+  - hub.docker.com/repositories/your-user-name
+- sign in from local terminal with username and password:
+  - docker login -u your-user-name
+- push a new image:
+  - docker tag your-app-image-name your-user-name/your-app-image-name
+    - with tag: docker tag local-image:tagname your-user-name/new-repository-name:tagname
+  - docker push your-user-name/your-app-image-name
+    - with tag: docker push your-user-name/new-repository-name:tagname
+
+Run image from Docker Hub:
+- docker run -dp 127.0.0.1:3000:3000 your-user-name/repository-name
+
+## Writing Dockerfile
+
+Example:
+- COPY package.json and yarn.lock first to cache the dependency layer
+- and then copy the rest, so that yarn install is only runned when the dependency layer changes.
+!Dockerfile ---
+# syntax=docker/dockerfile:1
+FROM node:18-alpine
+WORKDIR /app
+COPY package.json yarn.lock ./
+RUN yarn install --production
+COPY . .
+CMD ["node", "src/index.js"]
+EXPOSE 3000
+---------------
+
+Example with multi-stage builds:
+- build static pages
+- move the static pages to nginx
+!Dockerfile ---
+# syntax=docker/dockerfile:1
+FROM node:18 AS build
+WORKDIR /app
+COPY package* yarn.lock ./
+RUN yarn install
+COPY public ./public
+COPY src ./src
+RUN yarn run build
+
+FROM nginx:alpine
+COPY --from=build /app/build /usr/share/nginx/html
+---------------
+
+Example with unit test:
+!Dockerfile ---
+# syntax=docker/dockerfile:1
+
+ARG NODE_VERSION=18.0.0
+
+FROM node:${NODE_VERSION}-alpine as base
+WORKDIR /usr/src/app
+EXPOSE 3000
+
+FROM base as dev
+RUN --mount=type=bind,source=package.json,target=package.json \
+    --mount=type=bind,source=package-lock.json,target=package-lock.json \
+    --mount=type=cache,target=/root/.npm \
+    npm ci --include=dev
+USER node
+COPY . .
+CMD npm run dev
+
+FROM base as prod
+RUN --mount=type=bind,source=package.json,target=package.json \
+    --mount=type=bind,source=package-lock.json,target=package-lock.json \
+    --mount=type=cache,target=/root/.npm \
+    npm ci --omit=dev
+USER node
+COPY . .
+CMD node src/index.js
+
+FROM base as test
+ENV NODE_ENV test
+RUN --mount=type=bind,source=package.json,target=package.json \
+    --mount=type=bind,source=package-lock.json,target=package-lock.json \
+    --mount=type=cache,target=/root/.npm \
+    npm ci --include=dev
+USER node
+COPY . .
+#use RUN to run the tests (not CMD).
+# CMD instruction runs when the container runs.
+# RUN instruction runs when the image is being built and the build will fail if the tests fail.
+RUN npm run test
+---------------
+to run test stage:
+docker build -t node-docker-image-test --progress=plain --no-cache --target test .
+  --target means the targeted stage in Dockerfile
+  --no-cache to ensure the tests always run
+  --progress=plain to view the build output
+
+## Docker Compose
+
+Docker Compose defines multi-container Docker applications and deploys them to a single server.
+Kubernetes is a container orchestrator and can run container runtimes over several machines (virtual or real).
+
+In your project root directory, create compose.yaml (see below).
+  The name of the group in Docker Dashboard will be the same as the root directory name.
+  The name of the containers will follow the format:
+    <service-name>-<replica-number>
+Start your multi containers service:
+  - Do `docker rm -f` on all existing container of your app and mysql
+  - docker compose up -d
+    -d for detached (run in background)
+Get the log for all containers: docker compose logs -f
+  -f for follow (give you live output as it's generated)
+Get the log from one service:
+  docker compose logs -f service-name
+  docker compose logs -f app
+  docker compose logs -f mysql
+Stop and remove the multi containers service (including the network): docker compose down
+  Also removes named volumes:
+    docker compose down --volumes
+    docker compose down -v
+  Only stop the multi containers service: docker compose stop
+  Only remove stopped multi containers service: docker compose rm
+
+---------------
+!compose.yaml
+
+services:
+  app:    #the name of the container that will also become the network alias
+    image: node:18-alpine
+    command: sh -c "yarn install && yarn run dev"
+    ports:
+      - 127.0.0.1:3000:3000
+    working_dir: /app
+    volumes:
+      - ./:/app     #same as: -v "$(pwd):/app"
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_USER: root
+      MYSQL_PASSWORD: secret
+      MYSQL_DB: todos
+
+  mysql:
+    image: mysql:8.0
+    volumes:
+      - todo-mysql-data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: todos
+
+volumes:
+  todo-mysql-data: #by simply providing only the volume name, the default options are used
+---------------

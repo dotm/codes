@@ -61,10 +61,11 @@ Variables created on the
 
 Use the stack if you know exactly
     how much data you need to allocate
-    before compile time and it is not too big.
+    before compile time and it is not too big and it'll not change at runtime.
 Use the heap if you don't know exactly
-    how much data you will need at run time
-    or if you need to allocate a lot of data.
+    how much data you will need at run time,
+    or if you need to allocate a lot of data,
+    or when the amount of memory needed can change at runtime.
 
 The size of the stack is set when a thread is created.
     It has a maximum size already determined when your program starts.

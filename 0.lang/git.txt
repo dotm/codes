@@ -31,6 +31,13 @@
   git <verb> -h
   man git-<verb>
 
+#Set git to g
+
+In Windows terminal: echo $profile
+using VSCode, add this line to $profile: Set-Alias g git
+restart all terminal
+if there's any error loading the script, try running this in Terminal with admin permission: Set-ExecutionPolicy RemoteSigned
+
 #Useful aliases
 git config --global alias.z push
 git config --global alias.zf 'push -f'

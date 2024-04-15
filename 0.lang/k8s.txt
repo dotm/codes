@@ -1,0 +1,312 @@
+# Docker Language Guide
+
+Create docker-node-kubernetes.yaml (see below)
+  The --- inside the file separate the k8s objects
+Run: kubectl apply -f docker-node-kubernetes.yaml
+Verify:
+  kubectl get deployments
+  kubectl get services
+Open localhost:30001
+  the port is from the nodePort value in docker-node-kubernetes.yaml
+Run: kubectl delete -f docker-node-kubernetes.yaml
+
+!docker-node-kubernetes.yaml------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: docker-nodejs-demo
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      todo: web
+  template:
+    metadata:
+      labels:
+        todo: web
+    spec:
+      containers:
+      - name: todo-site
+        image: DOCKER_USERNAME/DOCKER_HUB_REPO_NAME
+        imagePullPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: todo-entrypoint
+  namespace: default
+spec:
+  type: NodePort
+  selector:
+    todo: web
+  ports:
+  - port: 3000
+    targetPort: 3000
+    nodePort: 30001
+----------------------------------
+
+# Concepts
+
+Node: a physical or virtual machines that can be used to run zero or more pods. 
+  production ready workload should have 3 minimum nodes.
+Control Plane: a node that manages the pods and nodes inside of a cluster
+Pod: one or more containers grouped together for administration and networking.
+  Pods (not containers) are the atomic unit on k8s.
+  Pod contains shared resources for the containers inside it:
+    Shared storage, as Volumes
+    Networking, as a unique cluster IP address
+    Information on how to run each container (container image version, ports to use, etc.)
+  containers in a Pod:
+    share an IP Address and port space,
+    are always co-located and co-scheduled,
+    and run in a shared context on the same Node.
+Deployments: the way to manage the creation, monitoring, resetting/self-healing, and scaling of Pods.
+Service: a logical set of Pods
+  enables external traffic exposure, load balancing, and service discovery for the pods
+  is defined using YAML or JSON.
+  The set of Pods targeted by a Service is usually determined by labels and selectors.
+    Labels are modifiable key/value pairs attached to objects and can be used in any number of ways:
+      Designate objects for development, test, and production.
+      Embed version tags.
+      Classify an object using tags.
+  Create a Service without selector
+    if you want to manually map a Service to specific endpoints
+      because it will not create the corresponding Endpoints object.
+    if you are strictly using ExternalName (see below).
+Services can be exposed in different ways by specifying a type in the spec of the Service:
+  - ClusterIP (default)
+    Expose on an internal IP in the cluster making it only reachable from within the cluster.
+  - NodePort
+    Exposes the Service on the same port of each selected Node in the cluster using NAT.
+    Makes a Service accessible from outside the cluster using <NodeIP>:<NodePort>.
+    Superset of ClusterIP.
+  - LoadBalancer
+    Creates an external load balancer in the current cloud (if supported)
+    and assigns a fixed, external IP to the Service. Superset of NodePort.
+  - ExternalName
+    Maps the Service to the contents of the externalName field (e.g. foo.bar.example.com),
+    by returning a CNAME record with its value.
+    No proxying of any kind is set up.
+    This type requires v1.7 or higher of kube-dns, or CoreDNS version 0.0.8 or higher.
+
+Every Kubernetes Node runs at least:
+  Kubelet
+    a process for communication between the control plane and the Node;
+    it manages the Pods and the containers running on a machine.
+  A container runtime (like Docker)
+    pulling the container image from a registry, unpacking the container, and running the application.
+
+# Tutorials
+
+## Hello Minikube
+
+Install minikube and kubectl.
+
+Create a cluster (from one terminal):
+  minikube start
+Open the dashboard (from another terminal):
+  minikube dashboard --url
+    --url means return url only (don't open a web browser)
+Stop cluster:
+  minikube stop
+Delete minikube VM:
+  minikube delete
+
+Create deployment:
+  kubectl create deployment hello-node --image=registry.k8s.io/e2e-test-images/agnhost:2.39 -- /agnhost netexec --http-port=8080
+    This will run a test container image that includes a webserver.
+Delete deployment:
+  kubectl delete deployment hello-node
+List deployments:
+  kubectl get deployments
+List pods:
+  kubectl get pods
+View application logs for containers in a pod.
+  kubectl logs [pod-name]
+  kubectl logs hello-node-7b87cd5f68-8gd58
+View cluster events:
+  kubectl get events
+View the kubectl configuration:
+  kubectl config view
+
+Create service (to expose the pod to access outside of the Kubernetes virtual network):
+  kubectl expose deployment hello-node --type=LoadBalancer --port=8080
+    --type=LoadBalancer expose your Service outside of the cluster
+Delete service:
+  kubectl delete service hello-node
+List services:
+  kubectl get services
+Opens your app inside a browser window:
+  minikube service hello-node
+
+List addons:
+  minikube addons list
+Enable an addon:
+  minikube addons enable [addon-name]
+  minikube addons enable metrics-server
+View the Pod and Service you created by installing that addon:
+  kubectl get pod,svc -n kube-system
+Check the output from metrics-server:
+  kubectl top pods
+    if this raises error, wait for a while and then try again.
+Disable an addon:
+  minikube addons disable [addon-name]
+  minikube addons disable metrics-server
+
+Clean up:
+  kubectl delete service hello-node
+  kubectl delete deployment hello-node
+  minikube stop
+  minikube delete # optional (if you want to use minikube again, you don't need to delete it)
+
+## Learn Kubernetes Basics
+
+### Deploy an App
+
+kubectl command format:
+  kubectl [action] [resource]
+
+Check kubectl is configured to talk to your cluster:
+  kubectl version
+List cluster nodes:
+  kubectl get nodes
+Deploy an app:
+  kubectl create deployment [deployment-name] --image=[image-url]
+  kubectl create deployment kubernetes-bootcamp --image=gcr.io/google-samples/kubernetes-bootcamp:v1
+List deployments:
+  kubectl get deployments
+Create a proxy to forward communications into the cluster-wide, private network:
+    kubectl proxy #will run on port 8001
+  Get API version:
+    curl http://localhost:8001/version
+  List pod name:
+    kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}'
+  Access pod through proxy:
+    curl http://localhost:8001/api/v1/namespaces/default/pods/[pod-name]/
+
+### Explore Your App
+
+Troubleshooting with kubectl:
+  kubectl get [resource]      #list resources
+  kubectl describe [resource] #show detailed information about a resource
+  kubectl logs [pod-name]     #print the logs from a container in a pod
+  kubectl exec [pod-name]     #execute a command on a container in a pod
+  resources: pods, nodes, deployments, services, events
+Check application configuration:
+  kubectl get pods
+  kubectl describe pods
+Execute command in a container:
+  kubectl exec [pod-name] -- env
+  kubectl exec kubernetes-bootcamp-5485cc6795-8sgr6 -- env
+Start a bash session in a container:
+  kubectl exec -ti [pod-name] -- bash
+  kubectl exec -ti kubernetes-bootcamp-5485cc6795-8sgr6 -- bash
+    You can access the internal k8s network from this bash inside the pod:
+      curl http://localhost:8080
+
+### Expose Your App Publicly
+
+kubectl get pods
+kubectl get services
+kubectl expose deployment/kubernetes-bootcamp --type="NodePort" --port 8080
+kubectl get services
+
+To find out what port was opened externally (NodePort):
+    kubectl describe services/[service-name]
+    kubectl describe services/kubernetes-bootcamp
+  Or:
+    kubectl get services/kubernetes-bootcamp -o go-template='{{(index .spec.ports 0).nodePort}}'
+Get minikube IP:
+  minikube ip
+Access the NodePort:
+    curl http://[minikube-ip]:[node-port]
+    curl http://192.168.49.2:32478
+  If you're running minikube with Docker Desktop, create a minikube tunnel first:
+    from another terminal: minikube service kubernetes-bootcamp --url
+    curl using the ip and port from the response of the command above
+
+The Deployment created automatically a label for our Pod.
+With this command, you can see the name (the key) of that label:
+  kubectl describe deployment
+    then see the Labels field
+
+Use label to query list of Pods:
+  kubectl get pods -l app=[label-name]
+  kubectl get pods -l app=kubernetes-bootcamp
+Use label to query list of Services:
+  kubectl get services -l app=[label-name]
+  kubectl get services -l app=kubernetes-bootcamp
+
+Apply a new label we use the label subcommand followed by the object type, object name and the new label:
+  kubectl label [object-type] [object-name] [new-label]
+  kubectl label pods kubernetes-bootcamp-5485cc6795-8sgr6 version=v1
+Check new label is applied:
+  kubectl describe pods [pod-name]
+  kubectl describe pods kubernetes-bootcamp-5485cc6795-8sgr6
+    then see the Labels field
+Using the new label:
+  kubectl get pods -l version=v1
+
+Delete the service:
+  kubectl delete service -l app=kubernetes-bootcamp
+Confirm service is deleted:
+  kubectl get services
+Confirm that route is not exposed externally anymore:
+  curl http://[previously-exposed-ip-and-port]
+    the ip and port can be:
+      http://[minikube-ip]:[node-port]
+      or provided by the minikube tunnel
+Confirm the pod is still running:
+  kubectl exec -ti [pod-name] -- curl http://localhost:8080
+  kubectl exec -ti kubernetes-bootcamp-5485cc6795-8sgr6 -- curl http://localhost:8080
+
+### Running Multiple Instances of Your App
+
+kubectl expose deployment/kubernetes-bootcamp --type="NodePort" --port 8080
+kubectl get deployments
+
+List ReplicaSet:
+  kubectl get rs
+    the name might display: kubernetes-bootcamp-5485cc6795
+Scale Deployment:
+  kubectl scale deployments/[deployment-name] --replicas=[number-of-replicas]
+  kubectl scale deployments/kubernetes-bootcamp --replicas=4
+    to check:
+      kubectl get deployments   #the numbers will change
+      kubectl get pods -o wide  #new pods with different ip addresses will be found or terminated
+      kubectl describe deployments/kubernetes-bootcamp  #change can be found in Events field as log
+Check load balancing is working:
+  if using Docker Desktop, create a minikube tunnel:
+    minikube service kubernetes-bootcamp --url
+  then curl using the ip and port of minikube tunnel or http://[minikube-ip]:[node-port]
+  see that the pod name in the response is different
+
+### Performing a Rolling Update
+
+A rolling update allows a Deployment update to take place with zero downtime
+  so that we can even deploy new app versions several times a day.
+
+kubectl get deployments
+kubectl get pods
+
+View the current image version of the app:
+  kubectl describe pods
+    to show all pods and then check the Containers and Image field to check the version
+  kubectl describe pods [pod-name]
+    for one pod only
+Do rolling update:
+  kubectl set image deployments/[deployment-name] [deployment-name]=[new-image-version]
+  kubectl set image deployments/kubernetes-bootcamp kubernetes-bootcamp=docker.io/jocatalin/kubernetes-bootcamp:v2
+Verify rolling update done:
+  kubectl get pods
+  kubectl describe pods
+    check the Containers and Image field to check the version
+    check the Events log to see if there's any problem updating
+  kubectl rollout status deployments/kubernetes-bootcamp
+Rollback an update:
+  kubectl rollout undo deployments/kubernetes-bootcamp
+    Updates are versioned and you can revert to any previously known state of a Deployment.
+
+Clean up multiple resources:
+  kubectl delete deployments/kubernetes-bootcamp services/kubernetes-bootcamp

@@ -334,7 +334,7 @@ Constants are defined within the scope of the current class (or the main class i
 #--------------------------------------------------------------------------------
 #Method
   def functionName(parameter1, parameter2)          #can also be -> def functionName parameter1, parameter2
-     a block
+    a block
   end
   def functionName(parameter1, parameter2); a block; end    #one line method
 #Implicit return
@@ -373,82 +373,74 @@ end
 
 #--------------------------------------------------------------------------------
 #Proc vs Block vs Lambda
+block is not an object, can't be saved to variables, and don't have the powers of a real object
+  for that, we'll need procs
 procs are objects
-  blocks are just part of the *syntax* of a method call and can only appear in argument lists
+  blocks are just part of the syntax of a method call and can only appear in argument lists
 at most one block can appear in an argument list
   In contrast, you can pass multiple procs to methods.
 procs and lambdas are both Proc objects.
-  <Proc:0x007f96b1032d30@(irb):75>
-  <Proc:0x007f96b1b41938@(irb):76 (lambda)>
-lambdas check the number of arguments
+lambda checks the number of arguments passed to it, proc does not
+  lambda will throw an error if you pass it the wrong number of arguments
   procs just return nil if arguments are not passed and ignore extra arguments given
 lambdas and procs treat the 'return' keyword differently
-  'return' inside of a lambda triggers the code right outside of the lambda code
-  'return' inside of a proc triggers the code outside of the method where the proc is being executed
-    def lambda_test
-      lam = lambda { return "inner" }
-      lam.call
-      puts "Hello world"
-      return "outer"
-    end
-    lambda_test #puts "Hello world" and return "outer"
-
-    def proc_test
-      proc = Proc.new { return "inner" }
-      proc.call
-      puts "Hello world"
-      return "outer"
-    end
-    proc_test #only return "inner"
+  def lambda_test
+    lam = lambda { return "inner" }; lam.call;
+    #codes after is still executed
+  end
+  def proc_test
+    proc = Proc.new { return "inner" }; proc.call;
+    #codes after is not executed (the function proc_test will return)
+  end
 
 #Block
   {a block}
   do
     a block
   end
+  { |parameter1, parameter2| a block}
+  do |parameter1, parameter2|
+    a block
+  end
 
 #Yield
-methods that accept blocks transfer control from the calling method to the block and back again
-we can build this into the methods we define using the yield keyword
+allow methods to accept blocks
+  transfer control from the calling method to the block and back again to the method
+use block_given? to check if a block has been passed to avoid error
+example:
   def lala (name)
     puts "We're in the method!"
+    return "No block given" unless block_given?
     yield (name)
     yield ("Lala")
     puts "We're back in the method!"
   end
-
   lala(Yoshua) { |n| puts "We're in the block #{n}!" }
-  ->   We're in the method!
-    We're in the block Yoshua!
-    We're in the block Lala!
-    We're back in the method!
+  ->  We're in the method!
+      We're in the block Yoshua!
+      We're in the block Lala!
+      We're back in the method!
 
+#Lambda (anonymous function; a special type of Proc)
+  definition:
+    lambda { |parameter1, parameter2| code block }
+    -> (parameter1, parameter2) { code block } #arrow notation
 #Proc
-  proc_name = Proc.new {code block}    #you can also use the do end syntax
-
-  since block is not an object,
-    blocks can't be saved to variables
-    and don't have all the powers and abilities of a real object
-    for that, we'll need procs; plus procs keep your codes DRY
-  passing a proc as parameter: (&proc_name)
+  definition:
+   proc_name = Proc.new { |parameters| code block }    #you can also use the do end syntax
+  passing a proc or lambda as parameter: def method_name(&proc_name)
     the "&" convert the proc into a block
     the () is optional  #(see method)
-  calling a proc directly: proc_name.call
+  calling a proc directly:
+    best for clarity:
+      proc_name.call; proc_name.call(parameters)
+    other syntax:
+      proc_name.(); proc_name.(parameters)
+      proc_name[]; proc_name[parameters]
+      proc_name.===; proc_name.===parameters
   converting symbols to procs
     strings = ["1", "2", "3"]
     nums = strings.map(&:to_i)    -> [1, 2, 3]
-
-#Lambda
-  lambda: anonymous function
-  lambda { |parameters| code block }
-    use & to pass lambda as parameter
-    call lambda using call method
-  lambda vs proc
-    lambda checks the number of arguments passed to it, proc does not
-      lambda will throw an error if you pass it the wrong number of arguments
-      a proc will ignore unexpected arguments and assign nil to any that are missing
-    when a lambda returns, it passes control back to the calling method
-      when a proc returns, it does so immediately, without going back to the calling method
 
 #--------------------------------------------------------------------------------
 #Class and object
@@ -606,7 +598,7 @@ One of the main purposes of modules is to separate methods and constants into na
   gem          -> RubyGems help and overview
   gem list      -> list all local gems
   gem list --remote  -> list all remote gems at http://rubyforge.org
-    gem query --remote --name-matches class    -> asked the repository for all gems with names including the word “class.�?
+    gem query --remote --name-matches class    -> asked the repository for all gems with names including the word “class.�?
   gem install name  -> replace name with the gem name you want to install
     gem install name --source http://url.org  -> accessing a gem build from sources other than rubyforge.org
   gem update      -> update all local gems

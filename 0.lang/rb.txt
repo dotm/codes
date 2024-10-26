@@ -488,11 +488,11 @@ example:
   instance_name.instance_method
 #Calling attribute
   #Accessing global variable
-  $global_variable
+    $global_variable
   #Create method to get a variable
-  def method_name; variable_name; end
+    def method_name; variable_name; end
   #Using instance_variable_get or class_variable_get
-  ClassName.instance_variable_get(:@instance_variable)    #bad practice because violate encapsulation
+    ClassName.instance_variable_get(:@instance_variable)    #bad practice because violate encapsulation
 #Using attr_reader and attr_writer
   attr_reader :name    :=     def name; @name; end
     #If you want another method name, you could alias the accessor AFTER you define attr_reader:
@@ -526,6 +526,9 @@ class Canvas
 end
 within Canvas, you can access Line and Circle classes directly, but from
 outside the Canvas class, you can only access Line and Circle as Canvas::Line and Canvas::Circle
+
+#Optional chaining (using &. operator)
+  optional_value&.field_name
 
 #--------------------------------------------------------------------------------
 #Module

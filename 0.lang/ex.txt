@@ -1,0 +1,1227 @@
+use the `mix format` task to format your code according to a well-defined set of rules
+
+Get docs:
+  h ModuleName
+  h function_name/arity
+    h +/2
+    arity: the number of arguments the function takes.
+  h ModuleName.SubmoduleName.function_name/arity
+
+A variable assigned in a scope does not affect its surrounding environment:
+  x = 42
+  (fn -> x = 0 end).() # functions, try catch blocks, etc.
+  #x here is still 42
+
+IEx:
+  get value from n-th line: v(n)
+    iex(1)> 1+1
+    iex(2)> v(1) #returns 2
+  get last command value: v()
+  get n-th value from latest history: v(-n)
+    v(-1) == v()
+
+length vs. size
+  length means the information must be computed
+    e.g. for linked list
+  size information is pre-computed in the data structure
+    e.g. a fixed-length tuple
+
+#Optional syntax
+  The rules:
+    blocks are syntax convenience:
+      if variable? do
+        Call.this()
+      else
+        Call.that()
+      end
+    for keyword list:
+      if variable?, do: Call.this(), else: Call.that()
+    keyword lists as last argument do not require square brackets:
+      if variable?, [do: Call.this(), else: Call.that()]
+    keyword lists are the same as lists of two-element tuples:
+      if variable?, [{:do, Call.this()}, {:else, Call.that()}]
+    parentheses are optional on function calls:
+      if(variable?, [{:do, Call.this()}, {:else, Call.that()}])
+  Examples:
+    with syntax sugar:
+      defmodule Math do
+        def add(a, b) do
+          a + b
+        end
+      end
+    without:
+      defmodule(Math, [
+        {:do, def(add(a, b), [{:do, a + b}])}
+      ])
+
+#--------------------------------------------------------------------------------
+#Data types
+Elixir data structures are immutable.
+Variables can be rebound with = or with methods but the value inside variables won't change
+  example: variable_name = put_elem(variable_name, 1, "world") #rebound
+Getting count:
+  the function is named size if the operation is in constant time (the value is pre-calculated)
+  or length if the operation is linear (calculating the length gets slower as the input grows).
+
+Basic types:
+  true and false  # boolean (is actually atoms: :true and :false)
+  1               # integer
+  1.0             # float (64-bit)
+  :atom           # atom (symbol)
+  "elixir"        # string
+  [1, 2, 3]       # list
+  {1, 2, 3}       # tuple
+  nil             # (is actually atom: :nil)
+Number representation:
+  Binary: 0b1010 == 10
+  Octal: 0o777 == 511
+  Hexadecimal: 0x1F == 31
+  Float: 1.0
+  Scientific notation: 1.0e-10
+
+Operators
+  Arithmetic operators: + - * /
+    the operator / always returns float
+    integer division: div(7,2)
+    modulo (remainder): rem(7,2)
+  Boolean/Logical operators:
+    All are short circuit.
+    strict operators: and or not
+      only accepts boolean on the left side
+    relaxed operators: && || !
+      accepts any type on the left side
+      useful for assigning when nil: :nil || value
+  Comparison operators: == === != !== > < >= <=
+    == vs. ===
+      === is stricter in comparing integers and floats
+      1 == 1.0 is true. but 1 === 1.0 is false
+
+#--------------------------------------------------------------------------------
+#Strings
+  represented internally by contiguous sequences of bytes (binaries)
+
+concat: "hello " <> "world!"
+interpolation: "hello #{variable_name}!"
+print: IO.puts("hello\nworld")
+get length:
+  byte_size("hellö") == 6
+  String.length("hellö") == 5   #actual length of string
+
+#--------------------------------------------------------------------------------
+#Lists and tuples
+
+#(Linked) Lists: [1, 2, true, 3]
+  is heterogeneous
+  is linked lists
+    accessing the length of a list is a linear operation
+    updating or adding elements is fast
+  used as return type in functions when the number of elements returned may vary.
+functions:
+  length: length([])
+  concat: [1, 2, 3] ++ [4, 5, 6] == [1, 2, 3, 4, 5, 6]
+  substract: [1, true, 2, false, 3, true] -- [true, false] == [1, 2, 3, true]
+  head: hd([1, 2, 3]) == 1
+    hd([]) will raise ArgumentError
+  tail: tl(list) == [2, 3]
+  prepend: [0 | [1, 2, 3]] == [0, 1, 2, 3]
+
+#Tuples: {:ok, "hello"}
+  is heterogeneous
+  is stored contiguously in memory
+    getting the tuple size or accessing an element by index is fast
+    updating or adding elements is expensive (because it creates a new tuple in memory)
+  used as return type in functions when the number of elements returned is fixed.
+methods;
+  get by index: elem(tuple, 1)
+  set by index: put_elem(tuple, 1, 4)
+  get size: tuple_size({})
+
+#Tagged tuples: {tag, value}
+  a handy return value when an operation may succeed or fail:
+    {:ok, file content}
+    {:error, :enoent}
+
+#--------------------------------------------------------------------------------
+#Pattern matching
+
+#The match operator: =
+  to assign variables: x = 1
+    variables must be on the left side
+  to match variables:
+    1 = x #returns 1 because 1 matches with the value of x
+    2 = x #raise MatchError
+  to destructure: {a, b, c} = {:hello, "world", 42}
+    will raise error if a match can't be made:
+      left and right side is not the same size
+      one is tuple and one is list
+  pattern match on specific value: {:ok, result} = {:ok, 13}
+    the value 13 is destructured to result if the :ok matches
+  variables mentioned multiple times in a pattern must bind to the same value:
+    {x, x} = {1, 1} #OK
+    {x, x} = {1, 2} #MatchError
+  pattern match on list:
+    [a, b, c] = [1, 2, 3]
+  pattern match on list with head and tail:
+    [head | tail] = [1, 2, 3] #will raise MatchError if list is empty
+    head == 1
+    tail == [2, 3]
+
+#The pin operator: ^
+  used to avoid rebinding variables when we want to match to a variable instead
+  example:
+    x = 1
+    ^x = 2 #will raise MatchError because we pattern match to x current value (1)
+    x = 2  #will rebind x to 2
+  example with pattern matching destructuring:
+    x = 1
+    [^x, 2, 3] = [1, 2, 3]  #doesn't raise MatchError because x is 1
+    {y, ^x} = {2, 1}        #the value 2 is now assigned to y from destructuring
+    {y, ^x} = {2, 2}        #will raise MatchError because x is not 2
+
+#Ignore values with underscore variable
+  [head | _] = [1, 2, 3]  #only bind head and ignore the tail
+
+#Pattern match binaries/bitstrings
+  <<0, 1, x>> = <<0, 1, 2>>         #x is now 2
+  <<0, 1, x::2>> = <<0, 1, 2::2>>   #x can only be match with ::2 in this case
+if size is unknown:
+  <<0, 1, x::bitstring>> = <<0, 1, 2::3>> #x is now <<2::size(3)>>
+  <<0, 1, x::binary>> = <<0, 1, 2, 3, 4>> #x is now <<2, 3, 4>>
+other modifiers:
+  <<head::binary-size(2), rest::binary>> = <<0, 1, 2, 3>>
+    head == <<0, 1>>
+    rest == <<2, 3>>
+  <<head::bitstring-size(2), rest::bitstring>> = <<0, 1, 2, 3>>
+    head == <<0::size(2)>>
+    rest == <<0, 4, 8, 3::size(6)>>
+#Pattern match string (always use utf8 modifier)
+  <<head, rest::binary>> = "banana" #no problem
+    head == ?b
+    rest == "anana"
+  <<x, rest::binary>> = "über" #problem
+    x != ?ü
+  <<x::utf8, y::utf8, rest::binary>> = "über" #no problem
+    x == ?ü
+    y == ?b
+
+#--------------------------------------------------------------------------------
+#Errors (for exceptions; don't use for flow control)
+  raise error:
+    raise "oops"
+      ** (RuntimeError) oops
+    raise ArgumentError, message: "invalid argument foo"
+      ** (ArgumentError) invalid argument foo
+  custom error:
+    defmodule MyError do
+      defexception message: "default message"
+    end
+    raise MyError
+    ** (MyError) default message
+    raise MyError, message: "custom message"
+    ** (MyError) custom message
+  rescuing:
+    try do
+      raise "oops"
+    rescue
+      e in RuntimeError -> e    #either use this if you need to access the exception
+      RuntimeError -> "Error!"  #or use this if you don't need the exception
+      e ->                      #example below is for reraising error
+        Logger.error(Exception.format(:error, e, __STACKTRACE__))
+        reraise e, __STACKTRACE__
+    end
+
+#Throws
+  and then catch:
+    try do
+      Enum.each(-50..50, fn x ->
+        if rem(x, 13) == 0, do: throw(x)
+      end)
+      "Got nothing"
+    catch
+      x -> "Got #{x}"
+    end
+    "Got -39"
+  can also caught exit signal:
+    try do
+      exit("I am exiting")
+    catch
+      :exit, _ -> "not really"
+    end
+  within a function body:
+    defmodule Example do
+      def matched_catch do
+        exit(:timeout)
+      catch
+        :exit, :timeout ->
+          {:error, :timeout}
+      end
+
+      def mismatched_catch do
+        exit(:timeout)
+      catch
+        #Since no clause matches, this catch will have no effect
+        :exit, :explosion ->
+          {:error, :explosion}
+      end
+    end
+
+#Exit signal (to exit BEAM process)
+  exit with non-zero code:
+    spawn_link(fn -> exit(1) end)
+
+#Try after and else
+  expression_result = try do
+    # some code that can raise error
+  rescue
+    # do something if error
+  else
+    # do something if no error
+  after
+    # do this regardless of error or not
+  end
+
+#--------------------------------------------------------------------------------
+#Conditional
+
+#Case
+  pattern matching with binding:
+    case {1, 2, 3} do
+      {4, 5, 6} -> "This clause won't match"
+      {1, x, 3} -> "This clause will match and bind x to 2 in this clause"
+      _ -> "This clause would match any value"
+    end
+  pattern matching with pin operator to avoid binding:
+    x = 1
+    case 10 do
+      ^x -> "Won't match"
+      _ -> "Will match"
+    end
+  pattern matching with guards:
+    x = 1
+    case {1, 2, 3} do
+      {1, x, 3} when x > 0 -> "Will match"
+      _ -> "Would match, if guard condition were not satisfied"
+    end
+  error in guards do not leak (it just make the guard fails):
+    case 1 do
+      x when hd(x) -> "Simply won't match instead of raising ArgumentError"
+      x -> "Got #{x}"
+    end
+  pattern matching :ok and :error
+    case File.read("hello") do
+      {:ok, body} -> IO.puts("Success: #{body}")
+      {:error, reason} -> IO.puts("Error: #{reason}")
+    end
+  no matched clause in case will raise CaseClauseError
+
+#If else
+  if condition do
+    #will run if condition doesn't evaluate to nil or false
+    statements
+    return expression
+  else
+    statements
+    return expression
+  end
+#If else in keyword list form (ternary operation)
+  if condition, do: expression, else: expression
+#Using if else to change value in a functional way
+  x = if x >= 0 do
+    1
+    #x will be 1 if it's positive
+    #and nil if it's negative (since we don't supply else clause)
+  end
+#Unless
+  x = unless condition do
+    #will run if condition evaluates to nil or false
+    statements
+    return expression
+  end
+
+#Cond
+  check several conditions and find the first one that does not evaluate to nil or false.
+  is similar to else if in other languages.
+cond do
+  2 + 2 == 5 -> "This will not be true"
+  1 + 1 == 2 -> "But this will"
+  true -> "Add default case to avoid CondClauseError being raised because no conditions matched"
+end
+
+#--------------------------------------------------------------------------------
+#Looping
+
+#Comprehensions
+  is made of three parts:
+    generators
+    filters
+      filter expression that return false or nil will be discarded (all other values are selected)
+    collectables
+      is given inside do expression or do-end block
+  comprehensions options: :uniq, :into, and :reduce
+  docs:
+    https://hexdocs.pm/elixir/Kernel.SpecialForms.html#for/1
+    https://www.mitchellhanberg.com/the-comprehensive-guide-to-elixirs-for-comprehension/
+  with list generator:
+    for n <- [1, 2, 3, 4], do: n * n
+  with range generator:
+    for n <- 1..4, do: n * n
+  with map generator:
+    for {word, definition} <- dictionary do
+      IO.puts "#{word}: #{definition}"
+    end
+  with bitstring generators (to comprehend over bitstring streams)
+    pixels = <<213, 45, 132, 64, 76, 32, 76, 0, 0, 234, 32, 15>>
+    for <<r::8, g::8, b::8 <- pixels>>, do: {r, g, b}
+    # results in [{213, 45, 132}, {64, 76, 32}, {76, 0, 0}, {234, 32, 15}]
+  multiple generators:
+    for i <- [:a, :b, :c], j <- [1, 2], do:  {i, j} == [a: 1, a: 2, b: 1, b: 2, c: 1, c: 2]
+  multiple generators (with dependence):
+    dirs = ["/home/mikey", "/home/james"]
+    for dir <- dirs,
+        file <- File.ls!(dir),
+        path = Path.join(dir, file),
+        File.regular?(path) do
+      File.stat!(path).size
+    end
+  using stream from IO module as source and destination: (example below will echo back any string given but uppercased)
+    stream = IO.stream(:stdio, :line)
+    for line <- stream, into: stream do
+      String.upcase(line) <> "\n"
+    end
+  pattern matching to filter:
+    for {:even, n} <- values, do: n * n
+  using filter:
+    for n <- 0..5, rem(n, 2) == 0, do: n * n
+  using :into option
+    for <<c <- " hello world ">>, c != ?\s, into: "", do: <<c>>   #== "helloworld"
+  using :into option to transform values in a map
+    for {key, val} <- %{"a" => 1, "b" => 2}, into: %{}, do: {key, val * val}    #== %{"a" => 1, "b" => 4}
+  using :uniq option
+    for employee <- employees, hobby <- employee.hobbies, uniq: true do
+      hobby.name  #will collect unique hobby name
+    end
+  using :reduce option
+    for x <- [1, 2, 3], reduce: 0 do
+      acc -> x + acc
+    end
+
+#--------------------------------------------------------------------------------
+#Anonymous function
+  can access variables that are in scope when the function is defined (closures)
+#Syntax:
+  defining: add = fn a, b -> a + b end # Function<12.71889879/2 in :erl_eval.expr/5>
+  calling: add.(1, 2) == 3
+  check: is_function(add) == true
+  check number of arguments: is_function(add, 2) == true
+  pattern match (with guards) on function arguments:
+    f = fn
+      x, y when x > 0 -> x + y
+      x, y -> x * y
+    end
+
+#Capture operator
+  used to capture an existing function.
+    &ModuleName.SubmoduleName.function_name/arity
+  in a variable:
+    fun = &is_atom/1 #&:erlang.is_atom/1
+    add = &+/2
+  for function definition:
+    fun = &(&1 + 1)       #fun.(1) == 2
+    fun = &"Hello #{&1}"  #fun.("world") == "Hello world"
+
+#--------------------------------------------------------------------------------
+# Binaries, strings, charlists, bitstring
+  strings in Elixir are represented internally by binaries
+    is_binary("hellö") == true
+    IO.inspect("hełło", binaries: :as_binaries) == <<104, 101, 197, 130, 197, 130, 111>>
+    ?a = 97 = 0x0061
+    "a" = "\u0061"
+  bitstring: contiguous sequence of bits
+    <<3::4>> == <<3::size(4)>>  #shorthand way to define bit size
+    <<42>> == <<42::8>>         #default size is 8
+    <<0::1>> == <<2::1>>        #overflow back to 0 when reached limit of the size
+    <<0>> == <<256>>            #overflow back to 0 when reached limit of the size
+    <<259::16>> == <<1, 3>>
+    <<0::1, 0::1, 1::1, 1::1>> == <<3::4>>
+  binary: contiguous sequences of bytes (bits of size 8)
+    is_binary(<<3::4>>) == false
+    is_binary(<<42::16>>) == true
+  string: a valid UTF-8 encoded binary
+    String.valid?(<<239, 191, 19>>) == false
+  UTF-8 graphemes: multiple characters perceived as one
+    String.codepoints("👩‍🚒") == ["👩", "‍", "🚒"]
+    String.graphemes("👩‍🚒") == ["👩‍🚒"]
+    String.length("👩‍🚒") == 1
+  charlist: integer list where all the integers are valid code points
+    usually only used when using old erlang libraries
+      ~c"hello" == [?h, ?e, ?l, ?l, ?o]
+    instead of containing bytes, it contains integer code points
+      is_list(~c"hello") == true
+      is_binary(~c"hello") == false
+
+#String
+  get number of bytes: byte_size("hellö") == 6
+  get number of graphemes: String.length("hellö") == 5
+  get character code point: ?a == 97
+  get string binaries: IO.inspect("hełło", binaries: :as_binaries) == <<104, 101, 197, 130, 197, 130, 111>>
+  concatenate string: "Hello" <> " world"
+  convert to string:
+    to_string(~c"hełło") == "hełło"
+    to_string(:hello) == "hello" 
+    to_string(1) == "1"
+#Binary
+  concatenate binary: <<0, 1>> <> <<2, 3>>
+
+#Convert binary to bits (1 and 0)
+  defmodule Bits do
+    def as_string(binary) do
+      for(<<x::size(1) <- binary>>, do: "#{x}")
+      |> Enum.chunk_every(8)
+      |> Enum.join(" ")
+    end
+  end
+
+#Charlist
+  integer list as string (instead of charlist):
+    inspect([99, 97, 116], charlists: :as_list)
+    # will be "[99, 97, 116]"
+    # instead of ~c"cat"
+  convert to string: to_string(~c"hełło") == "hełło"
+  convert to charlist: to_charlist("hełło") == [104, 101, 322, 322, 111]
+  concatenate: ~c"Hello " ++ ~c"world"
+    same as concat list
+
+#Sigil
+  format:
+    start with ~
+    followed by either a single lower-case letter or one or more upper-case letters
+      uppercase letters sigils do not perform interpolation nor escaping
+        ~s(String with escape codes \x26 #{"inter" <> "polation"}) == "String with escape codes & interpolation"
+        @doc ~S"""
+          Converts double-quotes to single-quotes. convert("\"foo\"") == "'foo'"
+          """
+          def convert(...)
+    and then a delimiter
+      8 variations provided: // || "" '' () [] {} <>
+      so that you don't have to escape like this: ~r/^https?:\/\// and can use this instead ~r(^https?://)
+    optional modifiers are added after the final delimiter
+    also support heredocs (3 double-quotes or single-quotes) as separators:
+      ~s"""
+        this isa heredoc string
+        """
+  common sigils:
+    ~r/regex with case insensitive/i
+    ~s(this is a string with "double" quotes, not 'single' ones)
+    ~c"charlist"
+    ~w(foo bar bat) == ["foo", "bar", "bat"]
+      modifiers: c for charlists, s for strings, and a for atoms,
+      ~w(foo bar bat)a == [:foo, :bar, :bat]
+    ~D[2019-10-31] (creates %Date{} struct)
+    ~T[23:00:07.123456] (creates %Time{} struct, microsecond can be omitted)
+    ~N[2019-10-31 23:00:07] (creates %NaiveDateTime{} struct, doesn't have timezone)
+    ~U[2019-10-31 19:59:03Z] (creates %DateTime{} struct, with timezone)
+  sigil internal:
+    ~r/foo/i is the same as calling a function with a binary and a char list as the argument sigil_r(<<"foo">>, [?i])
+  custom sigil:
+    defmodule MySigils do
+      def sigil_i(string, []), do: String.to_integer(string)
+      def sigil_i(string, [?n]), do: -String.to_integer(string)
+    end
+    import MySigils
+    ~i(13) == 13
+    ~i(42)n == -42
+  Sigils can also be used to do compile-time work with the help of macros. 
+    see the Kernel module
+
+#Escape codes
+  \\ – single backslash
+  \a – bell/alert
+  \b – backspace
+  \d - delete
+  \e - escape
+  \f - form feed
+  \n – newline
+  \r – carriage return
+  \s – space
+  \t – tab
+  \v – vertical tab
+  \0 - null byte
+  \xDD - represents a single byte in hexadecimal (such as \x13)
+  \uDDDD and \u{D...} - represents a Unicode codepoint in hexadecimal (such as \u{1F600})
+
+#--------------------------------------------------------------------------------
+#Associative data structures
+
+#Keyword lists
+  list of ordered 2-item tuples where
+    the first element (the key) is an atom
+    and the second element can be any value.
+  mostly used to pass options to functions
+    String.split("1  2  3", " ", [{:trim, true}])
+    String.split("1  2  3", " ", [trim: true])    #shorthand for keyword list
+    String.split("1  2  3", " ", trim: true)      #shorthand when it is the function's last args
+  access by key: keyword_list[:atom]
+    in case of duplicate keys, value at the front of the list is the one fetched
+
+#Maps
+  unordered key value pairs where the key can be any value (heterogeneous)
+    %{"key" => "value", 1 => true, true => false}
+  get by key: map_name[key]
+    will return nil if no key found
+  get by key with default value: Map.get(map_name, key, default_value)
+  put by key: Map.put(map_name, key, value)
+  predefined keys (can't add or remove new key)
+    created by using atom as key
+      map = %{:name => "John", :age => 23}
+      map = %{name: "John", age: 23}
+    access with dot syntax: map.name
+      will raise KeyError when using dot syntax if no key found
+    put if key has been defined: map = %{map | key: value}
+      will raise KeyError if key hasn't been defined
+
+#Nested data structure
+  example:
+    users = [
+      john: %{name: "John", age: 27, languages: ["Erlang", "Ruby", "Elixir"]},
+      mary: %{name: "Mary", age: 29, languages: ["Elixir", "F#", "Clojure"]}
+    ]
+  get:
+    users[:john].age
+  set:
+    users = put_in users[:john].age, 31
+  update with function:
+    users = update_in users[:mary].languages, fn languages -> List.delete(languages, "Clojure") end
+  other methods:
+    get_in/1
+    pop_in/1
+    get_and_update_in/2
+    get_in/3
+    put_in/3
+    update_in/3
+    get_and_update_in/3
+    pop_in/2
+
+#Structs (structure)
+  structs are maps with a field named __struct__ that holds the name of the struct
+    struct_variable.__struct__ == StructName
+  structs do not inherit any of the protocols that maps do
+  only the fields defined through defstruct will be allowed to exist in a struct
+  define:
+    defmodule User do
+      @enforce_keys [:name]                     #name must be specified on instantiation
+      defstruct name: "John", age: 27, id: nil  #values defined here will be the default values
+      defstruct [:id, name: "John", age: 27]    #same as the line above (keyword list must come last)
+    end
+  instantiate:
+    %User{}
+    %User{name: "Jane"}
+  accessing field:
+    struct_variable.field_name
+  updating field:
+    struct_variable = %{ struct_variable | field_name: new_value }
+  pattern match field:
+    %StructName{field_name: variable_name} = struct_variable
+
+#Protocol
+  definition:
+    defprotocol Utility do
+      @spec type(t) :: String.t()
+      def type(value)
+    end
+  implementation:
+    defimpl Utility, for: BitString do
+      def type(_value), do: "string"
+    end
+  calling:
+    Utility.type("hello")
+  common protocols:
+    Enumerable
+    String.Chars (to_string)
+    Inspect
+#Using Any in Protocol
+  defining default behaviour:
+    defimpl Size, for: Any do
+      def size(_), do: 0
+    end
+  using default behaviour explicitly with @derive:
+    defmodule OtherUser do
+      @derive [Size]
+      defstruct [:name, :age]
+    end
+  using default behaviour implicitly with @fallback_to_any:
+    defprotocol Size do
+      @fallback_to_any true
+      def size(data)
+    end
+
+#--------------------------------------------------------------------------------
+#Module
+  is_atom(ModuleName) == true
+  to_string(ModuleName) == "Elixir.ModuleName"
+  to_string(String) == "Elixir.String"
+  :"Elixir.ModuleName" == ModuleName
+  :"Elixir.String" == String
+  :"Elixir.ModuleName".function_name
+
+creation:
+  !file_name.ex
+  defmodule ModuleName do
+    def function_name do
+    end
+    defp private_function do
+    end
+  end
+compilation: elixirc file_name.ex
+  will generate Elixir.file_name.beam (bytecode file)
+usage in iex (need to open iex in the same directory as the bytecode):
+  ModuleName.function_name
+mix project structure:
+  _build - contains compilation artifacts
+  lib - contains Elixir code (usually .ex files)
+  test - contains tests (usually .exs files)
+
+scripting mode
+  !file_name.exs
+  defmodule ModuleName do
+    def function_name do
+    end
+  end
+  ModuleName.function_name #you can call functions directly in exs file
+build and run: elixir file_name.exs
+
+You don't have to define parent module before being able to define the child module
+  this is the same:
+    defmodule Foo do
+      defmodule Bar do
+      end
+    end
+  with this (as they are effectively independent):
+    defmodule Foo.Bar do
+    end
+    defmodule Foo do
+      alias Foo.Bar #allows this to still be accessed as Bar inside Foo module
+    end
+
+#Function (can only be defined inside module)
+  definition:
+    def function_name do
+    end
+  do block syntax definition:
+    def function_name, do: expression
+  private function definition:
+    use defp instead of def
+  functions returning boolean:
+    use ? after name like function_name?
+  functions that can be used as guards:
+    use is_x format without ? like is_even
+  with args:
+    def function_name(arg1, arg2, optional_arg \\ expression), do: something
+  function head (function definition without a body):
+    def join(a, b \\ nil, sep \\ " ")
+    # If a function with default values has multiple clauses,
+    # you must create a function head for declaring defaults
+    def join(a, b, _sep) when is_nil(b), do: a
+    def join(a, b, sep), do: a <> sep <> b
+  with after clause to ensure code execution even when error:
+    def function_name do
+      raise "oops"
+    after
+      IO.puts "cleaning up!"
+    end
+
+#Module attributes
+  @moduledoc — provides documentation for the current module.
+  @doc — provides documentation for the function or macro that follows the attribute.
+  @spec — provides a typespec for the function that follows the attribute.
+  @behaviour — (notice the British spelling) used for specifying an OTP or user-defined behaviour.
+single line example:
+  defmodule MyServer do
+    @moduledoc "My server code."
+  end
+multi line with heredoc and Doctests:
+  defmodule Math do
+    @moduledoc """
+    Provides math-related functions.
+
+    ## Examples (doctest)
+
+        iex> Math.sum(1, 2)
+        3
+
+    """
+
+    @doc """
+    Calculates the sum of two numbers.
+    """
+    def sum(a, b), do: a + b
+  end
+used as temporary storage (after the module is compiled, the module attribute is discarded, and it's return value is copied into where it's used):
+  defmodule MyServer do
+    @service URI.parse("https://example.com")
+    
+    #accessing the temporary storage
+    IO.inspect @service
+    def status(email) do
+      SomeHttpClient.get(@service)
+      #above line will be replaced with the lines below:
+      SomeHttpClient.get(%URI{
+        authority: "example.com",
+        host: "example.com",
+        port: 443,
+        scheme: "https"
+      })
+    end
+
+    #avoid reading the same attribute multiple times and instead move it to function
+    #that is, prefer this:
+      def some_function, do: do_something_with(example())
+      def another_function, do: do_something_else_with(example())
+      defp example, do: @example
+    #instead of this:
+      def some_function, do: do_something_with(@example)
+      def another_function, do: do_something_else_with(@example)
+  end
+as compile-time constants:
+  you can do this:
+    @hours_in_a_day 24
+  but prefer:
+    defp hours_in_a_day(), do: 24
+    defp system_config(), do: %{timezone: "Etc/UTC", locale: "pt-BR"}
+      #composite data structures as constants is ok, if they are made exclusively of other data types (no function calls, operators, or other expressions)
+      #Given data structures in Elixir are immutable, only one instance of the data structure above is allocated and shared across all functions calls, if it doesn't have any executable expression.
+  and if you need public constants shared across modules,
+    create a MyApp.Constants module.
+  The use case for module attributes arise when you need to do some work at compile-time and then inject its results inside a function.
+    A common scenario is module attributes inside patterns and guards (as an alternative to defguard/1),
+    since they only support a limited set of expressions:
+      inside pattern:
+        @default_timezone "Etc/UTC"
+        def shift(@default_timezone), do: ...
+      inside guards:
+        @time_periods [:am, :pm]
+        def shift(time, period) when period in @time_periods, do: ...
+Module attributes as constants and as temporary storage are most often used together:
+  the module attribute is used to compute and store an expensive value, and then exposed as constant from that module using function definition.
+Libraries and frameworks can leverage module attributes to provide custom annotations.
+  defmodule MyTest do
+    use ExUnit.Case, async: true #ExUnit stores the value of async in a module attribute to change how the module is compiled.
+
+    #Tags also work as annotations and can be supplied multiple times, thanks to Elixir's ability to accumulate attribute.
+    #Then you can use tags to setup and filter tests, such as avoiding executing Unix specific tests while running your test suite on Windows.
+    @tag :external
+    @tag os: :unix
+    test "contacts external service" do
+      # ...
+    end
+  end
+
+
+#--------------------------------------------------------------------------------
+#Iteration
+  Elixir doesn't have iteration
+  use recursion (optimize with tail call)
+    def sum_list([head | tail], accumulator) do
+      sum_list(tail, head + accumulator)
+      # not a tail call if there is other statements/expression after the sum_list call
+      # or if you do things like: return 1 + sum_list()
+    end
+    def sum_list([], accumulator) do
+      #base case
+      accumulator
+    end
+  use Enum methods (filter, map, reduce, etc.) so you don't have to reinvent the wheel
+    Enum.each(0..3, &IO.puts/1)
+    Enum.reduce([1, 2, 3], 0, fn x, acc -> x + acc end)
+    Enum.reduce([1, 2, 3], 0, &+/2)
+    Enum.map([1, 2, 3], fn x -> x * 2 end)
+    Enum.map([1, 2, 3], &(&1 * 2))
+    Enum.map(%{1 => 2, 3 => 4}, fn {k, v} -> k * v end)
+
+#Range
+  0..3 # 0 to 3 inclusive
+
+#Pipe operator
+  passes the output on its left as first argument to the function call on its right side
+  example:
+    before:
+      stream = Stream.unfold("hełło", &String.next_codepoint/1)
+      Enum.take(stream, 10)
+    after:
+      Stream.cycle([1, 2, 3]) |> Enum.take(10)
+    before: Enum.sum(Enum.filter(Enum.map(1..100_000, &(&1 * 3)), odd?))
+    after: 1..100_000 |> Enum.map(&(&1 * 3)) |> Enum.filter(odd?) |> Enum.sum()
+
+#Stream
+  lazy-evaluation, composable enumerables.
+    instead of generating intermediate lists,
+    streams build a series of computations that are 
+    invoked only when we pass the underlying stream to the Enum module
+  useful when working with large/infinite collections
+    1..100_000 |> Stream.map(&(&1 * 3)) |> Stream.filter(odd?) |> Enum.sum()
+    Stream.cycle([1, 2, 3]) |> Enum.take(10)
+
+
+#--------------------------------------------------------------------------------
+All modules defined in Elixir are defined inside the main Elixir namespace, such as Elixir.String.
+  However, for convenience, you can omit "Elixir." when referencing them.
+
+alias, require, and import are lexically scoped
+  (you can import them in a function/module and it will only be available in that function/module)
+example:
+  defmodule Math do
+    def plus(a, b) do
+      alias Math.List
+    end
+  end
+
+#alias directive
+  alias Foo.Bar, as: Bar #Alias the module so it can be called as Bar instead of Foo.Bar
+    #same as: alias alias Foo.Bar
+    #because alias without :as means the last part of the module name becomes the alias
+  alias MyApp.{Foo, Bar, Baz} #will be spread into MyApp.Foo, MyApp.Bar and MyApp.Baz
+Aliases expand to atoms because in EVM (and consequently Elixir),
+  modules are always represented by atoms: :"Elixir.Foo.Bar" == Bar
+
+#require directive
+  require Foo #Require the module in order to use its macros
+  require MyApp.{Foo, Bar, Baz} #will be spread into MyApp.Foo, MyApp.Bar and MyApp.Baz
+
+#import directive
+  import Foo #Import functions/macros to current namespace (instead of aliasing for shortcut)
+  import List, only: [duplicate: 2] #will import List.duplicate/2
+  import List, except: [duplicate: 2]
+  import MyApp.{Foo, Bar, Baz} #will be spread into MyApp.Foo, MyApp.Bar and MyApp.Baz
+While imports can be a useful for frameworks and libraries to build abstractions,
+  developers should generally prefer alias to import on their own codebases,
+  as aliases make the origin of the function being invoked clearer.
+
+#use macro
+  use Foo #Invokes the custom code defined in Foo as an extension point
+  defmodule Example do
+    use Feature, option: :value
+    #the line above will be compiled to lines below
+    require Feature
+    Feature.__using__(option: :value) #this needs to be defined in the Feature module
+  end
+  use MyApp.{Foo, Bar, Baz} #will be spread into MyApp.Foo, MyApp.Bar and MyApp.Baz
+Since use allows any code to run, we can't really know
+  the side-effects of using a module without reading its documentation.
+  Therefore use this function with care and only if strictly required.
+  Don't use use where an import or alias would do.
+
+#--------------------------------------------------------------------------------
+#IO
+  print to stdout:
+    IO.puts "hello"
+  get from stdin:
+    answer = IO.gets "confirm? (Y/n)\n"
+
+#File
+  read 10 lines from file and auto-close it:
+    stream = File.stream!("path/to/file")
+    Enum.take(stream, 10)
+  open file:
+    {:ok, file} = File.open("path/to/file/hello", [:write])
+    #file is PID to a process that will be terminated when the file is closed
+    #use :append instead of :write to not remove previous content
+    #if the file is opened without encoding,
+    #  by default the file is expected to be in raw (binary) mode,
+    #  and the functions in the IO module starting with bin* must be used
+    #  (example: IO.binread/2 and IO.binwrite/2)
+    # the default IO device (:stdio) and files opened with :utf8 encoding
+    #  work with the remaining functions in the IO module.
+  write to file:
+    IO.binwrite(file, binary)
+      IO.binwrite(file, "world")
+    IO.write(pid, binary)
+      IO.write(pid, "hello")
+  iodata and chardata
+    valid examples:
+      ["Hello ", name, "!"] 
+      ["apple", [",", "banana", [",", "lemon"]]]
+    IO.binwrite/2 #accepts iodata (integers in iodata represent bytes)
+    IO.write/2 #accepts chardata (integers in chardata represent Unicode code points)
+  optimizing string operation (avoid creating new string in memory)
+    IO.puts(["Hello ", name, "!"])
+      #use this instead of IO.puts("Hello " <> name <> "!")
+    Enum.intersperse(["apple", "banana", "lemon"], ",")
+      #use this instead of Enum.join(["apple", "banana", "lemon"], ",")
+  close file:
+    File.close(file)
+  read file:
+    {:ok, content} = File.read("path/to/file/hello") #will return {:error, content} if it fails
+    content = File.read!("path/to/file/hello") #read! will raise more meaningful error if it fails
+  #read with pattern matching:
+    case File.read("path/to/file/hello") do
+      {:ok, body} -> # do something with the `body`
+      {:error, reason} -> # handle the error caused by `reason`
+    end
+  File.rm/1 remove files
+  File.mkdir/1 create directories
+  File.mkdir_p/1 create directories and all their parent chain
+  File.cp_r/2 copy recursive
+  File.rm_rf/1
+#Path
+  Path.join("foo", "bar") #"foo/bar" or "foo\bar" in Windows
+  Path.expand("~/hello") #"/Users/dotm/hello"
+  Path.expand("./hello")
+
+#--------------------------------------------------------------------------------
+#OTP
+  Process and messages are the building blocks of otp.
+  The core of otp is GenServer and Supervisor.
+  GenServer is a looping process that keeps its own state and accepts rpc style messages.
+    The server side is what's already implemented by GenServer
+    (including mechanisms for handling concurrency that'll be hard too implement ourself),
+    and then we just need to add
+      callbacks (the rpcs) that make use of GenServer mechanisms
+      and a client API (convenience methods for the callback).
+  An agent is for a common subset of GenServer usecase (storing data).
+    We can just use it or
+    we can implement a client api since the server side is already implemented.
+  We need to use linked process (using spawn_link and start_link)
+    so that the process can be supervised.
+  Supervisor wraps around processes to make sure they're auto restarted when failing.
+
+#Process
+  spawn:
+    pid = spawn(fn -> 1 + 2 end)
+  get current process:
+    pid = self()
+  check process is alive:
+    Process.alive?(pid)
+  send message to a process:
+    send(pid, message)
+    send(self(), {:hello, "world"})
+  give name to a process:
+    Process.register(pid, :alias)
+    send(:alias, {:hello, "world"})
+  receive message in a process mailbox:
+    receive do
+      {:hello, msg} -> msg
+      {:world, _msg} -> "won't match"
+    after
+      0 -> "optional timeout (will wait for 1s and kill self)"
+      # no after clause means process will wait indefinitely for messages
+      # timeout of 0 means process expect the message to be already in the mailbox
+      #  useful when experimenting in iex because no timeout can hang the iex process
+      #  (if no message is in the iex mailbox)
+    end
+  flushes and prints all the messages in the mailbox: flush()
+  spawn child process that send message to its parent:
+    parent = self() #need to capture current pid here (not inside spawn argument)
+    spawn(fn -> send(parent, {:hello, self()}) end) #self here is the child process pid
+    receive do
+      {:hello, pid} -> "Got hello from #{inspect pid}"
+    end
+#Linked process: will cause parent process to fail if one of it's child fails
+  spawn new linked process:
+    spawn_link(fn -> raise "error" end)
+  link already spawned process to current process:
+    pid = spawn(fn -> Process.sleep(10000); raise "error" end)
+    Process.link(pid)
+
+#Task: a GenServer well suited for long running task with async await API.
+  example:
+    task = Task.async(fn -> 1 + 1 end) #error will be linked to parent
+    res = Task.await(task) #res == 2
+  start new isolated task:
+    {:ok, pid} = Task.start(fn -> raise "oops" end)
+    #use this if you care only for side-effects and not its results nor if it completes successfully
+  start new linked task (will kill parent if child fails):
+    {:ok, pid} = Task.start_link(fn -> raise "oops" end)
+
+#Agent: a GenServer used to store state
+  start new isolated agent:
+    {:ok, pid} = Agent.start(fn -> %{} end)
+  start new linked agent (will kill parent if child fails):
+    {:ok, pid} = Agent.start_link(fn -> %{} end)
+  update state
+    Agent.update(pid, fn map -> Map.put(map, :hello, :world) end)
+  get state
+    Agent.get(pid, fn map -> Map.get(map, :hello) end)
+
+#--------------------------------------------------------------------------------
+#Debugging
+
+using IO.inspect(item, opts \\ []) to debug pipeline:
+  (1..10)
+  |> IO.inspect()
+  |> Enum.map(fn x -> x * 2 end)
+  |> IO.inspect()
+  |> Enum.sum()
+  |> IO.inspect()
+will print:
+  1..10
+  [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]
+  110
+add label:
+  [1, 2, 3]
+  |> IO.inspect(label: "before")
+  |> Enum.map(&(&1 * 2))
+  |> IO.inspect(label: "after")
+  |> Enum.sum
+will print:
+  before: [1, 2, 3]
+  after: [2, 4, 6]
+get all variable names and their values:
+  IO.inspect binding()
+
+dbg/2 is similar to IO.inspect/2,
+  but it also prints the code and location
+example:
+  !my_file.exs
+  feature = %{name: :dbg, inspiration: "Rust"}
+  dbg(feature)
+  dbg(Map.put(feature, :in_version, "1.14.0"))
+will print:
+  [my_file.exs:2: (file)]
+  feature #=> %{inspiration: "Rust", name: :dbg}
+  [my_file.exs:3: (file)]
+  Map.put(feature, :in_version, "1.14.0") #=> %{in_version: "1.14.0", inspiration: "Rust", name: :dbg}
+using dbg to debug pipeline:
+  !dbg_pipes.exs
+  __ENV__.file
+  |> String.split("/", trim: true)
+  |> List.last()
+  |> File.exists?()
+  |> dbg()
+will print:
+  [dbg_pipes.exs:5: (file)]
+  __ENV__.file #=> "/home/myuser/dbg_pipes.exs"
+  |> String.split("/", trim: true) #=> ["home", "myuser", "dbg_pipes.exs"]
+  |> List.last() #=> "dbg_pipes.exs"
+  |> File.exists?() #=> true
+
+pass --dbg pry as an option to "stop" the code execution where the dbg call is:
+  iex --dbg pry
+  iex --dbg pry -S mix    # debug inside a of a project:
+Now any call to dbg will ask if you want to pry the existing code.
+  If you accept, you can access all variables, imports and aliases from the code, directly from IEx.
+  This is called "prying".
+While the pry session is running, the code execution stops,
+  until continue (or c) or next (or n) are called.
+Remember you can always run iex in the context of a project with iex -S mix TASK.
+You can then use whereami to check where the code execution stop.
+  You can use this to check the code around: whereami 20 #where 20 is an arbitrary number.
+
+using IEx.break!/2
+  iex(1)> break! URI.decode_query/2
+  iex(2)> URI.decode_query "foo=bar", %{}
+the second line will trigger the break! (pry)
+you can then use whereami and access the parameters of decode_query
+
+mix test with breakpoints via the -b/--breakpoints flag
+When the flag is used, a breakpoint is set at the beginning of every test that will run.
+  iex -S mix test --breakpoints --failed  # Debug all failed tests
+  iex -S mix test -b path/to/file:line    # Debug the test at the given file:line
+when breakpoint is triggered, you can use all pry functionality
+
+Using observer:
+  $ iex
+  Mix.ensure_application!(:wx)             # Not necessary on Erlang/OTP 27+
+  Mix.ensure_application!(:runtime_tools)  # Not necessary on Erlang/OTP 27+
+  Mix.ensure_application!(:observer)
+  :observer.start()
+The above will open another Graphical User Interface that provides many panes to fully understand and navigate the runtime and your project.
+If you are using the Phoenix web framework, it ships with the Phoenix LiveDashboard, a web dashboard for production nodes which provides similar features to Observer.
+
+Finally, remember you can also get a mini-overview of the runtime info by calling runtime_info/0 directly in IEx.
+
+We have just scratched the surface of what the Erlang VM has to offer, for example:
+- Alongside the observer application, Erlang also includes a :crashdump_viewer to view crash dumps
+- Integration with OS level tracers, such as Linux Trace Toolkit, DTRACE, and SystemTap
+- Microstate accounting measures how much time the runtime spends in several low-level tasks in a short time interval
+- Mix ships with many tasks under the profile namespace, such as mix profile.cprof and mix profile.fprof
+- For more advanced use cases, we recommend the excellent Erlang in Anger, which is available as a free ebook
+
+#--------------------------------------------------------------------------------
+#Erlang libraries
+
+call in Elixir:
+  ModuleName.method_name()
+call in Erlang:
+  :module_name.method_name()
+
+The :binary module is useful when you are dealing with binary data that is not necessarily UTF-8 encoded.
+String module returns Unicode codepoints, while :binary deals with raw data bytes.
+  String.to_charlist("Ø") == [216]
+  :binary.bin_to_list("Ø") == [195, 152]
+
+:io.format/2 and :io_lib.format/2 is used for printf purpose
+  The first formats to terminal output, while the second formats to an iolist.
+    iex> :io.format("Pi is approximately given by:~10.3f~n", [:math.pi])
+    Pi is approximately given by:     3.142
+    :ok
+    iex> to_string(:io_lib.format("Pi is approximately given by:~10.3f~n", [:math.pi]))
+    "Pi is approximately given by:     3.142\n"
+The format specifiers differ from printf, refer to the Erlang documentation for details.
+
+The :crypto module is part of the :crypto application that ships with Erlang.
+This means you must list the :crypto application as an additional application in your project configuration.
+To do this, edit your mix.exs file to include:
+  def application do
+    [extra_applications: [:crypto]]
+  end
+Any module that is not part of the :kernel or :stdlib Erlang applications must have their application explicitly listed in your mix.exs
+
+The :digraph and :digraph_utils modules contain functions for dealing with directed graphs built of vertices and edges.
+
+The modules :ets and :dets handle storage of large data structures in memory or on disk respectively.
+
+The :math module contains common mathematical operations covering trigonometry, exponential, and logarithmic functions.
+
+The :queue module provides a data structure that implements (double-ended) FIFO (first-in first-out) queues efficiently:
+
+The :rand has functions for returning random values and setting the random seed.
+
+The :zip module lets you read and write ZIP files to and from disk or memory, as well as extracting file information.
+
+The :zlib module deals with data compression in zlib format, as found in the gzip command line utility found in Unix systems.
+
+#--------------------------------------------------------------------------------
+#Documentation
+  Elixir documentation is written using Markdown
+Example with Doctests:
+  defmodule MyApp.Hello do
+    @moduledoc """
+    This is the Hello module.
+    """
+    @moduledoc since: "1.0.0"   #metadata
+
+    @doc metadata_key: "metadata value"
+    @doc deprecated: "Use Foo.bar/2 instead"  #will not raise deprecated warning
+    @deprecated "Use Foo.bar/2 instead"       #this will emit deprecated warning
+    @doc """
+    Says hello to the given `name`.
+
+    Returns `:ok`.
+
+    ## Examples
+
+        iex> MyApp.Hello.world(:john)
+        :ok
+
+    """
+    @doc since: "1.3.0"
+    def world(name) do
+      IO.puts("hello #{name}")
+    end
+
+    def size(map_with_size)     #function head added as documentation purpose
+    def size(%{size: size}) do
+      size
+    end
+  end
+Hiding module and function (from being documented):
+  defmodule MyApp.Hidden do
+    @moduledoc false  #hide the whole module (and all functions in it)
+
+    @doc false        #hide this function only
+    def add(a, b), do: a + b
+
+    # function starting with 1 or 2 underscores are automatically treated as hidden
+    # compiler does not import functions with leading underscores
+    # and they hint to anyone reading the code of their intended private usage.
+    def __add__(a, b), do: a + b
+  end

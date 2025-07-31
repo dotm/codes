@@ -1,3 +1,5 @@
+// In Dart, everything is an object
+
 // Define a function.
 void printInteger(int aNumber) {
   print('The number is $aNumber.'); // Print to console.
@@ -8,13 +10,21 @@ void main() {
   var number = 42; // Declare and initialize a variable.
   printInteger(number); // Call a function.
 }
+// can also capture CLI arguments
+void main(List<String> arguments) {
+  print(arguments);
+}
 
 #--------------------------------------------------------------------------------
 // single line comment
 /* multi line comment */
 
-/// single line documentation comment
-/** multi line documentation comment */
+/// single line documentation comment referencing a [method]
+/** multi line documentation comment referencing a [ClassName] */
+Inside a documentation comment, the analyzer ignores all text unless it is enclosed in [brackets].
+Using brackets, you can refer to classes, methods, fields, top-level variables, functions, and parameters.
+The names in brackets are resolved in the lexical scope of the documented program element.
+In the class's generated documentation, they'll becomes useful links.
 
 #--------------------------------------------------------------------------------
 #Variable declaration:
@@ -22,13 +32,14 @@ void main() {
   variable_type variableName;
   variable_type variableName = value;
 #Late variables: a non-nullable variable that’s lazily initialized after its declaration.
-  late String temperature = readThermometer(); // Lazily initialized.
+  late String temperature = readThermometer(); // only initialized if temperature is used
 
 #Final and const
   final variable can be set only once
+    but its fields can be changed (unlike const)
   const variable is a compile-time constant
-    can be at the class level, mark it static const
-    can also create constant values, as well as to declare constructors that create constant values.
+    if it's at the class level, mark it: static const
+    can be used to create constant values, as well as to declare constructors that create constant values.
 #Examples
   final name = 'Bob'; // Without a type annotation
   final String nickname = 'Bobby';
@@ -36,26 +47,45 @@ void main() {
   final bar = const [1,2];
   const bar = []; // Equivalent to `const []`
 
+#Wildcard variables _
+  represent an unused placeholder
+#Examples
+  for (var _ in list) {}
+  try {
+    throw '!';
+  } catch (_) {
+    print('oops');
+  }
+
 #--------------------------------------------------------------------------------
 #Data types
   Everything you can place in a variable is an object.
-    Even numbers, functions, and null are objects.
-    With the exception of null (if you enable sound null safety),
+    including numbers, functions, and null.
+  With the exception of null (if you enable sound null safety),
     all objects inherit from the Object class.
+  Nullable type is suffixed by ? such as String?
 #num: int, double
   Exponent: 1.42e5
+  Separator: var macAddress = 0x00_14_22_01_23_45
+  num x = 1; // can have both int and double values
 #String
 #bool
+#Record
+#Function
 #List (arrays)
 #Set
 #Map
 #Runes
 #Symbol
+  represents an operator or identifier declared in a Dart program
+  they're used in APIs that refer to identifiers by name,
+    because minification changes identifier names but not identifier symbols.
+  get the symbol for an identifier: #identifier_name
 #Null
   null
 #Object: The superclass of all Dart classes except Null.
 #Enum: The superclass of all enums.
-#Future and Stream: Used in asynchrony support.
+#Future and Stream: Used in asynchronous programming.
 #Iterable: Used in for-in loops and in synchronous generator functions.
 #Never: Indicates that an expression can never successfully finish evaluating.
   Most often used for functions that always throw an exception.
@@ -63,3 +93,1362 @@ void main() {
   Usually you should use Object or Object? instead.
 #void: Indicates that a value is never used.
   Often used as a return type.
+
+#Type operators
+  #as
+    for typecasting (can raise exception)
+    if you're unsure about an object type, use is operator like this:
+      if (object is type){ statement; }
+  #is
+    True if the object has the specified type
+  #is!
+    True if the object doesn't have the specified type
+#Type alias (typedef)
+  typedef TypeAlias = OriginalType;
+  typedef Age = int;
+  typedef IntList = List<int>; //with parameterized type
+  typedef ListMapper<X> = Map<X, List<X>>; //with type parameter
+  typedef CompareFn<T> = int Function(T a, T b);
+#Get object type at runtime: objectName.runtimeType //returns a Type object
+
+#Operators
+  #Arithmetic operators: + - * /
+    #integer division: ~/
+    #modulo: %
+    #Increment and decrement operators: i++ i-- ++i --i
+      #Expression value is i+1: ++i
+      #Expression value is i: i++
+  #Comparison operators: < <= > >= == !=
+    #Shallow equality: equality of references uses identical()
+    #Deep equality: equality of values uses ==
+  #Logical operators: && || !
+  #Bitwise operators: & | ^ << >>
+    #Unary bitwise complement (0s become 1s; 1s become 0s): ~expr
+    #Unsigned shift right: >>>
+  #Compound assignment operators:
+    += -= *= /= %= >>>= ^= <<= &= |= ~/= >>=
+
+#--------------------------------------------------------------------------------
+#Error Handling
+  Dart provides Exception and Error
+
+#Throw
+  #error: throw FormatException('Expected at least 1 section');
+  #any object: throw 'Out of llamas!';
+
+#Catch
+try {
+  breedMoreLlamas();
+} on OutOfLlamasException {
+  // A specific exception
+  buyMoreLlamas();
+  // You can rethrow the error
+  rethrow;
+} on Exception catch (e) {
+  // Anything else that is an exception
+  print('Unknown exception: $e');
+} catch (e, s) {
+  // No specified type, handles all
+  print('Something really unknown: $e');
+  // catch can also give stack trace
+  print('Stack trace:\n $s');
+} finally {
+  // Always clean up, whether or not an exception is thrown.
+  cleanLlamaStalls();
+  // The finally clause runs after any matching catch clauses
+  // If no catch clause matches the exception, the exception is propagated after the finally clause runs
+}
+
+#Assert: assert(condition, optionalMessage);
+  During development, use an assert statement to disrupt normal execution if a boolean condition is false
+    assert(urlString.startsWith('https'), 'URL ($urlString) should start with "https".');
+  Flutter enables assertions in debug mode.
+  Development-only tools such as webdev serve typically enable assertions by default.
+  Some tools, such as dart run and dart compile js support assertions through a command-line flag: --enable-asserts.
+  In production code, assertions are ignored, and the arguments to assert aren't evaluated.
+
+#--------------------------------------------------------------------------------
+#String
+  String object holds a sequence of UTF-16 code units
+#single line '' ""
+#multi line '''''' """"""
+#raw string: r'In a raw string, not even \n gets special treatment.'
+#interpolation:
+  "insert $identifier"
+  "insert ${expression}"
+#concatenate:
+  var s1 =
+    'String concatenation' 'using adjacent string literals'
+    " works even over line breaks.";
+  var s2 = 'The + operator ' + 'works, as well.';
+
+#Runes and grapheme clusters
+  #unicode code point with 4 hex digits: \uXXXX
+    #Other unicode code point: \u{XXXX}
+  #get grapheme clusters of a string: string.characters //will return Characters object
+
+#--------------------------------------------------------------------------------
+#Conditional
+
+#If statement (can be combined with if case statement)
+if (condition) {
+  statement;
+} else if (condition) {
+  statement;
+}
+
+#Ternary operator statement
+  condition ? expression : expression
+
+#Null-coalescing operator
+  nullable_variable ?? default_value
+
+#If case statement
+  if (pair case [int x, int y]) return Point(x, y);
+
+#Switch statements
+switch (command) {        // Non-empty case clauses end the switch after completion (break statement not required)
+  case 'OPEN' || 'START': // You can use logical-or patterns to allow cases to share a body or a guard
+    executeOpen();
+    continue newCase;     // Continues executing at the newCase label.
+  case 'INVALID':         // Do nothing by adding break
+    break;
+  case 'DENIED':          // Empty case without break will fall through.
+  case 'CLOSED':
+    executeClosed();      // Runs for both DENIED and CLOSED,
+
+  newCase:                // Label
+  case 'PENDING':
+    executeNowClosed();   // Runs for both OPEN and PENDING.
+  
+  default:                // Or: case _
+    throw "unknown"       // Dart tries to do exhaustiveness checking. So you must specify all cases.
+}
+
+#Switch expressions
+token = switch (charCode) {
+  slash || star || plus || minus => operator(charCode),
+  comma || semicolon => punctuation(charCode),
+  >= digit0 && <= digit9 => number(),
+  _ => throw FormatException('Invalid'),
+};
+
+#Guard clause (can be used in switch statement, switch expression, if-case statement)
+if (something case somePattern when some || boolean || expression) { statement; }
+
+#--------------------------------------------------------------------------------
+#Loop
+
+#For loop
+for (int i = 1; i <= 12; i++) {
+  print(i);
+}
+
+#While loop
+while (condition) {
+  statement;
+}
+
+#Do while loop
+do {
+  statement;
+} while (condition);
+
+#Iterate over Iterable
+  #with for in:
+    for (final object in objectList) {
+      print(object);
+    }
+  #pattern matching for-in
+    for (final Candidate(:name, :yearsExperience) in candidates) {
+      print('$name has $yearsExperience of experience.');
+    }
+  #using Iterable.forEach:
+    collection.forEach(print);
+
+#Control Transfer Statements
+  #break out of loop: break;
+  #continue to next iteration: continue;
+#Labeled Statements
+  outerLoop:
+  for (var i = 1; i <= 3; i++) {
+    for (var j = 1; j <= 3; j++) {
+      if (i == 2 && j == 2) {
+        break outerLoop; //you can also continue outerLoop;
+      }
+    }
+  }
+
+#--------------------------------------------------------------------------------
+#Cascade notation
+  var paint = Paint()
+    ..color = Colors.black
+    ..strokeCap = StrokeCap.round
+If the object that the cascade operates on can be null, then use a null-shorting cascade (?..) for the first operation
+  document.querySelector('#confirm')
+    ?..textContent = 'Confirm'
+    ..classList.add('important')
+
+#--------------------------------------------------------------------------------
+#Record
+#defining:
+  #positional fields: (String, int) record = ('A string', 123);
+    position starts from 1 ('first' is record.$1)
+  #named fields: ({int a, bool b}) record = (a: 123, b: true);
+  #mixed: (String, String, {int a, bool b}) record = ('first', a: 2, b: true, 'last');
+    positional fields is automatically placed before named fields
+    so 'last' is record.$2 (not record.$4)
+#access fields:
+  record.$1 //positional field
+  record.a  //named field
+
+#--------------------------------------------------------------------------------
+#List
+#defining:
+  var listName = [value, value, value];
+  List<TypeName> listName = [value, value, value];
+  var listName = <TypeName>[];
+  var emptyList = {};
+  const constantList = const [value, value]; //this will raise error: constantList[1] = value;
+#get length: listName.length
+#access by index: listName[index]
+
+#--------------------------------------------------------------------------------
+#Set
+#defining:
+  var setName = {value, value, value};
+  Set<TypeName> setName = {value, value, value};
+  var setName = <TypeName>{};
+  var setName = Set<TypeName>();
+  const constantSet = const {value, value}; //this will raise error: constantSet.add(value);
+#add element:
+  setName.add(element);
+  setName.addAll(elementList);
+#get length: setName.length
+
+#--------------------------------------------------------------------------------
+#Map
+#defining:
+  var mapName = {key: value, key: value, key: value};
+  Map<KeyType, ValueType> mapName = {key: value, key: value, key: value};
+  var mapName = <KeyType, ValueType>{};
+  var mapName = Map<KeyType, ValueType>();
+  final constantMap = const {key: value}; //this will raise error: constantMap[key] = value;
+#add key-value pair:
+  mapName[key] = value
+#get value by key (return null if key doesn't exist):
+  mapName[key]
+#get number of key-value pair:
+  mapName.length
+
+#--------------------------------------------------------------------------------
+#Collection elements
+  syntax similar to list comprehension
+#Leaf element
+  #expression element: [value, expression]
+  #map entry element: {key_expression: value_expression}
+#Control flow element
+  #null-aware element (won't be inserted if null):
+    [?nullable_expression, ?nullable_value]
+    {?key_expression: value_expression}
+    {key_expression: ?value_expression}
+    {?key_expression: ?value_expression}
+  #spread element:
+    [value, ...sequence_expression, value]
+  #null-aware spread element (ignored if nullable_sequence as a whole is null):
+    [value, ...?nullable_sequence, value]
+  #to spread and filter null value:
+    final list = [
+      'start',
+      ...sequence_with_nullable_value.where((e) => e != null).cast<String>(),
+      'end',
+    ];
+  #if element
+    #only add if condition is true: {key: value, if (condition) key: value}
+    #if else: [value, if (condition) value else value, value]
+      #if else-if else: [value, if (condition) value else if (condition) value else value, value]
+      #if else-if (else ignore): [value, if (condition) value else if (condition) value, value]
+      #you can mix condition (boolean expression) with pattern matching below:
+        [if (condition) value else if (expression case pattern) value]
+    #pattern matching with case:
+      [value, if (expression case pattern) value]
+      [value, if (expression case pattern) value else value]
+      [value, if (expression case pattern) value else if (expression case pattern) else value]
+      var typeInfo = [
+        if (data case int i) 'Data is an integer: $i',
+        if (data case bool b) 'Data is a boolean: $b',
+      ];
+      var items = [
+        1,
+        if ("hello" case String(length: var wordLength)) wordLength,
+        3,
+      ]; // [1, 5, 3]
+      var orderDetails = ['Apples', 12, ''];
+      var summary = [
+        'Product: ${orderDetails[0]}',
+        if (orderDetails case [_, int qty, _]) 'Quantity: $qty',
+        if (orderDetails case [_, _, ''])
+          'Delivery: Not Started'
+        else
+          'Delivery: In Progress',
+      ]; // [Product: Apples, Quantity: 12, Delivery: Not Started]
+  #for element
+    [1, for (var n in numbers) n * n, 7]
+    [1, for (var x = 2; x < 4; x++) x, 7]
+    
+#--------------------------------------------------------------------------------
+#Generic
+#generic in class definition
+  abstract class Cache<T> {
+    T getByKey(String key);
+    void setByKey(String key, T value);
+  }
+#generic in method definition
+  T first<T>(List<T> ts) {
+    T tmp = ts[0];
+    return tmp;
+    //note that T is used as return type, parameter type, and local variable type
+  }
+#bound: <T extends OtherType>
+  class Foo<T extends Object> {
+    // Any type provided to Foo for T must be non-nullable.
+  }
+#F-bound polymorphism: <T extends OtherType<T>>
+  abstract interface class Comparable<T> {
+    int compareTo(T o);
+  }
+  int compareAndOffset<T extends Comparable<T>>(T t1, T t2) =>
+      t1.compareTo(t2) + 1;
+  class A implements Comparable<A> {
+    @override
+    int compareTo(A other) => /*...implementation...*/ 0;
+  }
+  var useIt = compareAndOffset(A(), A());
+
+#--------------------------------------------------------------------------------
+#Patterns
+  may match and/or destructure a value
+  are a syntactic category in the Dart language, like statements and expressions
+
+#Places patterns can appear
+  #Variable declaration: var (a, [b, c]) = ('str', [1, 2]);
+  #Variable assignment: (b, a) = (a, b); //swap
+  #Switch statements and expressions:
+    switch (obj) {
+      case 1:
+        print('one');
+      case >= first && <= last:
+        print('in range');
+      case (var a, var b):
+        print('a = $a, b = $b');
+      default:
+    }
+    var isPrimary = switch (color) {
+      Color.red || Color.yellow || Color.blue => true,
+      _ => false,
+    };
+  #with guard: (evaluate a condition without exiting the whole switch if the condition is false)
+    switch (shape) {
+      case Square(size: var s) || Circle(size: var s) when s > 0:
+        print('Non-empty symmetric shape');
+    }
+  #For and for-in loops:
+    for (var MapEntry(:key, value: count) in hist.entries) {
+      print('$key occurred $count times');
+    }
+#Use cases for patterns
+  #Destructuring multiple returns:
+    var (name, age) = userInfo(json);
+    final (:name, :age) = getData(); //return (name: 'doug', age: 25);
+  #Destructuring class instances:
+    var Foo(:one, :two) = Foo(one: 'one', two: 2);
+  #Algebraic data types:
+    sealed class Shape {}
+    class Square implements Shape {
+      final double length;
+      Square(this.length);
+    }
+    class Circle implements Shape {
+      final double radius;
+      Circle(this.radius);
+    }
+    double calculateArea(Shape shape) => switch (shape) {
+      Square(length: var l) => l * l,
+      Circle(radius: var r) => math.pi * r * r,
+    };
+  #Validating incoming JSON
+    var data = { 'user': ['Lily', 13] };
+    if (data case {'user': [String name, int age]}) {
+      print('User $name is $age years old.');
+    }
+#Pattern types
+  #Logical-or: subpattern1 || subpattern2
+    Subpatterns in a logical-or pattern can bind variables,
+      but the branches must define the same set of variables,
+      because only one branch will be evaluated when the pattern matches.
+    var isPrimary = switch (color) {
+      Color.red || Color.yellow || Color.blue => true,
+      _ => false,
+    };
+  #Logical-and: subpattern1 && subpattern2
+    Subpatterns in a logical-and pattern can bind variables,
+      but the variables in each subpattern must not overlap,
+      because they will both be bound if the pattern matches.
+    switch ((1, 2)) {
+      // Error, both subpatterns attempt to bind 'b'.
+      case (var a, var b) && (var b, var c): // ...
+    }
+  #Relational: == != < > <= >=
+    String asciiCharType(int char) {
+      const space = 32;
+      const zero = 48;
+      const nine = 57;
+      return switch (char) {
+        < space => 'control',
+        == space => 'space',
+        > space && < zero => 'punctuation',
+        >= zero && <= nine => 'digit',
+        _ => '',
+      };
+    }
+  #Cast (will throw if failed): value as TypeName
+    (num, Object) record = (1, 's');
+    var (i as int, s as String) = record;
+  #Null-check: subpattern?
+    String? maybeString = 'nullable with base type String';
+    switch (maybeString) {
+      case var s?:
+        print("not null");
+      case null:  #you might also be able to use default
+        print("null");
+    }
+  #Null-assert (will throw if null): subpattern!
+    (int?, int?) position = (2, 3);
+    var (x!, y!) = position;
+  #Constant
+    You can use simple literals and references to named constants directly as constant patterns:
+      123, true, null, 'string', math.pi, SomeClass.constant, const Point(1, 2), const (1 + 2)
+    switch (obj) {
+      case 1: // literal
+      case [a, b]: // List or map pattern (a and b are variables)
+      case const [a, b]: // List or map literal (a and b are constants)
+    }
+  #Variable (bind new variables to values that have been matched or destructured)
+    switch ((1, 2)) {
+      case (var a, var b): // 'a' and 'b' are in scope in the case body.
+      case (int a, String b): // typed variable pattern
+    }
+  #Identifier
+    behave like a constant pattern or like a variable pattern, depending on the context where they appear:
+      #Declaration context: declares a new variable with identifier name: var (a, b) = (1, 2);
+      #Assignment context: assigns to existing variable with identifier name: (a, b) = (3, 4);
+      #Matching context: treated as a named constant pattern (unless its name is _):
+        const c = 1;
+        switch (2) {
+          case c:
+            print('match $c');
+          default:
+            print('no match'); // Prints "no match".
+        }
+      #Wildcard identifier in any context: matches any value and discards it: case [_, var y, _]: print('The middle element is $y');
+  #Parenthesized: (subpattern)
+    let you control pattern precedence:
+      //x and y is true. z is false.
+      (x || y) && z => 'matches nothing'
+  #List: [subpattern1, subpattern2]
+    switch (list) {
+      case ['a', 'b']:
+      case [a, b]: //assuming you have a and b as identifier
+    }
+  #List pattern with rest element:
+    var [a, b, ..., c, d] = [1, 2, 3, 4, 5, 6, 7];
+    print('$a $b $c $d'); // 1 2 6 7
+    var [a, b, ...rest, c, d] = [1, 2, 3, 4, 5, 6, 7];  #capture the rest element
+    print('$a $b $rest $c $d'); // 1 2 [3, 4, 5] 6 7
+  #Map: var {"key": subpattern1, someConst: subpattern2} = map
+    ignores any keys that the map contains that aren't matched by the pattern
+    matching a key that does not exist in the map will throw a StateError
+  #Record:
+    pattern must match the entire record:
+      (subpattern1, subpattern2) = (1, 2)
+      (x: subpattern1, y: subpattern2) = (x: 1, y: 2)
+    getter name can be inferred from the variable pattern or identifier pattern in the field subpattern
+      // Record pattern with variable subpatterns:
+      var (untyped: untyped, typed: int typed) = record;
+      var (:untyped, :int typed) = record;
+      switch (record) {
+        case (untyped: var untyped, typed: int typed): // ...
+        case (:var untyped, :int typed): // ...
+      }
+      // Record pattern with null-check and null-assert subpatterns:
+      switch (record) {
+        case (checked: var checked?, asserted: var asserted!): // ...
+        case (:var checked?, :var asserted!): // ...
+      }
+      // Record pattern with cast subpattern:
+      var (untyped: untyped as int, typed: typed as String) = record;
+      var (:untyped as int, :typed as String) = record;
+  #Object: ClassName(x: subpattern1, y: subpattern2)
+    using getters on the object's properties
+    object patterns don't require the pattern to match the entire object
+    getter name can be omitted and inferred:
+      var Point(:x, :y) = Point(1, 2);
+  #Wildcard
+    _ is a wildcard (a variable/identifier pattern) that doesn't bind or assign to any variable
+    used as a placeholder to destructure later positional values:
+      var [_, second, _] = list;
+    test a value's type:
+      switch (record) {
+        case (int _, String _): //without binding the value to a name
+      }
+
+#--------------------------------------------------------------------------------
+#Function
+  first-class object
+  can have any number of required positional parameters
+    followed either by named parameters
+    or by optional positional parameters (but not both).
+  return null if unspecified
+  multiple return is supported by using Record
+#definition:
+  #basic: functionName() { statements; }
+    #call: functionName()
+  #explicit return type: TypeName functionName() { statements; }
+  #arrow syntax: functionName(TypeName argName) => expression;
+  #positional parameters: functionName(TypeName argName, TypeName argName) { statements; }
+    #call: functionName(value, expression)
+    #can be put anywhere in relation to named parameters:
+      #in front of: functionName(value, argName: value)
+      #at the back: repeat(times: 2, () {statements;});
+      #any combination thereof
+  #named parameter: functionName({TypeName argName, TypeName argName}) { statements; }
+    #call: functionName(argName: value, argName: expression)
+    #non-null default value: functionName({TypeName argName = value}) { statements; }
+    #required value: functionName({required TypeName? argName = value}) { statements; }
+      can have null as argument
+  #optional parameter: functionName(TypeName argName, [TypeName? argName, TypeName? argName = default_value]) { statements; }
+#type definition (allowed to omit the names of positional parameters):
+  ReturnType Function(TypeName, {TypeName argName}) f = ReturnType functionName(TypeName argName, {TypeName argName}) { statements; }
+#anonymous function
+  (TypeName argName, TypeName argName) { statements; }
+  (TypeName argName, TypeName argName) => expression;
+#external function declaration (the body is implemented separately from its declaration):
+  external ReturnType functionName(TypeName argName);
+
+#Generators
+  lazily produce a sequence of values
+#Synchronous generator: Returns an Iterable object.
+  Iterable<int> naturalsTo(int n) sync* {
+    int k = 0;
+    while (k < n) yield k++;
+  }
+#Asynchronous generator: Returns a Stream object.
+  Stream<int> asynchronousNaturalsTo(int n) async* {
+    int k = 0;
+    while (k < n) yield k++;
+  }
+#Optimizing recursive generator: using yield*
+  Iterable<int> naturalsDownFrom(int n) sync* {
+    if (n > 0) {
+      yield n;
+      yield* naturalsDownFrom(n - 1);
+    }
+  }
+
+#--------------------------------------------------------------------------------
+#Metadata
+  metadata annotation begins with the character @
+    followed by either a reference to a compile-time constant:
+      @Deprecated('deprecation message'), @deprecated, @override, and @pragma
+    or a call to a constant constructor
+  can appear before:
+    library, class, typedef, type parameter, constructor, factory, function, field, parameter,
+    variable declaration, import directive, export directive
+#defining metadata annotations
+  class Todo {
+    final String who;
+    final String what;
+
+    const Todo(this.who, this.what);
+  }
+#using metadata annotations
+  @Todo('Dash', 'Implement this function')
+  void doSomething() {
+    print('Do something');
+  }
+
+#--------------------------------------------------------------------------------
+#Libraries & imports
+  identifiers that start with an underscore (_) are visible only inside the library
+  Every Dart file (plus its parts) is a library, even if it doesn't use a library directive.
+  Libraries can be distributed using packages.
+#Import library
+  import 'dart:js_interop';
+  import 'package:test/test.dart'; //import from pub tool package manager
+  import 'file/system/path.dart';
+#Prefix (alias):
+  import 'package:lib2/lib1.dart' as _; //non-binding but provide access to the non-private extensions in that library
+  import 'package:lib2/lib2.dart' as lib2;
+#Selective import:
+  import 'package:lib1/lib1.dart' show foo; // Import only foo.
+  import 'package:lib2/lib2.dart' hide foo; // Import all names EXCEPT foo.
+#Lazy import in web:
+  import 'package:greetings/hello.dart' deferred as hello;
+  Future<void> greet() async {
+    await hello.loadLibrary();
+    hello.printGreeting();
+  }
+  //Note: You can't use types from a deferred library in the importing file.
+  //Move interface types to a library imported by both the deferred library and the importing file.
+#library directive (to specify library-level doc comments or metadata annotations):
+  /// A really great test library.
+  @TestOn('browser')
+  library;
+  // put the lines above at the start of the file
+#Creating package: https://dart.dev/tools/pub/create-packages
+
+#--------------------------------------------------------------------------------
+#Class
+
+#Creating class
+  double initial = 1.5;
+  class ClassName {
+    // Unless you override noSuchMethod, using a non-existent member results in a NoSuchMethodError.
+    @override
+    void noSuchMethod(Invocation invocation) {
+      print('You tried to use a non-existent member: ' '${invocation.memberName}');
+    }
+
+    //Attribute declaration and definition
+    //you can use any variable and constant definition here
+    //identifiers that start with an underscore (_) are visible only inside the library
+    double? attr1 = initial;
+    final attr2;
+    final attr3 = 0;
+    late double? attr4 = this.attr1 * 4; //can access `this` in `late` initializer
+
+    //Method declaration and definition
+    ReturnType methodName() => expression; //you can use any function definition here
+    //You can override operators except for !=
+    ClassName operator +(ClassName o) => ClassName(attr1 + o.attr1);
+    @override
+    bool operator ==(Object other) => other is ClassName && attr1 == other.attr1;
+    @override
+    int get hashCode => Object.hash(attr1);
+
+    #Getters and setters
+    double get attr6 => attr2 + attr4; //use with: objectName.attr6
+    set attr6(double value) => attr2 = value - attr4;
+
+    //Class (static) attribute and method
+    static const attr5 = value
+    static ReturnType methodName() => expression; //You can use static methods as compile-time constants (const)
+
+    //If you need to assign the value of a final instance variable after the constructor body starts, you can use one of the following:
+    //  Use a factory constructor.
+    //  Use late final, but be careful: a late final without an initializer adds a setter to the API.
+
+    // Can use `this` here because they are constructor parameter declarations and not expressions
+    ClassName(this.attr1, this.attr2);
+  }
+
+#Types of constructors
+    class Point { double x, y; }
+  #Generative constructors
+    Point(this.x, this.y);  // Generative constructor with initializing formal parameters:
+  #Default constructors
+    is a generative constructor without arguments or name
+  #Named constructors
+    Point.origin() : x = 0, y = 0;
+  #Constant constructors
+    class ImmutablePoint {
+      final double x, y;  //must be final so that the constant constructor below can work
+      const ImmutablePoint(this.x, this.y);
+      static const ImmutablePoint origin = ImmutablePoint(0, 0);
+    }
+  #Redirecting constructors
+    Point.alongXAxis(double x) : this(x, 0);
+  #Factory constructors
+    use this when:
+      The constructor doesn't always create a new instance of its class. Although a factory constructor can't return null, it might return:
+        an existing instance from a cache instead of creating a new one
+        a new instance of a subtype
+      You need to perform non-trivial work prior to constructing an instance.
+        This could include checking arguments or doing any other processing that can't be handled in the initializer list.
+    example:
+      class Logger {
+        final String name;
+        bool mute = false;
+        static final Map<String, Logger> _cache = <String, Logger>{};
+
+        factory Logger(String name) {
+          return _cache.putIfAbsent(name, () => Logger._internal(name));
+        }
+        factory Logger.fromJson(Map<String, Object> json) {
+          return Logger(json['name'].toString());
+        }
+        Logger._internal(this.name);
+
+        void log(String msg) {
+          if (!mute) print(msg);
+        }
+      }
+      var logger = Logger('UI');
+      var logMap = {'name': 'UI'};
+      var loggerJson = Logger.fromJson(logMap);
+  #Redirecting factory constructors: factory Listenable.merge(List<Listenable> listenables) = _MergingListenable
+    while ordinary factory constructors could create and return instances of other classes
+      redirecting factories have several advantages:
+      An abstract class might provide a constant constructor that uses the constant constructor of another class.
+      A redirecting factory constructor avoids the need for forwarders to repeat the formal parameters and their default values.
+
+#Using constructor (the new keyword is optional)
+  var p1 = Point(2, 2);
+  var p1 = new Point(2, 2);
+#Constructor tear-offs (point-free style)
+  var strings = charCodes.map(String.fromCharCode); //named constructor
+  var buffers = charCodes.map(StringBuffer.new);    //unnamed constructor:
+
+#Instance variable initialization
+  #in declaration:
+    class Point {
+      double x = 1.0; double y = 2.0;
+      // Point();   // The implicit default constructor sets these variables to (1.0,2.0)
+      // double? x, y; // null if not set in constructor
+    }
+  #use initializing formal parameters
+    Point(this.x, this.y);                        // sets the x and y instance variables before the constructor body runs.
+    Point.optional([this.x = 0.0, this.y = 0.0]); // initializing formal parameters can also be optional.
+    Point.named({this.x = 1.0, this.y = 1.0});    // using named variables: Point.named(x: 2.0, y: 2.0);
+  #use an initializer list
+    //Before the constructor body runs, you can initialize instance variables. Separate initializers with commas.
+    //To validate inputs during development, use assert in the initializer list.
+    Point.fromJson(Map<String, double> json) : x = json['x']!, y = json['y']!, assert(json['x']! >= 0) {
+      print('In Point.fromJson(): ($x, $y)');
+    }
+
+#get class/static attribute: ClassName.attribute
+#get object attribute: objectName.attribute
+#set class/static attribute: ClassName.attribute = expression
+#set object attribute: objectName.attribute = expression
+#call class/static method: ClassName.methodName()
+#call object method: objectName.methodName()
+#access optional object: objectName?.attribute objectName?.methodName()
+
+#Class modifiers
+  abstract: can't be instantiated (not all member is concrete implementation)
+  base: can't be used as interface (using implements)
+    this is how most programming language class is (Java, C#)
+    base transitivity: every subtype of a type marked base must also prevent being implemented (must be marked base, final, or sealed)
+  final: can't be used as interface or supertype (using extends)
+  interface: can be used as interface
+  sealed: for exhaustive checking on pattern matching
+    implicitly abstract: cannot be constructed themselves
+    can have factory constructors
+    can define constructors for their subclasses to use
+    unlike base and final, there is no transitive restriction: subtype can be used as supertype or interface
+  mixin: can be mixed in
+#Valid combinations
+  #class
+    #allow: construct extends implements
+    #disallow: mixin exhaustive
+  #base class
+    #allow: construct extends
+    #disallow: implements mixin exhaustive
+  #interface class
+    #allow: construct implements
+    #disallow: extends mixin exhaustive
+  #final class
+    #allow: construct
+    #disallow: extends implements mixin exhaustive
+  #sealed class
+    #allow: exhaustive
+    #disallow: construct extends implements mixin
+  #abstract class
+    #allow: extends implements
+    #disallow: construct mixin exhaustive
+  #abstract base class
+    #allow: extends
+    #disallow: construct implements mixin exhaustive
+  #abstract interface class (pure interface that can't be instantiated)
+    #allow: implements
+    #disallow: construct extends mixin exhaustive
+  #abstract final class
+    #allow:
+    #disallow: construct extends implements mixin exhaustive
+  #mixin class
+    #allow: construct extends implements mixin
+    #disallow: exhaustive
+  #base mixin class
+    #allow: construct extends mixin
+    #disallow: implements exhaustive
+  #abstract mixin class
+    #allow: extends implements mixin
+    #disallow: construct exhaustive
+  #abstract base mixin class
+    #allow: extends mixin
+    #disallow: construct implements exhaustive
+  #mixin
+    #allow: implements mixin
+    #disallow: construct extends exhaustive
+  #base mixin
+    #allow: mixin
+    #disallow: construct extends implements exhaustive
+
+#Callable objects: implement the call() method to allow an instance of your Dart class to be called like a function
+  class ClassName {
+    String call(String a, String b, String c) => '$a $b $c!';
+  }
+  ClassName("1", "2", "3")
+
+#Abstract methods
+  Instance, getter, and setter methods can be abstract
+    defining an interface but leaving its implementation up to other classes.
+    Abstract methods can only exist in abstract classes or mixins.
+    To make a method abstract, use a semicolon (;) instead of a method body
+  Example:
+    abstract class Doer {
+      void doSomething(); // Define an abstract method.
+    }
+    class EffectiveDoer extends Doer {
+      void doSomething() {
+        // Provide an implementation, so the method is not abstract here...
+      }
+    }
+
+#Interface
+class Person {
+  final String _name; // In the interface, but visible only in this library.
+  Person(this._name); // Not in the interface, since this is a constructor.
+
+  String greet(String who) => 'Hello, $who. I am $_name.';  // In the interface.
+}
+class Impostor implements Person, InterfaceName {
+  String get _name => '';
+  String greet(String who) => 'Hi $who. Do you know who I am?';
+}
+
+#Inheritance
+  Subclasses don't inherit constructors from their superclass
+  Class can inherit the parameters of a superclass (super parameters)
+  Use the @override annotation to indicate that you are intentionally overriding a superclass instance method
+#Examples
+  #positional
+    class Vector2d {
+      final double x, y;
+      Vector2d(this.x, this.y);
+    }
+    class Vector3d extends Vector2d {
+      final double z;
+      // Forward the x and y parameters to the default super constructor like:
+      // Vector3d(final double x, final double y, this.z) : super(x, y);
+      Vector3d(super.x, super.y, this.z);
+    }
+  #named
+    class Vector2d {
+      final double x, y;
+      Vector2d.named({required this.x, required this.y});
+    }
+    class Vector3d extends Vector2d {
+      final double z;
+      // Forward the y parameter to the named super constructor like:
+      // Vector3d.yzPlane({required double y, required this.z})
+      //       : super.named(x: 0, y: y);
+      Vector3d.yzPlane({required super.y, required this.z}) : super.named(x: 0);
+    }
+#get superclass attribute: super.attribute
+#call superclass method: super.methodName()
+
+#Mixins (also add behavior implementation unlike Interface)
+  mixin Musician {
+    void playInstrument(String instrumentName); // Abstract method.
+    void playPiano() { playInstrument('Piano'); }
+    void playFlute() { playInstrument('Flute'); }
+  }
+  class Virtuoso with Musician { 
+    @override
+    void playInstrument(String instrumentName) { // Subclass must define.
+      print('Plays the $instrumentName beautifully');
+    }  
+  }
+  /// Can be applied to any type with a [name] property and provides an
+  /// implementation of [hashCode] and operator `==` in terms of it.
+  mixin NameIdentity {
+    String get name;
+    @override
+    int get hashCode => name.hashCode;
+    @override
+    bool operator ==(other) => other is NameIdentity && name == other.name;
+  }
+  class Person with NameIdentity {
+    final String name;
+    Person(this.name);
+  }
+#Mixin implements interface
+  abstract interface class Tuner {
+    void tuneInstrument();
+  }
+  mixin Guitarist implements Tuner {
+    void playSong() {
+      tuneInstrument();
+      print('Strums guitar majestically.');
+    }
+  }
+  class PunkRocker with Guitarist {
+    @override
+    void tuneInstrument() {
+      print("Don't bother, being out of tune is punk rock.");
+    }
+  }
+#Mixin Inheritance
+  class Musician {
+    musicianMethod() {
+      print('Playing music!');
+    }
+  }
+  mixin MusicalPerformer on Musician {
+    performerMethod() {
+      print('Performing music!');
+      super.musicianMethod();
+    }
+  }
+  class SingerDancer extends Musician with MusicalPerformer { }
+#Mixin Class: a class that is usable as both a regular class and a mixin
+  mixin class Musician { }
+  class Novice with Musician { } // Use Musician as a mixin
+  class Novice extends Musician { } // Use Musician as a class
+  Musician()
+
+#--------------------------------------------------------------------------------
+#Enumerated types
+  #declaration: enum Color { red, green, blue }
+#Enhanced Enum
+  enum Vehicle implements Comparable<Vehicle> {
+    car(tires: 4, passengers: 5, carbonPerKilometer: 400),
+    bus(tires: 6, passengers: 50, carbonPerKilometer: 800),
+    bicycle(tires: 2, passengers: 1, carbonPerKilometer: 0);
+
+    const Vehicle({
+      required this.tires,
+      required this.passengers,
+      required this.carbonPerKilometer,
+    });
+
+    final int tires;
+    final int passengers;
+    final int carbonPerKilometer;
+
+    int get carbonFootprint => (carbonPerKilometer / passengers).round();
+
+    bool get isTwoWheeled => this == Vehicle.bicycle;
+
+    @override
+    int compareTo(Vehicle other) => carbonFootprint - other.carbonFootprint;
+  }
+#Using enums: Color.blue
+#Get enum index: Color.red.index //starts from 0 based on position
+#Get enum name: Color.red.name //'red'
+#Call enum member: Vehicle.car.carbonFootprint
+#Get a list of all the enumerated values: Color.values
+#Using switch statement:
+  switch (aColor) {
+    case Color.red:
+      print('Red as roses!');
+    case Color.green:
+      print('Green as grass!');
+    default: // Without this, you see a WARNING.
+      print(aColor); // 'Color.blue'
+  }
+
+#--------------------------------------------------------------------------------
+#Extension Methods
+  members of an extension can be methods, getters, setters, or operators
+  extensions can also have static fields and static helper methods
+#implementing:
+  !lib/string_apis.dart
+  extension NumberParsing on String {
+    int parseInt() {
+      return int.parse(this);
+    }
+  }
+  //Unnamed extensions are visible only in the library where they're declared
+  extension on String {
+    bool get isBlank => trim().isEmpty;
+  }
+  //Generic extension
+  extension MyFancyList<T> on List<T> {
+    int get doubleLength => length * 2;
+    List<T> operator -() => reversed.toList();
+    List<List<T>> split(int at) => [sublist(0, at), sublist(at)];
+  }
+#using:
+  import 'string_apis.dart';
+  void main() {
+    print('42'.parseInt()); // Use an extension method.
+  }
+#name conflict resolutions
+  #using show and hide:
+    import 'string_apis.dart' show NumberParsing; //either show this
+    import 'string_apis_2.dart' hide NumberParsing2; //or hide this to avoid parseInt conflict
+  #apply extension explicitly:
+    print(NumberParsing('42').parseInt());
+    print(NumberParsing2('42').parseInt());
+  #using prefix as alias:
+    import 'string_apis_3.dart' as rad;
+    print(rad.NumberParsing('42').parseInt());
+
+#--------------------------------------------------------------------------------
+#Extension Types
+  compile-time abstraction that "wraps" an existing type with a different, static-only interface
+  like wrapper classes, but don't require the creation of an extra run-time object
+    better for performance
+    but is more unsafe (extension type and representation type is treated as the same at runtime)
+      any type query or run-time operations work on the representation type
+  members can be methods, getters, setters, or operators (non-external instance variables and abstract members are not allowed)
+  interface members of the representation type are not interface members of the extension type by default
+  use cases for extension type
+    Providing an extended interface to an existing type
+    Providing a different interface to an existing type
+#declaration
+  //extension type ExtensionTypeName(RepresentationTypeName representationObjectReferenceName) {}
+  extension type IdNumber(int id) {
+    operator <(IdNumber other) => id < other.id; // Wraps the 'int' type's '<' operator:
+    // Doesn't declare the '+' operator (does not make sense for ID numbers)
+
+    //declaration also introduces:
+    //implicit getter for the representation object with the representation type as the return type: int get id
+    //implicit constructor: IdNumber(int id) : id = id
+  }
+#cast to extension type: IdNumber(42)
+#cast to representation type: myId as int
+#constructors
+  extension type E(int i) {
+    E.n(this.i);
+    E.m(int j, String foo) : i = j + foo.length;
+  }
+  void main() {
+    E(4); // Implicit unnamed constructor.
+    E.n(3); // Named constructor.
+    E.m(5, "Hello!"); // Named constructor with additional parameters.
+  }
+#hide implicit constructor using private constructor
+  extension type E._(int i) {
+    E.fromString(String foo) : i = int.parse(foo);
+  }
+#override implicit constructor using private constructor
+  extension type const E._(int it) {
+    E(): this._(42);
+    E.otherName(this.it);
+  }
+  void main2() {
+    E();
+    const E._(2); //other libraries can't call E._
+    E.otherName(3);
+  }
+#You can also declare
+  forwarding generative constructors,
+  or factory constructors (which can also forward to constructors of sub-extension types).
+#implements clause
+  #is used to:
+    introduce a subtype relationship on an extension type
+    add the members of the representation object to the extension type interface.
+  #extension type can only implement:
+    #its representation type (to makes all members of the representation type implicitly available to the extension type):
+      extension type NumberI(int i) implements int{
+        // 'NumberI' can invoke all members of 'int',
+        // plus anything else it declares here.
+      }
+    #supertype of its representation type to make the members of the supertype available, while not necessarily all the members of representation type.
+      extension type Sequence<T>(List<T> _) implements Iterable<T> {
+        // Better operations than List.
+      }
+      extension type Id(int _id) implements Object {
+        // Makes the extension type non-nullable.
+        static Id? tryParse(String source) => int.tryParse(source) as Id?;
+      }
+    #another extension type that is valid on the same representation type to reuse operations across multiple extension types (similar to multiple inheritance).
+      extension type const Opt<T>._(({T value})? _) {
+        const factory Opt(T value) = Val<T>;
+        const factory Opt.none() = Non<T>;
+      }
+      extension type const Val<T>._(({T value}) _) implements Opt<T> {
+        const Val(T value) : this._((value: value));
+        T get value => _.value;
+      }
+      extension type const Non<T>._(Null _) implements Opt<Never> {
+        const Non() : this._(null);
+      }
+#Redeclaring supertype member
+  Declaring an extension type member that shares a name with a member of a supertype
+    is not an override relationship like it is between classes, but rather a redeclaration.
+    An extension type member declaration completely replaces any supertype member with the same name.
+    It's not possible to provide an alternative implementation for the same function.
+  enable the lint annotate_redeclares to get a warning if you declare an extension type method
+    that hides a superinterface member and isn't annotated with @redeclare
+  #Example:
+    import 'package:meta/meta.dart'; //import @redeclare
+    extension type MyString(String _) implements String {
+      // Replaces 'String.operator[]'.
+      @redeclare
+      int operator [](int index) => codeUnitAt(index);
+    }
+
+#--------------------------------------------------------------------------------
+#Futures
+  Future<String> _readFileAsync(String filename) { //use Future<void> type if you don't return any value
+    final file = File(filename);
+
+    // .readAsString() returns a Future.
+    // .then() registers a callback to be executed when `readAsString` resolves.
+    return file.readAsString().then((contents) {
+      return contents.trim();
+    });
+  }
+
+#async-await syntax
+  void main() async {
+    try {
+      var version = await lookUpVersion();
+      statements;
+    } catch (e) {
+      // catch error in await call
+    }
+  }
+
+#Streams
+  #using periodic to generate Stream:
+    Stream<int> stream = Stream.periodic(const Duration(seconds: 1), (i) => i * i);
+  #await-for, yield, yield*:
+    Stream<int> asyncGenerator(Stream<int> stream) async* {
+      //async* indicates that the function is an asynchronous generator that returns a Stream
+      var sum = 0;
+
+      //yield vs yield*
+      //yield value; emits a single value to the stream.
+      //yield* anotherStream; delegates emission to another stream (i.e., yields all values from another stream).
+      //  and then resume execution after anotherStream stops producing values
+      yield* Stream.periodic(const Duration(seconds: 1), (i) => i * i);
+      await for (final value in stream) {
+        yield sum += value;
+      }
+    }
+
+#Isolates
+  is based on Actor model:
+    doesn't share any memory
+    communicate with message passing
+  Using isolates:
+    Isolate.run() takes a single function or callback that will be run on a separate thread.
+      Isolate.run(_readAndParseJson);
+      Isolate.run(() => slowFib(40));
+      Isolate.run(() async {
+        return await functionName(expression)
+      });
+    you can use Flutter's compute function instead of Isolate.run()
+    Isolate.spawn() creates an isolate that will handle multiple messages over time, or a background worker.
+  spawn() vs. spawnUri()
+    Isolate.spawn()
+      the two isolates have the same executable code and are in the same isolate group
+      which enable performance optimizations such as sharing code.
+      Isolate.exit() works only when the isolates are in the same isolate group.
+    Isolate.spawnUri() sets up the new isolate with a copy of the code that's at the specified URI
+      spawnUri() is much slower than spawn() and the new isolate isn't in its spawner's isolate group.
+      Message passing is also slower when isolates are in different groups.
+  Sendable from isolate:
+    Isolate.spawn() and Isolate.exit() abstract over SendPort objects, so they're subject to the same limitations.
+    It can not send:
+      Objects with native resources, such as Socket.
+      ReceivePort
+      DynamicLibrary
+      Finalizable
+      Finalizer
+      NativeFinalizer
+      Pointer
+      UserTag
+      Instances of classes that are marked with @pragma('vm:isolate-unsendable')
+#Basic example of sending multiple messages between isolates with ports
+  #ingredients:
+    Isolate.spawn()
+    Isolate.exit()
+    ReceivePort
+      when you create a ReceivePort, it creates a SendPort for itself
+    SendPort
+    SendPort.send()
+  #code example:
+    import 'dart:async';
+    import 'dart:convert';
+    import 'dart:isolate';
+
+    void main() async {
+      final worker = Worker();
+      await worker.spawn();
+      await worker.parseJson('{"key":"value"}');
+    }
+
+    class Worker {
+      late SendPort _sendPort;
+      final Completer<void> _isolateReady = Completer.sync();
+
+      Future<void> spawn() async {
+        final receivePort = ReceivePort();
+        receivePort.listen(_handleResponsesFromIsolate);
+        await Isolate.spawn(_startRemoteIsolate, receivePort.sendPort);
+      }
+
+      void _handleResponsesFromIsolate(dynamic message) {
+        if (message is SendPort) {
+          _sendPort = message;
+          _isolateReady.complete();
+        } else if (message is Map<String, dynamic>) {
+          print(message);
+        }
+      }
+
+      static void _startRemoteIsolate(SendPort port) {
+        final receivePort = ReceivePort();
+        port.send(receivePort.sendPort);
+
+        receivePort.listen((dynamic message) async {
+          if (message is String) {
+            final transformed = jsonDecode(message);
+            port.send(transformed);
+          }
+        });
+      }
+
+      Future<void> parseJson(String message) async {
+        await _isolateReady.future;
+        _sendPort.send(message);
+      }
+    }
+#Robust example of sending multiple messages between isolates with ports
+  import 'dart:async';
+  import 'dart:convert';
+  import 'dart:isolate';
+
+  void main() async {
+    final worker = await Worker.spawn();
+    print(await worker.parseJson('{"key":"value"}'));
+    print(await worker.parseJson('"banana"'));
+    print(await worker.parseJson('[true, false, null, 1, "string"]'));
+    print(
+      await Future.wait([worker.parseJson('"yes"'), worker.parseJson('"no"')]),
+    );
+    worker.close();
+  }
+
+  class Worker {
+    final SendPort _commands;
+    final ReceivePort _responses;
+    final Map<int, Completer<Object?>> _activeRequests = {};
+    int _idCounter = 0;
+    bool _closed = false;
+
+    Future<Object?> parseJson(String message) async {
+      if (_closed) throw StateError('Closed');
+      final completer = Completer<Object?>.sync();
+      final id = _idCounter++;
+      _activeRequests[id] = completer;
+      _commands.send((id, message));
+      return await completer.future;
+    }
+
+    static Future<Worker> spawn() async {
+      // Create a receive port and add its initial message handler.
+      final initPort = RawReceivePort();
+      final connection = Completer<(ReceivePort, SendPort)>.sync();
+      initPort.handler = (initialMessage) {
+        final commandPort = initialMessage as SendPort;
+        connection.complete((
+          ReceivePort.fromRawReceivePort(initPort),
+          commandPort,
+        ));
+      };
+
+      // Spawn the isolate.
+      try {
+        await Isolate.spawn(_startRemoteIsolate, (initPort.sendPort));
+      } on Object {
+        initPort.close();
+        rethrow;
+      }
+
+      final (ReceivePort receivePort, SendPort sendPort) =
+          await connection.future;
+
+      return Worker._(receivePort, sendPort);
+    }
+
+    Worker._(this._responses, this._commands) {
+      _responses.listen(_handleResponsesFromIsolate);
+    }
+
+    void _handleResponsesFromIsolate(dynamic message) {
+      final (int id, Object? response) = message as (int, Object?);
+      final completer = _activeRequests.remove(id)!;
+
+      if (response is RemoteError) {
+        completer.completeError(response);
+      } else {
+        completer.complete(response);
+      }
+
+      if (_closed && _activeRequests.isEmpty) _responses.close();
+    }
+
+    static void _handleCommandsToIsolate(
+      ReceivePort receivePort,
+      SendPort sendPort,
+    ) {
+      receivePort.listen((message) {
+        if (message == 'shutdown') {
+          receivePort.close();
+          return;
+        }
+        final (int id, String jsonText) = message as (int, String);
+        try {
+          final jsonData = jsonDecode(jsonText);
+          sendPort.send((id, jsonData));
+        } catch (e) {
+          sendPort.send((id, RemoteError(e.toString(), '')));
+        }
+      });
+    }
+
+    static void _startRemoteIsolate(SendPort sendPort) {
+      final receivePort = ReceivePort();
+      sendPort.send(receivePort.sendPort);
+      _handleCommandsToIsolate(receivePort, sendPort);
+    }
+
+    void close() {
+      if (!_closed) {
+        _closed = true;
+        _commands.send('shutdown');
+        if (_activeRequests.isEmpty) _responses.close();
+        print('--- port closed --- ');
+      }
+    }
+  }
+
+#--------------------------------------------------------------------------------
+To-read:
+https://dart.dev/libraries/dart-async
+https://dart.dev/libraries/async/async-await
+
+Core Libraries
+Effective Dart
+Packages
+Development
+Interoperability
+Tools & techniques
+Resources
+
+All Read:
+Language
+
+Skipped:
+https://dart.dev/null-safety/understanding-null-safety
+https://dart.dev/null-safety/unsound-null-safety
+https://dart.dev/null-safety/faq
+https://dart.dev/language/keywords

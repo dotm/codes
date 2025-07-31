@@ -62,19 +62,22 @@ Data types
   String
   null value
   reference types
-Type reflection (find data types of a variable)
-Type conversion
-Type alias
+Type Operators
+  Type reflection (find data types of a variable)
+  Type conversion/typecasting
+  Type check
+  Type alias
 Operators
   Arithmetic operators: + - * / % ^
-    Compound assignment operators
     Increment and decrement operators
-  Boolean/Logical operators: and or not
+  Boolean/Logical operators: and or not && || !
     short circuit operator
   Comparison operators: < <= > >= == !=
     Shallow equality: equality of references
     Deep equality: equality of values
-  Bitwise operators: and or not xor left-shift right-shift
+  Bitwise operators: and or not xor left-shift right-shift & | ! ^ << >>
+  Compound assignment operators:
+    += -= *= /= %= ^= <<= &= |= >>=
   Basic mathematics operations
     exponent (if not in Arithmetic operators)
     random number generator
@@ -103,6 +106,8 @@ Exception Handling / Error Handling
 #--------------------------------------------------------------------------------
 String
 (mutable immutable, is an array of character)
+  single line '' ""
+  multi line '''''' """"""
   access by index
   get index of character
     first occurrence
@@ -154,6 +159,8 @@ If statement
 Ternary operator statement
   condition ? expression : expression
 Switch statement
+Null-coalescing operator
+  nullable_variable ?? default_value
 
 #--------------------------------------------------------------------------------
 Loop
@@ -256,8 +263,10 @@ is pass-by-reference (available functionalities: copy, identity operator/referen
 Extending associative array with User Defined Function
 
 #--------------------------------------------------------------------------------
-Tuple
+Tuple/Record
+(positional fields, named fields)
   create
+  access index
   unpacking
   
 #--------------------------------------------------------------------------------
@@ -360,7 +369,7 @@ Class
 Creating class (with parameter or object specifier for init method)
   Initialization (init method)
     using object specifier ({a: 1, b: 2, ...}) instead of requesting multiple parameter (a, b, ...)
-  Attribute declaration and definition: 
+  Attribute declaration and definition:
     global (public) and local (private) attribute
     class and instance (object) attribute
   Method declaration and definition: 
@@ -376,11 +385,11 @@ is pass-by-value
 is pass-by-reference (available functionalities: copy, identity operator/reference equality)
   Create object (Instantiating class)
 
-get class attribute
+get class/static attribute
 get object attribute
-set class attribute
+set class/static attribute
 set object attribute
-call class method
+call class/static method
 call object method
 accessor method
   getter setter
@@ -403,6 +412,15 @@ Class relationship
   Aggregation
   Composition
   
+#--------------------------------------------------------------------------------
+Generic
+(using type parameter such as Set<T>)
+(when T is turned into concrete type, we say it's parameterized such as Set<int>)
+  generic in class definition
+  generic in function definition
+  bound: <T extends OtherType>
+  F-bound polymorphism: <T extends OtherType<T>>
+
 #--------------------------------------------------------------------------------
 Module (see Module above)
   OOP Module

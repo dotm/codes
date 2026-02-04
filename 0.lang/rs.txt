@@ -95,16 +95,37 @@ Cargo may run multiple tests concurrently, so make sure that they don't race wit
     println!("{number:>0width$}", number=1, width=6)  //This will output "000001"
 #Print struct:
   //add #[derive(Debug)] above the struct definition and then print like below
-  println!("{:?}", struct_variable);
+  println!("{:?}", struct_variable);  //for one liner
+  println!("{:#?}", struct_variable); //for formatted output
 
-#Not Yet Understood??????
-std::fmt contains many traits which govern the display of text. The base form of two important ones are listed below:
+std::fmt contains many traits which govern the display of text, including:
+  fmt::Debug
+    Uses the {:?} marker
+    Format text for debugging purposes.
+  fmt::Display
+    Uses the {} marker
+    Format text in a more elegant, user friendly fashion.
+    implementing the fmt::Display trait automatically implements the ToString trait which allows us to convert the type to String.
 
-fmt::Debug: Uses the {:?} marker. Format text for debugging purposes.
-fmt::Display: Uses the {} marker. Format text in a more elegant, user friendly fashion.
-Here, we used fmt::Display because the std library provides implementations for these types. To print text for custom types, more steps are required.
+#--------------------------------------------------------------------------------
+#Debug macro (need fmt::Debug trait)
+  dbg! takes ownership of an expression (as opposed to println!, which takes a reference),
+  prints the file and line number of where that dbg! macro call occurs in your code
+  along with the resultant value of that expression to the stderr, and returns ownership of the value
 
-Implementing the fmt::Display trait automatically implements the ToString trait which allows us to convert the type to String.
+#Example
+  let scale = 2;
+  let rect1 = Rectangle {
+      width: dbg!(30 * scale),
+      height: 50,
+  };
+  dbg!(&rect1); //use a reference as to not take ownership
+stderr:
+  [src/main.rs:10:16] 30 * scale = 60
+  [src/main.rs:14:5] &rect1 = Rectangle {
+    width: 60,
+    height: 50,
+  }
 
 #--------------------------------------------------------------------------------
 #Basic
@@ -572,9 +593,9 @@ Loop
   #from array or string:
     let slice_name = &array_name[starting_index..ending_index]
     let slice_name = &array_name[1..3]  //will include elements of index 1 and 2 from array_name
-    let slice_name = &array_name[1:]  //will include elements from index 1 until the last element from array_name
-    let slice_name = &array_name[:3]  //will include elements of index 0, 1, and 2 from array_name
-    let slice_name = &array_name[:]   //will include all elements from array_name
+    let slice_name = &array_name[1..]   //will include elements from index 1 until the last element from array_name
+    let slice_name = &array_name[..3]   //will include elements of index 0, 1, and 2 from array_name
+    let slice_name = &array_name[..]    //will include all elements from array_name
   #get slice length: slice_name.len()
 #passing whole array as slice:
   let array_name: [T; array_length] = [];
@@ -701,7 +722,7 @@ Loop
 #Accessing vector elements
   #by index: let first: &i32 = &v[0];     //will panic if index is out of range
   #by get method:
-    match v.get(0) {            //won't panic if index is out of range
+    match v.get(0) {                      //won't panic if index is out of range
       Some(first) => print!("{}", first),
       None => (),
     }
@@ -766,7 +787,7 @@ Loop
       }
     #tuple struct (named tuples):
       struct StructName(TypeName, TypeName);
-    #unit struct (field-less; useful for generics):
+    #unit-like struct (field-less; useful for generics):
       struct StructName;
   #instantiate struct:
     #basic struct:
@@ -1159,6 +1180,11 @@ Loop
       optional = Some(i + 1);
     }
   }
+
+#Let else statement
+  let Coin::Quarter(state) = coin else {
+    return None;
+  };
 
 #--------------------------------------------------------------------------------
 #Code Organization

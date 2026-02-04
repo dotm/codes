@@ -1,0 +1,42 @@
+System Design Interview
+
+0. Introduction (5 minutes)
+1. Understand the problem and establish design scope (5 minutes)
+  - Clarify the requirements: why are we building this, who the users are, what features need to be built
+    - e.g. chat app can be very different for different requirements (WhatsApp vs Discord)
+  - Clarify NFR: focus on scale and performance
+    - e.g.,:
+      - number of users
+      - network effects between users
+      - soft or hard real time
+      - QPS
+    - other possible NFR: scalability, security, availability, etc.
+2. Propose high-level design and get buy in (20 minutes)
+  1. It's recommended to do top down approach (start with REST API)
+    - REST vs GraphQL. WebSocket vs Phoenix LiveView
+  2. And then create a high-level design diagram
+    - make sure all features are covered
+    - many designs start with a load balancer or API gateway forwarding to microservices
+  3. Do these (create API and design diagram) for all required features (review that all features are completed end to end)
+  4. Once completed, create the data model and schema (this can be part of the deep dive below if this is mostly for NFR)
+    - Also discuss the data access patterns and read/write ratio
+    - Scale can impact this step
+    - Database used and indexing options
+3. Design deep dive (15 minutes)
+  - Identify areas that can be problematic (1 or 2 might be enough)
+  - Come up with at least 2 solutions and discuss trade-offs
+    - example solutions: reduce call from frontend, optimize SQL indexing, use NoSQL solution
+    - discuss trade-offs
+      - use numbers to back up your design
+      - discuss trade-offs in general and then in specific (for current case)
+    - choose 1 solution
+    - list out the reasons of choosing a particular solution
+    - ask if the interviewer have any questions or concerns
+    - repeat for all problems
+  - NFR matters most here
+  - Work closely with the interviewer on what to discuss
+4. Wrap up (5 minutes)
+  - Summarize the design
+  - Focus on the parts that are unique to the particular situation
+5. QnA (5 minutes)
+  - Ask about the company, what projects are ongoing and planned, etc.

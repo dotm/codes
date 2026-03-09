@@ -1,0 +1,804 @@
+#################################################################################
+General
+
+#Statements
+Comments
+  // single-line comment
+  /* multi-line comment */
+Input/Output
+  String input
+    val input: String? = readlnOrNull()
+    val nonNullInput: String = readln()
+  String output
+    println("line with newline")
+    print("no newline")
+    Multi-line string output
+      val text = """
+        line 1
+        line 2
+      """.trimIndent()
+      println(text)
+    printf
+      println("name=%s age=%d".format(name, age))
+      val s = String.format("%.2f", 3.14159)
+  Serialization and Deserialization (Parsing)
+    JSON (kotlinx.serialization)
+      @kotlinx.serialization.Serializable
+      data class User(val id: Int, val name: String)
+
+      val json = kotlinx.serialization.json.Json.encodeToString(User(1, "Ana"))
+      val user = kotlinx.serialization.json.Json.decodeFromString<User>(json)
+    XML (commonly via Jackson / xmlutil)
+      val xmlMapper = com.fasterxml.jackson.dataformat.xml.XmlMapper()
+      val xml = xmlMapper.writeValueAsString(user)
+      val parsed = xmlMapper.readValue(xml, User::class.java)
+  File I/O
+    val file = java.io.File("notes.txt")
+    file.writeText("hello")
+    file.appendText("\nworld")
+    val content = file.readText()
+    val lines = file.readLines()
+  Command line arguments input
+    fun main(args: Array<String>) {
+      val first = args.getOrNull(0)
+    }
+Date and Time (java.time)
+  create
+    date object
+      val d = java.time.LocalDate.of(2026, 3, 9)
+    current date
+      val nowDate = java.time.LocalDate.now()
+      val nowDateTime = java.time.LocalDateTime.now()
+      val nowInstant = java.time.Instant.now()
+  display
+    date to string with format
+      val fmt = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+      val s = nowDateTime.format(fmt)
+    date to locale
+      val localized = nowDate.format(
+        java.time.format.DateTimeFormatter
+          .ofLocalizedDate(java.time.format.FormatStyle.FULL)
+          .withLocale(java.util.Locale.US)
+      )
+    time from now
+      val in2Hours = java.time.LocalDateTime.now().plusHours(2)
+    time from date
+      val startOfDay = d.atStartOfDay()
+    time to now
+      val duration = java.time.Duration.between(startOfDay, java.time.LocalDateTime.now())
+    time to date
+      val dateOnly = nowDateTime.toLocalDate()
+  from date time get/set
+    millisecond
+      val ms = nowInstant.toEpochMilli()
+    second minute hour
+      val second = nowDateTime.second
+      val minute = nowDateTime.minute
+      val hour = nowDateTime.hour
+    day name / date of month / date of year / week of year / month / year
+      val dayName = nowDate.dayOfWeek
+      val dom = nowDate.dayOfMonth
+      val doy = nowDate.dayOfYear
+      val week = nowDate.get(java.time.temporal.WeekFields.ISO.weekOfYear())
+      val month = nowDate.month
+      val year = nowDate.year
+  from date time
+    get start of (year, month, week, day, hour, minute, second)
+      val startYear = nowDate.with(java.time.temporal.TemporalAdjusters.firstDayOfYear())
+      val startMonth = nowDate.with(java.time.temporal.TemporalAdjusters.firstDayOfMonth())
+      val startWeek = nowDate.with(java.time.DayOfWeek.MONDAY)
+      val startDay = nowDateTime.toLocalDate().atStartOfDay()
+      val startHour = nowDateTime.withMinute(0).withSecond(0).withNano(0)
+      val startMinute = nowDateTime.withSecond(0).withNano(0)
+      val startSecond = nowDateTime.withNano(0)
+    get end of (year, month, week, day, hour, minute, second)
+      val endYear = nowDate.with(java.time.temporal.TemporalAdjusters.lastDayOfYear())
+      val endMonth = nowDate.with(java.time.temporal.TemporalAdjusters.lastDayOfMonth())
+      val endWeek = nowDate.with(java.time.DayOfWeek.SUNDAY)
+      val endDay = startDay.plusDays(1).minusNanos(1)
+      val endHour = startHour.plusHours(1).minusNanos(1)
+      val endMinute = startMinute.plusMinutes(1).minusNanos(1)
+      val endSecond = startSecond.plusSeconds(1).minusNanos(1)
+    get difference from another date
+      val daysBetween = java.time.temporal.ChronoUnit.DAYS.between(d, nowDate)
+    get number of days in certain month
+      val daysInMonth = java.time.YearMonth.of(2026, 2).lengthOfMonth()
+  to date time
+    add
+      val nextWeek = nowDate.plusWeeks(1)
+    subtract
+      val prevMonth = nowDate.minusMonths(1)
+  check if date
+    is today
+      val isToday = d == java.time.LocalDate.now()
+    is between 2 dates
+      val between = !d.isBefore(start) && !d.isAfter(end)
+    is same with another date
+      val same = d.isEqual(other)
+    is after another date
+      val after = d.isAfter(other)
+    is same with or after another date
+      val sameOrAfter = !d.isBefore(other)
+    is before another date
+      val before = d.isBefore(other)
+    is same with or before another date
+      val sameOrBefore = !d.isAfter(other)
+Hold execution (sleep, halt)
+  Thread.sleep(1000L)
+  kotlinx.coroutines.delay(1000L)   // in coroutine
+
+#Etc.
+Data types
+  Boolean value
+    Boolean (true false)
+  Number
+    Byte Short Int Long Float Double
+    UByte UShort UInt ULong
+  String
+    String
+  null value
+    null
+  reference types
+    class instances, arrays, collections, function types
+Type Operators
+  Type reflection
+    value::class
+    value::class.simpleName
+  Type conversion/typecasting
+    x.toInt() x.toDouble() x.toString()
+    val y: Sub = obj as Sub
+    val yOrNull: Sub? = obj as? Sub
+  Type check
+    if (obj is String) { println(obj.length) }  // smart cast
+    if (obj !is String) return
+  Type alias
+    typealias UserId = Long
+Operators
+  Arithmetic operators: + - * / %
+    Increment and decrement operators
+      ++ --
+  Boolean/Logical operators: and or not && || !
+    short circuit operator
+      && ||
+  Comparison operators: < <= > >= == !=
+    Shallow equality: equality of references
+      a === b
+    Deep equality: equality of values
+      a == b
+  Bitwise operators (Int/Long infix funcs)
+    and or xor inv shl shr ushr
+  Compound assignment operators
+    += -= *= /= %= <<= >>=
+  Basic mathematics operations (kotlin.math)
+    exponent: x.pow(y)
+    random number generator: kotlin.random.Random.nextInt(0, 10)
+    max min abs cos sin tan PI exp sqrt floor ceil round
+Access Control
+  Access Levels
+    public (default), internal, protected, private
+HTTP REST function
+  // Ktor server
+  routing {
+    get("/ping") { call.respondText("pong") }
+  }
+  // client (Ktor)
+  val response = io.ktor.client.HttpClient().get("https://example.com")
+Exception Handling / Error Handling
+  try-catch-finally
+    try {
+      risky()
+    } catch (e: java.io.IOException) {
+      handleIO()
+    } catch (e: Exception) {
+      handleAny()
+    } finally {
+      cleanup()
+    }
+    nested try-catch-finally is allowed
+  Raising exception / Throwing error
+    throw IllegalArgumentException("bad argument")
+  User-defined exception / error
+    class AppException(message: String): Exception(message)
+
+#--------------------------------------------------------------------------------
+String
+(mutable immutable, is an array of character)
+  String is immutable
+  StringBuilder is mutable
+  single line ""
+  multi line """ ... """
+  access by index
+    val ch = s[0]
+  get index of character
+    first occurrence: s.indexOf('a')
+    last occurrence: s.lastIndexOf('a')
+  get string length
+    s.length
+  reverse
+    s.reversed()
+  uppercase
+    s.uppercase()
+  lowercase
+    s.lowercase()
+  capitalize
+    s.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+  concatenate
+    s1 + s2
+    s1.plus(s2)
+  repeat
+    s.repeat(3)
+  interpolation
+    "name=$name age=${age + 1}"
+  strip (trailing space, leading space, both)
+    s.trimEnd() s.trimStart() s.trim()
+  pad (with trailing space, leading space, both)
+    s.padEnd(10, ' ') s.padStart(10, '0')
+  substring
+    s.substring(2)
+    s.substring(1, 4)
+    s.slice(1..3)
+  split
+    s.split(",")
+  include
+    s.contains("abc")
+  replace substring
+    s.replace("old", "new")
+  check if string
+    is empty: s.isEmpty() / s.isBlank()
+    starts with substring: s.startsWith("pre")
+    ends with substring: s.endsWith("end")
+    is alphanumeric: s.all { it.isLetterOrDigit() }
+    is alphabet: s.all { it.isLetter() }
+    is digit: s.all { it.isDigit() }
+    is whitespace: s.all { it.isWhitespace() }
+Regex
+  find (if exists)
+    Regex("cat").containsMatchIn(text)
+    find global
+      Regex("cat").findAll(text).toList()
+  find position
+    Regex("cat").find(text)?.range
+    find position global
+      Regex("cat").findAll(text).map { it.range }.toList()
+  replace
+    Regex("cat").replace(text, "dog")
+    replace global
+      Regex("cat").replace(text, "dog")
+
+#################################################################################
+Imperative, Structured, Procedural
+
+#Statements
+
+Variable declaration and definition (assignment)
+  Local variable vs Global variable
+    fun f() { val local = 1 }
+    val topLevel = 1   // top-level (file scope)
+  Mutable variable vs Immutable variable
+    var mutable = 1
+    val immutable = 2
+Constant declaration and definition (assignment)
+  const val APP_NAME = "my-app"   // top-level or object/companion object only
+
+#--------------------------------------------------------------------------------
+Conditional
+
+If statement
+  if (x > 0) {
+    println("positive")
+  } else if (x < 0) {
+    println("negative")
+  } else {
+    println("zero")
+  }
+  // if as expression
+  val sign = if (x >= 0) "non-negative" else "negative"
+Ternary operator statement
+  no ternary operator in Kotlin
+  use if-expression instead
+    val max = if (a > b) a else b
+Switch statement
+  when (value) {
+    0 -> println("zero")
+    1, 2 -> println("small")
+    in 3..10 -> println("range")
+    is String -> println(value.length)
+    else -> println("other")
+  }
+Null-coalescing operator (Elvis)
+  nullableVariable ?: defaultValue
+
+#--------------------------------------------------------------------------------
+Loop
+
+For loop
+  for (i in 0..5) { }
+  for (i in 0 until 5) { }
+  for (i in 10 downTo 0 step 2) { }
+While loop
+  while (condition) { }
+Do while loop
+  do { } while (condition)
+
+Iterate over data structures (array, object)
+  for (item in list) { }
+  for ((index, value) in list.withIndex()) { }
+  for ((key, value) in map) { }
+
+Control Transfer Statements
+  break out of loop
+    break
+    break with goto (label)
+      outer@ for (i in 0..3) {
+        for (j in 0..3) {
+          if (j == 2) break@outer
+        }
+      }
+  continue to next iteration
+    continue
+    continue with goto (label)
+      continue@outer
+
+#--------------------------------------------------------------------------------
+Procedure
+  fun log(message: String): Unit {
+    println(message)
+  }
+
+#--------------------------------------------------------------------------------
+Array
+is ordered collections of values
+is pass-by-reference (reference passed by value)
+(zero index, fixed-length; can be homogeneous)
+  create (declaration and definition)
+    val arr = arrayOf(1, 2, 3)
+    val ints = intArrayOf(1, 2, 3)
+    val empty = Array(3) { 0 }
+  length
+    arr.size
+  access element by index
+    arr[0]
+  access element by value
+    arr.indexOf(2)
+  change element value at index
+    arr[1] = 99
+  add and get value (dynamic arrays -> MutableList)
+    val m = mutableListOf(1, 2, 3)
+    pop (get last)
+      val last = m.removeLast()
+    push (add to last)
+      m.add(4)
+    shift (get first)
+      val first = m.removeFirst()
+    unshift (add to first)
+      m.add(0, 0)
+    stack operations: push, pop
+      m.add(x); m.removeLast()
+    queue operations: push, shift
+      m.add(x); m.removeFirst()
+  delete element
+    by index
+      single element: m.removeAt(2)
+      multiple elements: m.subList(1, 3).clear()
+    by value
+      m.remove(99)
+      with condition: m.removeAll { it < 0 }
+  sort
+    ascending: m.sort()
+    descending: m.sortDescending()
+  iteration over array
+    for each (by index and value)
+      arr.forEachIndexed { index, value -> println("$index:$value") }
+    map
+      val doubled = arr.map { it * 2 }
+    filter
+      val evens = arr.filter { it % 2 == 0 }
+  concatenate
+    val merged = arr + arrayOf(4, 5)
+  slicing
+    val part = arr.sliceArray(1..2)
+  copy
+    val clone = arr.copyOf()
+  max min sum first last reverse
+    arr.maxOrNull() arr.minOrNull() arr.sum() arr.first() arr.last() arr.reversed()
+  get unique elements
+    arr.distinct()
+  emptying
+    m.clear()
+  join into string (with separator)
+    arr.joinToString(",")
+  check if an element is in array
+    2 in arr
+
+Multidimensional array
+  val matrix = Array(3) { IntArray(4) }
+  matrix[1][2] = 7
+
+Extending array with User Defined Function
+  fun IntArray.averageOrZero(): Double = if (isEmpty()) 0.0 else average()
+
+Range array
+  val range = 1..10
+  val stepRange = 0 until 10 step 2
+
+#--------------------------------------------------------------------------------
+Associative array
+is unordered collections of key-value associations
+is pass-by-reference (reference passed by value)
+  create (declaration and definition)
+    val ro = mapOf("a" to 1, "b" to 2)
+    val rw = mutableMapOf("a" to 1)
+  access value by key
+    static access (dot notation)
+      // not available for Map keys
+    dynamic access (with key)
+      rw["a"]
+      rw.getValue("a")
+  add key-value pair
+    rw["b"] = 2
+    rw.put("c", 3)
+  edit key-value pair
+    rw["a"] = 10
+  delete key-value pair
+    by key
+      rw.remove("a")
+    by value
+      rw.entries.removeIf { it.value < 0 }
+      with condition
+        rw.entries.removeAll { (_, v) -> v % 2 == 0 }
+  sort
+    val byKey = rw.toSortedMap()
+    val byValue = rw.entries.sortedBy { it.value }
+  copy
+    val shallow = rw.toMutableMap()
+  get list of
+    keys: rw.keys
+    values: rw.values
+  iteration over associative array
+    for each (by key and value)
+      rw.forEach { (k, v) -> println("$k=$v") }
+    map
+      val mapped = rw.mapValues { (_, v) -> v * 2 }
+    filter
+      val filtered = rw.filter { (_, v) -> v > 0 }
+
+Extending associative array with User Defined Function
+  fun <K, V> MutableMap<K, V>.putIfAbsent2(k: K, v: V) { if (k !in this) this[k] = v }
+
+#--------------------------------------------------------------------------------
+Tuple/Record
+(positional fields, named fields)
+  create
+    val pair = Pair("x", 1)
+    val triple = Triple("x", 1, true)
+    data class Point(val x: Int, val y: Int)
+  access index
+    pair.first pair.second
+  unpacking
+    val (name, count) = pair
+
+#--------------------------------------------------------------------------------
+Set
+is unordered collections of unique values
+is pass-by-reference (reference passed by value)
+  create
+    val ro = setOf(1, 2, 3)
+    val rw = mutableSetOf(1, 2, 3)
+  length
+    rw.size
+  sort
+    rw.sorted()
+  insert element
+    rw.add(4)
+  delete element
+    rw.remove(2)
+  contains
+    3 in rw
+
+  union
+    in A or B: A union B
+  intersection
+    in A and B: A intersect B
+  difference
+    in A not in B: A subtract B
+  symmetric difference
+    in A xor B:
+      (A subtract B) union (B subtract A)
+
+  check if a set
+    is subset to another set
+      A.all { it in B }
+    is strict subset to another set
+      A.size < B.size && A.all { it in B }
+    is superset to another set
+      B.all { it in A }
+    is disjoint to another set
+      A.none { it in B }
+
+#--------------------------------------------------------------------------------
+Enumeration
+is pass-by-reference (enum entries are singleton objects)
+  definition
+    enum class Direction { NORTH, SOUTH, EAST, WEST }
+    enum class Color(val hex: String) { RED("#f00"), BLUE("#00f") }
+  usage
+    val d = Direction.NORTH
+    Direction.entries.forEach { println(it) }
+
+#--------------------------------------------------------------------------------
+Module (used to store constant and function)
+
+Creating module
+  package my.app.util
+  object MathUtil {
+    const val PI2 = 6.28318
+    fun square(x: Int) = x * x
+  }
+Export module
+  public declarations in package are accessible by import
+
+Import module (from another file)
+  Import
+    import my.app.util.MathUtil
+  Import as (alias)
+    import my.app.util.MathUtil as MU
+  Selective import (don't import all)
+    import my.app.util.MathUtil.square
+  Qualified import
+    use fully qualified name: my.app.util.MathUtil.square(3)
+
+Package (directory of modules that can contains subpackages)
+  package my.app.feature
+
+#################################################################################
+Functional
+
+Function
+(first-class object, can be overloaded)
+  Declaration
+    fun add(a: Int, b: Int): Int
+  Definition
+    fun add(a: Int, b: Int): Int { return a + b }
+    fun add(a: Int, b: Int) = a + b
+  Call
+    add(1, 2)
+  Change context
+    with(person) { println(name) }
+    run { println("current receiver / scope") }
+  Default arguments
+    fun greet(name: String = "world") = "hi $name"
+    Optional parameter (nullable)
+      fun find(id: String? = null) { }
+  Variadic function
+    fun sum(vararg nums: Int): Int = nums.sum()
+Anonymous function (Lambda)
+  val inc: (Int) -> Int = { it + 1 }
+  val fn = fun(x: Int): Int { return x * 2 }
+Higher order function
+  fun apply(x: Int, f: (Int) -> Int) = f(x)
+  Closure
+    fun makeCounter(): () -> Int {
+      var c = 0
+      return { ++c }
+    }
+  Nested function
+    fun outer() {
+      fun inner() { }
+      inner()
+    }
+  Callback
+    fun fetch(onDone: (String) -> Unit) { onDone("ok") }
+  Currying
+    fun addCurried(a: Int): (Int) -> Int = { b -> a + b }
+Function composition
+  infix fun <A, B, C> ((A) -> B).andThen(g: (B) -> C): (A) -> C = { a -> g(this(a)) }
+Common iteration function
+  sort: list.sorted() list.sortedBy { it.key }
+  filter: list.filter { it > 0 }
+  map: list.map { it * 2 }
+  each: list.forEach { println(it) }
+  reduce/fold: list.reduce { acc, n -> acc + n }; list.fold(0) { acc, n -> acc + n }
+  list comprehension (map + filter equivalent)
+    val out = list.filter { it > 0 }.map { it * 2 }
+
+Pattern matching
+  when (x) {
+    is String -> x.length
+    0 -> 0
+    else -> -1
+  }
+Guards
+  when {
+    x < 0 -> "negative"
+    x == 0 -> "zero"
+    else -> "positive"
+  }
+Where binding clause
+  fun <T> copyWhen(source: List<T>, predicate: (T) -> Boolean) where T : Any { }
+Let binding
+  nullable?.let { value -> println(value) }
+
+Type signature
+  val op: (Int, Int) -> Int = ::add
+User-defined types
+  Defining new type
+    typealias Predicate<T> = (T) -> Boolean
+    sealed interface Result
+    data class Ok(val value: String): Result
+    data class Err(val reason: String): Result
+
+#--------------------------------------------------------------------------------
+Module (see Module above)
+  FP Module
+    package my.fp
+    object Functions {
+      fun <T, R> List<T>.fmap(f: (T) -> R): List<R> = map(f)
+    }
+
+#################################################################################
+Class-Based Object Oriented Programming
+
+#--------------------------------------------------------------------------------
+Class
+  Attribute := variable attached to a class or object
+  Method := function attached to a class or object
+  use this keyword to refer to object instance
+
+Creating class (with parameter for init)
+  class Person(val id: Int, var name: String) {
+    init {
+      require(name.isNotBlank())
+    }
+
+    private var secret = "x"
+
+    fun rename(newName: String) {
+      this.name = newName
+      logPrivate()
+    }
+
+    private fun logPrivate() { }
+
+    companion object {
+      const val species = "human"
+      fun createAnonymous() = Person(0, "anonymous")
+    }
+  }
+
+  Initialization (init method)
+    init { statements }
+  Attribute declaration and definition
+    global (public) and local (private) attribute
+      var visible = 1
+      private var hidden = 2
+    class and instance (object) attribute
+      companion object { var classCounter = 0 }
+      var instanceCounter = 0
+  Method declaration and definition
+    global (public) and local (private) method
+      fun publicMethod() {}
+      private fun privateMethod() {}
+    class and instance (object) method
+      companion object { fun staticLike() {} }
+      fun instanceMethod() {}
+  Access class attribute from method
+    companion object { val version = 1 }
+    fun printVersion() = println(version)
+  Access instance attribute from method
+    fun display() = println(name)
+  Call private method from public method
+    fun run() { privateMethod() }
+  Access private variable from public method
+    fun revealLength() = hidden.toString().length
+
+Object
+is pass-by-reference (reference passed by value)
+  Create object (Instantiating class)
+    val p = Person(1, "Ana")
+
+get class/static attribute
+  Person.species
+get object attribute
+  p.name
+set class/static attribute
+  // mutable companion property only
+set object attribute
+  p.name = "Ann"
+call class/static method
+  Person.createAnonymous()
+call object method
+  p.rename("Anita")
+accessor method
+  getter setter
+    var age: Int = 0
+      get() = field
+      set(value) { field = value.coerceAtLeast(0) }
+
+Inheritance
+  open class Animal { open fun speak() {} }
+  class Dog: Animal() { override fun speak() { println("woof") } }
+  Access superclass attribute and method
+    super.speak()
+  Attribute and method overriding
+    open var speed = 0
+    override var speed = 10
+  Preventing override of attribute and method
+    final override fun speak() {}
+  final class (can't be subclassed)
+    class FinalClass
+
+Interface
+  interface Drivable {
+    val wheels: Int
+    fun drive()
+    fun stop() { println("stop") } // default impl
+  }
+
+Reflection (list all attributes or methods)
+  val kClass = Person::class
+  val props = kClass.members.filterIsInstance<kotlin.reflect.KProperty1<Person, *>>()
+  val methods = kClass.members.filterIsInstance<kotlin.reflect.KFunction<*>>()
+
+Abstract class
+  abstract class Shape {
+    abstract fun area(): Double
+    fun printArea() = println(area())
+  }
+Nested class
+  class Outer {
+    class Nested
+    inner class Inner { fun owner() = this@Outer }
+  }
+
+Class relationship
+  Association
+    class Order(val customer: Customer)
+  Aggregation
+    class Team(val members: MutableList<Player>)
+  Composition
+    class House { private val room = Room() }
+
+#--------------------------------------------------------------------------------
+Generic
+(using type parameter such as Set<T>)
+  generic in class definition
+    class Box<T>(var value: T)
+  generic in function definition
+    fun <T> singletonList(item: T): List<T> = listOf(item)
+  bound
+    fun <T : Number> sumNum(a: T, b: T): Double = a.toDouble() + b.toDouble()
+  F-bound polymorphism
+    fun <T> maxOf(a: T, b: T): T where T : Comparable<T> = if (a >= b) a else b
+
+#--------------------------------------------------------------------------------
+Module (see Module above)
+  OOP Module
+    package my.oop
+    object Services {
+      class UserService
+    }
+
+#################################################################################
+Event-Driven (Asynchronous) Programming
+
+Callback function
+  fun loadData(done: (String) -> Unit) {
+    done("ok")
+  }
+Listeners
+  interface ClickListener { fun onClick(x: Int, y: Int) }
+  class Button {
+    var listener: ClickListener? = null
+    fun click() { listener?.onClick(10, 20) }
+  }
+Promises
+  // Kotlin equivalent: Deferred / suspend / CompletableFuture
+  suspend fun fetch(): String = "result"
+  val deferred = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).async { fetch() }
+  val value = deferred.await()
+Generator
+  val seq = sequence {
+    yield(1)
+    yield(2)
+    yieldAll(3..5)
+  }

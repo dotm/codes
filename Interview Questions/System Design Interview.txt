@@ -1,5 +1,22 @@
 System Design Interview
 
+Cheatsheet:
+- Clarify requirements: why build this, for whom, what features
+- Clarify NFR: based on context (startup vs. at scale; how real time; etc.)
+- For all core features:
+  - API contract
+  - Design diagram (from API Gateway to DB)
+  - Data schema/modelling
+  - Usage pattern (read vs. write; etc.)
+  - Get buy in and feedback
+- Identify problem areas. For each problems:
+  - Come up with 2 or more solutions
+  - Discuss tradeoff in general
+  - Discuss tradeoff for current situation
+  - Decide 1 solution for the problem
+  - Get buy in and feedback
+- Wrap up summary
+
 0. Introduction (5 minutes)
 1. Understand the problem and establish design scope (5 minutes)
   - Clarify the requirements: why are we building this, who the users are, what features need to be built
